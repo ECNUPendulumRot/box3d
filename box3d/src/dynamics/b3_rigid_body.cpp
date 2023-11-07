@@ -25,12 +25,13 @@ box3d::b3RigidBody::b3RigidBody(const std::string &obj_file_name):
     m_Inertia(b3Inertia())
 
 {
-    m_pose.set_position(b3Vector3d::Zero());
-    m_pose.set_rotation(b3Vector3d::Zero());
+    m_pose.set_position(b3Vector3d::zero());
+    m_pose.set_rotation(b3Vector3d::zero());
 
-    m_velocity.set_position(b3Vector3d::Zero());
-    m_velocity.set_rotation(b3Vector3d::Zero());
+    m_velocity.set_position(b3Vector3d::zero());
+    m_velocity.set_rotation(b3Vector3d::zero());
 }
+
 
 bool box3d::b3RigidBody::compute_mass_properties() {
 

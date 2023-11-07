@@ -3,7 +3,7 @@
 #define BOX3D_B3_POSE_HPP
 
 
-#include "utils/b3_types.hpp"
+#include "common/b3_types.hpp"
 
 namespace box3d {
     template <typename T>

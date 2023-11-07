@@ -5,8 +5,8 @@
 template <typename T>
 box3d::b3Pose<T>::b3Pose()
 {
-    m_p.setZero();
-    m_r.setZero();
+    m_p.set_zero();
+    m_r.set_zero();
     m_rel_p = nullptr;
 }
 

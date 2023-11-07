@@ -3,7 +3,6 @@
 
 
 box3d::b3Body::b3Body():
-
     m_mesh(nullptr)
 {
     ;

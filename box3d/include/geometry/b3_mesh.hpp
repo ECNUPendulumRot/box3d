@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "utils/b3_types.hpp"
+#include "common/b3_types.hpp"
 #include "dynamics/b3_inertia.hpp"
 #include "dynamics/b3_pose.hpp"
 

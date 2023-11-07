@@ -8,5 +8,6 @@
 
 #include "utils/b3_log.hpp"
 
+#include "collision/b3_bvh.hpp"
 
 #endif //BOX3D_BOX3D_HPP

@@ -11,7 +11,7 @@
 #include "math/b3_matrix.hpp"
 
 #include "utils/b3_io.hpp"
-#include "utils/b3_types.hpp"
+#include "common/b3_types.hpp"
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,

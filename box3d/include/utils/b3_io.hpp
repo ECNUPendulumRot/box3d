@@ -4,7 +4,7 @@
 
 
 #include <string>
-
+#include <vector>
 #include <Eigen/Core>
 
 bool read_obj(const std::string& obj_file_name,

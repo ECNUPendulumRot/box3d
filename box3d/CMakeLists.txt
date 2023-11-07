@@ -8,12 +8,19 @@ set(B3D_HEADER_FILES
 
         include/geometry/b3_mesh.hpp
 
-        include/utils/b3_types.hpp
+        include/common/b3_types.hpp
         include/utils/b3_io.hpp
         include/utils/b3_log.hpp
 
         include/math/b3_matrix.hpp
         include/geometry/b3_geometry.hpp
+
+        include/dynamics/b3_world.hpp
+        include/collision/b3_bvh.hpp
+        include/common/b3_allocator.hpp
+        include/math/b3_vector.hpp
+        include/common/b3_common.hpp
+        include/math/b3_min_max.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -26,6 +33,9 @@ set(B3D_SOURCE_FILES
 
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
+        src/dynamics/b3_world.cpp
+        src/collision/b3_bvh.cpp
+
 )
 
 # add third-party libraries
