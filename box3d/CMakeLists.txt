@@ -21,6 +21,10 @@ set(B3D_HEADER_FILES
         include/math/b3_vector.hpp
         include/common/b3_common.hpp
         include/math/b3_min_max.hpp
+        include/math/b3_math.hpp
+        include/collision/b3_fixture.hpp
+        include/collision/b3_rigid_fixture.hpp
+        include/collision/b3_aabb.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -35,6 +39,7 @@ set(B3D_SOURCE_FILES
         src/utils/b3_log.cpp
         src/dynamics/b3_world.cpp
         src/collision/b3_bvh.cpp
+        src/collision/b3_aabb.cpp
 
 )
 

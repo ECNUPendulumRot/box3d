@@ -12,6 +12,7 @@
 
 #include "utils/b3_io.hpp"
 #include "common/b3_types.hpp"
+#include "common/b3_common.hpp"
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
@@ -93,6 +94,35 @@ bool box3d::b3Mesh::mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Ine
     Inertia.set_inertia(tmp_inertia);
 
     return true;
+}
+
+
+void box3d::b3Mesh::recenter(b3PoseD* new_center)
+{
+    // TODO: do a transform in this function
+    m_rel_pose = new_center;
+    auto eigen_new_center = new_center->position().eigen_vector3();
+    m_V.rowwise() -= eigen_new_center.transpose();
+}
+
+
+void box3d::b3Mesh::transform()
+{
+    b3_assert(m_rel_pose != nullptr);
+
+    for (int32 i = 0; i < m_V.rows(); i++) {
+        auto transformed = m_rel_pose->transform(m_V.row(i).transpose());
+        m_V.row(i) = transformed.transpose();
+    }
+}
+
+
+box3d::b3AABB box3d::b3Mesh::get_bounding_aabb() const
+{
+    Eigen::Vector3d aabb_min = m_V.colwise().minCoeff();
+    Eigen::Vector3d aabb_max = m_V.colwise().maxCoeff();
+
+    return b3AABB{aabb_min, aabb_max};
 }
 
 

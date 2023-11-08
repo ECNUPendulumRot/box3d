@@ -72,6 +72,10 @@ public:
         m_density = density;
     };
 
+    /**
+     * @brief Get volume, center of geometry and inertia from the mesh
+     * @param position
+     */
     void set_position(const b3Vector3d& position){
         m_pose.set_position(position);
     }

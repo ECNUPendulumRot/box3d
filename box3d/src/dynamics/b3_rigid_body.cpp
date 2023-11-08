@@ -30,6 +30,8 @@ box3d::b3RigidBody::b3RigidBody(const std::string &obj_file_name):
 
     m_velocity.set_position(b3Vector3d::zero());
     m_velocity.set_rotation(b3Vector3d::zero());
+
+    compute_mass_properties();
 }
 
 
@@ -40,7 +42,10 @@ bool box3d::b3RigidBody::compute_mass_properties() {
     if (mesh == nullptr)
         return false;
 
+    // The m_CoM is relative to the origin of the obj file
     mesh->mesh_properties(m_volume, m_CoM, m_Inertia);
+
+    mesh->recenter(&m_CoM);
 
     m_mass = m_volume * m_density;
 

@@ -53,6 +53,8 @@ public:
            const T& r_y,
            const T& r_z);
 
+    Eigen::Vector3<T> transform(const Eigen::Vector3<T>& v);
+
     inline void set_relative_pose(b3Pose<T>* rel_pose){
         m_rel_p = rel_pose;
     };
@@ -73,7 +75,16 @@ public:
         m_r = b3Vector3<T>(x, y, z);
     };
 
+    inline b3Vector3<T> position() const {
+        return m_p;
+    };
+
+    inline b3Vector3<T> rotation() const {
+        return m_r;
+    };
 };
+
+
 
 using b3PoseF = box3d::b3Pose<float>;
 using b3PoseD = box3d::b3Pose<double>;

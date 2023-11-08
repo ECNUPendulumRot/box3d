@@ -4,8 +4,10 @@
 
 #include <Eigen/Core>
 
+#include "math/b3_math.hpp"
 #include "math/b3_min_max.hpp"
 
+#include "common/b3_common.hpp"
 
 namespace box3d {
 
@@ -13,6 +15,24 @@ namespace box3d {
     class b3Vector3;
 
 }
+
+template <typename T>
+inline box3d::b3Vector3<T> operator+(const box3d::b3Vector3<T>& v1, const box3d::b3Vector3<T>& v2);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator-(const box3d::b3Vector3<T>& v1, const box3d::b3Vector3<T>& v2);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator-(const box3d::b3Vector3<T>& v);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator*(T s, const box3d::b3Vector3<T>& v);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, T s);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator/(const box3d::b3Vector3<T>& v, T s);
 
 
 template <typename T>
@@ -43,6 +63,10 @@ public:
         m_z = z;
     }
 
+    inline Eigen::Vector3<T> eigen_vector3() const {
+        return Eigen::Vector3<T>(m_x, m_y, m_z);
+    }
+
     inline b3Vector3& operator=(const Eigen::Vector3<T>& v) {
         m_x = v.x();
         m_y = v.y();
@@ -51,16 +75,16 @@ public:
     }
 
     inline b3Vector3& operator+=(const b3Vector3& v) {
-        m_x += v.x;
-        m_y += v.y;
-        m_z += v.z;
+        m_x += v.m_x;
+        m_y += v.m_y;
+        m_z += v.m_z;
         return *this;
     }
 
     inline b3Vector3& operator-=(const b3Vector3& v) {
-        m_x -= v.x;
-        m_y -= v.y;
-        m_z -= v.z;
+        m_x -= v.m_x;
+        m_y -= v.m_y;
+        m_z -= v.m_z;
         return *this;
     }
 
@@ -78,13 +102,32 @@ public:
     }
 
     inline T dot(const b3Vector3<T>& v) const {
-        return m_x * v.x + m_y * v.y + m_z * v.z;
+        return m_x * v.m_x + m_y * v.m_y + m_z * v.m_z;
     }
 
     inline b3Vector3 cross(const b3Vector3<T>& v) const {
-        return b3Vector3(m_y * v.z - m_z * v.y,
-                         m_z * v.x - m_x * v.z,
-                         m_x * v.y - m_y * v.x);
+        return b3Vector3(m_y * v.m_z - m_z * v.m_y,
+                         m_z * v.m_x - m_x * v.m_z,
+                         m_x * v.m_y - m_y * v.m_x);
+    }
+
+    inline bool is_zero() {
+        if constexpr (std::is_same_v<T, float>)
+            return m_x < b3_float_epsilon && m_y < b3_float_epsilon && m_z < b3_float_epsilon;
+        else
+            return m_x < b3_double_epsilon && m_y < b3_double_epsilon && m_z < b3_double_epsilon;
+    }
+
+    inline b3Vector3 normalized() {
+        return *this / length();
+    }
+
+    inline T length() {
+        return b3_sqrt<T>(length2());
+    }
+
+    inline T length2() const {
+        return dot(*this);
     }
 
     inline void set_zero() {
@@ -145,6 +188,11 @@ inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, T s) {
 }
 
 template <typename T>
+inline box3d::b3Vector3<T> operator/(const box3d::b3Vector3<T>& v, T s) {
+    return v * (T(1.0) / s) ;
+}
+
+template <typename T>
 inline box3d::b3Vector3<T> b3_min_coeff(const box3d::b3Vector3<T>& a, const box3d::b3Vector3<T>& b){
     return box3d::b3Vector3(b3_min(a.x(), b.x()), b3_min(a.y(), b.y()), b3_min(a.z(), b.z()));
 }
@@ -153,5 +201,8 @@ template <typename T>
 inline box3d::b3Vector3<T> b3_max_coeff(const box3d::b3Vector3<T>& a, const box3d::b3Vector3<T>& b){
     return box3d::b3Vector3(b3_max(a.x(), b.x()), b3_max(a.y(), b.y()), b3_max(a.z(), b.z()));
 }
+
+
+
 
 #endif //BOX3D_B3_VECTOR_HPP
