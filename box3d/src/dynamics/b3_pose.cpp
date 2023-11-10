@@ -30,6 +30,15 @@ box3d::b3Pose<T>::b3Pose(const T &x,
 
 
 template<typename T>
+box3d::b3Pose<T>::b3Pose(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation)
+{
+    m_p = b3Vector3<T>(position);
+    m_r = b3Vector3<T>(rotation);
+    m_rel_p = nullptr;
+}
+
+
+template<typename T>
 Eigen::Vector3<T> box3d::b3Pose<T>::transform(const Eigen::Vector3<T> &v)
 {
     // Initialize the rotation matrix

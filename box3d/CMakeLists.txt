@@ -25,6 +25,8 @@ set(B3D_HEADER_FILES
         include/collision/b3_fixture.hpp
         include/collision/b3_rigid_fixture.hpp
         include/collision/b3_aabb.hpp
+        include/dynamics/b3_body_def.hpp
+        include/utils/b3_json.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -40,6 +42,7 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_world.cpp
         src/collision/b3_bvh.cpp
         src/collision/b3_aabb.cpp
+        src/dynamics/b3_body_def.cpp
 
 )
 
@@ -60,3 +63,7 @@ target_link_libraries(box3d PUBLIC Eigen3::Eigen)
 # spdlog
 include(spdlog)
 target_link_libraries(box3d PUBLIC spdlog::spdlog)
+
+# nlohmann_json
+include(json)
+target_link_libraries(box3d PUBLIC nlohmann_json::nlohmann_json)

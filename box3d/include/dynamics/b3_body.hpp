@@ -10,6 +10,10 @@ namespace box3d {
 
     class b3Body;
 
+    class b3BodyDef;
+
+    enum class b3BodyType;
+
 }
 
 
@@ -41,7 +45,6 @@ public:
         return m_mesh;
     }
 };
-
 
 
 #endif //BOX3D_B3_BODY_HPP

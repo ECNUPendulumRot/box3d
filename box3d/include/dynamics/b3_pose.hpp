@@ -39,6 +39,13 @@ public:
 
     /**
      * @brief Construct a new b3Pose object
+     * @param position
+     * @param rotation
+     */
+    b3Pose(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation);
+
+    /**
+     * @brief Construct a new b3Pose object
      * @param x: The x position
      * @param y: The y position
      * @param z: The z position
@@ -82,7 +89,13 @@ public:
     inline b3Vector3<T> rotation() const {
         return m_r;
     };
+
+    static b3Pose<T> zero() {
+        return b3Pose<T>(T(0), T(0), T(0), T(0), T(0), T(0));
+    };
+
 };
+
 
 
 
