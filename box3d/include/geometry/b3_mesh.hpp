@@ -67,9 +67,13 @@ public:
      * @brief align the mesh vertices to a new center
      * @param new_center: new center of the mesh
      */
-    void recenter(b3PoseD* new_center);
+    void recenter(const b3PoseD& new_center);
 
     void transform();
+
+    void set_relative_pose(b3PoseD* pose) {
+        m_rel_pose = pose;
+    }
 
     /**
      * @brief Get volume, center of geometry and inertia from the mesh

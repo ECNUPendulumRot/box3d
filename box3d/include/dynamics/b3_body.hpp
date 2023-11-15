@@ -24,6 +24,12 @@ class box3d::b3Body {
      */
     b3Mesh* m_mesh;
 
+    b3Body* m_next;
+
+protected:
+
+    b3Vector3d m_force;
+
 public:
 
     /**
@@ -37,13 +43,28 @@ public:
      */
     explicit b3Body(const std::string& obj_file_name);
 
-    inline void set_mesh(const std::string& obj_file_name) {
-        m_mesh = new b3Mesh(obj_file_name);
+    virtual void set_mesh(b3Mesh* mesh) {
+        m_mesh = mesh;
     };
 
     inline b3Mesh* mesh() const {
         return m_mesh;
     }
+
+    inline void set_next(b3Body* next) {
+        m_next = next;
+    }
+
+    inline b3Body* next() const {
+        return m_next;
+    }
+
+    void apply_central_force(const b3Vector3d& force) {
+        m_force += force;
+    }
+
+    virtual void test_step_by_force(double time_step) = 0;
+
 };
 
 

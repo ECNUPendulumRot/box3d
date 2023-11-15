@@ -48,7 +48,9 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
         return false;
     }
 
-    bool V_rect = b3_list_to_matrix(vV, m_V);
+    Eigen::MatrixXd V;
+
+    bool V_rect = b3_list_to_matrix(vV, V);
     if (!V_rect) {
         // igl::list_to_matrix(vV,V) already printed error message
         return false;
@@ -90,18 +92,17 @@ bool box3d::b3Mesh::mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Ine
     if (!success)
         return false;
 
-    CoG.set_position(tmp_center);
+    CoG.set_linear(tmp_center);
     Inertia.set_inertia(tmp_inertia);
 
     return true;
 }
 
 
-void box3d::b3Mesh::recenter(b3PoseD* new_center)
+void box3d::b3Mesh::recenter(const b3PoseD &new_center)
 {
     // TODO: do a transform in this function
-    m_rel_pose = new_center;
-    auto eigen_new_center = new_center->position().eigen_vector3();
+    auto eigen_new_center = new_center.linear().eigen_vector3();
     m_V.rowwise() -= eigen_new_center.transpose();
 }
 

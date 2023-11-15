@@ -27,6 +27,10 @@ set(B3D_HEADER_FILES
         include/collision/b3_aabb.hpp
         include/dynamics/b3_body_def.hpp
         include/utils/b3_json.hpp
+        include/utils/b3_timer.h
+        include/utils/b3_gui_viewer.hpp
+        include/utils/b3_igl_viewer_ext.hpp
+        include/utils/b3_imgui_ext.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -43,6 +47,10 @@ set(B3D_SOURCE_FILES
         src/collision/b3_bvh.cpp
         src/collision/b3_aabb.cpp
         src/dynamics/b3_body_def.cpp
+        src/utils/b3_gui_viewer.cpp
+        src/utils/b3_igl_viewer_ext.cpp
+        src/utils/b3_ui_menu.cpp
+        src/utils/b3_imgui_ext.cpp
 
 )
 
@@ -67,3 +75,10 @@ target_link_libraries(box3d PUBLIC spdlog::spdlog)
 # nlohmann_json
 include(json)
 target_link_libraries(box3d PUBLIC nlohmann_json::nlohmann_json)
+
+# igl
+include(libigl)
+
+igl_include(glfw)
+igl_include(imgui)
+target_link_libraries(box3d PUBLIC igl::glfw igl::imgui)

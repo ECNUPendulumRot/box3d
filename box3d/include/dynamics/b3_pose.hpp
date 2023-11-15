@@ -66,27 +66,27 @@ public:
         m_rel_p = rel_pose;
     };
 
-    inline void set_position(b3Vector3<T> p){
+    inline void set_linear(b3Vector3<T> p){
         m_p = p;
     };
 
-    inline void set_position(const T& x, const T& y, const T& z){
+    inline void set_linear(const T& x, const T& y, const T& z){
         m_p = b3Vector3<T>(x, y, z);
     };
 
-    inline void set_rotation(b3Vector3<T> p){
+    inline void set_angular(b3Vector3<T> p){
         m_r = p;
     };
 
-    inline void set_rotation(const T& x, const T& y, const T& z){
+    inline void set_angular(const T& x, const T& y, const T& z){
         m_r = b3Vector3<T>(x, y, z);
     };
 
-    inline b3Vector3<T> position() const {
+    inline b3Vector3<T> linear() const {
         return m_p;
     };
 
-    inline b3Vector3<T> rotation() const {
+    inline b3Vector3<T> angular() const {
         return m_r;
     };
 

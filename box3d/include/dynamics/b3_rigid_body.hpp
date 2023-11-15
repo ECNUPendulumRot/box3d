@@ -5,6 +5,7 @@
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_pose.hpp"
 #include "dynamics/b3_inertia.hpp"
+#include "dynamics/b3_body_def.hpp"
 
 namespace box3d {
 
@@ -22,12 +23,12 @@ class box3d::b3RigidBody: public b3Body {
     /**
      * The volume of the rigid body.
      */
-    double m_volume;
+    double m_volume = 0.0;
 
     /**
      * The mass of the rigid body.
      */
-    double m_mass;
+    double m_inv_mass = 0.0;
 
     /**
      * The center of mass of the rigid body.
@@ -64,6 +65,8 @@ public:
      */
     explicit b3RigidBody(const std::string& obj_file_name);
 
+    explicit b3RigidBody(const b3BodyDef& body_def);
+
     /**
      * @brief Get volume, center of geometry and inertia from the mesh
      * @param density
@@ -77,7 +80,26 @@ public:
      * @param position
      */
     void set_position(const b3Vector3d& position){
-        m_pose.set_position(position);
+        m_pose.set_linear(position);
+    }
+
+    // TODO: delete test function
+    void test_step_by_force(double time_step) override {
+        m_velocity.set_linear(m_velocity.linear() + m_force * time_step);
+        m_pose.set_linear(m_pose.linear() + m_velocity.linear() * time_step);
+
+        mesh()->transform();
+    }
+
+    void set_mesh(b3Mesh* mesh) override {
+
+        b3Body::set_mesh(mesh);
+
+        compute_mass_properties();
+
+        mesh->set_relative_pose(&m_pose);
+
+        mesh->transform();
     }
 
 private:
