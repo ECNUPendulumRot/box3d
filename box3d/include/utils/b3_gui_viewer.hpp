@@ -20,7 +20,6 @@ namespace box3d {
 
 class box3d::b3GUIViewer {
 
-    using Super = igl::opengl::glfw::ViewerPlugin;
     using Viewer = igl::opengl::glfw::Viewer;
 
     Viewer m_viewer;
@@ -31,14 +30,7 @@ public:
 
     void launch();
 
-    bool set_world(box3d::b3World* world) {
-        m_world = world;
-
-        if (world->empty()){
-            return false;
-        } else
-            add_meshes();
-    }
+    bool set_world(box3d::b3World* world);
 
 private:
 
@@ -46,20 +38,9 @@ private:
 
     void simulation_step();
 
-    void redraw_mesh() {
-        for (int mesh_id = 0; mesh_id < box3d::b3Mesh::num_meshes(); ++mesh_id) {
-            box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(mesh_id);
-            m_viewer.data(mesh_id).set_mesh(mesh->vertices(), mesh->faces());
-        }
-    }
+    void redraw_mesh();
 
-    void add_meshes() {
-        for (int mesh_id = 0; mesh_id < box3d::b3Mesh::num_meshes(); ++mesh_id) {
-            m_viewer.append_mesh(true);
-            box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(mesh_id);
-            m_viewer.data(mesh_id).set_mesh(mesh->vertices(), mesh->faces());
-        }
-    }
+    void add_meshes();
 
 };
 

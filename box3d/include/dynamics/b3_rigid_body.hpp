@@ -6,6 +6,7 @@
 #include "dynamics/b3_pose.hpp"
 #include "dynamics/b3_inertia.hpp"
 #include "dynamics/b3_body_def.hpp"
+#include "utils/b3_log.hpp"
 
 namespace box3d {
 
@@ -89,6 +90,11 @@ public:
         m_pose.set_linear(m_pose.linear() + m_velocity.linear() * time_step);
 
         mesh()->transform();
+//        auto first_v = mesh()->vertices().row(0);
+//
+//        auto v_str = b3_matrix_str(first_v);
+//        spdlog::log(spdlog::level::info, "first vertex: {}", v_str);
+
     }
 
     void set_mesh(b3Mesh* mesh) override {

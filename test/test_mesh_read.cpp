@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     app.add_option("scene_path,-i,-s,--scene-path",
                    mesh_path,
-                   "JSON file with input mesh")  -> default_val("sphere.obj");
+                   "JSON file with input mesh")  -> default_val("plane.obj");
 
     CLI11_PARSE(app, argc, argv);
 

@@ -64,6 +64,9 @@ public:
      * @brief Read a mesh from an ascii obj file
      * @param obj_file_name: path to .obj file
      * @return true on success, false on errors
+     * In obj, the coordinate is different from the common ones,
+     * In obj, it is a x right, y up, z forward coordinate,
+     * so we need to transform to a x forward, y left, z up coordinate
      */
     bool read_obj(const std::string& obj_file_name);
 

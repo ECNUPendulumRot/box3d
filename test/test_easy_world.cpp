@@ -60,31 +60,11 @@ int main(int argc, char* argv[]) {
 
     body->set_mesh(mesh);
 
-    igl::opengl::glfw::Viewer viewer;
+    box3d::b3GUIViewer viewer;
 
-    viewer.data().set_mesh(body->mesh()->vertices(), body->mesh()->faces());
-
-
-    Eigen::Vector3d x_axis(5, 0, 0);
-    Eigen::Vector3d y_axis(0, 5, 0);
-    Eigen::Vector3d z_axis(0, 0, 5);
-    Eigen::Vector3d o = Eigen::Vector3d::Zero();
-    viewer.data().set_face_based(true);
-
-    viewer.data().add_edges(x_axis.transpose(), o.transpose(), Eigen::RowVector3d(1,0,0));
-    viewer.data().add_edges(y_axis.transpose(), o.transpose(), Eigen::RowVector3d(0,1,0));
-    viewer.data().add_edges(y_axis.transpose(), o.transpose(), Eigen::RowVector3d(0,0,1));
+    viewer.set_world(&world);
 
     viewer.launch();
 
-
-    while (true) {
-
-        box3d::b3Timer timer;
-        world.test_step();
-
-        timer.sleep();
-
-    }
     return 0;
 }

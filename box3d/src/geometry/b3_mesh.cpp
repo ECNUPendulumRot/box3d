@@ -15,6 +15,9 @@
 #include "common/b3_common.hpp"
 #include "common/b3_allocator.hpp"
 
+std::vector<box3d::b3Mesh*> box3d::b3Mesh::s_meshes = std::vector<box3d::b3Mesh*>();
+
+
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
                                 double& mass,
@@ -38,6 +41,18 @@ box3d::b3Mesh::b3Mesh(const std::string &obj_file_name)
 
 bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
 
+
+    // 0 0 1
+    // 1 0 0
+    // 0 1 0
+    static b3Matrix3d transform = [](){
+        b3Matrix3d m;
+        m.setIdentity();
+        m.col(0).swap(m.col(1));
+        m.col(1).swap(m.col(2));
+        return m;
+    }();
+
     std::vector<std::vector<double>> vV, vTC, vN;
     std::vector<std::vector<int>> vF, vFTC, vFN, vL;
 
@@ -49,9 +64,7 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
         return false;
     }
 
-    Eigen::MatrixXd V;
-
-    bool V_rect = b3_list_to_matrix(vV, V);
+    bool V_rect = b3_list_to_matrix(vV, m_V);
     if (!V_rect) {
         // igl::list_to_matrix(vV,V) already printed error message
         return false;
@@ -79,6 +92,9 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
         m_E.conservativeResize(m_E.rows() + faceE.rows(), 2);
         m_E.bottomRows(faceE.rows()) = faceE;
     }
+
+    // transform to x-forward, y-left, z-up
+    m_V = (transform * m_V.transpose()).transpose().eval();
 
     return true;
 }
