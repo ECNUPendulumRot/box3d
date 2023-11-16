@@ -37,14 +37,6 @@ box3d::b3Body* box3d::b3World::create_body(const box3d::b3BodyDef &def)
 }
 
 
-box3d::b3Mesh*  box3d::b3World::create_mesh(const std::filesystem::path &file_path)
-{
-    std::string fs_string = file_path.string();
-    b3Mesh* mesh = b3_alloc()
-
-}
-
-
 void box3d::b3World::test_step()
 {
     b3Body* body = m_body_list;

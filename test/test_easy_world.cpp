@@ -48,11 +48,11 @@ int main(int argc, char* argv[]) {
     spdlog::log(spdlog::level::info, "path: {}", f_p.string());
 
     std::ifstream f(f_p.string());
-    nlohmann::json  fixture_f = nlohmann::json::parse(f);
+    nlohmann::json fixture_f = nlohmann::json::parse(f);
 
     box3d::b3World world;
 
-    box3d::b3Mesh* mesh = new box3d::b3Mesh((fs::path(B3D_MESH_DIR) / path).string());
+    box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((fs::path(B3D_MESH_DIR) / path).string());
 
     box3d::b3BodyDef body_def = box3d::b3BodyDef::create_body_definition(fixture_f);
 
@@ -86,7 +86,5 @@ int main(int argc, char* argv[]) {
         timer.sleep();
 
     }
-
-
     return 0;
 }

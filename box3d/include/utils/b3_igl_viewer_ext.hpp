@@ -25,9 +25,6 @@ namespace igl {
 
             virtual void recolor() {}
             virtual inline bool is_mesh() { return false; }
-            virtual inline bool is_scalar_field() { return false; }
-            virtual inline bool is_vector_field() { return false; }
-            virtual inline bool is_com() { return false; }
 
             /// only used in graph data for now
             virtual void update_vertex_data() {}
@@ -63,11 +60,6 @@ namespace igl {
             void set_faces(
                     const Eigen::MatrixXd& V,
                     const Eigen::MatrixXi& F,
-                    const Eigen::MatrixXd& color);
-
-            void set_vector_field(
-                    const Eigen::MatrixXd& V,
-                    const Eigen::MatrixXd& F,
                     const Eigen::MatrixXd& color);
         };
 
@@ -107,37 +99,6 @@ namespace igl {
             Eigen::RowVector3d m_kinematic_color;
 
             std::vector<std::string> vertex_data_labels;
-        };
-
-        class VectorFieldData : public ViewerDataExt {
-        public:
-            VectorFieldData(
-                    igl::opengl::glfw::Viewer* _viewer,
-                    const Eigen::RowVector3d& color);
-
-            virtual inline bool is_vector_field() override { return true; }
-
-            void recolor() override;
-            virtual void
-            set_vector_field(const Eigen::MatrixXd& V, const Eigen::MatrixXd& F);
-
-            void
-            update_vector_field(const Eigen::MatrixXd& V, const Eigen::MatrixXd& F);
-
-            Eigen::MatrixXd mF;
-            Eigen::MatrixXd mV;
-        };
-
-        class CoMData : public VectorFieldData {
-        public:
-            CoMData(igl::opengl::glfw::Viewer* _viewer);
-
-            inline bool is_vector_field() override { return false; }
-            inline bool is_com() override { return true; }
-
-
-            void set_vector_field(
-                    const Eigen::MatrixXd& V, const Eigen::MatrixXd& F) override;
         };
     } // namespace opengl
 } // namespace igl

@@ -10,7 +10,11 @@ namespace box3d {
 
 }
 
-class box3d::b3Fixture {
+class box3d::b3Fixture
+{
+
+public:
+
 
 };
 

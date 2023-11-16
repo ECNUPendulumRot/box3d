@@ -13,6 +13,7 @@
 #include "utils/b3_io.hpp"
 #include "common/b3_types.hpp"
 #include "common/b3_common.hpp"
+#include "common/b3_allocator.hpp"
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
@@ -252,6 +253,19 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
     return true;
 }
 
+
+box3d::b3Mesh*  box3d::b3Mesh::create_mesh(const std::filesystem::path &file_path)
+{
+    std::string fs_string = file_path.string();
+
+    void* memory = b3_alloc(sizeof(b3Mesh));
+
+    auto* mesh = new(memory) b3Mesh(fs_string);
+
+    s_meshes.push_back(mesh);
+
+    return mesh;
+}
 
 
 

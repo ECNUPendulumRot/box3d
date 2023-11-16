@@ -5,12 +5,14 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "common/b3_types.hpp"
 #include "dynamics/b3_inertia.hpp"
 #include "dynamics/b3_pose.hpp"
 
 #include "collision/b3_aabb.hpp"
+
 
 namespace box3d {
 
@@ -42,6 +44,8 @@ class box3d::b3Mesh {
      * @brief Pose of the mesh wrt the world frame
      */
     b3PoseD* m_rel_pose = nullptr;
+
+    static std::vector<b3Mesh*> s_meshes;
 
 public:
 
@@ -107,6 +111,16 @@ public:
         return m_F;
     }
 
+    static b3Mesh* create_mesh(const std::filesystem::path& file_path);
+
+    static int num_meshes() {
+        return int(s_meshes.size());
+    }
+
+    // TODO: replace mesh pointers to mesh id;
+    static b3Mesh* mesh(int mesh_id) {
+        return s_meshes[mesh_id];
+    }
 };
 
 

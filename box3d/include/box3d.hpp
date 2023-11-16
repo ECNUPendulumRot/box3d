@@ -8,7 +8,7 @@
 #include "dynamics/b3_body_def.hpp"
 #include "utils/b3_timer.h"
 #include "utils/b3_log.hpp"
-
+#include "utils/b3_gui_viewer.hpp"
 #include "collision/b3_bvh.hpp"
 
 #endif //BOX3D_BOX3D_HPP

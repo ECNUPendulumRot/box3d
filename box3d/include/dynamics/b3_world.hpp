@@ -31,7 +31,9 @@ public:
 
     b3Body* create_body(const b3BodyDef& def);
 
-    b3Mesh* create_mesh(const std::filesystem::path& file_path);
+    bool empty() const {
+        return m_body_count == 0;
+    }
 
     void test_step();
 
