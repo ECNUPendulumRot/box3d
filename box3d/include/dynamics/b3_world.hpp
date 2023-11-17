@@ -19,6 +19,8 @@ class box3d::b3World {
 
     b3Body* m_body_list;
 
+    b3Body* m_rigid_body_list;
+
     int32 m_body_count;
 
     b3Vector3d m_gravity = b3Vector3d(0, 0, 9.8);
@@ -31,12 +33,19 @@ public:
 
     b3Body* create_body(const b3BodyDef& def);
 
+    void set_gravity(const b3Vector3d& gravity) {
+        m_gravity = gravity;
+    }
+
     bool empty() const {
         return m_body_count == 0;
     }
 
     void test_step();
 
+protected:
+
+    void solve_rigid(double delta_t);
 
 };
 

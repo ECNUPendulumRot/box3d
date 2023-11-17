@@ -2,7 +2,6 @@
 #ifndef BOX3D_B3_BODY_HPP
 #define BOX3D_B3_BODY_HPP
 
-
 #include "geometry/b3_mesh.hpp"
 #include "dynamics/b3_pose.hpp"
 
@@ -25,10 +24,6 @@ class box3d::b3Body {
     b3Mesh* m_mesh;
 
     b3Body* m_next;
-
-protected:
-
-    b3Vector3d m_force;
 
 public:
 
@@ -58,12 +53,6 @@ public:
     inline b3Body* next() const {
         return m_next;
     }
-
-    void apply_central_force(const b3Vector3d& force) {
-        m_force += force;
-    }
-
-    virtual void test_step_by_force(double time_step) = 0;
 
 };
 

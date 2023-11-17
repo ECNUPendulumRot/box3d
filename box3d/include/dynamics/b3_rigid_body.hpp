@@ -16,6 +16,8 @@ namespace box3d {
 
 class box3d::b3RigidBody: public b3Body {
 
+    friend class b3World;
+
     /**
      * The density of the rigid body.
      */
@@ -53,6 +55,8 @@ class box3d::b3RigidBody: public b3Body {
      */
     b3PoseD m_velocity;
 
+    b3Vector3d m_force;
+
 public:
 
     /**
@@ -84,17 +88,20 @@ public:
         m_pose.set_linear(position);
     }
 
-    // TODO: delete test function
-    void test_step_by_force(double time_step) override {
-        m_velocity.set_linear(m_velocity.linear() + m_force * time_step);
-        m_pose.set_linear(m_pose.linear() + m_velocity.linear() * time_step);
+    void set_pose(const b3PoseD& pose){
+        m_pose = pose;
+    }
 
-        mesh()->transform();
-//        auto first_v = mesh()->vertices().row(0);
-//
-//        auto v_str = b3_matrix_str(first_v);
-//        spdlog::log(spdlog::level::info, "first vertex: {}", v_str);
+    void set_velocity(const b3PoseD& velocity){
+        m_velocity = velocity;
+    }
 
+    b3PoseD get_pose() const {
+        return m_pose;
+    }
+
+    b3PoseD get_velocity() const {
+        return m_velocity;
     }
 
     void set_mesh(b3Mesh* mesh) override {
@@ -104,8 +111,10 @@ public:
         compute_mass_properties();
 
         mesh->set_relative_pose(&m_pose);
+    }
 
-        mesh->transform();
+    void apply_central_force(const b3Vector3d& force) {
+        m_force += force;
     }
 
 private:

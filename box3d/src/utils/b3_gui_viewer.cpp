@@ -58,7 +58,9 @@ void box3d::b3GUIViewer::add_meshes() {
         printf("mesh_id: %d\n", mesh_id);
         int viewer_id = m_viewer.append_mesh(true);
         box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(mesh_id);
-        m_viewer.data(viewer_id).set_mesh(mesh->vertices(), mesh->faces());
+        m_viewer.data(mesh_id).set_mesh(mesh->vertices(), mesh->faces());
+
+        m_viewer_id_to_mesh_id[viewer_id] = mesh_id;
     }
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(1, 0, 0), Eigen::RowVector3d(1, 0, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 1, 0), Eigen::RowVector3d(0, 1, 0));
@@ -76,15 +78,12 @@ void box3d::b3GUIViewer::redraw_mesh() {
         return m;
     }();
 
-    for (int mesh_id = 0; mesh_id < box3d::b3Mesh::num_meshes(); ++mesh_id) {
-        box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(mesh_id);
-        auto transformed = (transform * mesh->vertices().transpose()).transpose().eval();
+    for (int viewer_id = 0; viewer_id < m_viewer.data_list.size(); ++viewer_id) {
+        box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(m_viewer_id_to_mesh_id[viewer_id]);
 
-        m_viewer.data(mesh_id).set_mesh(mesh->vertices(), mesh->faces());
+        auto vertices = mesh->transform();
 
-        auto v_str = b3_matrix_str(mesh->vertices().row(0));
-        spdlog::log(spdlog::level::info, "first vertex: {}", v_str);
-
+        m_viewer.data(viewer_id).set_mesh(vertices * transform.transpose(), mesh->faces());
     }
 }
 

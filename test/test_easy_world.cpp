@@ -52,6 +52,8 @@ int main(int argc, char* argv[]) {
 
     box3d::b3World world;
 
+    world.set_gravity(b3Vector3d(0.0, 0.0, -9.8));
+
     box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((fs::path(B3D_MESH_DIR) / path).string());
 
     box3d::b3BodyDef body_def = box3d::b3BodyDef::create_body_definition(fixture_f);

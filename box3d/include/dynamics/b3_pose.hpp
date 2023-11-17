@@ -90,13 +90,20 @@ public:
         return m_r;
     };
 
+    inline b3Matrix3<T> rotation_matrix() const {
+        if (m_r.is_zero()) {
+            return Eigen::Matrix3<T>::Identity();
+        } else {
+            Eigen::AngleAxis<T> angle_axis(m_r.length(), m_r.normalized().eigen_vector3());
+            return angle_axis.toRotationMatrix();
+        }
+    }
+
     static b3Pose<T> zero() {
         return b3Pose<T>(T(0), T(0), T(0), T(0), T(0), T(0));
     };
 
 };
-
-
 
 
 using b3PoseF = box3d::b3Pose<float>;

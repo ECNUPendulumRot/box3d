@@ -124,14 +124,31 @@ void box3d::b3Mesh::recenter(const b3PoseD &new_center)
 }
 
 
-void box3d::b3Mesh::transform()
-{
-    b3_assert(m_rel_pose != nullptr);
+//void box3d::b3Mesh::transform()
+//{
+//    b3_assert(m_rel_pose != nullptr);
+//
+//    for (int32 i = 0; i < m_V.rows(); i++) {
+//        auto transformed = m_rel_pose->transform(m_V.row(i).transpose());
+//        m_V.row(i) = transformed.transpose();
+//    }
+//}
 
-    for (int32 i = 0; i < m_V.rows(); i++) {
-        auto transformed = m_rel_pose->transform(m_V.row(i).transpose());
-        m_V.row(i) = transformed.transpose();
-    }
+b3MatrixXd box3d::b3Mesh::transform() const
+{
+    return transform(m_rel_pose);
+}
+
+
+b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
+{
+    b3_assert(pose != nullptr);
+
+    // Because the mesh vertices are rowwise, we need to transpose the matrix
+    b3Matrix3d R_T = pose->rotation_matrix().transpose();
+    Eigen::RowVector3d p_T = pose->linear().eigen_vector3().transpose();
+
+    return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
 }
 
 
@@ -282,6 +299,10 @@ box3d::b3Mesh*  box3d::b3Mesh::create_mesh(const std::filesystem::path &file_pat
 
     return mesh;
 }
+
+
+
+
 
 
 

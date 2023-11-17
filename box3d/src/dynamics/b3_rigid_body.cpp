@@ -61,7 +61,7 @@ bool box3d::b3RigidBody::compute_mass_properties() {
     m_inv_mass = m_volume * m_density;
 
     // TODO: check this inv mass formulation
-    m_inv_mass = m_inv_mass == 0 ? 0.0 : m_inv_mass;
+    m_inv_mass = m_inv_mass == 0 ? 0.0 : 1.0 / m_inv_mass;
 
     m_Inertia.set_relative_pose(&m_pose);
 

@@ -26,6 +26,8 @@ class box3d::b3GUIViewer {
 
     box3d::b3World* m_world;
 
+    std::map<int, int> m_viewer_id_to_mesh_id;
+
 public:
 
     void launch();

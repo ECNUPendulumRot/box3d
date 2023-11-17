@@ -2,7 +2,7 @@
   "body_type": "rigid",
 
   "density": 1,
-  "initial position":    [0, 0, 10],
+  "initial position":    [0, 0, 0],
   "initial orientation": [0, 0, 0],
 
   "initial linear velocity":  [0, 0, 0],

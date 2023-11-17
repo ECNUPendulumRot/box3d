@@ -76,7 +76,9 @@ public:
      */
     void recenter(const b3PoseD& new_center);
 
-    void transform();
+    b3MatrixXd transform() const;
+
+    b3MatrixXd transform(const b3PoseD* pose) const;
 
     void set_relative_pose(b3PoseD* pose) {
         m_rel_pose = pose;
@@ -105,6 +107,11 @@ public:
      */
     inline b3MatrixXi& edges() {
         return m_E;
+    }
+
+    // TODO: delete this method
+    void test_addition() {
+        m_V.rowwise() += Eigen::RowVector3d(1, 1, 1);
     }
 
     /**
