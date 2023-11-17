@@ -56,5 +56,9 @@ box3d::b3BodyDefRigid::b3BodyDefRigid(const nlohmann::json &json)
     m_init_pose = b3PoseD(init_position, init_orientation);
     m_init_velocity = b3PoseD(init_linear_velocity, init_angular_velocity);
 
-    m_type = b3BodyType::b3_RIGID;
+}
+
+box3d::b3BodyDefRigid box3d::b3BodyDefRigid::create_definition(const nlohmann::json &json)
+{
+    return box3d::b3BodyDefRigid(json);
 }

@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
     spdlog::log(spdlog::level::info, "path: {}", path.string());
 
-    auto* body = new box3d::b3RigidBody( (fs::path(B3D_MESH_DIR) / path).string());
+    auto* body = new box3d::b3BodyRigid((fs::path(B3D_MESH_DIR) / path).string());
 
     igl::opengl::glfw::Viewer viewer;
 

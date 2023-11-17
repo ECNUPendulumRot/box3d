@@ -2,7 +2,7 @@
 #include "dynamics/b3_rigid_body.hpp"
 
 
-box3d::b3RigidBody::b3RigidBody():
+box3d::b3BodyRigid::b3BodyRigid():
     b3Body(),
     m_pose(b3PoseD()),
     m_velocity(b3PoseD()),
@@ -14,7 +14,7 @@ box3d::b3RigidBody::b3RigidBody():
 }
 
 
-box3d::b3RigidBody::b3RigidBody(const std::string &obj_file_name):
+box3d::b3BodyRigid::b3BodyRigid(const std::string &obj_file_name):
     b3Body(obj_file_name),
     m_density(1.0),
     m_CoM(b3PoseD()),
@@ -31,7 +31,7 @@ box3d::b3RigidBody::b3RigidBody(const std::string &obj_file_name):
 }
 
 
-box3d::b3RigidBody::b3RigidBody(const box3d::b3BodyDef &body_def):
+box3d::b3BodyRigid::b3BodyRigid(const box3d::b3BodyDef &body_def):
     m_volume(0.0),
     m_CoM(b3PoseD()),
     m_Inertia(b3Inertia())
@@ -46,7 +46,16 @@ box3d::b3RigidBody::b3RigidBody(const box3d::b3BodyDef &body_def):
 }
 
 
-bool box3d::b3RigidBody::compute_mass_properties() {
+box3d::b3BodyRigid::b3BodyRigid(const box3d::b3BodyDefRigid &body_def)
+{
+    m_pose = body_def.m_init_pose;
+    m_velocity = body_def.m_init_velocity;
+
+    m_density = body_def.m_density;
+}
+
+
+bool box3d::b3BodyRigid::compute_mass_properties() {
 
     b3Mesh* mesh = this->mesh();
 
@@ -67,6 +76,8 @@ bool box3d::b3RigidBody::compute_mass_properties() {
 
     return true;
 }
+
+
 
 
 

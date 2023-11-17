@@ -65,7 +65,7 @@ public:
 
 class box3d::b3BodyDefRigid: public b3BodyDefInner {
 
-    friend class b3RigidBody;
+    friend class b3BodyRigid;
 
     /**
      * @brief The density of the rigid body.
@@ -77,8 +77,6 @@ class box3d::b3BodyDefRigid: public b3BodyDefInner {
 
     b3PoseD m_init_velocity = b3PoseD::zero();
 
-    b3BodyType m_type = b3BodyType::b3_RIGID;
-
 public:
 
     b3BodyDefRigid() = default;
@@ -86,6 +84,9 @@ public:
     explicit b3BodyDefRigid(const nlohmann::json& json);
 
     ~b3BodyDefRigid() override = default;
+
+    static b3BodyDefRigid create_definition(const nlohmann::json& json);
+
 
 };
 

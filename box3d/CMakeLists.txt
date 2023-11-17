@@ -36,7 +36,6 @@ set(B3D_HEADER_FILES
 set(B3D_SOURCE_FILES
         src/dynamics/b3_rigid_body.cpp
         src/dynamics/b3_pose.cpp
-        src/dynamics/b3_body.cpp
         src/dynamics/b3_inertia.cpp
 
         src/geometry/b3_mesh.cpp

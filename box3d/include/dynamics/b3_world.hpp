@@ -17,9 +17,9 @@ namespace box3d {
 
 class box3d::b3World {
 
-    b3Body* m_body_list;
+    //b3Body* m_body_list;
 
-    b3Body* m_rigid_body_list;
+    b3BodyRigid* m_rigid_body_list;
 
     int32 m_body_count;
 
@@ -31,7 +31,7 @@ public:
 
     b3World();
 
-    b3Body* create_body(const b3BodyDef& def);
+    //b3Body* create_body(const b3BodyDef& def);
 
     void set_gravity(const b3Vector3d& gravity) {
         m_gravity = gravity;
@@ -46,6 +46,8 @@ public:
 protected:
 
     void solve_rigid(double delta_t);
+
+    b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
 
 };
 
