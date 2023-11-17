@@ -11,7 +11,12 @@
 #include "math/b3_matrix.hpp"
 
 #include "utils/b3_io.hpp"
-#include "utils/b3_types.hpp"
+#include "common/b3_types.hpp"
+#include "common/b3_common.hpp"
+#include "common/b3_allocator.hpp"
+
+std::vector<box3d::b3Mesh*> box3d::b3Mesh::s_meshes = std::vector<box3d::b3Mesh*>();
+
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
@@ -35,6 +40,18 @@ box3d::b3Mesh::b3Mesh(const std::string &obj_file_name)
 
 
 bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
+
+
+    // 0 0 1
+    // 1 0 0
+    // 0 1 0
+    static b3Matrix3d transform = [](){
+        b3Matrix3d m;
+        m.setIdentity();
+        m.col(0).swap(m.col(1));
+        m.col(1).swap(m.col(2));
+        return m;
+    }();
 
     std::vector<std::vector<double>> vV, vTC, vN;
     std::vector<std::vector<int>> vF, vFTC, vFN, vL;
@@ -76,6 +93,9 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
         m_E.bottomRows(faceE.rows()) = faceE;
     }
 
+    // transform to x-forward, y-left, z-up
+    m_V = (transform * m_V.transpose()).transpose().eval();
+
     return true;
 }
 
@@ -89,10 +109,55 @@ bool box3d::b3Mesh::mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Ine
     if (!success)
         return false;
 
-    CoG.set_position(tmp_center);
+    CoG.set_linear(tmp_center);
     Inertia.set_inertia(tmp_inertia);
 
     return true;
+}
+
+
+void box3d::b3Mesh::recenter(const b3PoseD &new_center)
+{
+    // TODO: do a transform in this function
+    auto eigen_new_center = new_center.linear().eigen_vector3();
+    m_V.rowwise() -= eigen_new_center.transpose();
+}
+
+
+//void box3d::b3Mesh::transform()
+//{
+//    b3_assert(m_rel_pose != nullptr);
+//
+//    for (int32 i = 0; i < m_V.rows(); i++) {
+//        auto transformed = m_rel_pose->transform(m_V.row(i).transpose());
+//        m_V.row(i) = transformed.transpose();
+//    }
+//}
+
+b3MatrixXd box3d::b3Mesh::transform() const
+{
+    return transform(m_rel_pose);
+}
+
+
+b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
+{
+    b3_assert(pose != nullptr);
+
+    // Because the mesh vertices are rowwise, we need to transpose the matrix
+    b3Matrix3d R_T = pose->rotation_matrix().transpose();
+    Eigen::RowVector3d p_T = pose->linear().eigen_vector3().transpose();
+
+    return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
+}
+
+
+box3d::b3AABB box3d::b3Mesh::get_bounding_aabb() const
+{
+    Eigen::Vector3d aabb_min = m_V.colwise().minCoeff();
+    Eigen::Vector3d aabb_max = m_V.colwise().maxCoeff();
+
+    return b3AABB{aabb_min, aabb_max};
 }
 
 
@@ -220,6 +285,23 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
 
     return true;
 }
+
+
+box3d::b3Mesh*  box3d::b3Mesh::create_mesh(const std::filesystem::path &file_path)
+{
+    std::string fs_string = file_path.string();
+
+    void* memory = b3_alloc(sizeof(b3Mesh));
+
+    auto* mesh = new(memory) b3Mesh(fs_string);
+
+    s_meshes.push_back(mesh);
+
+    return mesh;
+}
+
+
+
 
 
 

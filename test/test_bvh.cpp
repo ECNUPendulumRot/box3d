@@ -6,18 +6,6 @@
 
 #include <igl/opengl/glfw/Viewer.h>
 
-box3d::b3Mesh* mesh = nullptr;
-
-bool callback(igl::opengl::glfw::Viewer& viewer)
-{
-    mesh->test_addition();
-
-    // 更新网格显示
-    viewer.data().set_mesh(mesh->vertices(), mesh->faces());
-
-    return false; // 返回false表示不退出程序
-}
-
 
 int main(int argc, char* argv[]) {
 
@@ -31,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     app.add_option("scene_path,-i,-s,--scene-path",
                    mesh_path,
-                   "JSON file with input mesh")  -> default_val("plane.obj");
+                   "JSON file with input mesh")  -> default_val("sphere.obj");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -48,16 +36,14 @@ int main(int argc, char* argv[]) {
 
     spdlog::log(spdlog::level::info, "path: {}", path.string());
 
-    mesh = box3d::b3Mesh::create_mesh(path.string());
+    auto* body = new box3d::b3RigidBody( (fs::path(B3D_MESH_DIR) / path).string());
 
     igl::opengl::glfw::Viewer viewer;
 
-    viewer.data().set_mesh(mesh->vertices(), mesh->faces());
+    viewer.data().set_mesh(body->mesh()->vertices(), body->mesh()->faces());
 
     viewer.data().set_face_based(true);
 
-    viewer.callback_pre_draw = &callback;
-    viewer.core().animation_max_fps = 60;
     viewer.launch();
 
     return 0;

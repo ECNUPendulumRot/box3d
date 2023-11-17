@@ -1,0 +1,16 @@
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
+
+include(cli11)
+
+add_executable(general_test general_test.cpp)
+
+# Eigen
+include(eigen)
+target_link_libraries(general_test PUBLIC Eigen3::Eigen)
+
+# igl
+include(libigl)
+
+igl_include(glfw)
+igl_include(imgui)
+target_link_libraries(general_test PUBLIC igl::glfw igl::imgui)
