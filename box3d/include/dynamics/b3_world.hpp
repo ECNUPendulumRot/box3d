@@ -6,7 +6,7 @@
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
-
+#include "dynamics/b3_rigid_body.hpp"
 
 namespace box3d {
 
@@ -19,7 +19,7 @@ class box3d::b3World {
 
     //b3Body* m_body_list;
 
-    b3BodyRigid* m_rigid_body_list;
+    b3Body* m_rigid_body_list;
 
     int32 m_body_count;
 
@@ -43,11 +43,13 @@ public:
 
     void test_step();
 
+    b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
+
 protected:
 
     void solve_rigid(double delta_t);
 
-    b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
+
 
 };
 

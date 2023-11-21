@@ -154,8 +154,9 @@ b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
 
 box3d::b3AABB box3d::b3Mesh::get_bounding_aabb() const
 {
-    Eigen::Vector3d aabb_min = m_V.colwise().minCoeff();
-    Eigen::Vector3d aabb_max = m_V.colwise().maxCoeff();
+    auto v_trans = transform();
+    Eigen::Vector3d aabb_min = v_trans.colwise().minCoeff();
+    Eigen::Vector3d aabb_max = v_trans.colwise().maxCoeff();
 
     return b3AABB{aabb_min, aabb_max};
 }

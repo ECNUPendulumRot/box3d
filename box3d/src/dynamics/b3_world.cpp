@@ -12,37 +12,9 @@ box3d::b3World::b3World():
 }
 
 
-box3d::b3Body* box3d::b3World::create_body(const box3d::b3BodyDef &def)
-{
-    //b3Body* body = nullptr;
-
-    switch (def.get_type()) {
-
-        case b3BodyType::b3_RIGID:
-            body = new b3BodyRigid(def);
-            body->set_next(m_rigid_body_list);
-            m_rigid_body_list = body;
-            ++m_body_count;
-            break;
-
-        default:
-            break;
-    }
-
-    if (body == nullptr)
-        return nullptr;
-
-//    body->set_next(m_body_list);
-//    m_body_list = body;
-//    ++m_body_count;
-
-    return body;
-}
-
-
 void box3d::b3World::test_step()
 {
-    b3Body* body = m_body_list;
+    b3Body* body = m_rigid_body_list;
 
     double delta_t  = 1.0 / m_hz;
 
@@ -52,7 +24,7 @@ void box3d::b3World::test_step()
 
 
 void box3d::b3World::solve_rigid(double delta_t) {
-    b3Body *body = m_rigid_body_list;
+    b3Body* body = m_rigid_body_list;
 
     while (body != nullptr) {
 
@@ -73,12 +45,17 @@ void box3d::b3World::solve_rigid(double delta_t) {
 }
 
 
-box3d::b3BodyRigid* box3d::b3World::create_rigid_body(const box3d::b3BodyDefRigid &def)
+box3d::b3BodyRigid* box3d::b3World::create_rigid_body(const box3d::b3BodyDefRigid& def)
 {
     void* memory = b3_alloc(sizeof (b3BodyRigid));
-    b3BodyRigid* body = new(memory) b3BodyRigid(def);
+    auto* body = new(memory) b3BodyRigid(def);
+
+    body->set_world(this);
     body->set_next(m_rigid_body_list);
     m_rigid_body_list = body;
     ++m_body_count;
+
+
+    return body;
 }
 

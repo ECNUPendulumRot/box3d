@@ -14,7 +14,7 @@ namespace box3d {
 }
 
 
-class box3d::b3BodyRigid: public b3Body<b3BodyRigid> {
+class box3d::b3BodyRigid: public b3Body {
 
     friend class b3World;
 

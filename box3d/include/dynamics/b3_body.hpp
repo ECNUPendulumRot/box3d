@@ -4,19 +4,21 @@
 
 #include "geometry/b3_mesh.hpp"
 #include "dynamics/b3_pose.hpp"
+#include "collision/b3_fixture.hpp"
+#include "common/b3_allocator.hpp"
 
 namespace box3d {
-
-    template<typename T>
-    class b3Body;
 
     class b3BodyDef;
 
     enum class b3BodyType;
 
+    class b3World;
+
+    class b3Body;
+
 }
 
-template<typename T>
 class box3d::b3Body {
 
     /**
@@ -24,7 +26,12 @@ class box3d::b3Body {
      */
     b3Mesh* m_mesh;
 
-    T* m_next;
+    b3Body* m_next;
+
+    /**
+     * @brief The world that the body belongs to
+     */
+    b3World* m_world;
 
 public:
 
@@ -51,12 +58,22 @@ public:
         return m_mesh;
     }
 
-    inline void set_next(T* next) {
+    inline void set_next(b3Body* next) {
         m_next = next;
     }
 
-    inline T* next() const {
+    inline b3Body* next() const {
         return m_next;
+    }
+
+    inline void set_world(b3World* world) {
+        m_world = world;
+    }
+
+    b3Fixture* create_fixture(const b3FixtureDef& def) {
+        void* memory = b3_alloc(sizeof(b3Fixture));
+        b3Fixture* fixture = new(memory) b3Fixture;
+
     }
 
 };
