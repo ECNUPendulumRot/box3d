@@ -4,7 +4,6 @@
 
 
 #include "dynamics/b3_pose.hpp"
-#include "dynamics/b3_body.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -16,13 +15,14 @@ namespace box3d {
 
     class b3BodyDefRigid;
 
-    enum class b3BodyType {
-
-        b3_RIGID
-
-    };
+    enum class b3BodyType;
 }
 
+enum class box3d::b3BodyType {
+
+    b3_RIGID
+
+};
 
 class box3d::b3BodyDef {
 

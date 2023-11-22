@@ -2,22 +2,25 @@
 #ifndef BOX3D_B3_BODY_HPP
 #define BOX3D_B3_BODY_HPP
 
+
 #include "geometry/b3_mesh.hpp"
 #include "dynamics/b3_pose.hpp"
-#include "collision/b3_fixture.hpp"
+
 #include "common/b3_allocator.hpp"
+
 
 namespace box3d {
 
-    class b3BodyDef;
-
-    enum class b3BodyType;
+    class b3Body;
 
     class b3World;
 
-    class b3Body;
+    ////////////////
 
+    class b3Fixture;
+    class b3FixtureDef;
 }
+
 
 class box3d::b3Body {
 
@@ -70,11 +73,7 @@ public:
         m_world = world;
     }
 
-    b3Fixture* create_fixture(const b3FixtureDef& def) {
-        void* memory = b3_alloc(sizeof(b3Fixture));
-        b3Fixture* fixture = new(memory) b3Fixture;
-
-    }
+    b3Fixture* create_fixture(const b3FixtureDef& def);
 
 };
 

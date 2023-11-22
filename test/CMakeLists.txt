@@ -10,7 +10,7 @@ set(B3D_MESH_DIR "${CMAKE_SOURCE_DIR}/mesh")
 set(B3D_FIXTURE_DIR "${CMAKE_SOURCE_DIR}/fixture")
 
 target_compile_definitions(test_mesh_read PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}")
-target_compile_definitions(test_bvh       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}")
+target_compile_definitions(test_bvh       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
 target_compile_definitions(test_easy_world       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
 
 include(libigl)

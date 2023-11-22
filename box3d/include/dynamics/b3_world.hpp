@@ -8,10 +8,13 @@
 #include "dynamics/b3_body_def.hpp"
 #include "dynamics/b3_rigid_body.hpp"
 
+#include "collision/b3_broad_phase.hpp"
+
 namespace box3d {
 
     class b3World;
 
+    class b3Body;
 }
 
 
@@ -26,6 +29,8 @@ class box3d::b3World {
     b3Vector3d m_gravity = b3Vector3d(0, 0, 9.8);
 
     double m_hz = 60;
+
+    b3BroadPhase m_broad_phase;
 
 public:
 
@@ -44,6 +49,10 @@ public:
     void test_step();
 
     b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
+
+    b3BroadPhase* get_broad_phase() {
+        return &m_broad_phase;
+    }
 
 protected:
 

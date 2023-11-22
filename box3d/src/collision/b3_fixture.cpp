@@ -1,5 +1,7 @@
 
 #include "collision/b3_fixture.hpp"
+
+#include "collision/b3_broad_phase.hpp"
 #include "dynamics/b3_body.hpp"
 
 
@@ -18,9 +20,9 @@ void box3d::b3Fixture::create_fixture(const box3d::b3FixtureDef &f_def, box3d::b
 
 
 // TODO: Implement this proxy
-void box3d::b3Fixture::create_rigid_proxy()
+void box3d::b3Fixture::create_rigid_proxy(b3BroadPhase* broad_phase)
 {
     m_proxy->m_aabb = m_body_mesh->get_bounding_aabb();
     m_proxy->m_fixture = this;
-    m_proxy->m_proxy_id = m_body->m_world->m_broad_phase.create_proxy(m_proxy->m_aabb, m_proxy);
+    m_proxy->m_proxy_id = broad_phase->create_proxy(m_proxy->m_aabb);
 }

@@ -38,6 +38,7 @@ public:
      * @return The center coordinate of the AABB.
      */
     inline b3Vector3d center() const {
+
         return 0.5 * (m_max - m_min);
     }
 
@@ -46,6 +47,7 @@ public:
      * @return The surface area of the AABB.
      */
     inline double get_surface_area(){
+
         double f1 =  (m_max.x() - m_min.x()) * (m_max.y() - m_min.y());
         double f2 =  (m_max.x() - m_min.x()) * (m_max.z() - m_min.z());
         double f3 =  (m_max.y() - m_min.y()) * (m_max.z() - m_min.z());
@@ -56,8 +58,24 @@ public:
      * @brief  Combine 2 AABBs into 1 AABB.
      */
     inline void combine(const b3AABB& A, const b3AABB& B) {
+
         m_min = b3_min_coeff(A.m_min, B.m_min);
         m_max = b3_max_coeff(A.m_max, B.m_max);
+    }
+
+    inline bool contains(const b3AABB& other) const {
+
+        bool result = true;
+
+        result = result && m_min.x() <= other.m_min.x();
+        result = result && m_min.y() <= other.m_min.y();
+        result = result && m_min.z() <= other.m_min.z();
+
+        result = result && m_max.x() >= other.m_max.x();
+        result = result && m_max.y() >= other.m_max.y();
+        result = result && m_max.z() >= other.m_max.z();
+
+        return result;
     }
 
     /**

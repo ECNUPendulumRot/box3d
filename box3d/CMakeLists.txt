@@ -50,6 +50,7 @@ set(B3D_SOURCE_FILES
         src/utils/b3_gui_viewer.cpp
         src/collision/b3_fixture.cpp
         src/collision/b3_broad_phase.cpp
+        src/dynamics/b3_body.cpp
         #src/utils/b3_igl_viewer_ext.cpp
         #src/utils/b3_ui_menu.cpp
         #src/utils/b3_imgui_ext.cpp

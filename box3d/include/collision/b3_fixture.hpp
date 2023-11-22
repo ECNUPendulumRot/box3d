@@ -7,6 +7,7 @@
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
 
+
 namespace box3d {
 
     class b3Fixture;
@@ -15,7 +16,11 @@ namespace box3d {
 
     class b3FixtureDef;
 
+    /////////////////////
+
     class b3Body;
+
+    class b3BroadPhase;
 }
 
 
@@ -73,7 +78,7 @@ public:
 
     void create_fixture(const b3FixtureDef& f_def, b3Body* body);
 
-    void create_rigid_proxy();
+    void create_rigid_proxy(b3BroadPhase* broad_phase);
 
 };
 
