@@ -56,9 +56,9 @@ int main(int argc, char* argv[]) {
 
     box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((fs::path(B3D_MESH_DIR) / path).string());
 
-    box3d::b3BodyDef body_def = box3d::b3BodyDef::create_body_definition(fixture_f);
+    box3d::b3BodyDefRigid body_def = box3d::b3BodyDefRigid::create_definition(fixture_f);
 
-    box3d::b3Body* body = world.create_body(body_def);
+    box3d::b3BodyRigid* body = world.create_rigid_body(body_def);
 
     body->set_mesh(mesh);
 

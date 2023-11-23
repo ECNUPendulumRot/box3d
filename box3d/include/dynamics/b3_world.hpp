@@ -6,18 +6,21 @@
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
+#include "dynamics/b3_rigid_body.hpp"
 
+#include "collision/b3_broad_phase.hpp"
 
 namespace box3d {
 
     class b3World;
 
+    class b3Body;
 }
 
 
 class box3d::b3World {
 
-    b3Body* m_body_list;
+    //b3Body* m_body_list;
 
     b3Body* m_rigid_body_list;
 
@@ -27,11 +30,13 @@ class box3d::b3World {
 
     double m_hz = 60;
 
+    b3BroadPhase m_broad_phase;
+
 public:
 
     b3World();
 
-    b3Body* create_body(const b3BodyDef& def);
+    //b3Body* create_body(const b3BodyDef& def);
 
     void set_gravity(const b3Vector3d& gravity) {
         m_gravity = gravity;
@@ -43,9 +48,17 @@ public:
 
     void test_step();
 
+    b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
+
+    b3BroadPhase* get_broad_phase() {
+        return &m_broad_phase;
+    }
+
 protected:
 
     void solve_rigid(double delta_t);
+
+
 
 };
 

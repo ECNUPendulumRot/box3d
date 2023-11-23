@@ -127,6 +127,15 @@ public:
      */
     void destroy_bvh_proxy(int32 proxy_id);
 
+    bool move_proxy(int32 proxy_id, const b3AABB& aabb);
+
+    const b3AABB& get_AABB(int32 proxy_id) const {
+
+        b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
+
+        return m_nodes[proxy_id].m_aabb;
+    }
+
 private:
 
     /**

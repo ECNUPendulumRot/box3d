@@ -10,11 +10,11 @@
 
 namespace box3d {
 
-    class b3RigidBody;
+    class b3BodyRigid;
 }
 
 
-class box3d::b3RigidBody: public b3Body {
+class box3d::b3BodyRigid: public b3Body {
 
     friend class b3World;
 
@@ -60,17 +60,19 @@ class box3d::b3RigidBody: public b3Body {
 public:
 
     /**
-     * @brief Construct a new b3RigidBody object
+     * @brief Construct a new b3BodyRigid object
      */
-    b3RigidBody();
+    b3BodyRigid();
 
     /**
-     * @brief Construct a new b3RigidBody object
+     * @brief Construct a new b3BodyRigid object
      * @param obj_file_name: path to .obj file
      */
-    explicit b3RigidBody(const std::string& obj_file_name);
+    explicit b3BodyRigid(const std::string& obj_file_name);
 
-    explicit b3RigidBody(const b3BodyDef& body_def);
+    explicit b3BodyRigid(const b3BodyDef& body_def);
+
+    explicit b3BodyRigid(const b3BodyDefRigid& body_def);
 
     /**
      * @brief Get volume, center of geometry and inertia from the mesh

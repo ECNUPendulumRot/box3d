@@ -446,6 +446,26 @@ int32 box3d::b3DynamicTree::balance(int32 i_A)
     return i_A;
 }
 
+bool box3d::b3DynamicTree::move_proxy(int32 proxy_id, const box3d::b3AABB &aabb)
+{
+    b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
+
+    b3_assert(m_nodes[proxy_id].is_leaf());
+
+    const b3AABB& tree_aabb = m_nodes[proxy_id].m_aabb;
+
+    if (tree_aabb.contains(aabb)) {
+        return false;
+    }
+
+    remove_leaf(proxy_id);
+
+    m_nodes[proxy_id].m_aabb = aabb;
+    insert_to_leaf(proxy_id);
+
+    return true;
+}
+
 
 
 
