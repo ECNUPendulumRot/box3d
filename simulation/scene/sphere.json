@@ -1,0 +1,8 @@
+{
+   "objects": [{
+     "mesh": "sphere.obj",
+     "fixture": "rigid/sphere.json"
+   }
+   ]
+
+}
