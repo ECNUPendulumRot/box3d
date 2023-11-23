@@ -8,6 +8,8 @@ int32 box3d::b3BroadPhase::create_proxy(const box3d::b3AABB &aabb)
     ++m_proxy_count;
 
     // When created, all proxies are considered as moving.
+    // TODO: check the buffer_move method
+    // This series of function is not sure.
     buffer_move(proxy_id);
 
     return proxy_id;
