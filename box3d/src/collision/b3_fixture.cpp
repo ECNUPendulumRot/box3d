@@ -24,5 +24,5 @@ void box3d::b3Fixture::create_rigid_proxy(b3BroadPhase* broad_phase)
 {
     m_proxy->m_aabb = m_body_mesh->get_bounding_aabb();
     m_proxy->m_fixture = this;
-    m_proxy->m_proxy_id = broad_phase->create_proxy(m_proxy->m_aabb);
+    m_proxy->m_proxy_id = broad_phase->create_proxy(m_proxy->m_aabb, m_proxy);
 }

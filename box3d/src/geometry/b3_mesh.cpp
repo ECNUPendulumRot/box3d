@@ -139,7 +139,6 @@ b3MatrixXd box3d::b3Mesh::transform() const
     return transform(m_rel_pose);
 }
 
-
 b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
 {
     b3_assert(pose != nullptr);

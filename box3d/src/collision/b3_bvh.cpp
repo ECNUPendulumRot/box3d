@@ -5,6 +5,8 @@
 
 #include "common/b3_common.hpp"
 
+#include "collision/b3_fixture.hpp"
+
 
 box3d::b3Node::b3Node():
     m_aabb(b3AABB()),
@@ -45,13 +47,15 @@ box3d::b3DynamicTree::~b3DynamicTree()
 }
 
 
-int32 box3d::b3DynamicTree::create_bvh_proxy(const box3d::b3AABB &aabb)
+int32 box3d::b3DynamicTree::create_bvh_proxy(const box3d::b3AABB &aabb, box3d::b3FixtureProxy* fixture_proxy)
 {
 
     int32 bvh_proxy = assign_node();
 
     m_nodes[bvh_proxy].m_aabb = aabb;
     m_nodes[bvh_proxy].m_height = 0;
+
+    m_nodes[bvh_proxy].fixture_proxy = fixture_proxy;
 
     insert_to_leaf(bvh_proxy);
 
@@ -466,6 +470,38 @@ bool box3d::b3DynamicTree::move_proxy(int32 proxy_id, const box3d::b3AABB &aabb)
     return true;
 }
 
+inline box3d::b3FixtureProxy* box3d::b3DynamicTree::get_fixture_proxy(int32 proxy_id) const {
+    b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
+    return m_nodes[proxy_id].fixture_proxy;
+}
+
+template<typename T>
+void box3d::b3DynamicTree::query(T* callback, const b3AABB& aabb) const {
+    std::stack<int32> stack;
+    stack.push(m_root);
+
+    while (stack.size() > 0) {
+        int32 nodeId = stack.pop();
+        if(nodeId == b3_NULL_NODE) {
+            continue;
+        }
+
+        const b3Node& node = m_nodes + nodeId;
+
+        if(b3AABB::overlapped(node.m_aabb, aabb)) {
+            if(node.is_leaf()) {
+                callback->query_callback(nodeId);
+                // bool proceed = callback.query_callback(nodeId);
+                // if(!proceed) {
+                //     return;
+                // }
+            } else {
+                stack.push(node.m_child1);
+                stack.push(node.m_child2);
+            }
+        }
+    }
+}
 
 
 
