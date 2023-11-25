@@ -77,6 +77,10 @@ void box3d::b3Contact::set_fixture_b(b3Fixture* fixture_b) {
 
 void box3d::b3Contact::update() {
 
-    bool touching = b3TestOverlap(m_fixture_a, m_fixture_b);
+    bool touching = b3_gjk_test_overlap(m_fixture_a, m_fixture_b);
 
+    // TODO: 
+    if(touching) {
+
+    }
 }

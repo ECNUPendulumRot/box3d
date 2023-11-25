@@ -1,14 +1,18 @@
 
 #include "b3_collision.hpp"
-#include "b3_distance.hpp"
+#include "b3_gjk_distance.hpp"
+#include "collision/b3_fixture.hpp"
+#include "collision/b3_distance_proxy.hpp"
 
-bool box3d::b3TestOverlap(b3Fixture* fixture_a, b3Fixture* fixture_b) {
+bool box3d::b3_gjk_test_overlap(b3Fixture* fixture_a, b3Fixture* fixture_b) {
     
-    b3DistanceInput input(fixture_a, fixture_b);
-    b3DistanceOutput output;
+    b3DistanceProxy distance_proxy_a(fixture_a);
+    b3DistanceProxy distance_proxy_b(fixture_b);
 
-    b3Distance(&input, &output);
+    GJK gjk(&distance_proxy_a, &distance_proxy_b);
 
-    // set the threshold
-    return output.get_distance() < 1e-06;
+    gjk.evaluate();
+
+    // TODO: set the threshold
+    return gjk.get_distance() < 0.001;
 }

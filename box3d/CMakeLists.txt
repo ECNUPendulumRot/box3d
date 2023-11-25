@@ -34,7 +34,7 @@ set(B3D_HEADER_FILES
         #include/utils/b3_imgui_ext.hpp
 
 
-        include/collision/b3_distance.hpp
+        include/collision/b3_gjk_distance.hpp
         include/collision/b3_distance_proxy.hpp
         include/dynamics/b3_contact_manager.hpp
         include/dynamics/b3_contact.hpp
@@ -62,7 +62,7 @@ set(B3D_SOURCE_FILES
         #src/utils/b3_ui_menu.cpp
         #src/utils/b3_imgui_ext.cpp
 
-        src/collision/b3_distance.cpp
+        src/collision/b3_gjk_distance.cpp
         src/collision/b3_distance_proxy.cpp
         src/dynamics/b3_contact.cpp
         src/dynamics/b3_contact_manager.cpp

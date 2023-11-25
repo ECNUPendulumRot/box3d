@@ -14,7 +14,10 @@ namespace box3d {
 
 class box3d::b3DistanceProxy {
     // const b3MatrixXd* m_vertices;
+    //  TODO: convert to pointer
     const b3MatrixXd m_vertexs;
+
+    // TODO: store collision pointS
     b3Vector3d m_buffer[3];
     int32 m_count = 0;
 public:
@@ -29,7 +32,7 @@ public:
      * @param {b3Vector3d&} d 3*1
      * @return {*}
      */    
-    int32 get_support(const b3Vector3d& d) const;
+    b3Vector3d get_support(const b3Vector3d& d) const;
 
     inline int32 get_vertex_count() const;
 

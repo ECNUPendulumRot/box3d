@@ -5,7 +5,7 @@
 
 namespace box3d {
 
-    bool b3TestOverlap(b3Fixture* fixture_a, b3Fixture* fixture_b);
+    bool b3_gjk_test_overlap(b3Fixture* fixture_a, b3Fixture* fixture_b);
 
 }
 
