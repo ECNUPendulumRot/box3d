@@ -16,7 +16,13 @@ set(B3D_BODY_DEF_DIR "${B3D_SIMULATION_DIR}/body_definition")
 set(B3D_SCENE_DIR    "${B3D_SIMULATION_DIR}/scene")
 
 ###################### b3simapp ######################
-add_library(b3simapp src/b3_sim_app.cpp)
+add_library(b3simapp
+    src/b3_sim_app.cpp
+    src/b3_test.cpp
+    include/b3_sim_app.hpp
+    include/b3_test.hpp
+        include/test_sphere_dropping.hpp
+)
 
 target_include_directories(b3simapp
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

@@ -2,6 +2,9 @@
 #include "utils/b3_gui_viewer.hpp"
 #include "utils/b3_log.hpp"
 
+
+
+
 bool box3d::b3GUIViewer::set_world(box3d::b3World *world) {
     m_world = world;
 

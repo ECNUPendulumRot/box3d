@@ -7,7 +7,7 @@
 
 #include "box3d.hpp"
 
-box3d::b3SimApp::b3SimApp()
+b3SimApp::b3SimApp()
 {
     namespace fs = std::filesystem;
     m_body_def_dir = fs::path(B3D_BODY_DEF_DIR);
@@ -18,7 +18,7 @@ box3d::b3SimApp::b3SimApp()
 }
 
 
-void box3d::b3SimApp::load_scene(const std::string &scene_str)
+void b3SimApp::load_scene(const std::string &scene_str)
 {
     if (scene_str.empty()) {
         spdlog::warn("The scene path is empty");
@@ -32,7 +32,7 @@ void box3d::b3SimApp::load_scene(const std::string &scene_str)
 }
 
 
-void box3d::b3SimApp::parse_scene(const std::string &scene_str)
+void b3SimApp::parse_scene(const std::string &scene_str)
 {
     std::ifstream scene_file(scene_str);
 
@@ -51,7 +51,7 @@ void box3d::b3SimApp::parse_scene(const std::string &scene_str)
 }
 
 
-void box3d::b3SimApp::create_object(const nlohmann::json &object)
+void b3SimApp::create_object(const nlohmann::json &object)
 {
     namespace fs = std::filesystem;
 
@@ -62,9 +62,9 @@ void box3d::b3SimApp::create_object(const nlohmann::json &object)
     // m_mesh_paths.push_back(mesh_path);
     // m_fixture_paths.push_back(body_def_path);
 
-    b3Mesh* mesh = b3Mesh::create_mesh((m_mesh_dir / fs::path(mesh_path)));
+    box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((m_mesh_dir / fs::path(mesh_path)));
 
-    b3BodyDef body_def = b3BodyDef::create_body_definition(m_body_def_dir / fs::path(body_def_path));
+    box3d::b3BodyDef body_def = box3d::b3BodyDef::create_body_definition(m_body_def_dir / fs::path(body_def_path));
 
     Eigen::Vector3d initial_position;
     Eigen::Vector3d initial_orientation;
