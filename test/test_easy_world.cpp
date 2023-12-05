@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
     fs::path f_p(fixture_path);
-    f_p =  (fs::path(B3D_FIXTURE_DIR) / f_p);
+    f_p =  (fs::path(B3D_BODY_DEF_DIR) / f_p);
 
     spdlog::log(spdlog::level::info, "path: {}", f_p.string());
 
@@ -56,9 +56,8 @@ int main(int argc, char* argv[]) {
 
     box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((fs::path(B3D_MESH_DIR) / path).string());
 
-    box3d::b3BodyDefRigid body_def = box3d::b3BodyDefRigid::create_definition(fixture_f);
-
-    box3d::b3BodyRigid* body = world.create_rigid_body(body_def);
+    box3d::b3BodyDef def = box3d::b3BodyDef::create_rigid_definition(fixture_f);
+    box3d::b3Body* body = world.create_rigid_body(def);
 
     body->set_mesh(mesh);
 

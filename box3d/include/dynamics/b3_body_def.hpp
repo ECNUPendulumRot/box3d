@@ -5,6 +5,7 @@
 
 #include "dynamics/b3_pose.hpp"
 
+#include <filesystem>
 #include <nlohmann/json.hpp>
 
 namespace box3d {
@@ -26,9 +27,15 @@ enum class box3d::b3BodyType {
 
 class box3d::b3BodyDef {
 
+    friend class b3BodyRigid;
+
     b3BodyDefInner* m_def;
 
     b3BodyType m_type = b3BodyType::b3_RIGID;
+
+    b3PoseD m_init_pose = b3PoseD::zero();
+
+    b3PoseD m_init_velocity = b3PoseD::zero();
 
 public:
 
@@ -47,7 +54,11 @@ public:
 
     ~b3BodyDef();
 
-    static b3BodyDef create_body_definition(const nlohmann::json& json);
+    void set_initial_status(const b3PoseD& pose, const b3PoseD& velocity);
+
+    static b3BodyDef create_body_definition(const std::filesystem::path &file_path);
+
+    static b3BodyDef create_rigid_definition(const nlohmann::json& body_def);
 
 };
 
@@ -71,20 +82,19 @@ class box3d::b3BodyDefRigid: public b3BodyDefInner {
      */
     double m_density = 1.0;
 
-    b3PoseD m_init_pose = b3PoseD::zero();
-
-    b3PoseD m_init_velocity = b3PoseD::zero();
-
 public:
 
     b3BodyDefRigid() = default;
 
-    explicit b3BodyDefRigid(const nlohmann::json& json);
+    explicit b3BodyDefRigid(double density);
 
     ~b3BodyDefRigid() override = default;
 
-    static b3BodyDefRigid create_definition(const nlohmann::json& json);
+    static b3BodyDefRigid* create_definition(double density);
 
+    b3BodyDefInner* get_def() {
+        return this;
+    }
 
 };
 

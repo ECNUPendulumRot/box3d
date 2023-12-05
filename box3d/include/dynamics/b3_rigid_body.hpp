@@ -70,9 +70,8 @@ public:
      */
     explicit b3BodyRigid(const std::string& obj_file_name);
 
-    explicit b3BodyRigid(const b3BodyDef& body_def);
 
-    explicit b3BodyRigid(const b3BodyDefRigid& body_def);
+    explicit b3BodyRigid(const b3BodyDef& body_def);
 
     /**
      * @brief Get volume, center of geometry and inertia from the mesh

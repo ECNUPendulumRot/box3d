@@ -11,9 +11,9 @@ add_executable(test_app test_app.cpp)
 
 
 set(B3D_SIMULATION_DIR ${CMAKE_SOURCE_DIR}/simulation)
-set(B3D_MESH_DIR    "${B3D_SIMULATION_DIR}/mesh")
-set(B3D_FIXTURE_DIR "${B3D_SIMULATION_DIR}/fixture")
-set(B3D_SCENE_DIR   "${B3D_SIMULATION_DIR}/scene")
+set(B3D_MESH_DIR     "${B3D_SIMULATION_DIR}/mesh")
+set(B3D_BODY_DEF_DIR "${B3D_SIMULATION_DIR}/body_definition")
+set(B3D_SCENE_DIR    "${B3D_SIMULATION_DIR}/scene")
 
 ###################### b3simapp ######################
 add_library(b3simapp src/b3_sim_app.cpp)
@@ -29,27 +29,27 @@ target_link_libraries(b3simapp
 target_compile_definitions(b3simapp
     PRIVATE
     B3D_MESH_DIR="${B3D_MESH_DIR}"
-    B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}"
+    B3D_BODY_DEF_DIR="${B3D_BODY_DEF_DIR}"
     B3D_SCENE_DIR="${B3D_SCENE_DIR}"
 )
 
 ###################### b3simapp ######################
 
 
-target_compile_definitions(test_mesh_read PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}")
-target_compile_definitions(test_bvh       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
-target_compile_definitions(test_easy_world       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
-target_compile_definitions(test_app       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
+#target_compile_definitions(test_mesh_read PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}")
+#target_compile_definitions(test_bvh       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_FIXTURE_DIR="${B3D_FIXTURE_DIR}")
+target_compile_definitions(test_easy_world       PRIVATE B3D_MESH_DIR="${B3D_MESH_DIR}" B3D_BODY_DEF_DIR="${B3D_BODY_DEF_DIR}")
 
 
 
-target_include_directories(test_mesh_read PRIVATE box3d/include include)
-target_include_directories(test_bvh       PRIVATE box3d/include include)
+#target_include_directories(test_mesh_read PRIVATE box3d/include include)
+#target_include_directories(test_bvh       PRIVATE box3d/include include)
 target_include_directories(test_easy_world  PRIVATE box3d/include include)
 target_include_directories(test_app       PRIVATE box3d/include include)
 
-target_link_libraries(test_bvh       PUBLIC box3d CLI11::CLI11 igl::glfw)
-target_link_libraries(test_mesh_read PUBLIC box3d CLI11::CLI11 igl::glfw)
+#target_link_libraries(test_bvh       PUBLIC box3d CLI11::CLI11 igl::glfw)
+#target_link_libraries(test_mesh_read PUBLIC box3d CLI11::CLI11 igl::glfw)
 target_link_libraries(test_easy_world PUBLIC box3d CLI11::CLI11 igl::glfw nlohmann_json::nlohmann_json)
-target_link_libraries(test_app PUBLIC box3d CLI11::CLI11 igl::glfw nlohmann_json::nlohmann_json)
+
+target_link_libraries(test_app PUBLIC box3d b3simapp )
 

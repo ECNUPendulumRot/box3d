@@ -36,6 +36,8 @@ public:
 
     b3World();
 
+    ~b3World();
+
     //b3Body* create_body(const b3BodyDef& def);
 
     void set_gravity(const b3Vector3d& gravity) {
@@ -48,7 +50,12 @@ public:
 
     void test_step();
 
-    b3BodyRigid* create_rigid_body(const b3BodyDefRigid& def);
+    b3Body* create_rigid_body(const b3BodyDef& def);
+
+    b3Body* create_body(const b3BodyDef& def);
+
+    // void destroy_body(b3Body* body);
+
 
     b3BroadPhase* get_broad_phase() {
         return &m_broad_phase;

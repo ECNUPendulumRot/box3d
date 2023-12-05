@@ -11,6 +11,10 @@ box3d::b3World::b3World():
     ;
 }
 
+box3d::b3World::~b3World()
+{
+    // TODO: think about how to destruct
+}
 
 void box3d::b3World::test_step()
 {
@@ -45,7 +49,7 @@ void box3d::b3World::solve_rigid(double delta_t) {
 }
 
 
-box3d::b3BodyRigid* box3d::b3World::create_rigid_body(const box3d::b3BodyDefRigid& def)
+box3d::b3Body* box3d::b3World::create_rigid_body(const box3d::b3BodyDef& def)
 {
     void* memory = b3_alloc(sizeof (b3BodyRigid));
     auto* body = new(memory) b3BodyRigid(def);
@@ -55,7 +59,18 @@ box3d::b3BodyRigid* box3d::b3World::create_rigid_body(const box3d::b3BodyDefRigi
     m_rigid_body_list = body;
     ++m_body_count;
 
-
     return body;
 }
+
+
+box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
+{
+    switch (def.get_type()) {
+        case b3BodyType::b3_RIGID:
+            return create_rigid_body(def);
+    }
+}
+
+
+
 
