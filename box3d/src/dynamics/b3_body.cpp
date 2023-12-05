@@ -12,4 +12,5 @@ box3d::b3Fixture* box3d::b3Body::create_fixture(const box3d::b3FixtureDef &def) 
     fixture->create_fixture(def, this);
     fixture->create_rigid_proxy(m_world->get_broad_phase());
 
+    return fixture;
 }
