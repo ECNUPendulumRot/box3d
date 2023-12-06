@@ -4,9 +4,7 @@
 
 #include "box3d.hpp"
 
-
 class TestBase;
-
 
 
 using TestCreateFcn = TestBase*();
@@ -17,25 +15,38 @@ struct TestEntry
     TestCreateFcn* creatFcn;
 };
 
+
 int register_test(const char* category, const char* name, TestCreateFcn* fcn);
 
 class TestBase {
 
-    box3d::b3World *m_world;
+    static std::filesystem::path s_body_def_dir;
+
+    static std::filesystem::path s_mesh_dir;
+
+    static std::filesystem::path s_scene_dir;
+
+    box3d::b3World* m_world;
 
 public:
 
     TestBase();
 
+    // TODO: check the destructor.
+    ~TestBase() = default;
+
+    void destroy_objects();
+
     virtual void simulation_step();
 
+    box3d::b3World* get_world() {
+        return m_world;
+    }
 
+    static void parse_scene(TestBase* test, const std::string &scene_str);
+
+    void create_object(const nlohmann::json &object);
 
 };
-
-#define MAX_TEST 256
-
-extern TestEntry g_testEntries[MAX_TEST];
-extern int g_testCount;
 
 #endif //BOX3D_B3_TEST_HPP

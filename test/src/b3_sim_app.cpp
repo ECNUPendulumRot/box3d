@@ -18,8 +18,17 @@ b3SimApp::b3SimApp()
 }
 
 
+b3SimApp::~b3SimApp()
+{
+    delete m_test;
+}
+
+
 void b3SimApp::load_scene(const std::string &scene_str)
 {
+
+    // TODO: delete world in test first
+
     if (scene_str.empty()) {
         spdlog::warn("The scene path is empty");
         return;
@@ -28,7 +37,7 @@ void b3SimApp::load_scene(const std::string &scene_str)
     namespace fs = std::filesystem;
     std::string scene_path = (m_scene_dir / fs::path(scene_str)).string();
 
-    parse_scene(scene_path);
+    TestBase::parse_scene(m_test, scene_path);
 }
 
 
@@ -84,3 +93,18 @@ void b3SimApp::create_object(const nlohmann::json &object)
     auto body = m_world->create_body(body_def);
     body->set_mesh(mesh);
 }
+
+
+int b3SimApp::register_test(const char *name, TestCreateFcn *fcn)
+{
+    int index = m_test_count;
+    if (index < MAX_TEST)
+    {
+        m_test_series[index] = { name, fcn };
+        ++m_test_count;
+        return index;
+    }
+
+    return -1;
+}
+

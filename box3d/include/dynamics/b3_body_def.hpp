@@ -44,6 +44,8 @@ public:
         m_type = type;
     }
 
+    ~b3BodyDef();
+
     b3BodyDefInner* get_inner_def() const {
         return m_def;
     }
@@ -52,8 +54,6 @@ public:
         return m_type;
     }
 
-    ~b3BodyDef();
-
     void set_initial_status(const b3PoseD& pose, const b3PoseD& velocity);
 
     static b3BodyDef create_body_definition(const std::filesystem::path &file_path);
@@ -61,7 +61,6 @@ public:
     static b3BodyDef create_rigid_definition(const nlohmann::json& body_def);
 
 };
-
 
 class box3d::b3BodyDefInner {
 
@@ -90,7 +89,7 @@ public:
 
     ~b3BodyDefRigid() override = default;
 
-    static b3BodyDefRigid* create_definition(double density);
+    static b3BodyDef create_definition(double density);
 
     b3BodyDefInner* get_def() {
         return this;

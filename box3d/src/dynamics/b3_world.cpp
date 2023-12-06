@@ -11,10 +11,12 @@ box3d::b3World::b3World():
     ;
 }
 
+
 box3d::b3World::~b3World()
 {
     // TODO: think about how to destruct
 }
+
 
 void box3d::b3World::test_step()
 {

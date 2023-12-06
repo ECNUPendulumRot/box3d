@@ -6,6 +6,11 @@
 #include "utils/b3_json.hpp"
 #include "common/b3_allocator.hpp"
 
+box3d::b3BodyDef::~b3BodyDef()
+{
+    b3_free(m_def);
+}
+
 
 box3d::b3BodyDef box3d::b3BodyDef::create_body_definition(const std::filesystem::path &file_path)
 {
@@ -22,6 +27,8 @@ box3d::b3BodyDef box3d::b3BodyDef::create_body_definition(const std::filesystem:
 
 box3d::b3BodyDef box3d::b3BodyDef::create_rigid_definition(const nlohmann::json &body_def)
 {
+    // The merge operation is used for the default values
+    // Users may not specify some of the properties.
     nlohmann::json full_rigid = R"({
         "body_type": "rigid",
         "density": 1
@@ -30,15 +37,7 @@ box3d::b3BodyDef box3d::b3BodyDef::create_rigid_definition(const nlohmann::json 
 
     double density = full_rigid["density"];
 
-    b3BodyDefInner* def = b3BodyDefRigid::create_definition(density);
-
-    return b3BodyDef(def, b3BodyType::b3_RIGID);
-}
-
-
-box3d::b3BodyDef::~b3BodyDef()
-{
-    b3_free(m_def);
+    return b3BodyDefRigid::create_definition(density);
 }
 
 
@@ -58,10 +57,12 @@ box3d::b3BodyDefRigid::b3BodyDefRigid(double density)
 }
 
 
-box3d::b3BodyDefRigid* box3d::b3BodyDefRigid::create_definition(double density)
+box3d::b3BodyDef box3d::b3BodyDefRigid::create_definition(double density)
 {
     void* memory = b3_alloc(sizeof(b3BodyDefRigid));
 
-    return new(memory) b3BodyDefRigid(density);
+    b3BodyDefRigid* rigid_def =  new(memory) b3BodyDefRigid(density);
+
+    return b3BodyDef(rigid_def, b3BodyType::b3_RIGID);
 }
 

@@ -9,6 +9,10 @@
 
 #include <CLI/CLI.hpp>
 
+#include "b3_test.hpp"
+
+#define MAX_TEST 256
+
 namespace box3d {
 
     class b3World;
@@ -34,9 +38,17 @@ class b3SimApp {
 
     box3d::b3GUIViewer m_viewer;
 
+    TestEntry m_test_series[MAX_TEST];
+
+    TestBase* m_test;
+
+    int m_test_count;
+
 public:
 
     b3SimApp();
+
+    ~b3SimApp();
 
     inline box3d::b3World* get_world() {
         return m_world;
@@ -44,7 +56,7 @@ public:
 
     void load_scene(const std::string& scene_str);
 
-//void parse(int argc, char* argv[]);
+    int register_test(const char* name, TestCreateFcn* fcn);
 
 private:
 
