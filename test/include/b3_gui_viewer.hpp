@@ -2,23 +2,17 @@
 #ifndef BOX3D_B3_GUI_VIEWER_HPP
 #define BOX3D_B3_GUI_VIEWER_HPP
 
+#include <utility>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
+#include "igl/Timer.h"
+#include "igl/opengl/glfw/Viewer.h"
 
-#include <igl/Timer.h>
-#include <igl/opengl/glfw/Viewer.h>
+#include "box3d.hpp"
+#include "b3_test.hpp"
 
 
-#include "dynamics/b3_world.hpp"
-
-
-namespace box3d {
-
-    class b3GUIViewer;
-
-}
-
-class box3d::b3GUIViewer {
+class b3GUIViewer {
 
     using Viewer = igl::opengl::glfw::Viewer;
 

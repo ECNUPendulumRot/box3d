@@ -1,8 +1,11 @@
 
-#include "utils/b3_gui_viewer.hpp"
+#include "../include/b3_gui_viewer.hpp"
 #include "utils/b3_log.hpp"
 
-bool box3d::b3GUIViewer::set_world(box3d::b3World *world) {
+
+
+
+bool b3GUIViewer::set_world(box3d::b3World *world) {
     m_world = world;
 
     if (world->empty()){
@@ -16,7 +19,7 @@ bool box3d::b3GUIViewer::set_world(box3d::b3World *world) {
 }
 
 
-void box3d::b3GUIViewer::launch()
+void b3GUIViewer::launch()
 {
     m_viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_NO_ROTATION);
     //m_viewer.core().orthographic = true;
@@ -32,7 +35,7 @@ void box3d::b3GUIViewer::launch()
 }
 
 
-bool box3d::b3GUIViewer::pre_draw_loop()
+bool b3GUIViewer::pre_draw_loop()
 {
 
     simulation_step();
@@ -43,7 +46,7 @@ bool box3d::b3GUIViewer::pre_draw_loop()
 }
 
 
-void box3d::b3GUIViewer::simulation_step()
+void b3GUIViewer::simulation_step()
 {
     if (m_world->empty())
         return;
@@ -53,15 +56,19 @@ void box3d::b3GUIViewer::simulation_step()
 }
 
 
-void box3d::b3GUIViewer::add_meshes() {
-    for (int mesh_id = 0; mesh_id < box3d::b3Mesh::num_meshes(); ++mesh_id) {
-        printf("mesh_id: %d\n", mesh_id);
-        int viewer_id = m_viewer.append_mesh(true);
-        box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(mesh_id);
-        m_viewer.data(mesh_id).set_mesh(mesh->vertices(), mesh->faces());
+void b3GUIViewer::add_meshes() {
 
-        m_viewer_id_to_mesh_id[viewer_id] = mesh_id;
+    int mesh_count = m_world->get_mesh_count();
+
+    for (int i = 0; i < mesh_count; ++i) {
+        int viewer_id = m_viewer.append_mesh(true);
+
+        box3d::b3Mesh* mesh = m_world->get_mesh(i);
+
+        m_viewer.data(viewer_id).set_mesh(mesh->vertices(), mesh->faces());
+        m_viewer_id_to_mesh_id[viewer_id] = i;
     }
+
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(1, 0, 0), Eigen::RowVector3d(1, 0, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 1, 0), Eigen::RowVector3d(0, 1, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 0, 1), Eigen::RowVector3d(0, 0, 1));
@@ -69,7 +76,7 @@ void box3d::b3GUIViewer::add_meshes() {
 }
 
 
-void box3d::b3GUIViewer::redraw_mesh() {
+void b3GUIViewer::redraw_mesh() {
     static b3Matrix3d transform = [](){
         b3Matrix3d m;
         m.setIdentity();
@@ -79,7 +86,7 @@ void box3d::b3GUIViewer::redraw_mesh() {
     }();
 
     for (int viewer_id = 0; viewer_id < m_viewer.data_list.size(); ++viewer_id) {
-        box3d::b3Mesh* mesh = box3d::b3Mesh::mesh(m_viewer_id_to_mesh_id[viewer_id]);
+        box3d::b3Mesh* mesh = m_world->get_mesh(m_viewer_id_to_mesh_id[viewer_id]);
 
         auto vertices = mesh->transform();
 

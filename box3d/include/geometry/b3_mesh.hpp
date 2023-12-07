@@ -18,9 +18,15 @@ namespace box3d {
 
     class b3Mesh;
 
+///////////////////////////
+
+    class b3World;
+
 }
 
 class box3d::b3Mesh {
+
+    friend class b3World;
 
     /**
      * @brief Vertices of the mesh
@@ -44,6 +50,12 @@ class box3d::b3Mesh {
      * @brief Pose of the mesh wrt the world frame
      */
     b3PoseD* m_rel_pose = nullptr;
+
+    /**
+     * @brief Next mesh in the list
+     * This is used for managing memory of meshes.
+     */
+    b3Mesh* m_next = nullptr;
 
     static std::vector<b3Mesh*> s_meshes;
 
@@ -121,16 +133,14 @@ public:
         return m_F;
     }
 
-    static b3Mesh* create_mesh(const std::filesystem::path& file_path);
-
-    static int num_meshes() {
-        return int(s_meshes.size());
+    inline void set_next(b3Mesh* next) {
+        m_next = next;
     }
 
-    // TODO: replace mesh pointers to mesh id;
-    static b3Mesh* mesh(int mesh_id) {
-        return s_meshes[mesh_id];
+    inline b3Mesh* next() const {
+        return m_next;
     }
+
 };
 
 

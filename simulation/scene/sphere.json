@@ -1,0 +1,13 @@
+{
+   "gravity": [0, 0, -9.8],
+   "objects": [{
+     "mesh": "sphere.obj",
+     "body def": "rigid/sphere.json",
+     "initial position":    [0, 0, 0],
+     "initial orientation": [0, 0, 0],
+
+     "initial linear velocity":  [0, 0, 0],
+     "initial angular velocity": [0, 0, 0]
+   }
+   ]
+}

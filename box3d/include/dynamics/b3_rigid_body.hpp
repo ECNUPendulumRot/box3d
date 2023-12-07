@@ -64,15 +64,16 @@ public:
      */
     b3BodyRigid();
 
+    virtual ~b3BodyRigid() = default;
+
     /**
      * @brief Construct a new b3BodyRigid object
      * @param obj_file_name: path to .obj file
      */
     explicit b3BodyRigid(const std::string& obj_file_name);
 
-    explicit b3BodyRigid(const b3BodyDef& body_def);
 
-    explicit b3BodyRigid(const b3BodyDefRigid& body_def);
+    explicit b3BodyRigid(const b3BodyDef& body_def);
 
     /**
      * @brief Get volume, center of geometry and inertia from the mesh

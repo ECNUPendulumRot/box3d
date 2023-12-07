@@ -288,19 +288,6 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
 }
 
 
-box3d::b3Mesh*  box3d::b3Mesh::create_mesh(const std::filesystem::path &file_path)
-{
-    std::string fs_string = file_path.string();
-
-    void* memory = b3_alloc(sizeof(b3Mesh));
-
-    auto* mesh = new(memory) b3Mesh(fs_string);
-
-    s_meshes.push_back(mesh);
-
-    return mesh;
-}
-
 
 
 

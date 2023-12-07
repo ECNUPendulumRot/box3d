@@ -38,20 +38,11 @@ box3d::b3BodyRigid::b3BodyRigid(const box3d::b3BodyDef &body_def):
 {
     auto def = (b3BodyDefRigid*) body_def.get_inner_def();
 
-    m_pose = def->m_init_pose;
-    m_velocity = def->m_init_velocity;
-
-    m_density = def->m_density;
-
-}
-
-
-box3d::b3BodyRigid::b3BodyRigid(const box3d::b3BodyDefRigid &body_def)
-{
     m_pose = body_def.m_init_pose;
     m_velocity = body_def.m_init_velocity;
 
-    m_density = body_def.m_density;
+    m_density = def->m_density;
+
 }
 
 
