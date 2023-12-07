@@ -33,7 +33,7 @@ void TestBase::create_object(const nlohmann::json &object)
     // m_mesh_paths.push_back(mesh_path);
     // m_fixture_paths.push_back(body_def_path);
 
-    box3d::b3Mesh* mesh = box3d::b3Mesh::create_mesh((s_mesh_dir / fs::path(mesh_path)));
+    box3d::b3Mesh* mesh = m_world->create_mesh((s_mesh_dir / fs::path(mesh_path)));
 
     box3d::b3BodyDef body_def = box3d::b3BodyDef::create_body_definition(s_body_def_dir / fs::path(body_def_path));
 

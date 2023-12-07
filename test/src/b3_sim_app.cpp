@@ -2,9 +2,7 @@
 #include "b3_sim_app.hpp"
 
 #include <spdlog/spdlog.h>
-#include <nlohmann/json.hpp>
 
-#include "box3d.hpp"
 
 b3SimApp::b3SimApp()
 {

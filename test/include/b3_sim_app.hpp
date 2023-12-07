@@ -2,7 +2,6 @@
 #ifndef BOX3D_B3_SIM_APP_HPP
 #define BOX3D_B3_SIM_APP_HPP
 
-#include "box3d.hpp"
 
 #include <filesystem>
 #include <vector>
@@ -52,5 +51,6 @@ public:
 private:
 
 };
+
 
 #endif //BOX3D_B3_SIM_APP_HPP

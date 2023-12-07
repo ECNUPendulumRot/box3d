@@ -64,6 +64,8 @@ public:
      */
     b3BodyRigid();
 
+    virtual ~b3BodyRigid() = default;
+
     /**
      * @brief Construct a new b3BodyRigid object
      * @param obj_file_name: path to .obj file

@@ -8,6 +8,8 @@
 #include "dynamics/b3_body_def.hpp"
 #include "dynamics/b3_rigid_body.hpp"
 
+#include "geometry/b3_mesh.hpp"
+
 #include "collision/b3_broad_phase.hpp"
 
 namespace box3d {
@@ -15,14 +17,18 @@ namespace box3d {
     class b3World;
 
     class b3Body;
+
+    class b3Mesh;
 }
 
 
 class box3d::b3World {
 
-    //b3Body* m_body_list;
-
     b3Body* m_rigid_body_list;
+
+    b3Mesh* m_mesh_list;
+
+    int32 m_mesh_count;
 
     int32 m_body_count;
 
@@ -55,6 +61,20 @@ public:
     // TODO: implement this
     b3Body* create_body(const b3BodyDef& def);
 
+    b3Mesh* create_mesh(const std::filesystem::path& file_path);
+
+    inline int get_mesh_count() const {
+        return m_mesh_count;
+    }
+
+    b3Mesh* get_mesh(int id) const {
+
+        if (id >= m_mesh_count)
+            return nullptr;
+
+        return &m_mesh_list[id];
+    }
+
     /**
      * @brief Clear all objects in the world.
      */
@@ -68,8 +88,6 @@ public:
 protected:
 
     void solve_rigid(double delta_t);
-
-
 
 };
 
