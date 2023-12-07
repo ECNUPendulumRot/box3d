@@ -35,8 +35,6 @@ public:
     // TODO: check the destructor.
     ~TestBase() = default;
 
-    void destroy_objects();
-
     virtual void simulation_step();
 
     box3d::b3World* get_world() {

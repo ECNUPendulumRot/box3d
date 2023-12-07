@@ -1,11 +1,11 @@
 
-#include "utils/b3_gui_viewer.hpp"
+#include "../include/b3_gui_viewer.hpp"
 #include "utils/b3_log.hpp"
 
 
 
 
-bool box3d::b3GUIViewer::set_world(box3d::b3World *world) {
+bool b3GUIViewer::set_world(box3d::b3World *world) {
     m_world = world;
 
     if (world->empty()){
@@ -19,7 +19,7 @@ bool box3d::b3GUIViewer::set_world(box3d::b3World *world) {
 }
 
 
-void box3d::b3GUIViewer::launch()
+void b3GUIViewer::launch()
 {
     m_viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_NO_ROTATION);
     //m_viewer.core().orthographic = true;
@@ -35,7 +35,7 @@ void box3d::b3GUIViewer::launch()
 }
 
 
-bool box3d::b3GUIViewer::pre_draw_loop()
+bool b3GUIViewer::pre_draw_loop()
 {
 
     simulation_step();
@@ -46,7 +46,7 @@ bool box3d::b3GUIViewer::pre_draw_loop()
 }
 
 
-void box3d::b3GUIViewer::simulation_step()
+void b3GUIViewer::simulation_step()
 {
     if (m_world->empty())
         return;
@@ -56,7 +56,7 @@ void box3d::b3GUIViewer::simulation_step()
 }
 
 
-void box3d::b3GUIViewer::add_meshes() {
+void b3GUIViewer::add_meshes() {
     for (int mesh_id = 0; mesh_id < box3d::b3Mesh::num_meshes(); ++mesh_id) {
         printf("mesh_id: %d\n", mesh_id);
         int viewer_id = m_viewer.append_mesh(true);
@@ -72,7 +72,7 @@ void box3d::b3GUIViewer::add_meshes() {
 }
 
 
-void box3d::b3GUIViewer::redraw_mesh() {
+void b3GUIViewer::redraw_mesh() {
     static b3Matrix3d transform = [](){
         b3Matrix3d m;
         m.setIdentity();

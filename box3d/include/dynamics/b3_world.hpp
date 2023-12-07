@@ -52,9 +52,13 @@ public:
 
     b3Body* create_rigid_body(const b3BodyDef& def);
 
+    // TODO: implement this
     b3Body* create_body(const b3BodyDef& def);
 
-    // void destroy_body(b3Body* body);
+    /**
+     * @brief Clear all objects in the world.
+     */
+    void clear();
 
 
     b3BroadPhase* get_broad_phase() {

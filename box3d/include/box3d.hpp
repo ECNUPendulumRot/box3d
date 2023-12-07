@@ -9,9 +9,8 @@
 #include "geometry/b3_mesh.hpp"
 
 #include "utils/b3_log.hpp"
-#include "utils/b3_gui_viewer.hpp"
 #include "utils/b3_json.hpp"
 
 #include "collision/b3_bvh.hpp"
 
-#endif //BOX3D_BOX3D_HPP
+#endif //BOX3D_HPP

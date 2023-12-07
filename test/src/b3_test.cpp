@@ -1,6 +1,8 @@
 
 #include "b3_test.hpp"
 
+#include <fstream>
+
 namespace fs = std::filesystem;
 
 fs::path TestBase::s_body_def_dir = fs::path(B3D_BODY_DEF_DIR);
@@ -57,30 +59,24 @@ void TestBase::create_object(const nlohmann::json &object)
 
 void TestBase::parse_scene(TestBase* test, const std::string &scene_str)
 {
-    std::ifstream scene_file(scene_str);
 
+    // World must be cleared before the new scene parsed
+    box3d::b3World* world = test->get_world();
+    world->clear();
+
+    std::ifstream scene_file((s_scene_dir / fs::path(scene_str)).string());
     nlohmann::json scene_json = nlohmann::json::parse(scene_file);
-
-    nlohmann::json& object_list = scene_json["objects"];
 
     Eigen::Vector3d gravity;
     from_json(scene_json["gravity"], gravity);
-
-    box3d::b3World* world = test->get_world();
-
     world->set_gravity(b3Vector3d(gravity));
 
-
+    nlohmann::json& object_list = scene_json["objects"];
     for (auto& object : object_list) {
         test->create_object(object);
     }
 }
 
-// TODO: destroy object in the world
-void TestBase::destroy_objects()
-{
-
-}
 
 
 

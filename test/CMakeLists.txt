@@ -19,9 +19,12 @@ set(B3D_SCENE_DIR    "${B3D_SIMULATION_DIR}/scene")
 add_library(b3simapp
     src/b3_sim_app.cpp
     src/b3_test.cpp
+    src/b3_gui_viewer.cpp
     include/b3_sim_app.hpp
     include/b3_test.hpp
-        include/test_sphere_dropping.hpp
+    include/b3_gui_viewer.hpp
+
+    include/test_sphere_dropping.hpp
 )
 
 target_include_directories(b3simapp

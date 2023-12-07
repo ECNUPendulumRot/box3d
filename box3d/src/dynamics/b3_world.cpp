@@ -74,5 +74,11 @@ box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 }
 
 
+void box3d::b3World::clear()
+{
+
+}
+
+
 
 
