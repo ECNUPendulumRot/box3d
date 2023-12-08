@@ -93,6 +93,11 @@ public:
     b3Mesh* get_mesh() const {
         return m_body_mesh;
     }
+
+    // Test GJK 
+    void set_mesh(b3Mesh* mesh) {
+        m_body_mesh = mesh;
+    } 
 };
 
 #endif //BOX3D_B3_FIXTURE_HPP

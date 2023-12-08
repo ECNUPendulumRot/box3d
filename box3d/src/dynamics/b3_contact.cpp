@@ -1,5 +1,5 @@
 
-#include "b3_contact.hpp"
+#include "dynamics/b3_contact.hpp"
 #include "collision/b3_collision.hpp"
 #include "collision/b3_fixture.hpp"
 #include "dynamics/b3_body.hpp"
@@ -77,7 +77,7 @@ void box3d::b3Contact::set_fixture_b(b3Fixture* fixture_b) {
 
 void box3d::b3Contact::update() {
 
-    bool touching = b3_gjk_test_overlap(m_fixture_a, m_fixture_b);
+    bool touching = test_gjk_overlap(m_fixture_a, m_fixture_b);
 
     // TODO: 
     if(touching) {

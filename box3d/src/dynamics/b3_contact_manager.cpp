@@ -1,7 +1,7 @@
 
-#include "b3_contact_manager.hpp"
-#include "b3_contact.hpp"
-#include "collision/b3_broad_phase.hpp"
+#include "dynamics/b3_contact_manager.hpp"
+#include "dynamics/b3_contact.hpp"
+
 #include "collision/b3_fixture.hpp"
 
 void box3d::b3ContactManager::FindNewContact() {
@@ -15,6 +15,7 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
 
     b3Body* body_a = fixture_a->get_body();
     b3Body* body_b = fixture_b->get_body();
+
 
     if(body_a == body_b) {
         return;

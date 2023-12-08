@@ -50,8 +50,8 @@ void box3d::b3BroadPhase::update_pairs(T* callback) {
     m_pair_count = 0;
 
     for(int i = 0; i < m_move_count; ++i) {
-        m_queryProxyId = m_move_buffer[i];
-        if(m_queryProxyId == b3_NULL_NODE) {
+        m_query_proxy_id = m_move_buffer[i];
+        if(m_query_proxy_id == b3_NULL_NODE) {
             continue;
         }
 
@@ -62,10 +62,10 @@ void box3d::b3BroadPhase::update_pairs(T* callback) {
 
     for(int i = 0; i < m_pair_count; ++i) {
         b3Pair* current_pair = m_pair_buffer + i;
-        void* user_data_a = m_tree.get_user_data(current_pair->proxy_id_a);
-        void* user_data_b = m_tree.get_user_data(current_pair->proxy_id_b);
+        b3FixtureProxy* fixture_proxy_a = m_tree.get_fixture_proxy(current_pair->proxy_id_a);
+        b3FixtureProxy* fixture_proxy_b = m_tree.get_fixture_proxy(current_pair->proxy_id_b);
 
-        callback->add_pair(user_data_a, user_data_b);
+        callback->add_pair(fixture_proxy_a, fixture_proxy_b);
 
     }
 

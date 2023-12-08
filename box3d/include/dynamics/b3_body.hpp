@@ -39,6 +39,8 @@ class box3d::b3Body {
 
     b3ContactEdge* m_contact_list;
 
+    b3Fixture* m_fixture;
+
 public:
 
     /**
@@ -84,6 +86,10 @@ public:
 
     b3ContactEdge* get_contact_list() const {
         return m_contact_list;
+    }
+
+    b3Fixture* get_fixture() const {
+        return m_fixture;
     }
 
 };

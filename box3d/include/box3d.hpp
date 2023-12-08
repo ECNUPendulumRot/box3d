@@ -10,5 +10,6 @@
 #include "utils/b3_log.hpp"
 #include "utils/b3_gui_viewer.hpp"
 #include "collision/b3_bvh.hpp"
-
+#include "collision/b3_fixture.hpp"
+#include "collision/b3_collision.hpp"
 #endif //BOX3D_BOX3D_HPP

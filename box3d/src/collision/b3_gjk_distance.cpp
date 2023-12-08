@@ -1,6 +1,190 @@
 
-#include "b3_gjk_distance.hpp"
+#include "collision/b3_gjk_distance.hpp"
+#include "collision/b3_distance_proxy.hpp"
 
+#include "utils/b3_log.hpp"
+
+
+void box3d::GJK::evaluate() {
+
+    // initial search direction
+    search_dir << 1, 0, 0;
+    search_dir_negative = -search_dir;
+
+    // initial point for simplex
+    c = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
+    
+    // search in direaction of origin
+    search_dir = -search_dir;
+    search_dir_negative = -search_dir;
+
+    // get second point for a line segment simplex
+    b = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
+
+    // didn't reach the origin, won't enclose it
+    if(b.dot(search_dir) < 0) {
+        simplex_dim = 1;
+        spdlog::info("c is {}, {}, {}, norm is {}", c.x(), c.y(), c.z(), c.norm());
+        m_distance = c.norm();
+        return;
+    }
+
+    Eigen::Vector3d bc = c - b;
+    Eigen::Vector3d BO = -b;
+    search_dir = bc.cross(BO).cross(bc);
+    // origin is on this line segment
+    // search_dir == Eigen::Vector3d::Zero()
+    if(search_dir.squaredNorm() <= GJK_MIN_DISTANCE) {
+        m_status = GJKStatus::GjkInside;
+        return;
+    }
+
+    simplex_dim = 2;
+    int iterations = 0;
+
+    for(; iterations < GJK_MAX_ITERATION, m_status == GJKStatus::GjkValid; ++iterations) {
+        search_dir.normalize();
+        search_dir_negative = -search_dir;
+        a = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
+        // didn't reach the origin
+        if(a.dot(search_dir) < 0) {
+            if(simplex_dim == 2) {
+                Eigen::Vector3d bc = c - b;
+                Eigen::Vector3d CO = -c;
+                m_distance = CO.cross(bc).norm();
+            } else {
+                Eigen::Vector3d bc = c - b;
+                Eigen::Vector3d bd = d - b;
+                Eigen::Vector3d n = bc.cross(bd);
+                n.normalize();
+                m_distance = -b.dot(n);
+            }
+            return;
+
+        }
+
+        simplex_dim++;
+        if(simplex_dim == 3) {
+            update_simplex3();
+        } else if(simplex_dim == 4) {
+            update_simplex4();
+        }
+    }
+    if(iterations == GJK_MAX_ITERATION) {
+        m_status == GJKStatus::GjkFailed;
+        m_distance = -1;
+        return;
+    }
+    if(m_status == GJKStatus::GjkInside) {
+        m_distance = 0;
+        return;
+    }
+    Eigen::Vector3d ac = c - a;
+    Eigen::Vector3d ab = b - a;
+    m_distance = b3_fabs(((-c).dot((ac).cross(ab))));
+}
+
+void box3d::GJK::update_simplex3() {
+    /**
+     * b
+     * | \
+     * |  \
+     * |   \
+     * |    a
+     * |   /
+     * | /
+     * c
+    */
+    // triangle's normal 
+    Eigen::Vector3d ab = b - a;
+    Eigen::Vector3d ac = c - a;
+    Eigen::Vector3d n = ab.cross(ac);
+    Eigen::Vector3d AO = -a;
+
+    // Determine which feature is closest to origin,
+    // make that the new simplex
+    simplex_dim = 2;
+    if(AO.dot(ab.cross(n)) > 0 ) {
+        // Closest to edge AB
+        c = a;
+        search_dir = ab.cross(AO).cross(ab);
+        return;
+    }
+    if(AO.dot(n.cross(ac)) > 0) {
+        // Cloest to edge AC
+        b = a;
+        search_dir = ac.cross(AO).cross(ac);
+        return;
+    }
+    // triangle 
+    simplex_dim = 3;
+    if(b3_fabs(AO.dot(n)) < GJK_MIN_DISTANCE) {
+        spdlog::info("AO is {}, {}, {}", AO.x(), AO.y(), AO.z());
+        spdlog::info("n is {}, {}, {}", n.x(), n.y(), n.z());
+        spdlog::info("AO dot n is {}", AO.dot(n));
+        m_status = GJKStatus::GjkInside;
+        return;
+    }
+
+    if(AO.dot(n) > 0) {
+        // Above triangle
+        d = c; 
+        c = b;
+        b = a;
+        search_dir = n;
+        return;
+    }
+
+    // Below triangle
+    d = b;
+    b = a;
+    search_dir = -n;
+    return;
+}
+
+void box3d::GJK::update_simplex4() {
+    // a is peak/tip of pyramid, BCD is the 
+    // base(counterclockwise winding order)
+    // We know a priori that origin is above BCD and below a
+    
+    // get normals of three new faces
+    Eigen::Vector3d ab = b - a;
+    Eigen::Vector3d ac = c - a;
+    Eigen::Vector3d ad = d - a;
+    Eigen::Vector3d ABC = ab.cross(ac);
+    Eigen::Vector3d ACD = ac.cross(ad);
+    Eigen::Vector3d ADB = ad.cross(ab);
+
+    Eigen::Vector3d AO = -a; // dir to origin
+    simplex_dim = 3; 
+
+    if(ABC.dot(AO) > 0) {
+        // In front of ABC
+        d = c;
+        c = b;
+        b = a;
+        search_dir = ABC;
+        return;
+    }
+    if(ADB.dot(AO) > 0) {
+        // In front of ADB
+        c = d;
+        d = b;
+        b = a;
+        search_dir = ADB;
+        return;
+    }
+    if(ACD.dot(AO) > 0) {
+        // In front of ACD
+        b = a;
+        search_dir = ACD;
+        return;
+    }
+    // else inside tetrahedron; enclosed;
+    m_status = GJKStatus::GjkInside;
+}
+
+/*
 void box3d::GJK::evaluate(const b3Vector3d search_direction) {
 
     // 迭代次数
@@ -26,10 +210,10 @@ void box3d::GJK::evaluate(const b3Vector3d search_direction) {
     // default: [1, 0, 0]
     m_ray = search_direction;
 
-    m_simplex[0].rank = 0;
-    append_vertice(m_simplex[0], m_ray);
-    m_simplex[0].p[0] = 1;
-    m_ray = m_simplex[0].c[0]->w;
+    m_simplices[0].rank = 0;
+    append_vertice(m_simplices[0], m_ray);
+    m_simplices[0].p[0] = 1;
+    m_ray = m_simplices[0].c[0]->w;
     sqdist = m_ray.length2();
     lastw[0] = lastw[1] = lastw[2] = lastw[3] = m_ray;
 
@@ -133,15 +317,25 @@ void box3d::GJK::evaluate(const b3Vector3d search_direction) {
     switch (m_status) {
     case GJKStatus::GjkValid:
         m_distance = m_ray.length();
+        break;
     case GJKStatus::GjkInside:
         m_distance = 0;
+        break;
     case GJKStatus::GjkFailed:
-        m_distance = 0;
+        m_distance = -1;
+        break;
     }
 }
 
 void box3d::GJK::get_support(const b3Vector3d& d, SV& sv) const {
     sv.d = d.normalized();
+    b3Vector3d a = proxy_a->get_support(sv.d);
+    b3Vector3d b = proxy_b->get_support(-sv.d);
+
+    spdlog::info("direction is {}, {}, {}", sv.d.x(), sv.d.y(), sv.d.z());
+    spdlog::info("select the vector in a is {}, {}, {}", a.x(), a.y(), a.z());
+    spdlog::info("select the vector in b is {}, {}, {}", b.x(), b.y(), b.z());
+
     sv.w = proxy_a->get_support(sv.d) - proxy_b->get_support(-sv.d);
 }
 
@@ -164,7 +358,7 @@ double box3d::GJK::project_origin(const b3Vector3d& a, const b3Vector3d& b,
     if(l > GJK_SIMPLEX2_EPS) {
         double t = 0;
         if(l > 0) {
-            t = a.dot(b) / l;
+            t = -a.dot(b) / l;
         }
         if(t >= 1) {
             w[0] = 0;
@@ -272,3 +466,5 @@ double box3d::GJK::det(const b3Vector3d& a, const b3Vector3d& b, const b3Vector3
             a.x() * b.z() * c.y() - a.y() * b.x() * c.z() + 
             a.x() * b.y() * c.z() - a.z() * b.y() * c.x());
 }
+
+*/

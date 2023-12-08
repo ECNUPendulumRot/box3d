@@ -3,12 +3,12 @@
 #define B3_CONTACT_MANAGER
 
 #include "common/b3_types.hpp"
+#include "collision/b3_broad_phase.hpp"
 
 namespace box3d {
-
     class b3Contact;
-    class b3BroadPhase;
     class b3Fixture;
+    class b3FixtureProxy;
 
     class b3ContactManager;
 }

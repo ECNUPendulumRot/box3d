@@ -26,7 +26,7 @@ class box3d::b3World {
 
     int32 m_body_count;
 
-    b3Vector3d m_gravity = b3Vector3d(0, 0, 9.8);
+    b3Vector3d m_gravity = b3Vector3d(0, 0, 0);
 
     double m_hz = 60;
 
