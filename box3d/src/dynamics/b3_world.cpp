@@ -1,6 +1,6 @@
 
 #include "dynamics/b3_world.hpp"
-#include "dynamics/b3_rigid_body.hpp"
+#include "dynamics/b3_body_rigid.hpp"
 
 #include "common/b3_allocator.hpp"
 

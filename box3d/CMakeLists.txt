@@ -1,7 +1,7 @@
 set(B3D_HEADER_FILES
         include/box3d.hpp
 
-        include/dynamics/b3_rigid_body.hpp
+        include/dynamics/b3_body_rigid.hpp
         include/dynamics/b3_pose.hpp
         include/dynamics/b3_body.hpp
         include/dynamics/b3_inertia.hpp
@@ -30,12 +30,13 @@ set(B3D_HEADER_FILES
         include/utils/b3_timer.h
         ../test/include/b3_gui_viewer.hpp
         include/collision/b3_broad_phase.hpp
+        include/dynamics/b3_body_affine.hpp
         #include/utils/b3_igl_viewer_ext.hpp
         #include/utils/b3_imgui_ext.hpp
 )
 
 set(B3D_SOURCE_FILES
-        src/dynamics/b3_rigid_body.cpp
+        src/dynamics/b3_body_rigid.cpp
         src/dynamics/b3_pose.cpp
         src/dynamics/b3_inertia.cpp
 
@@ -51,6 +52,7 @@ set(B3D_SOURCE_FILES
         src/collision/b3_fixture.cpp
         src/collision/b3_broad_phase.cpp
         src/dynamics/b3_body.cpp
+        src/dynamics/b3_body_affine.cpp
         #src/utils/b3_igl_viewer_ext.cpp
         #src/utils/b3_ui_menu.cpp
         #src/utils/b3_imgui_ext.cpp

@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_RIGID_BODY_HPP
-#define BOX3D_B3_RIGID_BODY_HPP
+#ifndef BOX3D_B3_BODY_RIGID_HPP
+#define BOX3D_B3_BODY_RIGID_HPP
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_pose.hpp"
@@ -66,13 +66,6 @@ public:
 
     virtual ~b3BodyRigid() = default;
 
-    /**
-     * @brief Construct a new b3BodyRigid object
-     * @param obj_file_name: path to .obj file
-     */
-    explicit b3BodyRigid(const std::string& obj_file_name);
-
-
     explicit b3BodyRigid(const b3BodyDef& body_def);
 
     /**
@@ -131,4 +124,4 @@ private:
 };
 
 
-#endif //BOX3D_B3_RIGID_BODY_HPP
+#endif //BOX3D_B3_BODY_RIGID_HPP

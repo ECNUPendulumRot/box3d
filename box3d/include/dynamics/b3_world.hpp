@@ -6,7 +6,7 @@
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
-#include "dynamics/b3_rigid_body.hpp"
+#include "dynamics/b3_body_rigid.hpp"
 
 #include "geometry/b3_mesh.hpp"
 

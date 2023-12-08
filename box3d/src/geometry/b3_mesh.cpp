@@ -240,16 +240,17 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
         integral[9] += N.z() * (v0.x() * g0z + v1.x() * g1z + v2.x() * g2z);
     }
 
-    integral[0] /= 6;
-    integral[1] /= 24;
-    integral[2] /= 24;
-    integral[3] /= 24;
-    integral[4] /= 60;
-    integral[5] /= 60;
-    integral[6] /= 60;
-    integral[7] /= 120;
-    integral[8] /= 120;
-    integral[9] /= 120;
+
+    integral[0] /= 6;   /* 1 */
+    integral[1] /= 24;  /* x */
+    integral[2] /= 24;  /* y */
+    integral[3] /= 24;  /* z */
+    integral[4] /= 60;  /* x^2 */
+    integral[5] /= 60;  /* y^2 */
+    integral[6] /= 60;  /* z^2 */
+    integral[7] /= 120; /* xy */
+    integral[8] /= 120; /* yz */
+    integral[9] /= 120; /* xz */
 
     // mass
     mass = integral[0];

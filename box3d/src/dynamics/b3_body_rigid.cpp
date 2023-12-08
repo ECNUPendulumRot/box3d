@@ -1,5 +1,5 @@
 
-#include "dynamics/b3_rigid_body.hpp"
+#include "dynamics/b3_body_rigid.hpp"
 
 
 box3d::b3BodyRigid::b3BodyRigid():
@@ -11,23 +11,6 @@ box3d::b3BodyRigid::b3BodyRigid():
     m_Inertia(b3Inertia())
 {
     ;
-}
-
-
-box3d::b3BodyRigid::b3BodyRigid(const std::string &obj_file_name):
-    b3Body(obj_file_name),
-    m_density(1.0),
-    m_CoM(b3PoseD()),
-    m_Inertia(b3Inertia())
-
-{
-    m_pose.set_linear(b3Vector3d::zero());
-    m_pose.set_angular(b3Vector3d::zero());
-
-    m_velocity.set_linear(b3Vector3d::zero());
-    m_velocity.set_angular(b3Vector3d::zero());
-
-    compute_mass_properties();
 }
 
 
