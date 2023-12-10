@@ -109,6 +109,7 @@ void box3d::GJK::update_simplex2() {
     if(a.dot(search_dir) < 0) {
         // Closest to point a
         search_dir = -a;
+        c = a;
         simplex_dim = 1;
         return;
     }
