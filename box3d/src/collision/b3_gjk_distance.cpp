@@ -2,74 +2,77 @@
 #include "collision/b3_gjk_distance.hpp"
 #include "collision/b3_distance_proxy.hpp"
 
-#include "utils/b3_log.hpp"
+#include <Eigen/Dense>
 
 
 void box3d::GJK::evaluate() {
 
     // initial search direction
     search_dir << 1, 0, 0;
-    search_dir_negative = -search_dir;
 
     // initial point for simplex
-    c = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
+    c = proxy_b->get_support(search_dir) - proxy_a->get_support(-search_dir);
+
+    // record last used direction
+    last_used_search_dir[0] = last_used_search_dir[1] 
+                            = last_used_search_dir[2]
+                            = last_used_search_dir[3]
+                            = search_dir;
+    int last_used_id = 0;
     
     // search in direaction of origin
     search_dir = -search_dir;
-    search_dir_negative = -search_dir;
-
     // get second point for a line segment simplex
-    b = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
+    // b = proxy_b->get_support(search_dir) - proxy_a->get_support(-search_dir);
 
     // didn't reach the origin, won't enclose it
-    if(b.dot(search_dir) < 0) {
-        simplex_dim = 1;
-        spdlog::info("c is {}, {}, {}, norm is {}", c.x(), c.y(), c.z(), c.norm());
-        m_distance = c.norm();
-        return;
-    }
+    // if(b.dot(search_dir) < 0) {
+    //     simplex_dim = 1;
+    //     m_distance = c.norm();
+    //     return;
+    // }
 
-    Eigen::Vector3d bc = c - b;
-    Eigen::Vector3d BO = -b;
-    search_dir = bc.cross(BO).cross(bc);
+    // search_dir = (c - b).cross(-b).cross(c - b);
+
     // origin is on this line segment
     // search_dir == Eigen::Vector3d::Zero()
-    if(search_dir.squaredNorm() <= GJK_MIN_DISTANCE) {
-        m_status = GJKStatus::GjkInside;
-        return;
-    }
+    // if(search_dir.squaredNorm() <= GJK_MIN_DISTANCE) {
+    //     m_status = GJKStatus::GjkInside;
+    //     return;
+    // }
 
-    simplex_dim = 2;
+    // simplex_dim = 2;
+    simplex_dim = 1;
     int iterations = 0;
 
     for(; iterations < GJK_MAX_ITERATION, m_status == GJKStatus::GjkValid; ++iterations) {
         search_dir.normalize();
-        search_dir_negative = -search_dir;
-        a = proxy_b->get_support(search_dir) - proxy_a->get_support(search_dir_negative);
-        // didn't reach the origin
-        if(a.dot(search_dir) < 0) {
-            if(simplex_dim == 2) {
-                Eigen::Vector3d bc = c - b;
-                Eigen::Vector3d CO = -c;
-                m_distance = CO.cross(bc).norm();
-            } else {
-                Eigen::Vector3d bc = c - b;
-                Eigen::Vector3d bd = d - b;
-                Eigen::Vector3d n = bc.cross(bd);
-                n.normalize();
-                m_distance = -b.dot(n);
-            }
-            return;
 
+        bool found = false;
+        for(int i = 0; i < 4; ++i) {
+            if((last_used_search_dir[i] - search_dir).squaredNorm() < GJK_MIN_DISTANCE) {
+                found = true;
+            }
         }
+        if(found) {
+            break;
+        }
+        last_used_id = (last_used_id + 1) & 3;
+        last_used_search_dir[last_used_id] = search_dir;
+
+        // get next support point
+        a = proxy_b->get_support(search_dir) - proxy_a->get_support(-search_dir);
 
         simplex_dim++;
-        if(simplex_dim == 3) {
+        if(simplex_dim == 2) {
+            update_simplex2();
+        } else if(simplex_dim == 3) {
             update_simplex3();
         } else if(simplex_dim == 4) {
             update_simplex4();
         }
     }
+
     if(iterations == GJK_MAX_ITERATION) {
         m_status == GJKStatus::GjkFailed;
         m_distance = -1;
@@ -79,9 +82,47 @@ void box3d::GJK::evaluate() {
         m_distance = 0;
         return;
     }
-    Eigen::Vector3d ac = c - a;
-    Eigen::Vector3d ab = b - a;
-    m_distance = b3_fabs(((-c).dot((ac).cross(ab))));
+    compute_distance();
+}
+
+void box3d::GJK::compute_distance() {
+    if(simplex_dim == 1) {
+        m_distance = c.norm();
+        return;
+    }
+    if(simplex_dim == 2) {
+        m_distance = c.cross(c - b).norm();
+        return;
+    }
+    // simplex_dim == 3
+    m_distance = -b.dot( (c - b).cross(d - b).normalized() );
+}
+
+void box3d::GJK::update_simplex2() {
+    /**
+     *  a
+     *  | 
+     *  |
+     *  |
+     *  c
+    */
+    if(a.dot(search_dir) < 0) {
+        // Closest to point a
+        search_dir = -a;
+        simplex_dim = 1;
+        return;
+    }
+    b = a;
+    search_dir = (c - b).cross(-b).cross(c - b);
+    if(search_dir == Eigen::Vector3d::Zero()) {
+        if(c.normalized() == (a - c).normalized()) {
+            simplex_dim = 1;
+            search_dir = -c;
+        } else {
+            // origin is on the linear segment ac
+            m_status = GJKStatus::GjkInside;
+        }
+    }
 }
 
 void box3d::GJK::update_simplex3() {
@@ -99,34 +140,31 @@ void box3d::GJK::update_simplex3() {
     Eigen::Vector3d ab = b - a;
     Eigen::Vector3d ac = c - a;
     Eigen::Vector3d n = ab.cross(ac);
-    Eigen::Vector3d AO = -a;
 
-    // Determine which feature is closest to origin,
-    // make that the new simplex
-    simplex_dim = 2;
-    if(AO.dot(ab.cross(n)) > 0 ) {
-        // Closest to edge AB
-        c = a;
-        search_dir = ab.cross(AO).cross(ab);
-        return;
-    }
-    if(AO.dot(n.cross(ac)) > 0) {
-        // Cloest to edge AC
-        b = a;
-        search_dir = ac.cross(AO).cross(ac);
-        return;
-    }
-    // triangle 
-    simplex_dim = 3;
-    if(b3_fabs(AO.dot(n)) < GJK_MIN_DISTANCE) {
-        spdlog::info("AO is {}, {}, {}", AO.x(), AO.y(), AO.z());
-        spdlog::info("n is {}, {}, {}", n.x(), n.y(), n.z());
-        spdlog::info("AO dot n is {}", AO.dot(n));
+    if(a.dot(n) == 0) {
         m_status = GJKStatus::GjkInside;
         return;
     }
 
-    if(AO.dot(n) > 0) {
+    // Determine which feature is closest to origin,
+    // make that the new simplex
+    simplex_dim = 2;
+    if(a.dot(ab.cross(n)) < 0 ) {
+        // Closest to edge AB
+        c = a;
+        search_dir = ab.cross(-a).cross(ab);
+        return;
+    }
+    if(a.dot(n.cross(ac)) < 0) {
+        // Cloest to edge AC
+        b = a;
+        search_dir = ac.cross(-a).cross(ac);
+        return;
+    }
+    // triangle 
+    simplex_dim = 3;
+
+    if(a.dot(n) < 0) {
         // Above triangle
         d = c; 
         c = b;
@@ -148,17 +186,13 @@ void box3d::GJK::update_simplex4() {
     // We know a priori that origin is above BCD and below a
     
     // get normals of three new faces
-    Eigen::Vector3d ab = b - a;
-    Eigen::Vector3d ac = c - a;
-    Eigen::Vector3d ad = d - a;
-    Eigen::Vector3d ABC = ab.cross(ac);
-    Eigen::Vector3d ACD = ac.cross(ad);
-    Eigen::Vector3d ADB = ad.cross(ab);
+    Eigen::Vector3d ABC = (b - a).cross(c - a);
+    Eigen::Vector3d ACD = (c - a).cross(d - a);
+    Eigen::Vector3d ADB = (d - a).cross(b - a);
 
-    Eigen::Vector3d AO = -a; // dir to origin
     simplex_dim = 3; 
 
-    if(ABC.dot(AO) > 0) {
+    if(ABC.dot(a) < 0) {
         // In front of ABC
         d = c;
         c = b;
@@ -166,7 +200,7 @@ void box3d::GJK::update_simplex4() {
         search_dir = ABC;
         return;
     }
-    if(ADB.dot(AO) > 0) {
+    if(ADB.dot(a) < 0) {
         // In front of ADB
         c = d;
         d = b;
@@ -174,7 +208,7 @@ void box3d::GJK::update_simplex4() {
         search_dir = ADB;
         return;
     }
-    if(ACD.dot(AO) > 0) {
+    if(ACD.dot(a) < 0) {
         // In front of ACD
         b = a;
         search_dir = ACD;

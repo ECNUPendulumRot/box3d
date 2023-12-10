@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
         box3d::b3Pose<double> cube_rel_pose_a;
         box3d::b3Pose<double> cube_rel_pose_b;
 
-        cube_rel_pose_a.set_linear( { 1.0, 0, 0 } );
+        cube_rel_pose_a.set_linear( { 1.8, 0, 0 } );
 
 
         cube_mesh_a->set_relative_pose(&cube_rel_pose_a);
@@ -73,11 +73,8 @@ int main(int argc, char* argv[]) {
         double distance = box3d::get_gjk_distance(&cube_fixture_a, &cube_fixture_b);
 
         spdlog::info("the distance between cube and cube is {}", distance);
-
-        b3MatrixXd vectices_a = cube_mesh_a->transform();
-        b3MatrixXd vectices_b = cube_mesh_b->transform();
     }
-/*
+
     {
         spdlog::info("test gjk between cube and sphere");
         // cube and sphere
@@ -91,7 +88,7 @@ int main(int argc, char* argv[]) {
         box3d::b3Pose<double> cube_rel_pose;
         box3d::b3Pose<double> sphere_rel_pose;
 
-
+        cube_rel_pose.set_linear( { 2.0, 0, 0 } );
 
         cube_mesh_a->set_relative_pose(&cube_rel_pose);
         sphere_mesh_a->set_relative_pose(&sphere_rel_pose);
@@ -115,6 +112,8 @@ int main(int argc, char* argv[]) {
         box3d::b3Pose<double> sphere_rel_pose_a;
         box3d::b3Pose<double> sphere_rel_pose_b;
 
+        sphere_rel_pose_a.set_linear( { 5.0, 0, 0 } );
+
         sphere_mesh_a->set_relative_pose(&sphere_rel_pose_a);
         sphere_mesh_b->set_relative_pose(&sphere_rel_pose_b);
 
@@ -123,7 +122,6 @@ int main(int argc, char* argv[]) {
         spdlog::info("the distance between sphere and sphere is {}", distance);
     }
 
-*/
 
     return 0;
 }

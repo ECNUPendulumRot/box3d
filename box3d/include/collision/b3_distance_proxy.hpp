@@ -33,16 +33,16 @@ public:
 
     /**
      * @description: 给定方向d，寻找在d上的投影最大值
-     * @param {Eigen::Vector3d&} d 3*1
+     * @param {Eigen::Vector3d} d 3*1
      * @return {*}
      */    
-    Eigen::Vector3d get_support(Eigen::Vector3d& d) const {
-        // return m_mesh->get_support(d);
-        auto res = m_mesh->get_support(d);
+    Eigen::Vector3d get_support(Eigen::Vector3d d) const {
         
-        spdlog::info("support point is {}, {}, {}", res.x(), res.y(), res.z());
-
-        return res;
+        return m_mesh->get_support(d);
+        
+        // auto res = m_mesh->get_support(d);
+        // spdlog::info("support point is {}, {}, {}", res.x(), res.y(), res.z());
+        // return res;
     }
 };
 

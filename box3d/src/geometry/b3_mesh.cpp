@@ -151,7 +151,7 @@ b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
 }
 
 
-Eigen::Vector3d box3d::b3Mesh::get_support(const Eigen::Vector3d wd) {
+Eigen::Vector3d box3d::b3Mesh::get_support(Eigen::Vector3d wd) {
     
     // transform d to body coordinate, and don not care p
     b3Matrix3d R_T = m_rel_pose->rotation_matrix().transpose();

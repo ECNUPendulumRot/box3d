@@ -24,6 +24,7 @@ namespace box3d {
 
 /// https://vec3.ca/gjk/implementation/
 /// https://github.com/kevinmoran/GJK
+/// https://github.com/bulletphysics/bullet3/blob/master/src/BulletCollision/NarrowPhaseCollision/btGjkEpa3.h
 
 class box3d::GJK {
 
@@ -33,7 +34,9 @@ class box3d::GJK {
     // Simplex: just a set of points
     Eigen::Vector3d a, b, c, d;
 
-    Eigen::Vector3d search_dir, search_dir_negative;
+    Eigen::Vector3d search_dir;
+
+    Eigen::Vector3d last_used_search_dir[4];
 
     double m_distance;
 
@@ -48,9 +51,13 @@ public:
 
     void evaluate();
 
+    void update_simplex2();
+
     void update_simplex3();
     
     void update_simplex4();
+
+    void compute_distance();
 
     double get_distance() const {
         return m_distance;
