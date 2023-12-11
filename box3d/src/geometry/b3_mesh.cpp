@@ -15,8 +15,8 @@
 #include "common/b3_common.hpp"
 #include "common/b3_allocator.hpp"
 
-std::vector<box3d::b3Mesh*> box3d::b3Mesh::s_meshes = std::vector<box3d::b3Mesh*>();
-
+#include "dynamics/b3_body_rigid.hpp"
+#include "dynamics/b3_body_affine.hpp"
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
@@ -124,31 +124,43 @@ void box3d::b3Mesh::recenter(const b3PoseD &new_center)
 }
 
 
-//void box3d::b3Mesh::transform()
-//{
-//    b3_assert(m_rel_pose != nullptr);
-//
-//    for (int32 i = 0; i < m_V.rows(); i++) {
-//        auto transformed = m_rel_pose->transform(m_V.row(i).transpose());
-//        m_V.row(i) = transformed.transpose();
-//    }
-//}
-
 b3MatrixXd box3d::b3Mesh::transform() const
 {
-    return transform(m_rel_pose);
+    switch (m_body->get_type()) {
+        case b3BodyType::b3_RIGID:
+            return transform_rigid(((b3BodyRigid*)m_body)->get_pose());
+        case b3BodyType::b3_AFFINE:
+            return transform_affine(((b3BodyAffine*)m_body)->get_q());
+    }
 }
 
 
-b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
+b3MatrixXd box3d::b3Mesh::transform_rigid(const b3PoseD& pose) const
 {
-    b3_assert(pose != nullptr);
-
     // Because the mesh vertices are rowwise, we need to transpose the matrix
-    b3Matrix3d R_T = pose->rotation_matrix().transpose();
-    Eigen::RowVector3d p_T = pose->linear().eigen_vector3().transpose();
+    b3Matrix3d R_T = pose.rotation_matrix().transpose();
+    Eigen::RowVector3d p_T = pose.linear().eigen_vector3().transpose();
 
     return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
+}
+
+
+b3MatrixXd box3d::b3Mesh::transform_affine(const b3Vector12d &affine_q) const
+{
+    b3MatrixXd result = m_V;
+    for (int i = 0; i < m_V.rows(); ++i) {
+        Eigen::Matrix<double, 3, 12> J;
+        Eigen::Vector3d vertex = m_V.row(i);
+
+        J.setZero();
+        J.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
+        J.block(0, 3, 1, 3) = vertex;
+        J.block(1, 6, 1, 3) = vertex;
+        J.block(2, 9, 1, 3) = vertex;
+
+        result.row(i) = (J * affine_q).transpose();
+    }
+    return result;
 }
 
 

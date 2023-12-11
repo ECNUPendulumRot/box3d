@@ -9,7 +9,8 @@
 namespace box3d {
 
     class b3BodyAffine;
-    class b3BodyDefAffine
+    class b3BodyDefAffine;
+
 }
 
 
@@ -46,17 +47,30 @@ class box3d::b3BodyAffine: public b3Body
 {
     /**
      * @brief The affine transform of the body.
-     * q = (p, A1, A2, A3)
+     * q = (p^T, a1^T, a2^T, a3^T)
+     * A = (a1, a2, a3)^T
      */
     b3Vector12d m_q;
 
+    b3Vector12d m_q_dot;
+
     double m_stiffness = 0;
 
+    double m_density = 1;
+
+    // TODO: check whether the volume is the current one or the deformed one.
+    /**
+     * @brief The origin volume of the body.
+     */
+    double m_volume = 0;
+
+    /**
+     * @brief The potential is calculated as followed:
+     * stiffness * volume * || A * A^T - I||^2_F
+     */
     double m_potential_orth = 0;
 
     double m_kinetic_energy = 0;
-
-    double m_density;
 
     /**
      * @brief Pose of the body of CoM wrt the world frame
@@ -74,6 +88,8 @@ class box3d::b3BodyAffine: public b3Body
      */
     b3Matrix12d m_M;
 
+    b3Matrix12d m_inv_M;
+
 public:
 
     b3BodyAffine();
@@ -89,6 +105,14 @@ public:
     }
 
     void set_mesh(b3Mesh* mesh) override;
+
+    inline b3Matrix12d get_inv_mass_matrix() const {
+        return m_inv_M;
+    }
+
+    inline b3Vector12d get_q() const {
+        return m_q;
+    }
 
 private:
 

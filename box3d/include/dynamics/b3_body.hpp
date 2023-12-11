@@ -7,7 +7,7 @@
 #include "dynamics/b3_pose.hpp"
 
 #include "common/b3_allocator.hpp"
-
+#include "dynamics/b3_body_def.hpp"
 
 namespace box3d {
 
@@ -23,6 +23,8 @@ namespace box3d {
 
 
 class box3d::b3Body {
+
+    b3BodyType m_type;
 
     /**
      * @brief Mesh of the body
@@ -51,6 +53,10 @@ public:
      */
     explicit b3Body(const std::string& obj_file_name){
         m_mesh = new b3Mesh(obj_file_name);
+    }
+
+    b3BodyType get_type() const {
+        return m_type;
     }
 
     virtual void set_mesh(b3Mesh* mesh) {

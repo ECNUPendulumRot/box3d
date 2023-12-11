@@ -26,11 +26,15 @@ class box3d::b3World {
 
     b3Body* m_rigid_body_list;
 
+    b3Body* m_affine_body_list;
+
     b3Mesh* m_mesh_list;
 
     int32 m_mesh_count;
 
-    int32 m_body_count;
+    int32 m_rigid_body_count;
+
+    int32 m_affine_body_count;
 
     b3Vector3d m_gravity = b3Vector3d(0, 0, 9.8);
 
@@ -51,12 +55,14 @@ public:
     }
 
     bool empty() const {
-        return m_body_count == 0;
+        return m_rigid_body_count == 0;
     }
 
     void test_step();
 
     b3Body* create_rigid_body(const b3BodyDef& def);
+
+    b3Body* create_affine_body(const b3BodyDef& def);
 
     // TODO: implement this
     b3Body* create_body(const b3BodyDef& def);

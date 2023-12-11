@@ -1,12 +1,14 @@
 
 #include "dynamics/b3_world.hpp"
 #include "dynamics/b3_body_rigid.hpp"
+#include "dynamics/b3_body_affine.hpp"
 
 #include "common/b3_allocator.hpp"
 
 box3d::b3World::b3World():
-    m_rigid_body_list(nullptr), m_body_count(0),
-    m_mesh_list(nullptr), m_mesh_count(0)
+        m_rigid_body_list(nullptr), m_rigid_body_count(0),
+        m_affine_body_list(nullptr), m_affine_body_count(0),
+        m_mesh_list(nullptr), m_mesh_count(0)
 {
     ;
 }
@@ -15,6 +17,9 @@ box3d::b3World::b3World():
 box3d::b3World::~b3World()
 {
     // TODO: think about how to destruct
+    b3_free(m_mesh_list);
+    b3_free(m_rigid_body_list);
+    b3_free(m_affine_body_list);
 }
 
 
@@ -60,7 +65,21 @@ box3d::b3Body* box3d::b3World::create_rigid_body(const box3d::b3BodyDef& def)
     body->set_world(this);
     body->set_next(m_rigid_body_list);
     m_rigid_body_list = body;
-    ++m_body_count;
+    ++m_rigid_body_count;
+
+    return body;
+}
+
+
+box3d::b3Body *box3d::b3World::create_affine_body(const box3d::b3BodyDef &def)
+{
+    void* memory = b3_alloc(sizeof (b3BodyAffine));
+    auto* body = new(memory) b3BodyAffine(def);
+
+    body->set_world(this);
+    body->set_next(m_affine_body_list);
+    m_affine_body_list = body;
+    ++m_affine_body_list;
 
     return body;
 }
@@ -71,6 +90,8 @@ box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
     switch (def.get_type()) {
         case b3BodyType::b3_RIGID:
             return create_rigid_body(def);
+        case b3BodyType::b3_AFFINE:
+            return create_affine_body(def);
     }
 }
 
@@ -110,6 +131,8 @@ void box3d::b3World::clear()
         body = next;
     }
 }
+
+
 
 
 

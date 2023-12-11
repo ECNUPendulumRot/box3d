@@ -34,7 +34,7 @@ void box3d::b3BodyRigid::set_mesh(box3d::b3Mesh *mesh)
 
     compute_mass_properties();
 
-    mesh->set_relative_pose(&m_pose);
+    mesh->set_relative_body(this);
 }
 
 

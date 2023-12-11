@@ -13,7 +13,6 @@
 
 #include "collision/b3_aabb.hpp"
 
-
 namespace box3d {
 
     class b3Mesh;
@@ -22,6 +21,7 @@ namespace box3d {
 
     class b3World;
 
+    class b3Body;
 }
 
 class box3d::b3Mesh {
@@ -47,17 +47,15 @@ class box3d::b3Mesh {
     b3MatrixXi m_F;
 
     /**
-     * @brief Pose of the mesh wrt the world frame
-     */
-    b3PoseD* m_rel_pose = nullptr;
-
-    /**
      * @brief Next mesh in the list
      * This is used for managing memory of meshes.
      */
     b3Mesh* m_next = nullptr;
 
-    static std::vector<b3Mesh*> s_meshes;
+    /**
+     * @brief The body that the mesh belongs to.
+     */
+    b3Body* m_body = nullptr;
 
 public:
 
@@ -90,10 +88,12 @@ public:
 
     b3MatrixXd transform() const;
 
-    b3MatrixXd transform(const b3PoseD* pose) const;
+    b3MatrixXd transform_rigid(const b3PoseD& pose) const;
 
-    void set_relative_pose(b3PoseD* pose) {
-        m_rel_pose = pose;
+    b3MatrixXd transform_affine(const b3Vector12d& affine_q) const;
+
+    void set_relative_body(b3Body* body) {
+        m_body = body;
     }
 
     /**

@@ -1,6 +1,10 @@
 
 #include "dynamics/b3_body_affine.hpp"
 
+// TODO: check this include
+// Must included because of the inverse method
+#include <Eigen/LU>
+
 
 box3d::b3BodyAffine::b3BodyAffine()
 {
@@ -10,6 +14,8 @@ box3d::b3BodyAffine::b3BodyAffine()
     m_q[3]  = 1.0;
     m_q[7]  = 1.0;
     m_q[11] = 1.0;
+
+    m_q_dot.setZero();
 
     m_M.setZero();
 }
@@ -21,8 +27,7 @@ void box3d::b3BodyAffine::set_mesh(box3d::b3Mesh *mesh)
 
     compute_mass_properties();
 
-    // TODO: check whether the following line is necessary
-    // mesh->set_relative_pose(&m_pose);
+    mesh->set_relative_body(this);
 }
 
 
@@ -34,13 +39,13 @@ bool box3d::b3BodyAffine::compute_mass_properties()
         return false;
 
     // TODO: check this assumption.
-    // In Affine body dynamics, the volume and Inertia does not maintain.
-    double volume; b3Inertia Inertia; b3PoseD CoM;
-    mesh->mesh_properties(volume, CoM, Inertia);
+    // In Affine body dynamics, Inertia does not maintain.
+    b3Inertia Inertia; b3PoseD CoM;
+    mesh->mesh_properties(m_volume, CoM, Inertia);
 
     mesh->recenter(CoM);
 
-    compute_jacobian_integral(volume, Inertia, CoM);
+    compute_jacobian_integral(m_volume, Inertia, CoM);
 
     return true;
 }
@@ -90,7 +95,13 @@ void box3d::b3BodyAffine::compute_jacobian_integral(double volume, const b3Inert
     }
 
     m_M *= m_density;
+
+    bool invertible = false;
+
+    // TODO: inverse check
+    m_inv_M = m_M.inverse();
 }
+
 
 box3d::b3BodyAffine::b3BodyAffine(const box3d::b3BodyDef &body_def)
 {
@@ -121,5 +132,5 @@ box3d::b3BodyDef box3d::b3BodyDefAffine::create_definition(double stiffness, dou
 
     b3BodyDefAffine* rigid_def =  new(memory) b3BodyDefAffine(stiffness, density);
 
-    return b3BodyDef(rigid_def, b3BodyType::b3_RIGID);
+    return b3BodyDef(rigid_def, b3BodyType::b3_AFFINE);
 }
