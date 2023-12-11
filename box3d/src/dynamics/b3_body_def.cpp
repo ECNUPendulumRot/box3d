@@ -5,6 +5,8 @@
 
 #include "utils/b3_json.hpp"
 #include "common/b3_allocator.hpp"
+#include "dynamics/b3_body_rigid.hpp"
+#include "dynamics/b3_body_affine.hpp"
 
 box3d::b3BodyDef::~b3BodyDef()
 {
@@ -21,6 +23,8 @@ box3d::b3BodyDef box3d::b3BodyDef::create_body_definition(const std::filesystem:
 
     if (type == "rigid") {
         return create_rigid_definition(body_def);
+    } else if (type == "affine") {
+        return create_affine_definition(body_def);
     }
 }
 
@@ -41,6 +45,21 @@ box3d::b3BodyDef box3d::b3BodyDef::create_rigid_definition(const nlohmann::json 
 }
 
 
+box3d::b3BodyDef box3d::b3BodyDef::create_affine_definition(const nlohmann::json &body_def)
+{
+    nlohmann::json full_affine = R"({
+        "body_type": "affine",
+        "density": 1,
+        "stiffness": 100
+    })"_json;
+    full_affine.merge_patch(body_def);
+
+    double density = full_affine["density"];
+    double stiffness = full_affine["stiffness"];
+    return b3BodyDefAffine::create_definition(stiffness, density);
+}
+
+
 void box3d::b3BodyDef::set_initial_status(const b3PoseD &pose, const b3PoseD &velocity)
 {
     m_init_pose = pose;
@@ -48,21 +67,8 @@ void box3d::b3BodyDef::set_initial_status(const b3PoseD &pose, const b3PoseD &ve
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
 
 
-box3d::b3BodyDefRigid::b3BodyDefRigid(double density)
-{
-    m_density = density;
-}
 
 
-box3d::b3BodyDef box3d::b3BodyDefRigid::create_definition(double density)
-{
-    void* memory = b3_alloc(sizeof(b3BodyDefRigid));
-
-    b3BodyDefRigid* rigid_def =  new(memory) b3BodyDefRigid(density);
-
-    return b3BodyDef(rigid_def, b3BodyType::b3_RIGID);
-}
 

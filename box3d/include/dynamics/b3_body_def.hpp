@@ -20,14 +20,14 @@ namespace box3d {
 }
 
 enum class box3d::b3BodyType {
-
-    b3_RIGID
-
+    b3_RIGID,
+    b3_AFFINE,
 };
 
 class box3d::b3BodyDef {
 
     friend class b3BodyRigid;
+    friend class b3BodyAffine;
 
     b3BodyDefInner* m_def;
 
@@ -60,7 +60,10 @@ public:
 
     static b3BodyDef create_rigid_definition(const nlohmann::json& body_def);
 
+    static b3BodyDef create_affine_definition(const nlohmann::json& body_def);
+
 };
+
 
 class box3d::b3BodyDefInner {
 
@@ -70,31 +73,5 @@ public:
 
 };
 
-
-class box3d::b3BodyDefRigid: public b3BodyDefInner {
-
-    friend class b3BodyRigid;
-
-    /**
-     * @brief The density of the rigid body.
-     * Unit: kg/m^3
-     */
-    double m_density = 1.0;
-
-public:
-
-    b3BodyDefRigid() = default;
-
-    explicit b3BodyDefRigid(double density);
-
-    ~b3BodyDefRigid() override = default;
-
-    static b3BodyDef create_definition(double density);
-
-    b3BodyDefInner* get_def() {
-        return this;
-    }
-
-};
 
 #endif //BOX3D_B3_BODY_DEF_HPP

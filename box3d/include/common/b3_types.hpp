@@ -29,6 +29,9 @@ using b3MatrixX = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
 template <typename T>
 using b3Vector12 = Eigen::Matrix<T, 12, 1>;
 
+template <typename T>
+using b3Matrix12 = Eigen::Matrix<T, 12, 12>;
+
 using b3Vector3d = box3d::b3Vector3<double>;
 using b3Vector3f = box3d::b3Vector3<float>;
 
@@ -42,5 +45,7 @@ using b3MatrixXf = b3MatrixX<float>;
 using b3Vector12d = b3Vector12<double>;
 using b3Vector12f = b3Vector12<float>;
 
+using b3Matrix12d = b3Matrix12<double>;
+using b3Matrix12f = b3Matrix12<float>;
 
 #endif //BOX3D_B3_TYPES_HPP

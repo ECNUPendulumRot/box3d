@@ -9,9 +9,36 @@
 #include "utils/b3_log.hpp"
 
 namespace box3d {
-
     class b3BodyRigid;
+    class b3BodyDefRigid;
 }
+
+
+class box3d::b3BodyDefRigid: public b3BodyDefInner {
+
+    friend class b3BodyRigid;
+
+    /**
+     * @brief The density of the rigid body.
+     * Unit: kg/m^3
+     */
+    double m_density = 1.0;
+
+public:
+
+    b3BodyDefRigid() = default;
+
+    explicit b3BodyDefRigid(double density);
+
+    ~b3BodyDefRigid() override = default;
+
+    static b3BodyDef create_definition(double density);
+
+    b3BodyDefInner* get_def() {
+        return this;
+    }
+
+};
 
 
 class box3d::b3BodyRigid: public b3Body {
@@ -21,7 +48,7 @@ class box3d::b3BodyRigid: public b3Body {
     /**
      * The density of the rigid body.
      */
-    double m_density;
+    double m_density = 1.0;
 
     /**
      * The volume of the rigid body.
@@ -100,14 +127,7 @@ public:
         return m_velocity;
     }
 
-    void set_mesh(b3Mesh* mesh) override {
-
-        b3Body::set_mesh(mesh);
-
-        compute_mass_properties();
-
-        mesh->set_relative_pose(&m_pose);
-    }
+    void set_mesh(b3Mesh* mesh) override;
 
     void apply_central_force(const b3Vector3d& force) {
         m_force += force;

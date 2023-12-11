@@ -3,10 +3,8 @@
 
 
 box3d::b3BodyRigid::b3BodyRigid():
-    b3Body(),
     m_pose(b3PoseD()),
     m_velocity(b3PoseD()),
-    m_density(1.0),
     m_CoM(b3PoseD()),
     m_Inertia(b3Inertia())
 {
@@ -26,6 +24,17 @@ box3d::b3BodyRigid::b3BodyRigid(const box3d::b3BodyDef &body_def):
 
     m_density = def->m_density;
 
+}
+
+
+void box3d::b3BodyRigid::set_mesh(box3d::b3Mesh *mesh)
+{
+
+    b3Body::set_mesh(mesh);
+
+    compute_mass_properties();
+
+    mesh->set_relative_pose(&m_pose);
 }
 
 
@@ -49,6 +58,25 @@ bool box3d::b3BodyRigid::compute_mass_properties() {
     m_Inertia.set_relative_pose(&m_pose);
 
     return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+
+box3d::b3BodyDefRigid::b3BodyDefRigid(double density)
+{
+    m_density = density;
+}
+
+
+box3d::b3BodyDef box3d::b3BodyDefRigid::create_definition(double density)
+{
+    void* memory = b3_alloc(sizeof(b3BodyDefRigid));
+
+    b3BodyDefRigid* rigid_def =  new(memory) b3BodyDefRigid(density);
+
+    return b3BodyDef(rigid_def, b3BodyType::b3_RIGID);
 }
 
 

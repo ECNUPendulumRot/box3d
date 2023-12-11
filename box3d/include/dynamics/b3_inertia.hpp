@@ -46,6 +46,10 @@ public:
         m_I = I;
     };
 
+    b3Matrix3d get_inertia_matrix() const {
+        return m_I;
+    }
+
 };
 
 

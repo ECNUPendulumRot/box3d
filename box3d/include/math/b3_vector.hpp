@@ -130,6 +130,10 @@ public:
         return dot(*this);
     }
 
+    inline T operator[](int i) const {
+        return m_ts[i];
+    }
+
     inline void set_zero() {
         m_x = m_y = m_z = T(0);
     }
