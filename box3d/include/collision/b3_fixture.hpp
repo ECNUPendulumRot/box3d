@@ -57,6 +57,12 @@ class box3d::b3FixtureProxy {
     b3Fixture* m_fixture;
     int32 m_proxy_id;
 
+public:
+
+    b3Fixture* get_fixture() const {
+        return m_fixture;
+    }
+
 };
 
 
@@ -80,6 +86,18 @@ public:
 
     void create_rigid_proxy(b3BroadPhase* broad_phase);
 
+    b3Body* get_body() const {
+        return m_body;
+    }
+
+    b3Mesh* get_mesh() const {
+        return m_body_mesh;
+    }
+
+    // Test GJK 
+    void set_mesh(b3Mesh* mesh) {
+        m_body_mesh = mesh;
+    } 
 };
 
 #endif //BOX3D_B3_FIXTURE_HPP

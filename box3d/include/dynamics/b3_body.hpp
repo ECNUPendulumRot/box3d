@@ -5,6 +5,7 @@
 
 #include "geometry/b3_mesh.hpp"
 #include "dynamics/b3_pose.hpp"
+#include "dynamics/b3_contact.hpp"
 
 #include "common/b3_allocator.hpp"
 
@@ -35,6 +36,10 @@ class box3d::b3Body {
      * @brief The world that the body belongs to
      */
     b3World* m_world;
+
+    b3ContactEdge* m_contact_list;
+
+    b3Fixture* m_fixture;
 
 public:
 
@@ -73,7 +78,19 @@ public:
         m_world = world;
     }
 
+    inline void set_contact_list(b3ContactEdge* contact_list) {
+        m_contact_list = contact_list;
+    }
+
     b3Fixture* create_fixture(const b3FixtureDef& def);
+
+    b3ContactEdge* get_contact_list() const {
+        return m_contact_list;
+    }
+
+    b3Fixture* get_fixture() const {
+        return m_fixture;
+    }
 
 };
 

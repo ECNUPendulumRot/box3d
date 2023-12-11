@@ -141,6 +141,13 @@ public:
         return m_next;
     }
 
+    /**
+     * @brief get the support vector
+     * @param wd: the vector is in the world frame
+    */
+    Eigen::Vector3d get_support(const Eigen::Vector3d& wd);
+
+
 };
 
 

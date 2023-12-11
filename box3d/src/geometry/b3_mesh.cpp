@@ -139,7 +139,6 @@ b3MatrixXd box3d::b3Mesh::transform() const
     return transform(m_rel_pose);
 }
 
-
 b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
 {
     b3_assert(pose != nullptr);
@@ -149,6 +148,34 @@ b3MatrixXd box3d::b3Mesh::transform(const b3PoseD* pose) const
     Eigen::RowVector3d p_T = pose->linear().eigen_vector3().transpose();
 
     return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
+}
+
+
+Eigen::Vector3d box3d::b3Mesh::get_support(const Eigen::Vector3d& wd)
+{
+    
+    // transform d to body coordinate, and don not care p
+    b3Matrix3d R_T = m_rel_pose->rotation_matrix().transpose();
+    Eigen::Vector3d p = m_rel_pose->linear().eigen_vector3();
+
+    Eigen::Vector3d local_d = R_T * wd;
+
+    double max_value = m_V.row(0).dot(local_d);
+    int max_index = 0;
+
+    b3_assert(m_V.rows() >= 1);
+    double value = 0;
+
+    for(int i = 1; i < m_V.rows(); ++i) {
+        value = m_V.row(i).dot(local_d);
+        if(value > max_value) {
+            max_value = value;
+            max_index = i;
+        }
+    }
+
+    // transform vertex to world coordinate
+    return m_V.row(max_index) * R_T + p.transpose();
 }
 
 
@@ -286,9 +313,6 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
 
     return true;
 }
-
-
-
 
 
 
