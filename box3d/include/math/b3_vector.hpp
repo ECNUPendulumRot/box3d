@@ -68,6 +68,7 @@ public:
     }
 
     inline b3Vector3& operator=(const Eigen::Vector3<T>& v) {
+        
         m_x = v.x();
         m_y = v.y();
         m_z = v.z();
