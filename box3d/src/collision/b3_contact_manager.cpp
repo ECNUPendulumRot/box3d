@@ -1,14 +1,17 @@
 
-#include "dynamics/b3_contact_manager.hpp"
-#include "dynamics/b3_contact.hpp"
+#include "collision/b3_contact_manager.hpp"
+#include "collision/b3_contact.hpp"
 
 #include "collision/b3_fixture.hpp"
 
-void box3d::b3ContactManager::FindNewContact() {
+void box3d::b3ContactManager::FindNewContact()
+{
     m_broadPhase.update_pairs(this);
 }
 
-void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b) {
+
+void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b)
+{
 
     b3Fixture* fixture_a = fixture_proxy_a->get_fixture();
     b3Fixture* fixture_b = fixture_proxy_b->get_fixture();
@@ -79,7 +82,9 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
     ++m_contact_count;
 }
 
-void box3d::b3ContactManager::destory(b3Contact* contact) {
+
+void box3d::b3ContactManager::destory(b3Contact* contact)
+{
     
     if(contact->get_prev()) {
         contact->get_prev()->set_next(contact->get_next());
@@ -99,7 +104,9 @@ void box3d::b3ContactManager::destory(b3Contact* contact) {
 
 }
 
-void box3d::b3ContactManager::collide() {
+
+void box3d::b3ContactManager::collide()
+{
 
     b3Contact* current_contact = m_contact_list;
 

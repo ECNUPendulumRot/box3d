@@ -1,5 +1,5 @@
 
-#include "dynamics/b3_contact.hpp"
+#include "collision/b3_contact.hpp"
 #include "collision/b3_collision.hpp"
 #include "collision/b3_fixture.hpp"
 #include "dynamics/b3_body.hpp"

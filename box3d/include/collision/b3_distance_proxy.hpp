@@ -16,19 +16,25 @@ namespace box3d {
     class b3DistanceProxy;
 }
 
-class box3d::b3DistanceProxy {
+class box3d::b3DistanceProxy
+{
+
     // const b3MatrixXd* m_vertices;
     //  TODO: convert to pointer
     // b3MatrixXd m_vertexs;
     b3Mesh* m_mesh;
     // TODO: store collision pointS
+
     b3Vector3d m_buffer[3];
+
     int32 m_count = 0;
+
 public:
-    b3DistanceProxy(const b3Body* body) : 
+
+    b3DistanceProxy(const b3Body* body): 
             m_mesh(body->mesh()) {}
 
-    b3DistanceProxy(const b3Fixture* fixture) : 
+    b3DistanceProxy(const b3Fixture* fixture): 
             m_mesh(fixture->get_mesh()) {}
 
     /**
