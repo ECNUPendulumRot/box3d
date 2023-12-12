@@ -3,12 +3,15 @@
 #define BOX3D_B3_BODY_HPP
 
 
-#include "geometry/b3_mesh.hpp"
-#include "dynamics/b3_pose.hpp"
-#include "dynamics/b3_contact.hpp"
-
 #include "common/b3_allocator.hpp"
+
+#include "geometry/b3_mesh.hpp"
+
+#include "dynamics/b3_pose.hpp"
 #include "dynamics/b3_body_def.hpp"
+
+#include "collision/b3_contact.hpp"
+
 
 namespace box3d {
 
