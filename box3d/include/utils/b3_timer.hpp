@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_TIMER_H
-#define BOX3D_B3_TIMER_H
+#ifndef BOX3D_B3_TIMER_HPP
+#define BOX3D_B3_TIMER_HPP
 
 
 #include <chrono>
@@ -56,4 +56,4 @@ public:
 std::chrono::duration<double> box3d::b3Timer::m_sleep_adjust = std::chrono::duration<double>(0);
 double box3d::b3Timer::m_filter_param = 0.1;
 
-#endif //BOX3D_B3_TIMER_H
+#endif //BOX3D_B3_TIMER_HPP

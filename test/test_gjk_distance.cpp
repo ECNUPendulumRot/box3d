@@ -19,6 +19,8 @@ int main(int argc, char* argv[]) {
     box3d::b3Mesh* sphere_mesh_a = nullptr;
     box3d::b3Mesh* sphere_mesh_b = nullptr;
 
+    box3d::b3World* world = new box3d::b3World();
+
     {
         fs::path path(cube_mesh_path);
         path = fs::path(B3D_MESH_DIR) / path;
@@ -29,9 +31,9 @@ int main(int argc, char* argv[]) {
             spdlog::warn("The path do not exist");
             return 0;
         }
-
-        cube_mesh_a = box3d::b3Mesh::create_mesh(path.string());
-        cube_mesh_b = box3d::b3Mesh::create_mesh(path.string());
+            world->create_mesh(path);
+        cube_mesh_a = world->create_mesh(path);
+        cube_mesh_b = world->create_mesh(path);
     }
 
     {
@@ -45,8 +47,8 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        sphere_mesh_a = box3d::b3Mesh::create_mesh(path.string());
-        sphere_mesh_b = box3d::b3Mesh::create_mesh(path.string());
+        sphere_mesh_a = world->create_mesh(path);
+        sphere_mesh_b = world->create_mesh(path);
     }
 
 

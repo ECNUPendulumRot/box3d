@@ -71,6 +71,10 @@ public:
 
     bool set_world(box3d::b3World* world);
 
+    inline void set_max_fps(double fps) {
+        m_viewer.core().animation_max_fps = fps;
+    }
+
 private:
 
     bool pre_draw_loop();

@@ -48,6 +48,10 @@ public:
 
     int launch(bool gui);
 
+    inline void set_gui_fps(double fps) {
+        m_viewer.set_max_fps(fps);
+    }
+
 private:
 
 };
