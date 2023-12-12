@@ -87,12 +87,19 @@ box3d::b3Body *box3d::b3World::create_affine_body(const box3d::b3BodyDef &def)
 
 box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 {
+    b3Body* body;
     switch (def.get_type()) {
         case b3BodyType::b3_RIGID:
-            return create_rigid_body(def);
+            body = create_rigid_body(def);
+            break;
         case b3BodyType::b3_AFFINE:
-            return create_affine_body(def);
+            body = create_affine_body(def);
+            break;
     }
+
+    body->set_type(def.get_type());
+
+    return body;
 }
 
 

@@ -51,6 +51,12 @@ public:
         m_x = m_y = m_z = T(0);
     }
 
+    b3Vector3(const b3Vector3& other) {
+        m_x = other.m_x;
+        m_y = other.m_y;
+        m_z = other.m_z;
+    }
+
     explicit inline b3Vector3(const Eigen::Vector3<T>& v) {
         m_x = v.x();
         m_y = v.y();

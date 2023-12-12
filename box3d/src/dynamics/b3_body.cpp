@@ -5,6 +5,7 @@
 
 #include "collision/b3_fixture.hpp"
 
+
 box3d::b3Fixture* box3d::b3Body::create_fixture(const box3d::b3FixtureDef &def) {
 
     void* memory = b3_alloc(sizeof(b3Fixture));

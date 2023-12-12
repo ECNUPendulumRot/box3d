@@ -3,9 +3,23 @@
 #include "utils/b3_log.hpp"
 
 
+b3GUIViewer::b3GUIViewer()
+{
+    m_world = nullptr;
+    m_pair_list = nullptr;
+
+    // Set up the transformation matrix
+    // 0 1 0
+    // 0 0 1
+    // 1 0 0
+    m_transform.setIdentity();
+    m_transform.col(0).swap(m_transform.col(2));
+    m_transform.col(1).swap(m_transform.col(2));
+}
 
 
 bool b3GUIViewer::set_world(box3d::b3World *world) {
+
     m_world = world;
 
     if (world->empty()){
@@ -66,7 +80,13 @@ void b3GUIViewer::add_meshes() {
         box3d::b3Mesh* mesh = m_world->get_mesh(i);
 
         m_viewer.data(viewer_id).set_mesh(mesh->vertices(), mesh->faces());
-        m_viewer_id_to_mesh_id[viewer_id] = i;
+
+        // TODO: use b3_alloc
+        b3ViewMeshPair* pair = new b3ViewMeshPair(viewer_id, i);
+
+        pair->set_next(m_pair_list);
+
+        m_pair_list = pair;
     }
 
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(1, 0, 0), Eigen::RowVector3d(1, 0, 0));
@@ -77,21 +97,23 @@ void b3GUIViewer::add_meshes() {
 
 
 void b3GUIViewer::redraw_mesh() {
-    static b3Matrix3d transform = [](){
-        b3Matrix3d m;
-        m.setIdentity();
-        m.col(0).swap(m.col(2));
-        m.col(1).swap(m.col(2));
-        return m;
-    }();
 
-    for (int viewer_id = 0; viewer_id < m_viewer.data_list.size(); ++viewer_id) {
-        box3d::b3Mesh* mesh = m_world->get_mesh(m_viewer_id_to_mesh_id[viewer_id]);
+    b3ViewMeshPair* pair = m_pair_list;
+
+    while (pair != nullptr) {
+
+        int viewer_id = pair->get_viewer_id();
+        int mesh_id = pair->get_mesh_id();
+
+        box3d::b3Mesh* mesh = m_world->get_mesh(mesh_id);
 
         auto vertices = mesh->transform();
+        m_viewer.data(viewer_id).set_mesh(vertices * m_transform.transpose(), mesh->faces());
 
-        m_viewer.data(viewer_id).set_mesh(vertices * transform.transpose(), mesh->faces());
+        pair = pair->next();
     }
+
 }
+
 
 

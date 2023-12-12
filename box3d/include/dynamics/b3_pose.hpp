@@ -24,18 +24,17 @@ class box3d::b3Pose {
      */
     b3Vector3<T> m_r;
 
-    /**
-     * The relative pose of this pose.
-     * If this is a nullptr, then just relative to world frame
-     */
-    b3Pose<T>* m_rel_p;
-
 public:
 
     /**
      * @brief Construct a new b3Pose object
      */
     b3Pose();
+
+    b3Pose(const b3Pose& other) {
+        m_p = other.m_p;
+        m_r = other.m_r;
+    }
 
     /**
      * @brief Construct a new b3Pose object
@@ -59,12 +58,6 @@ public:
            const T& r_x,
            const T& r_y,
            const T& r_z);
-
-    Eigen::Vector3<T> transform(const Eigen::Vector3<T>& v);
-
-    inline void set_relative_pose(b3Pose<T>* rel_pose){
-        m_rel_p = rel_pose;
-    };
 
     inline void set_linear(b3Vector3<T> p){
         m_p = p;

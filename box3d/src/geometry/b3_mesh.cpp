@@ -128,7 +128,11 @@ b3MatrixXd box3d::b3Mesh::transform() const
 {
     switch (m_body->get_type()) {
         case b3BodyType::b3_RIGID:
+        {
+            auto k = ((b3BodyRigid*)m_body)->get_pose();
             return transform_rigid(((b3BodyRigid*)m_body)->get_pose());
+
+        }
         case b3BodyType::b3_AFFINE:
             return transform_affine(((b3BodyAffine*)m_body)->get_q());
     }
@@ -140,8 +144,12 @@ b3MatrixXd box3d::b3Mesh::transform_rigid(const b3PoseD& pose) const
     // Because the mesh vertices are rowwise, we need to transpose the matrix
     b3Matrix3d R_T = pose.rotation_matrix().transpose();
     Eigen::RowVector3d p_T = pose.linear().eigen_vector3().transpose();
+    auto M = (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
 
-    return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
+    auto s = b3_matrix_str(M, 2);
+    spdlog::log(spdlog::level::info, "transform_rigid: {}", s);
+
+    return M;
 }
 
 

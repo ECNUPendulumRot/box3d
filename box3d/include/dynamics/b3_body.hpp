@@ -15,7 +15,7 @@ namespace box3d {
 
     class b3World;
 
-    ////////////////
+    ////////////////////
 
     class b3Fixture;
     class b3FixtureDef;
@@ -24,6 +24,9 @@ namespace box3d {
 
 class box3d::b3Body {
 
+    /**
+     * @brief Type of the body
+     */
     b3BodyType m_type;
 
     /**
@@ -47,17 +50,7 @@ public:
         ;
     };
 
-    /**
-     * @brief Construct a new b3Body object
-     * @param obj_file_name: The obj file name
-     */
-    explicit b3Body(const std::string& obj_file_name){
-        m_mesh = new b3Mesh(obj_file_name);
-    }
-
-    b3BodyType get_type() const {
-        return m_type;
-    }
+    b3Fixture* create_fixture(const b3FixtureDef& def);
 
     virtual void set_mesh(b3Mesh* mesh) {
         m_mesh = mesh;
@@ -75,11 +68,17 @@ public:
         return m_next;
     }
 
+    inline b3BodyType get_type() const {
+        return m_type;
+    }
+
+    inline void set_type(b3BodyType type) {
+        m_type = type;
+    }
+
     inline void set_world(b3World* world) {
         m_world = world;
     }
-
-    b3Fixture* create_fixture(const b3FixtureDef& def);
 
 };
 
