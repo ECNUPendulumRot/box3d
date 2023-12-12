@@ -39,6 +39,10 @@ set(B3D_HEADER_FILES
         include/math/b3_min_max.hpp
         include/math/b3_math.hpp
 
+
+        include/solver/b3_solver.hpp
+        include/solver/b3_affine_solver.hpp
+
 )
 
 set(B3D_SOURCE_FILES
@@ -66,6 +70,7 @@ set(B3D_SOURCE_FILES
 
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
+        src/solver/b3_affine_solver.cpp
 
 )
 
