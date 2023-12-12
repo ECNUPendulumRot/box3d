@@ -33,4 +33,5 @@ private:
 
 };
 
+
 #endif //BOX3D_B3_AFFINE_SOLVER_HPP
