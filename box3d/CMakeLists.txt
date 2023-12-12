@@ -33,6 +33,13 @@ set(B3D_HEADER_FILES
         include/dynamics/b3_body_affine.hpp
         #include/utils/b3_igl_viewer_ext.hpp
         #include/utils/b3_imgui_ext.hpp
+
+
+        include/collision/b3_gjk_distance.hpp
+        include/collision/b3_distance_proxy.hpp
+        include/collision/b3_contact_manager.hpp
+        include/collision/b3_contact.hpp
+        include/collision/b3_collision.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -56,6 +63,12 @@ set(B3D_SOURCE_FILES
         #src/utils/b3_igl_viewer_ext.cpp
         #src/utils/b3_ui_menu.cpp
         #src/utils/b3_imgui_ext.cpp
+
+        src/collision/b3_gjk_distance.cpp
+        src/collision/b3_distance_proxy.cpp
+        src/collision/b3_contact.cpp
+        src/collision/b3_contact_manager.cpp
+        src/collision/b3_collision.cpp
 
 )
 

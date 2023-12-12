@@ -12,5 +12,8 @@
 #include "utils/b3_json.hpp"
 
 #include "collision/b3_bvh.hpp"
+#include "collision/b3_fixture.hpp"
+#include "collision/b3_collision.hpp"
 
-#endif //BOX3D_HPP
+#endif //BOX3D_BOX3D_HPP
+

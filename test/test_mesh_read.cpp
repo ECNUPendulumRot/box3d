@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
 
     fs::path path(mesh_path);
 
-    path = fs::path(B3D_MESH_DIR) / path;
+    // path = fs::path(B3D_MESH_DIR) / path;
+    path = fs::path("/home/lxj/box3d/mesh") / path;
 
     spdlog::log(spdlog::level::info, "path: {}", path.string());
 

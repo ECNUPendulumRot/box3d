@@ -9,6 +9,8 @@
 
 #include "collision/b3_aabb.hpp"
 
+#include <stack>
+
 #define b3_NULL_NODE (-1)
 
 #define b3_NULL_HEIGHT (-1)
@@ -20,6 +22,8 @@ namespace box3d {
     class b3Node;
 
     class b3DynamicTree;
+
+    class b3FixtureProxy;
 
 }
 
@@ -33,6 +37,11 @@ class box3d::b3Node {
      */
     b3AABB m_aabb;
 
+    /**
+     * general
+     * The proxy of the fxiture
+    */
+    b3FixtureProxy* fixture_proxy;
     /**
      * Because the nodes are firstly allocated in a continuous memory,
      * we can use the index of the node to access its next node while in list
@@ -117,9 +126,10 @@ public:
     /**
      * @brief Create a proxy in the dynamic tree.
      * @param aabb: The AABB of the proxy.
+     * @param user_data: general is proxy of the fixture
      * @return The index of the proxy.
      */
-    int32 create_bvh_proxy(const b3AABB& aabb);
+    int32 create_bvh_proxy(const b3AABB& aabb, b3FixtureProxy* user_data);
 
     /**
      * @brief Destroy a proxy in the dynamic tree.
@@ -135,6 +145,14 @@ public:
 
         return m_nodes[proxy_id].m_aabb;
     }
+
+    inline b3FixtureProxy* get_fixture_proxy(int32 proxy_id) const;
+
+    /**
+     * @brief iterator the tree to find overlap AABB
+    */
+    template<typename T>
+    void query(T* callback, const b3AABB& aabb) const;
 
 private:
 

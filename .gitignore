@@ -1,6 +1,9 @@
 # IDEA configuration files
 .idea/*
 
+# vscode configuration files
+.vscode/*
+
 # build files
 build/*
 build-debug/*
