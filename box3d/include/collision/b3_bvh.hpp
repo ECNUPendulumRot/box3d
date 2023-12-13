@@ -11,11 +11,13 @@
 
 #include <stack>
 
+
 #define b3_NULL_NODE (-1)
 
 #define b3_NULL_HEIGHT (-1)
 
 #define b3_LEAF_HEIGHT (0)
+
 
 namespace box3d {
 

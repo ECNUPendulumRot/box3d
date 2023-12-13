@@ -7,6 +7,10 @@ namespace box3d {
 
     class b3Solver;
 
+    ///////////////////
+
+    class b3World;
+
 }
 
 
@@ -14,7 +18,9 @@ class box3d::b3Solver {
 
 public:
 
-    virtual int solve() = 0;
+    virtual void initialize(b3World* world) = 0;
+
+    virtual int solve(double delta_t) = 0;
     
 };
 

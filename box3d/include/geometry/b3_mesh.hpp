@@ -92,6 +92,8 @@ public:
 
     b3MatrixXd transform_affine(const b3Vector12d& affine_q) const;
 
+    Eigen::Matrix<double, 3, 12> get_affine_jacobian(int row_index) const;
+
     void set_relative_body(b3Body* body) {
         m_body = body;
     }

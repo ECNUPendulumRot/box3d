@@ -153,18 +153,25 @@ b3MatrixXd box3d::b3Mesh::transform_affine(const b3Vector12d &affine_q) const
 {
     b3MatrixXd result = m_V;
     for (int i = 0; i < m_V.rows(); ++i) {
-        Eigen::Matrix<double, 3, 12> J;
-        Eigen::Vector3d vertex = m_V.row(i);
-
-        J.setZero();
-        J.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
-        J.block(0, 3, 1, 3) = vertex;
-        J.block(1, 6, 1, 3) = vertex;
-        J.block(2, 9, 1, 3) = vertex;
+        Eigen::Matrix<double, 3, 12> J = get_affine_jacobian(i);
 
         result.row(i) = (J * affine_q).transpose();
     }
     return result;
+}
+
+
+Eigen::Matrix<double, 3, 12> box3d::b3Mesh::get_affine_jacobian(int row_index) const {
+    Eigen::Matrix<double, 3, 12> J;
+    Eigen::Vector3d vertex = m_V.row(row_index);
+
+    J.setZero();
+    J.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
+    J.block(0, 3, 1, 3) = vertex;
+    J.block(1, 6, 1, 3) = vertex;
+    J.block(2, 9, 1, 3) = vertex;
+
+    return J;
 }
 
 

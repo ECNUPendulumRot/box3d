@@ -5,12 +5,15 @@
 
 #include "common/b3_allocator.hpp"
 
+#include "solver/b3_solver_affine.hpp"
+
 box3d::b3World::b3World():
         m_rigid_body_list(nullptr), m_rigid_body_count(0),
         m_affine_body_list(nullptr), m_affine_body_count(0),
         m_mesh_list(nullptr), m_mesh_count(0)
 {
-    ;
+    m_solver_affine = new b3SolverAffine();
+    m_solver_affine->initialize(this);
 }
 
 
@@ -20,6 +23,8 @@ box3d::b3World::~b3World()
     b3_free(m_mesh_list);
     b3_free(m_rigid_body_list);
     b3_free(m_affine_body_list);
+
+    b3_free(m_solver_affine);
 }
 
 
@@ -31,6 +36,7 @@ void box3d::b3World::test_step()
 
     solve_rigid(delta_t);
 
+    m_solver_affine->solve(delta_t);
 }
 
 

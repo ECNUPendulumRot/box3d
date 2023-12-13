@@ -12,17 +12,24 @@
 
 #include "collision/b3_broad_phase.hpp"
 
+
 namespace box3d {
 
     class b3World;
 
+    ////////////////
+
     class b3Body;
 
     class b3Mesh;
+
+    class b3SolverAffine;
 }
 
 
 class box3d::b3World {
+
+    friend class b3SolverAffine;
 
     b3Body* m_rigid_body_list;
 
@@ -42,17 +49,16 @@ class box3d::b3World {
 
     b3BroadPhase m_broad_phase;
 
+    b3SolverAffine* m_solver_affine;
+
 public:
 
     b3World();
 
     ~b3World();
 
-    //b3Body* create_body(const b3BodyDef& def);
-
-    void set_gravity(const b3Vector3d& gravity) {
-        m_gravity = gravity;
-    }
+    // TODO: implement this
+    b3Body* create_body(const b3BodyDef& def);
 
     bool empty() const {
         return m_rigid_body_count == 0;
@@ -63,9 +69,6 @@ public:
     b3Body* create_rigid_body(const b3BodyDef& def);
 
     b3Body* create_affine_body(const b3BodyDef& def);
-
-    // TODO: implement this
-    b3Body* create_body(const b3BodyDef& def);
 
     b3Mesh* create_mesh(const std::filesystem::path& file_path);
 
@@ -81,11 +84,18 @@ public:
         return &m_mesh_list[id];
     }
 
+    void set_gravity(const b3Vector3d& gravity) {
+        m_gravity = gravity;
+    }
+
+    b3Vector3d gravity() {
+        return m_gravity;
+    }
+
     /**
      * @brief Clear all objects in the world.
      */
     void clear();
-
 
     b3BroadPhase* get_broad_phase() {
         return &m_broad_phase;

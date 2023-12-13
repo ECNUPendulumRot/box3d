@@ -116,6 +116,47 @@ box3d::b3BodyAffine::b3BodyAffine(const box3d::b3BodyDef &body_def)
 }
 
 
+b3Vector12d box3d::b3BodyAffine::get_potential_energy_gradient()
+{
+    return orthogonal_potential_gradient();
+}
+
+
+b3Vector12d box3d::b3BodyAffine::orthogonal_potential_gradient()
+{
+    b3Vector9d a_v = m_q.block<9, 1>(2, 0);
+
+    b3Vector12d grad = b3Vector12d::Zero();
+
+    grad.block<3, 1>(0, 0) = Eigen::Vector3d::Zero();
+
+    double l = a_v.squaredNorm() - 1;
+    for (int i = 0; i < 9; ++i) {
+        grad[3 + i] = (l + a_v[i] * a_v[i]) * a_v[i];
+    }
+
+    return 2 * m_stiffness * m_volume * grad;
+}
+
+b3Vector12d box3d::b3BodyAffine::affine_gravity(const b3Vector3d &gravity)
+{
+    b3Vector12d affine_gravity = b3Vector12d::Zero();
+
+    b3Mesh* mesh = this->mesh();
+    b3MatrixXd vertex = mesh->vertices();
+
+    Eigen::Vector3d e_g = gravity.eigen_vector3();
+
+    int vertex_count = vertex.rows();
+
+    for (int i = 0; i < vertex_count; ++i) {
+        affine_gravity += mesh->get_affine_jacobian(i).transpose() * e_g;
+    }
+
+    return affine_gravity;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

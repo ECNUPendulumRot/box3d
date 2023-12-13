@@ -43,8 +43,10 @@ public:
 };
 
 
-class box3d::b3BodyAffine: public b3Body
-{
+class box3d::b3BodyAffine: public b3Body {
+
+    friend class b3SolverAffine;
+
     /**
      * @brief The affine transform of the body.
      * q = (p^T, a1^T, a2^T, a3^T)
@@ -110,11 +112,29 @@ public:
         return m_inv_M;
     }
 
+    inline void set_q(const b3Vector12d& q) {
+        m_q = q;
+    }
+
+    inline void set_q_dot(const b3Vector12d& q_dot) {
+        m_q_dot = q_dot;
+    }
+
     inline b3Vector12d get_q() const {
         return m_q;
     }
 
+    inline b3Vector12d get_q_dot() const {
+        return m_q_dot;
+    }
+
+    b3Vector12d affine_gravity(const b3Vector3d& gravity);
+
+    b3Vector12d get_potential_energy_gradient();
+
 private:
+
+    b3Vector12d orthogonal_potential_gradient();
 
     bool compute_mass_properties();
 
