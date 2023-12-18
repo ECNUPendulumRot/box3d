@@ -129,12 +129,14 @@ b3MatrixXd box3d::b3Mesh::transform() const
     switch (m_body->get_type()) {
         case b3BodyType::b3_RIGID:
         {
-            auto k = ((b3BodyRigid*)m_body)->get_pose();
             return transform_rigid(((b3BodyRigid*)m_body)->get_pose());
 
         }
         case b3BodyType::b3_AFFINE:
+        {
+            auto q = ((b3BodyAffine*)m_body)->get_q();
             return transform_affine(((b3BodyAffine*)m_body)->get_q());
+        }
     }
 }
 
@@ -163,7 +165,7 @@ b3MatrixXd box3d::b3Mesh::transform_affine(const b3Vector12d &affine_q) const
 
 Eigen::Matrix<double, 3, 12> box3d::b3Mesh::get_affine_jacobian(int row_index) const {
     Eigen::Matrix<double, 3, 12> J;
-    Eigen::Vector3d vertex = m_V.row(row_index);
+    Eigen::RowVector3d vertex = m_V.row(row_index);
 
     J.setZero();
     J.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();

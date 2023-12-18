@@ -2,7 +2,7 @@
    "gravity": [0, 0, -9.8],
    "objects": [{
      "mesh": "sphere.obj",
-     "body def": "rigid/sphere.json",
+     "body def": "affine/sphere.json",
      "initial position":    [0, 0, 0],
      "initial orientation": [0, 0, 0],
 

@@ -85,7 +85,7 @@ box3d::b3Body *box3d::b3World::create_affine_body(const box3d::b3BodyDef &def)
     body->set_world(this);
     body->set_next(m_affine_body_list);
     m_affine_body_list = body;
-    ++m_affine_body_list;
+    ++m_affine_body_count;
 
     return body;
 }

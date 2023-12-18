@@ -60,8 +60,11 @@ public:
     // TODO: implement this
     b3Body* create_body(const b3BodyDef& def);
 
-    bool empty() const {
-        return m_rigid_body_count == 0;
+    inline bool empty() const {
+        bool e = (m_rigid_body_count  == 0);
+        e = e && (m_affine_body_count == 0);
+
+        return e;
     }
 
     void test_step();

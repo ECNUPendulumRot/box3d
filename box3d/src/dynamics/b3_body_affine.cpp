@@ -18,6 +18,7 @@ box3d::b3BodyAffine::b3BodyAffine()
     m_q_dot.setZero();
 
     m_M.setZero();
+    m_inv_M.setZero();
 }
 
 
@@ -99,11 +100,14 @@ void box3d::b3BodyAffine::compute_jacobian_integral(double volume, const b3Inert
     bool invertible = false;
 
     // TODO: inverse check
+    // TODO: do inverse in other ways
+    // We may think 1e-5 is a threshould
+    // Add a threshould here may help for computing the inverse
     m_inv_M = m_M.inverse();
 }
 
 
-box3d::b3BodyAffine::b3BodyAffine(const box3d::b3BodyDef &body_def)
+box3d::b3BodyAffine::b3BodyAffine(const box3d::b3BodyDef &body_def):b3BodyAffine()
 {
     auto def = (b3BodyDefAffine*) body_def.get_inner_def();
 
@@ -138,20 +142,11 @@ b3Vector12d box3d::b3BodyAffine::orthogonal_potential_gradient()
     return 2 * m_stiffness * m_volume * grad;
 }
 
-b3Vector12d box3d::b3BodyAffine::affine_gravity(const b3Vector3d &gravity)
+
+b3Vector12d box3d::b3BodyAffine::affine_gravity_acc(const b3Vector3d &gravity)
 {
     b3Vector12d affine_gravity = b3Vector12d::Zero();
-
-    b3Mesh* mesh = this->mesh();
-    b3MatrixXd vertex = mesh->vertices();
-
-    Eigen::Vector3d e_g = gravity.eigen_vector3();
-
-    int vertex_count = vertex.rows();
-
-    for (int i = 0; i < vertex_count; ++i) {
-        affine_gravity += mesh->get_affine_jacobian(i).transpose() * e_g;
-    }
+    affine_gravity[2] = -9.8;
 
     return affine_gravity;
 }

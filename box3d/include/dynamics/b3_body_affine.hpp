@@ -128,7 +128,7 @@ public:
         return m_q_dot;
     }
 
-    b3Vector12d affine_gravity(const b3Vector3d& gravity);
+    b3Vector12d affine_gravity_acc(const b3Vector3d& gravity);
 
     b3Vector12d get_potential_energy_gradient();
 

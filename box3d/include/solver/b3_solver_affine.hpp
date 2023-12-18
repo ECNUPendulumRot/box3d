@@ -7,8 +7,6 @@
 
 #include "dynamics/b3_body_affine.hpp"
 
-#include "common/b3_types.hpp"
-
 
 namespace box3d {
 
