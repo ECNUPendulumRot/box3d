@@ -143,6 +143,7 @@ private:
     /**
      * @brief This method is used after M has been integrated
      * Not sure whether this will lead to new numerical problems
+     * Currently using SVD and solve by Identity to calculate the inverse
      */
     void calculate_M_inverse();
 

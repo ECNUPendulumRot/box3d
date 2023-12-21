@@ -11,4 +11,6 @@
 #define b3_double_epsilon DBL_EPSILON
 #define b3_float_epsilon FLT_EPSILON
 
+#define b3_close_to_zero 1e-5
+
 #endif //BOX3D_B3_COMMON_HPP

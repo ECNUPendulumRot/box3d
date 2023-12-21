@@ -3,8 +3,7 @@
 
 // TODO: check this include
 // Must included because of the inverse method
-#include <Eigen/LU>
-
+#include <Eigen/Dense>
 
 box3d::b3BodyAffine::b3BodyAffine()
 {
@@ -100,9 +99,6 @@ void box3d::b3BodyAffine::compute_jacobian_integral(double volume, const b3Inert
     bool invertible = false;
 
     // TODO: inverse check
-    // TODO: do inverse in other ways
-    // We may think 1e-5 is a threshould
-    // Add a threshould here may help for computing the inverse
     calculate_M_inverse();
 }
 
@@ -154,7 +150,27 @@ b3Vector12d box3d::b3BodyAffine::affine_gravity_acc(const b3Vector3d &gravity)
 
 void box3d::b3BodyAffine::calculate_M_inverse()
 {
+    // Calculate the pseudo inverse of the affine mass matrix;
+    b3Matrix12d I = b3Matrix12d::Identity(m_M.rows(), m_M.cols());
+    b3MatrixXd M = m_M;
 
+    for(int i = 0; i < M.rows(); ++i) {
+        for(int j = 0; j < M.cols(); ++j) {
+            if (fabs(M(i, j)) < b3_close_to_zero)
+                M(i, j) = 0;
+        }
+    }
+
+    // Compute the pseudo inverse of the
+    m_inv_M = M.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(I);
+
+    // Set all close-to-zero values to zero
+    for(int i = 0; i < m_inv_M.rows(); ++i) {
+        for(int j = 0; j < m_inv_M.cols(); ++j) {
+            if (fabs(m_inv_M(i, j)) < b3_close_to_zero)
+                m_inv_M(i, j) = 0;
+        }
+    }
 }
 
 
