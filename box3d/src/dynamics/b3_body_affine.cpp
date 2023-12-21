@@ -103,7 +103,7 @@ void box3d::b3BodyAffine::compute_jacobian_integral(double volume, const b3Inert
     // TODO: do inverse in other ways
     // We may think 1e-5 is a threshould
     // Add a threshould here may help for computing the inverse
-    m_inv_M = m_M.inverse();
+    calculate_M_inverse();
 }
 
 
@@ -149,6 +149,12 @@ b3Vector12d box3d::b3BodyAffine::affine_gravity_acc(const b3Vector3d &gravity)
     affine_gravity[2] = -9.8;
 
     return affine_gravity;
+}
+
+
+void box3d::b3BodyAffine::calculate_M_inverse()
+{
+
 }
 
 

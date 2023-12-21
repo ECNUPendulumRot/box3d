@@ -140,6 +140,12 @@ private:
 
     void compute_jacobian_integral(double volume, const b3Inertia& Inertia, const b3PoseD& CoM);
 
+    /**
+     * @brief This method is used after M has been integrated
+     * Not sure whether this will lead to new numerical problems
+     */
+    void calculate_M_inverse();
+
 };
 
 
