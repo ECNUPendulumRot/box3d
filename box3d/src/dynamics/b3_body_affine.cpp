@@ -124,18 +124,24 @@ b3Vector12d box3d::b3BodyAffine::get_potential_energy_gradient()
 
 b3Vector12d box3d::b3BodyAffine::orthogonal_potential_gradient()
 {
-    b3Vector9d a_v = m_q.block<9, 1>(2, 0);
-
     b3Vector12d grad = b3Vector12d::Zero();
-
     grad.block<3, 1>(0, 0) = Eigen::Vector3d::Zero();
 
-    double l = a_v.squaredNorm() - 1;
-    for (int i = 0; i < 9; ++i) {
-        grad[3 + i] = (l + a_v[i] * a_v[i]) * a_v[i];
+    Eigen::Vector3d a_v[3];
+    a_v[0] = m_q.block<3, 1>(3, 0);
+    a_v[1] = m_q.block<3, 1>(6, 0);
+    a_v[2] = m_q.block<3, 1>(9, 0);
+
+    for (int i = 0; i < 3; ++i) {
+        Eigen::Vector3d s = Eigen::Vector3d::Zero();
+        for (int j = 0;j != i && j < 3 ; ++j) {
+            s += (a_v[j] * a_v[j].transpose()) * a_v[i];
+        }
+        s += (a_v[i].dot(a_v[i]) - 1) * a_v[i];
+        grad.block<3, 1>(3 * i, 0) = s;
     }
 
-    return 2 * m_stiffness * m_volume * grad;
+    return 4 * m_stiffness * m_volume * grad;
 }
 
 

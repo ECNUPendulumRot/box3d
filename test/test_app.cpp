@@ -4,7 +4,7 @@ int main(int argc, char* argv[]) {
 
     b3SimApp app;
 
-    app.load_scene("sphere.json");
+    app.load_scene("gear.json");
 
     app.launch(true);
 
