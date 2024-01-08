@@ -61,25 +61,6 @@ bool box3d::b3BodyRigid::compute_mass_properties() {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////
-
-
-box3d::b3BodyDefRigid::b3BodyDefRigid(double density)
-{
-    m_density = density;
-}
-
-
-box3d::b3BodyDef box3d::b3BodyDefRigid::create_definition(double density)
-{
-    void* memory = b3_alloc(sizeof(b3BodyDefRigid));
-
-    b3BodyDefRigid* rigid_def =  new(memory) b3BodyDefRigid(density);
-
-    return b3BodyDef(rigid_def, b3BodyType::b3_RIGID);
-}
-
-
 
 
 

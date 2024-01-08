@@ -9,7 +9,7 @@
 
 #include "dynamics/b3_pose.hpp"
 #include "dynamics/b3_body_def.hpp"
-
+#include "geometry/b3_shape.hpp"
 #include "collision/b3_contact.hpp"
 
 
@@ -22,6 +22,7 @@ namespace box3d {
     ////////////////////
 
     class b3Fixture;
+
     class b3FixtureDef;
 }
 
@@ -33,11 +34,6 @@ class box3d::b3Body {
      */
     b3BodyType m_type;
 
-    /**
-     * @brief Mesh of the body
-     */
-    b3Mesh* m_mesh;
-
     b3Body* m_next;
 
     /**
@@ -47,26 +43,19 @@ class box3d::b3Body {
 
     b3ContactEdge* m_contact_list;
 
-    b3Fixture* m_fixture;
+    b3Fixture* m_fixture_list;
+
+    b3PoseD m_xf;
 
 public:
 
     /**
      * @brief Construct a new b3Body object
      */
-    b3Body():m_mesh(nullptr){
-        ;
-    };
+    b3Body() = default;
 
     b3Fixture* create_fixture(const b3FixtureDef& def);
 
-    virtual void set_mesh(b3Mesh* mesh) {
-        m_mesh = mesh;
-    };
-
-    inline b3Mesh* mesh() const {
-        return m_mesh;
-    }
 
     inline void set_next(b3Body* next) {
         m_next = next;
@@ -96,7 +85,7 @@ public:
     }
 
     b3Fixture* get_fixture() const {
-        return m_fixture;
+        return m_fixture_list;
     }
 
 };

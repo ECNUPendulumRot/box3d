@@ -9,7 +9,7 @@
 namespace box3d {
 
     class b3Inertia;
-
+    struct b3MassProperty;
 }
 
 
@@ -52,6 +52,16 @@ public:
 
 };
 
+
+struct box3d::b3MassProperty {
+
+    double m_volume;
+
+    b3PoseD m_CoG;
+
+    b3Inertia m_Inertia;
+
+};
 
 
 #endif //BOX3D_B3_INERTIA_HPP

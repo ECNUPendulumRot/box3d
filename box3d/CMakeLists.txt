@@ -41,7 +41,7 @@ set(B3D_HEADER_FILES
 
 
         include/solver/b3_solver.hpp
-        include/solver/b3_solver_affine.hpp
+        include/geometry/b3_shape.hpp
 
 )
 
@@ -62,7 +62,6 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_pose.cpp
         src/dynamics/b3_inertia.cpp
         src/dynamics/b3_world.cpp
-        src/dynamics/b3_body_def.cpp
         src/dynamics/b3_body.cpp
         src/dynamics/b3_body_affine.cpp
 
@@ -70,7 +69,7 @@ set(B3D_SOURCE_FILES
 
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
-        src/solver/b3_solver_affine.cpp
+        src/geometry/b3_shape.cpp
 
 )
 

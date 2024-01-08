@@ -5,58 +5,47 @@
 
 #include "common/b3_allocator.hpp"
 
-#include "solver/b3_solver_affine.hpp"
-
 box3d::b3World::b3World():
-        m_rigid_body_list(nullptr), m_rigid_body_count(0),
-        m_affine_body_list(nullptr), m_affine_body_count(0),
-        m_mesh_list(nullptr), m_mesh_count(0)
+    m_body_list(nullptr), m_body_count(0),
+    m_shape_list(nullptr), m_shape_count(0)
 {
-    m_solver_affine = new b3SolverAffine();
-    m_solver_affine->initialize(this);
 }
 
 
 box3d::b3World::~b3World()
 {
     // TODO: think about how to destruct
-    b3_free(m_mesh_list);
-    b3_free(m_rigid_body_list);
-    b3_free(m_affine_body_list);
-
-    b3_free(m_solver_affine);
+    b3_free(m_shape_list);
+    b3_free(m_body_list);
 }
 
 
 void box3d::b3World::test_step()
 {
-    b3Body* body = m_rigid_body_list;
+    b3Body* body = m_body_list;
 
     double delta_t  = 1.0 / m_hz;
 
-    solve_rigid(delta_t);
-
-    m_solver_affine->solve(delta_t);
+    solve(delta_t);
 }
 
 
-void box3d::b3World::solve_rigid(double delta_t)
+void box3d::b3World::solve(double delta_t)
 {
-    b3Body* body = m_rigid_body_list;
+    b3Body* body = m_body_list;
 
+    // TODO: remove rigid body for simplicity
     while (body != nullptr) {
 
-        auto* rigid_body = (b3BodyRigid*) body;
+        auto rigid_pose = body->get_pose();
+        auto rigid_velocity = body->get_velocity();
 
-        auto rigid_pose = rigid_body->get_pose();
-        auto rigid_velocity = rigid_body->get_velocity();
-
-        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * rigid_body->m_inv_mass * delta_t);
+        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * body->m_inv_mass * delta_t);
 
         rigid_pose.set_linear(rigid_pose.linear() + rigid_velocity.linear() * delta_t);
 
-        rigid_body->set_pose(rigid_pose);
-        rigid_body->set_velocity(rigid_velocity);
+        body->set_pose(rigid_pose);
+        body->set_velocity(rigid_velocity);
 
         body = body->next();
     }
@@ -69,23 +58,9 @@ box3d::b3Body* box3d::b3World::create_rigid_body(const box3d::b3BodyDef& def)
     auto* body = new(memory) b3BodyRigid(def);
 
     body->set_world(this);
-    body->set_next(m_rigid_body_list);
-    m_rigid_body_list = body;
-    ++m_rigid_body_count;
-
-    return body;
-}
-
-
-box3d::b3Body *box3d::b3World::create_affine_body(const box3d::b3BodyDef &def)
-{
-    void* memory = b3_alloc(sizeof (b3BodyAffine));
-    auto* body = new(memory) b3BodyAffine(def);
-
-    body->set_world(this);
-    body->set_next(m_affine_body_list);
-    m_affine_body_list = body;
-    ++m_affine_body_count;
+    body->set_next(m_body_list);
+    m_body_list = body;
+    ++m_body_count;
 
     return body;
 }
@@ -94,14 +69,9 @@ box3d::b3Body *box3d::b3World::create_affine_body(const box3d::b3BodyDef &def)
 box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 {
     b3Body* body;
-    switch (def.get_type()) {
-        case b3BodyType::b3_RIGID:
-            body = create_rigid_body(def);
-            break;
-        case b3BodyType::b3_AFFINE:
-            body = create_affine_body(def);
-            break;
-    }
+
+    body = create_rigid_body(def);
+
 
     body->set_type(def.get_type());
 
@@ -109,35 +79,36 @@ box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 }
 
 
-box3d::b3Mesh *box3d::b3World::create_mesh(const std::filesystem::path &file_path)
+box3d::b3Shape *box3d::b3World::create_shape(const std::filesystem::path &file_path)
 {
     std::string fs_string = file_path.string();
 
-    void* memory = b3_alloc(sizeof(b3Mesh));
+    void* memory = b3_alloc(sizeof(b3Shape));
 
-    auto* mesh = new(memory) b3Mesh(fs_string);
+    // TODO: implement creation of shape from world
+    auto* shape = new(memory) b3Shape;
 
-    mesh->set_next(mesh);
-    m_mesh_list = mesh;
-    m_mesh_count++;
+    shape->set_next(m_shape_list);
+    m_shape_list = shape;
+    m_shape_count++;
 
-    return mesh;
+    return shape;
 }
 
 
 void box3d::b3World::clear()
 {
-    b3Mesh* mesh = m_mesh_list;
+    b3Shape* shape = m_shape_list;
 
     // Free all meshes
-    while (mesh != nullptr) {
-        auto* next = mesh->next();
-        b3_free(mesh);
-        mesh = next;
+    while (shape != nullptr) {
+        auto* next = shape->next();
+        b3_free(shape);
+        shape = next;
     }
 
     // Free all bodies
-    b3Body* body = m_rigid_body_list;
+    b3Body* body = m_body_list;
     while (body != nullptr) {
         auto* next = body->next();
         b3_free(body);

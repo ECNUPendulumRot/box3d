@@ -18,6 +18,7 @@
 #include "dynamics/b3_body_rigid.hpp"
 #include "dynamics/b3_body_affine.hpp"
 
+
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
                                 double& mass,
@@ -36,6 +37,44 @@ box3d::b3Mesh::b3Mesh():
 box3d::b3Mesh::b3Mesh(const std::string &obj_file_name)
 {
     read_obj(obj_file_name);
+}
+
+
+void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3PoseD &xf, int32 childIndex) const
+{
+    b3_NOT_USED(childIndex);
+
+    b3Matrix3d R_T = xf.rotation_matrix().transpose();
+    Eigen::RowVector3d p_T = xf.linear().eigen_vector3().transpose();
+
+    b3MatrixXd trans =  m_V * R_T + p_T.replicate(m_V.rows(), 1);
+    Eigen::Vector3d aabb_min = trans.colwise().minCoeff();
+    Eigen::Vector3d aabb_max = trans.colwise().maxCoeff();
+
+    aabb->m_min = aabb_min;
+    aabb->m_max = aabb_max;
+}
+
+
+box3d::b3Shape *box3d::b3Mesh::clone() const
+{
+    void* mem = b3_alloc(sizeof(b3Mesh));
+    b3Mesh* clone = new (mem) b3Mesh;
+    *clone = *this;
+    return clone;
+}
+
+
+void box3d::b3Mesh::compute_mass_properties(box3d::b3MassProperty &massData, float density) const
+{
+    mesh_properties(massData.m_volume, massData.m_CoG, massData.m_Inertia);
+}
+
+
+void box3d::b3Mesh::get_view_data(box3d::b3ViewData *view_data) const
+{
+    view_data->m_V = transform();
+    view_data->m_F = m_F;
 }
 
 
@@ -175,45 +214,6 @@ Eigen::Matrix<double, 3, 12> box3d::b3Mesh::get_affine_jacobian(int row_index) c
 
     return J;
 }
-
-
-//Eigen::Vector3d box3d::b3Mesh::get_support(const Eigen::Vector3d& wd)
-//{
-//
-//    // transform d to body coordinate, and don not care p
-//    b3Matrix3d R_T = m_rel_pose->rotation_matrix().transpose();
-//    Eigen::Vector3d p = m_rel_pose->linear().eigen_vector3();
-//
-//    Eigen::Vector3d local_d = R_T * wd;
-//
-//    double max_value = m_V.row(0).dot(local_d);
-//    int max_index = 0;
-//
-//    b3_assert(m_V.rows() >= 1);
-//    double value = 0;
-//
-//    for(int i = 1; i < m_V.rows(); ++i) {
-//        value = m_V.row(i).dot(local_d);
-//        if(value > max_value) {
-//            max_value = value;
-//            max_index = i;
-//        }
-//    }
-//
-//    // transform vertex to world coordinate
-//    return m_V.row(max_index) * R_T + p.transpose();
-//}
-
-
-box3d::b3AABB box3d::b3Mesh::get_bounding_aabb() const
-{
-    auto v_trans = transform();
-    Eigen::Vector3d aabb_min = v_trans.colwise().minCoeff();
-    Eigen::Vector3d aabb_max = v_trans.colwise().maxCoeff();
-
-    return b3AABB{aabb_min, aabb_max};
-}
-
 
 // The method is introduced by Mirtich and utilized by Geometric Tools Engine
 // For more details please access:

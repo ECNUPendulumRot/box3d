@@ -8,10 +8,8 @@
 #include <filesystem>
 
 #include "common/b3_types.hpp"
-#include "dynamics/b3_inertia.hpp"
-#include "dynamics/b3_pose.hpp"
 
-#include "collision/b3_aabb.hpp"
+#include "geometry/b3_shape.hpp"
 
 namespace box3d {
 
@@ -24,7 +22,8 @@ namespace box3d {
     class b3Body;
 }
 
-class box3d::b3Mesh {
+
+class box3d::b3Mesh: public b3Shape {
 
     friend class b3World;
 
@@ -46,17 +45,6 @@ class box3d::b3Mesh {
      */
     b3MatrixXi m_F;
 
-    /**
-     * @brief Next mesh in the list
-     * This is used for managing memory of meshes.
-     */
-    b3Mesh* m_next = nullptr;
-
-    /**
-     * @brief The body that the mesh belongs to.
-     */
-    b3Body* m_body = nullptr;
-
 public:
 
     /**
@@ -69,6 +57,19 @@ public:
      * @param obj_file_name: path to .obj file
      */
     explicit b3Mesh(const std::string& obj_file_name);
+
+
+    void get_bound_aabb(b3AABB* aabb, const b3PoseD& xf, int32 childIndex) const override;
+
+    int32 get_child_count() const override {
+        return 1;
+    }
+
+    void compute_mass_properties(b3MassProperty& massData, float density) const override;
+
+    b3Shape* clone() const override;
+
+    void get_view_data(b3ViewData* view_data) const override;
 
     /**
      * @brief Read a mesh from an ascii obj file
@@ -94,10 +95,6 @@ public:
 
     Eigen::Matrix<double, 3, 12> get_affine_jacobian(int row_index) const;
 
-    void set_relative_body(b3Body* body) {
-        m_body = body;
-    }
-
     /**
      * @brief Get volume, center of geometry and inertia from the mesh
      * @param volume: volume of the mesh
@@ -106,8 +103,6 @@ public:
      * @return true on success, false on errors
      */
     bool mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Inertia) const;
-
-    b3AABB get_bounding_aabb() const;
 
     /**
      * @brief Get the vertices of the mesh
@@ -137,10 +132,6 @@ public:
 
     inline void set_next(b3Mesh* next) {
         m_next = next;
-    }
-
-    inline b3Mesh* next() const {
-        return m_next;
     }
 
     /**

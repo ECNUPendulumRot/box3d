@@ -14,33 +14,6 @@ namespace box3d {
 }
 
 
-class box3d::b3BodyDefRigid: public b3BodyDefInner {
-
-    friend class b3BodyRigid;
-
-    /**
-     * @brief The density of the rigid body.
-     * Unit: kg/m^3
-     */
-    double m_density = 1.0;
-
-public:
-
-    b3BodyDefRigid() = default;
-
-    explicit b3BodyDefRigid(double density);
-
-    ~b3BodyDefRigid() override = default;
-
-    static b3BodyDef create_definition(double density);
-
-    b3BodyDefInner* get_def() {
-        return this;
-    }
-
-};
-
-
 class box3d::b3BodyRigid: public b3Body {
 
     friend class b3World;
@@ -126,8 +99,6 @@ public:
     b3PoseD get_velocity() const {
         return m_velocity;
     }
-
-    void set_mesh(b3Mesh* mesh) override;
 
     void apply_central_force(const b3Vector3d& force) {
         m_force += force;

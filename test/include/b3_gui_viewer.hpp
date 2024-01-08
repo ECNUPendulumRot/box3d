@@ -12,24 +12,24 @@
 #include "b3_test.hpp"
 
 
-class b3ViewMeshPair {
+class b3ViewShapePair {
 
     int m_viewer_id;
 
-    int m_mesh_id;
+    int m_shape_id;
 
-    b3ViewMeshPair* m_next;
+    b3ViewShapePair* m_next;
 
 public:
 
-    b3ViewMeshPair(int viewer_id, int mesh_id):
-        m_viewer_id(viewer_id),
-        m_mesh_id(mesh_id),
-        m_next(nullptr) {
+    b3ViewShapePair(int viewer_id, int mesh_id):
+            m_viewer_id(viewer_id),
+            m_shape_id(mesh_id),
+            m_next(nullptr) {
         ;
     }
 
-    ~b3ViewMeshPair() {
+    ~b3ViewShapePair() {
         free(m_next);
     }
 
@@ -38,14 +38,14 @@ public:
     }
 
     inline int get_mesh_id() const {
-        return m_mesh_id;
+        return m_shape_id;
     }
 
-    inline b3ViewMeshPair* next() const {
+    inline b3ViewShapePair* next() const {
         return m_next;
     }
 
-    void set_next(b3ViewMeshPair* next) {
+    void set_next(b3ViewShapePair* next) {
         m_next = next;
     }
 };
@@ -59,7 +59,7 @@ class b3GUIViewer {
 
     box3d::b3World* m_world;
 
-    b3ViewMeshPair* m_pair_list;
+    b3ViewShapePair* m_pair_list;
 
     b3Matrix3d m_transform;
 

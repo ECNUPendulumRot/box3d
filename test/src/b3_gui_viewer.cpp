@@ -72,17 +72,18 @@ void b3GUIViewer::simulation_step()
 
 void b3GUIViewer::add_meshes() {
 
-    int mesh_count = m_world->get_mesh_count();
+    int mesh_count = m_world->get_shape_count();
 
     for (int i = 0; i < mesh_count; ++i) {
         int viewer_id = m_viewer.append_mesh(true);
 
-        box3d::b3Mesh* mesh = m_world->get_mesh(i);
-
-        m_viewer.data(viewer_id).set_mesh(mesh->vertices(), mesh->faces());
+        box3d::b3Shape* shape = m_world->get_shape(i);
+        box3d::b3ViewData view_data;
+        shape->get_view_data(&view_data);
+        m_viewer.data(viewer_id).set_mesh(view_data.vertexes(), view_data.faces());
 
         // TODO: use b3_alloc
-        b3ViewMeshPair* pair = new b3ViewMeshPair(viewer_id, i);
+        auto* pair = new b3ViewShapePair(viewer_id, i);
 
         pair->set_next(m_pair_list);
 
@@ -98,17 +99,18 @@ void b3GUIViewer::add_meshes() {
 
 void b3GUIViewer::redraw_mesh() {
 
-    b3ViewMeshPair* pair = m_pair_list;
+    b3ViewShapePair* pair = m_pair_list;
 
     while (pair != nullptr) {
 
         int viewer_id = pair->get_viewer_id();
         int mesh_id = pair->get_mesh_id();
 
-        box3d::b3Mesh* mesh = m_world->get_mesh(mesh_id);
+        box3d::b3Shape* shape = m_world->get_shape(mesh_id);
 
-        auto vertices = mesh->transform();
-        m_viewer.data(viewer_id).set_mesh(vertices * m_transform.transpose(), mesh->faces());
+        box3d::b3ViewData view_data;
+        shape->get_view_data(&view_data);
+        m_viewer.data(viewer_id).set_mesh(view_data.vertexes() * m_transform.transpose(), view_data.faces());
 
         pair = pair->next();
     }

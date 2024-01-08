@@ -13,4 +13,6 @@
 
 #define b3_close_to_zero 1e-5
 
+#define b3_NOT_USED(x) ((void)(x))
+
 #endif //BOX3D_B3_COMMON_HPP
