@@ -9,7 +9,9 @@
 namespace box3d {
 
     class b3Inertia;
+
     struct b3MassProperty;
+
 }
 
 
@@ -17,7 +19,7 @@ class box3d::b3Inertia {
 
     b3Matrix3d m_I;
 
-    b3PoseD* m_rel_p;
+    b3TransformD* m_rel_p;
 
 public:
 
@@ -26,7 +28,7 @@ public:
      */
     b3Inertia();
 
-    inline void set_relative_pose(b3PoseD* rel_pose){
+    inline void set_relative_pose(b3TransformD* rel_pose){
         m_rel_p = rel_pose;
     };
 
@@ -57,9 +59,15 @@ struct box3d::b3MassProperty {
 
     double m_volume;
 
-    b3PoseD m_CoG;
+    double m_mass;
 
-    b3Inertia m_Inertia;
+    /**
+     * @brief The center of mass of the rigid body.
+     * @note The m_center is just the integral part divide the volume
+     */
+    b3Vector3d m_center;
+
+    b3Matrix3d m_Inertia;
 
 };
 

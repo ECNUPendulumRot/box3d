@@ -9,10 +9,14 @@ class TestBase;
 
 using TestCreateFcn = TestBase*();
 
+
 struct TestEntry
 {
+    const char* category;
+
     const char* name;
-    TestCreateFcn* creatFcn;
+
+    TestCreateFcn* create_fcn;
 };
 
 
@@ -20,11 +24,7 @@ int register_test(const char* category, const char* name, TestCreateFcn* fcn);
 
 class TestBase {
 
-    static std::filesystem::path s_body_def_dir;
-
-    static std::filesystem::path s_mesh_dir;
-
-    static std::filesystem::path s_scene_dir;
+protected:
 
     box3d::b3World* m_world;
 
@@ -41,10 +41,11 @@ public:
         return m_world;
     }
 
-    static void parse_scene(TestBase* test, const std::string &scene_str);
-
-    void create_object(const nlohmann::json &object);
-
 };
+
+#define MAX_TEST 256
+
+extern TestEntry g_test_entries[MAX_TEST];
+extern int g_test_count;
 
 #endif //BOX3D_B3_TEST_HPP

@@ -69,6 +69,12 @@ public:
         m_z = z;
     }
 
+    inline void set(T x, T y, T z) {
+        m_x = x;
+        m_y = y;
+        m_z = z;
+    }
+
     inline Eigen::Vector3<T> eigen_vector3() const {
         return Eigen::Vector3<T>(m_x, m_y, m_z);
     }

@@ -6,11 +6,11 @@
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
-#include "dynamics/b3_body_rigid.hpp"
 
 #include "geometry/b3_shape.hpp"
-#include "collision/b3_broad_phase.hpp"
 
+#include "collision/b3_broad_phase.hpp"
+#include "collision/b3_contact_manager.hpp"
 
 namespace box3d {
 
@@ -25,8 +25,6 @@ namespace box3d {
 
 class box3d::b3World {
 
-    friend class b3SolverAffine;
-
     b3Body* m_body_list;
 
     b3Shape* m_shape_list;
@@ -39,7 +37,9 @@ class box3d::b3World {
 
     double m_hz = 60;
 
-    b3BroadPhase m_broad_phase;
+    b3ContactManager m_contact_manager;
+
+    bool m_new_contacts = false;
 
 public:
 
@@ -56,7 +56,7 @@ public:
 
     void test_step();
 
-    b3Body* create_rigid_body(const b3BodyDef& def);
+    void step(double dt, int32 velocity_iterations, int32 position_iterations);
 
     b3Shape* create_shape(const std::filesystem::path& file_path);
 
@@ -80,13 +80,17 @@ public:
         return m_gravity;
     }
 
+    b3BroadPhase* get_broad_phase() {
+        return m_contact_manager.get_broad_phase();
+    }
+
     /**
      * @brief Clear all objects in the world.
      */
     void clear();
 
-    b3BroadPhase* get_broad_phase() {
-        return &m_broad_phase;
+    inline void awake_contact_check() {
+        m_new_contacts = true;
     }
 
 protected:

@@ -1,6 +1,7 @@
 
-#ifndef BOX3D_B3_SHAPE_CPP
+#ifndef BOX3D_B3_SHAPE_HPP
 #define BOX3D_B3_SHAPE_HPP
+
 
 #include "common/b3_types.hpp"
 
@@ -59,11 +60,13 @@ struct box3d::b3ViewData {
 
 class box3d::b3Shape {
 
+protected:
+
     b3ShapeType m_type = e_type_not_defined;
 
     /**
      * The radius of the shape.
-     * This is used for extending the shape for collision test
+     * This is used for extending the AABB of the shape for collision test
      */
     double m_radius = 0;
 
@@ -88,14 +91,13 @@ public:
         return 0;
     };
 
-    virtual void get_bound_aabb(b3AABB* aabb, const b3PoseD& xf, int32 childIndex) const {
+    virtual void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 childIndex) const {
         b3_NOT_USED(aabb);
         b3_NOT_USED(xf);
         b3_NOT_USED(childIndex);
     };
 
-
-    virtual void compute_mass_properties(b3MassProperty& mass_data, float density) const {
+    virtual void compute_mass_properties(b3MassProperty& mass_data, double density) const {
         b3_NOT_USED(mass_data);
         b3_NOT_USED(density);
     };

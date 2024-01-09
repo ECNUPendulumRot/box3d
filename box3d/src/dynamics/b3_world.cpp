@@ -1,14 +1,14 @@
 
 #include "dynamics/b3_world.hpp"
-#include "dynamics/b3_body_rigid.hpp"
-#include "dynamics/b3_body_affine.hpp"
 
 #include "common/b3_allocator.hpp"
+#include "common/b3_time_step.hpp"
 
 box3d::b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
 {
+    ;
 }
 
 
@@ -34,46 +34,42 @@ void box3d::b3World::solve(double delta_t)
 {
     b3Body* body = m_body_list;
 
-    // TODO: remove rigid body for simplicity
     while (body != nullptr) {
 
-        auto rigid_pose = body->get_pose();
-        auto rigid_velocity = body->get_velocity();
+        auto rigid_pose = body->m_xf;
+        auto rigid_velocity = body->m_velocity;
 
         rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * body->m_inv_mass * delta_t);
 
         rigid_pose.set_linear(rigid_pose.linear() + rigid_velocity.linear() * delta_t);
 
-        body->set_pose(rigid_pose);
-        body->set_velocity(rigid_velocity);
+        body->m_xf = rigid_pose;
+        body->m_velocity = rigid_velocity;
 
         body = body->next();
     }
 }
 
 
-box3d::b3Body* box3d::b3World::create_rigid_body(const box3d::b3BodyDef& def)
-{
-    void* memory = b3_alloc(sizeof (b3BodyRigid));
-    auto* body = new(memory) b3BodyRigid(def);
-
-    body->set_world(this);
-    body->set_next(m_body_list);
-    m_body_list = body;
-    ++m_body_count;
-
-    return body;
-}
-
-
 box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 {
-    b3Body* body;
+    b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
 
-    body = create_rigid_body(def);
+    // allocate memory for the body
+    void* memory = b3_alloc(sizeof (b3Body));
+    auto* body = new(memory) b3Body(def);
 
+    body->set_world(this);
 
-    body->set_type(def.get_type());
+    // add to the double linked list
+    body->m_prev = nullptr;
+    body->m_next = this->m_body_list;
+
+    if (m_body_list) {
+        m_body_list->m_prev = body;
+    }
+    m_body_list = body;
+    ++m_body_count;
 
     return body;
 }
@@ -114,6 +110,23 @@ void box3d::b3World::clear()
         b3_free(body);
         body = next;
     }
+}
+
+void box3d::b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
+{
+    // ff new fixtures were added, we need to find the new contacts.
+    if (m_new_contacts) {
+        m_contact_manager.find_new_contact();
+        m_new_contacts = false;
+    }
+
+    b3TimeStep step;
+    step.m_dt = dt;
+    step.m_velocity_iterations = velocity_iterations;
+    step.m_position_iterations = position_iterations;
+
+    step.m_inv_dt = dt > 0.0 ? 1.0 / dt: 0.0;
+
 }
 
 

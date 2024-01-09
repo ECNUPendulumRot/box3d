@@ -4,15 +4,16 @@
 
 
 #include "common/b3_types.hpp"
+#include <Eigen/Geometry>
 
 namespace box3d {
     template <typename T>
-    class b3Pose;
+    class b3Transform;
 }
 
 
 template <typename T>
-class box3d::b3Pose {
+class box3d::b3Transform {
 
     /**
      * The position part of the pose relative to m_rel_p.
@@ -27,24 +28,24 @@ class box3d::b3Pose {
 public:
 
     /**
-     * @brief Construct a new b3Pose object
+     * @brief Construct a new b3Transform object
      */
-    b3Pose();
+    b3Transform();
 
-    b3Pose(const b3Pose& other) {
+    b3Transform(const b3Transform& other) {
         m_p = other.m_p;
         m_r = other.m_r;
     }
 
     /**
-     * @brief Construct a new b3Pose object
+     * @brief Construct a new b3Transform object
      * @param position
      * @param rotation
      */
-    b3Pose(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation);
+    b3Transform(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation);
 
     /**
-     * @brief Construct a new b3Pose object
+     * @brief Construct a new b3Transform object
      * @param x: The x position
      * @param y: The y position
      * @param z: The z position
@@ -52,12 +53,12 @@ public:
      * @param r_y: The y rotation theta
      * @param r_z: The z rotation theta
      */
-    b3Pose(const T& x,
-           const T& y,
-           const T& z,
-           const T& r_x,
-           const T& r_y,
-           const T& r_z);
+    b3Transform(const T& x,
+                const T& y,
+                const T& z,
+                const T& r_x,
+                const T& r_y,
+                const T& r_z);
 
     inline void set_linear(b3Vector3<T> p){
         m_p = p;
@@ -92,14 +93,19 @@ public:
         }
     }
 
-    static b3Pose<T> zero() {
-        return b3Pose<T>(T(0), T(0), T(0), T(0), T(0), T(0));
+    static b3Transform<T> zero() {
+        return b3Transform<T>(T(0), T(0), T(0), T(0), T(0), T(0));
     };
+
+    inline b3Vector3<T> transform(const b3Vector3<T>& v) const {
+        return b3Vector3<T>(rotation_matrix() * v.eigen_vector3() + m_p.eigen_vector3());
+    }
 
 };
 
 
-using b3PoseF = box3d::b3Pose<float>;
-using b3PoseD = box3d::b3Pose<double>;
+using b3TransformF = box3d::b3Transform<float>;
+using b3TransformD = box3d::b3Transform<double>;
+
 
 #endif //BOX3D_B3_POSE_HPP

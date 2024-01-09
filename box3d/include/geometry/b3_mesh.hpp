@@ -11,6 +11,7 @@
 
 #include "geometry/b3_shape.hpp"
 
+
 namespace box3d {
 
     class b3Mesh;
@@ -59,13 +60,14 @@ public:
     explicit b3Mesh(const std::string& obj_file_name);
 
 
-    void get_bound_aabb(b3AABB* aabb, const b3PoseD& xf, int32 childIndex) const override;
+    void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 childIndex) const override;
 
     int32 get_child_count() const override {
         return 1;
     }
 
-    void compute_mass_properties(b3MassProperty& massData, float density) const override;
+    // TODO: check this method. the density is passed
+    void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
     b3Shape* clone() const override;
 
@@ -85,15 +87,11 @@ public:
      * @brief align the mesh vertices to a new center
      * @param new_center: new center of the mesh
      */
-    void recenter(const b3PoseD& new_center);
+    void recenter(const b3TransformD& new_center);
 
     b3MatrixXd transform() const;
 
-    b3MatrixXd transform_rigid(const b3PoseD& pose) const;
-
-    b3MatrixXd transform_affine(const b3Vector12d& affine_q) const;
-
-    Eigen::Matrix<double, 3, 12> get_affine_jacobian(int row_index) const;
+    b3MatrixXd transform_rigid(const b3TransformD& pose) const;
 
     /**
      * @brief Get volume, center of geometry and inertia from the mesh
@@ -102,7 +100,7 @@ public:
      * @param Inertia: inertia of the mesh
      * @return true on success, false on errors
      */
-    bool mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Inertia) const;
+    bool mesh_properties(double& volume, b3Vector3d& CoG, b3Matrix3d& Inertia) const;
 
     /**
      * @brief Get the vertices of the mesh

@@ -2,6 +2,25 @@
 #include "../include/b3_gui_viewer.hpp"
 #include "utils/b3_log.hpp"
 
+#include "b3_test.hpp"
+
+static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
+{
+    int result = strcmp(a.category, b.category);
+    if (result == 0)
+    {
+        result = strcmp(a.name, b.name);
+    }
+
+    return result < 0;
+}
+
+
+static void sort_tests()
+{
+    std::sort(g_test_entries, g_test_entries + g_test_count, compare_tests);
+}
+
 
 b3GUIViewer::b3GUIViewer()
 {
@@ -15,6 +34,8 @@ b3GUIViewer::b3GUIViewer()
     m_transform.setIdentity();
     m_transform.col(0).swap(m_transform.col(2));
     m_transform.col(1).swap(m_transform.col(2));
+
+    sort_tests();
 }
 
 
@@ -36,10 +57,13 @@ bool b3GUIViewer::set_world(box3d::b3World *world) {
 void b3GUIViewer::launch()
 {
     m_viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_NO_ROTATION);
-    //m_viewer.core().orthographic = true;
+    // m_viewer.core().orthographic = true;
     m_viewer.core().is_animating = true;
-//    m_viewer.core().lighting_factor = 0.0;
+    // m_viewer.core().lighting_factor = 0.0;
     m_viewer.core().animation_max_fps = 60.0;
+
+    m_viewer.plugins.push_back(&m_plugin);
+    m_plugin.widgets.push_back(&m_menu);
 
     m_viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer&) {
         return pre_draw_loop();
@@ -51,8 +75,18 @@ void b3GUIViewer::launch()
 
 bool b3GUIViewer::pre_draw_loop()
 {
+    // make sure that two variables are initialized to -1
+    if (m_menu.m_selected_test != m_current_test) {
+        m_current_test = m_menu.m_selected_test;
 
-    simulation_step();
+        if (m_test != nullptr)
+            delete m_test;
+        m_test = g_test_entries[m_menu.m_selected_test].create_fcn();
+        m_world = m_test->get_world();
+    }
+
+    if (m_test != nullptr)
+        m_test->simulation_step();
 
     redraw_mesh();
 
@@ -62,7 +96,7 @@ bool b3GUIViewer::pre_draw_loop()
 
 void b3GUIViewer::simulation_step()
 {
-    if (m_world->empty())
+    if (m_world == nullptr || m_world->empty())
         return;
 
     m_world->test_step();
@@ -116,6 +150,5 @@ void b3GUIViewer::redraw_mesh() {
     }
 
 }
-
 
 

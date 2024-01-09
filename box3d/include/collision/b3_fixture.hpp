@@ -24,11 +24,13 @@ namespace box3d {
 }
 
 
-class box3d::b3FixtureDef {
+struct box3d::b3FixtureDef {
 
     double m_restitution = 0.0;
 
     double m_friction = 0.0;
+
+    double m_density = 1.0;
 
     /**
      * @brief The shape of the fixture.
@@ -39,16 +41,20 @@ class box3d::b3FixtureDef {
 
 public:
 
-    double get_restitution() const {
+    inline double get_restitution() const {
         return m_restitution;
     }
 
-    double get_friction() const {
+    inline double get_friction() const {
         return m_friction;
     }
 
-    b3Shape* get_shape() const {
+    inline b3Shape* get_shape() const {
         return m_shape;
+    }
+
+    inline double get_density() const {
+        return m_density;
     }
 
 };
@@ -68,6 +74,7 @@ struct box3d::b3FixtureProxy {
 
     int32 m_proxy_id = -1;
 
+    // the id of the proxy of the child shape
     int32 m_child_id = -1;
 
     b3Fixture* get_fixture() const {
@@ -79,15 +86,19 @@ struct box3d::b3FixtureProxy {
 
 class box3d::b3Fixture {
 
+    friend class b3Body;
+
     double m_restitution = 0.0;
 
     double m_friction = 0.0;
+
+    double m_density = 0.0;
 
     b3Shape* m_shape = nullptr;
 
     b3Body* m_body = nullptr;
 
-    b3BodyType m_type = b3BodyType::b3_RIGID;
+    b3BodyType m_type = b3BodyType::b3_type_not_defined;
 
     b3FixtureProxy* m_proxies = nullptr;
 
@@ -99,7 +110,11 @@ public:
 
     void create_fixture(const b3FixtureDef& f_def, b3Body* body);
 
-    void create_proxy(b3BroadPhase* broad_phase, b3PoseD& pose);
+    void create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf);
+
+    inline void get_mass_data(b3MassProperty& mass_data) const {
+        m_shape->compute_mass_properties(mass_data, m_density);
+    }
 
     b3Body* get_body() const {
         return m_body;
@@ -111,7 +126,11 @@ public:
 
     void set_shape(b3Shape* shape) {
         m_shape = shape;
-    } 
+    }
+
+    inline b3ShapeType get_shape_type() const {
+        return m_shape->get_type();
+    }
 };
 
 #endif //BOX3D_B3_FIXTURE_HPP

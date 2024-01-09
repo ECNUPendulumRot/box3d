@@ -14,12 +14,16 @@ namespace box3d {
 }
 
 class box3d::b3ContactManager {
-    b3BroadPhase m_broadPhase;
+
+    b3BroadPhase m_broad_phase;
+
     b3Contact* m_contact_list;
+
     int32 m_contact_count = 0;
 
 public:
-    void FindNewContact();
+
+    void find_new_contact();
 
     // Broad-phase callback
     void add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b);
@@ -28,6 +32,11 @@ public:
 
     // TODO
     void collide();
+
+    b3BroadPhase* get_broad_phase() {
+        return &m_broad_phase;
+    }
+
 };
 
 

@@ -1,0 +1,33 @@
+
+#ifndef BOX3D_B3CUBECONTACT_HPP
+#define BOX3D_B3CUBECONTACT_HPP
+
+#include "collision/b3_contact.hpp"
+#include "collision/b3_collision.hpp"
+
+namespace box3d {
+
+    class b3CubeContact;
+
+}
+
+
+class box3d::b3CubeContact: public b3Contact {
+
+
+
+protected:
+
+    static b3Contact* create(b3Fixture* fixture_a, int32 index_a, b3Fixture* fixture_b, int32 index_b);
+
+    static void destroy(b3Contact* contact);
+
+    b3CubeContact(b3Fixture* fixture_a, b3Fixture* fixture_b);
+
+    virtual ~b3CubeContact() = default;
+
+    void evaluate(b3Manifold* manifold, const b3TransformD& xf_a, const b3TransformD& xf_b) override;
+};
+
+
+#endif //BOX3D_B3CUBECONTACT_HPP

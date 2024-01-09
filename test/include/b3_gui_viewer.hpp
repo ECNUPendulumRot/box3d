@@ -5,12 +5,13 @@
 #include <utility>
 
 #include "spdlog/spdlog.h"
+
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "box3d.hpp"
-#include "b3_test.hpp"
+#include "b3_category_menu.hpp"
 
+#include "box3d.hpp"
 
 class b3ViewShapePair {
 
@@ -54,14 +55,24 @@ public:
 class b3GUIViewer {
 
     using Viewer = igl::opengl::glfw::Viewer;
+    using ImGuiMenu = igl::opengl::glfw::imgui::ImGuiMenu;
+    using ImGuiPlugin = igl::opengl::glfw::imgui::ImGuiPlugin;
 
     Viewer m_viewer;
 
+    ImGuiPlugin m_plugin;
+
+    CategoryMenu m_menu;
+
     box3d::b3World* m_world;
+
+    TestBase* m_test = nullptr;
 
     b3ViewShapePair* m_pair_list;
 
     b3Matrix3d m_transform;
+
+    int m_current_test = -1;
 
 public:
 

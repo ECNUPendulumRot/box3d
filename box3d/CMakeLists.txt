@@ -11,20 +11,15 @@ set(B3D_HEADER_FILES
         include/collision/b3_rigid_fixture.hpp
         include/collision/b3_broad_phase.hpp
 
-        # include/collision/b3_gjk_distance.hpp
-        # include/collision/b3_distance_proxy.hpp
-        # include/collision/b3_collision.hpp
         include/collision/b3_contact_manager.hpp
         include/collision/b3_contact.hpp
 
 
-        include/dynamics/b3_body_rigid.hpp
         include/dynamics/b3_pose.hpp
         include/dynamics/b3_body.hpp
         include/dynamics/b3_inertia.hpp
         include/dynamics/b3_world.hpp
         include/dynamics/b3_body_def.hpp
-        include/dynamics/b3_body_affine.hpp
 
         include/geometry/b3_mesh.hpp
         include/geometry/b3_geometry.hpp
@@ -42,6 +37,10 @@ set(B3D_HEADER_FILES
 
         include/solver/b3_solver.hpp
         include/geometry/b3_shape.hpp
+        include/geometry/b3_cube_shape.hpp
+        include/common/b3_time_step.hpp
+        include/collision/b3_collision.hpp
+        include/collision/b3CubeContact.hpp
 
 )
 
@@ -51,25 +50,20 @@ set(B3D_SOURCE_FILES
         src/collision/b3_aabb.cpp
         src/collision/b3_fixture.cpp
         src/collision/b3_broad_phase.cpp
-        # src/collision/b3_gjk_distance.cpp
-        # src/collision/b3_distance_proxy.cpp
-        # src/collision/b3_collision.cpp
         src/collision/b3_contact.cpp
         src/collision/b3_contact_manager.cpp
 
 
-        src/dynamics/b3_body_rigid.cpp
         src/dynamics/b3_pose.cpp
         src/dynamics/b3_inertia.cpp
         src/dynamics/b3_world.cpp
         src/dynamics/b3_body.cpp
-        src/dynamics/b3_body_affine.cpp
 
         src/geometry/b3_mesh.cpp
 
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
-        src/geometry/b3_shape.cpp
+        src/geometry/b3_cube_shape.cpp
 
 )
 

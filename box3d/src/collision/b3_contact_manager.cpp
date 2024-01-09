@@ -4,9 +4,10 @@
 
 #include "collision/b3_fixture.hpp"
 
-void box3d::b3ContactManager::FindNewContact()
+
+void box3d::b3ContactManager::find_new_contact()
 {
-    m_broadPhase.update_pairs(this);
+    m_broad_phase.update_pairs(this);
 }
 
 
@@ -19,26 +20,38 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
     b3Body* body_a = fixture_a->get_body();
     b3Body* body_b = fixture_b->get_body();
 
+    int32 index_a = fixture_proxy_a->m_child_id;
+    int32 index_b = fixture_proxy_b->m_child_id;
 
+    // check whether the two proxies belongs to the same body
+    // if they belong to the same, they do not need to check collision
     if(body_a == body_b) {
         return;
     }
  
     b3ContactEdge* edge = body_b->get_contact_list();
-    while(edge) {
-        if(edge->get_other() == body_a) {
-            b3Fixture* fa = edge->get_contact()->get_fixture_a();
-            b3Fixture* fb = edge->get_contact()->get_fixture_b();
 
-            if(fa == fixture_a && fb == fixture_b) {
+    while(edge) {
+
+        if(edge->m_other == body_a) {
+            b3Fixture* f_a = edge->m_contact->get_fixture_a();
+            b3Fixture* f_b = edge->m_contact->get_fixture_b();
+
+            int32 i_a = edge->m_contact->get_child_index_a();
+            int32 i_b = edge->m_contact->get_child_index_b();
+
+
+            if(f_a == fixture_a && f_b == fixture_b && i_a == index_a && i_b == index_b) {
+                // two fixtures now already exist a contact
                 return;
             }
 
-            if(fa == fixture_b && fb == fixture_a) {
+            if(f_a == fixture_b && f_b == fixture_a && i_a == index_b && i_b == index_a) {
+                // two fixtures now already exist a contact
                 return;
             }
         }
-        edge = edge->get_next();
+        edge = edge->m_next;
     }
 
     b3Contact* contact = b3Contact::create(fixture_a, fixture_b);

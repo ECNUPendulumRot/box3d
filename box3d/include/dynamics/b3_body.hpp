@@ -29,23 +29,54 @@ namespace box3d {
 
 class box3d::b3Body {
 
+    friend class b3World;
+
     /**
      * @brief Type of the body
      */
-    b3BodyType m_type;
+    b3BodyType m_type = b3BodyType::b3_type_not_defined;
 
-    b3Body* m_next;
+    b3World* m_world = nullptr;
 
-    /**
-     * @brief The world that the body belongs to
-     */
-    b3World* m_world;
 
-    b3ContactEdge* m_contact_list;
+    ///////////////// Kinematic Properties /////////////////
 
-    b3Fixture* m_fixture_list;
+    // CoM
+    b3Vector3d m_local_center = b3Vector3d::zero();
 
-    b3PoseD m_xf;
+    b3TransformD m_xf;
+
+    b3TransformD m_velocity;
+
+    ////////////////// Dynamic Properties //////////////////
+
+    double m_density = 1.0;
+
+    double m_volume = 0.0;
+
+    double m_mass = 0.0;
+
+    double m_inv_mass = 0.0;
+
+    b3Matrix3d m_inertia = b3Matrix3d::Zero();
+
+    b3Matrix3d m_inv_inertia = b3Matrix3d::Zero();
+
+    b3Vector3d m_force;
+
+    ///////////////// Collision Properties /////////////////
+
+    b3ContactEdge* m_contact_list = nullptr;
+
+    b3Fixture* m_fixture_list = nullptr;
+
+    int32 m_fixture_count = 0;
+
+    ///////////////// General linked list /////////////////
+
+    b3Body* m_prev = nullptr;
+
+    b3Body* m_next = nullptr;
 
 public:
 
@@ -54,12 +85,11 @@ public:
      */
     b3Body() = default;
 
+    explicit b3Body(const box3d::b3BodyDef &body_def);
+
     b3Fixture* create_fixture(const b3FixtureDef& def);
 
-
-    inline void set_next(b3Body* next) {
-        m_next = next;
-    }
+    ///////////////// Getter and Setter /////////////////
 
     inline b3Body* next() const {
         return m_next;
@@ -67,6 +97,22 @@ public:
 
     inline b3BodyType get_type() const {
         return m_type;
+    }
+
+    b3ContactEdge* get_contact_list() const {
+        return m_contact_list;
+    }
+
+    b3Fixture* get_fixture() const {
+        return m_fixture_list;
+    }
+
+    b3TransformD get_pose() const {
+        return m_xf;
+    }
+
+    inline void set_next(b3Body* next) {
+        m_next = next;
     }
 
     inline void set_type(b3BodyType type) {
@@ -80,13 +126,10 @@ public:
     inline void set_contact_list(b3ContactEdge* contact_list) {
         m_contact_list = contact_list;
     }
-    b3ContactEdge* get_contact_list() const {
-        return m_contact_list;
-    }
 
-    b3Fixture* get_fixture() const {
-        return m_fixture_list;
-    }
+private:
+
+    void reset_mass_data();
 
 };
 

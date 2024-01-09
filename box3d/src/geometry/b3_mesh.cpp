@@ -14,10 +14,7 @@
 #include "common/b3_types.hpp"
 #include "common/b3_common.hpp"
 #include "common/b3_allocator.hpp"
-
-#include "dynamics/b3_body_rigid.hpp"
-#include "dynamics/b3_body_affine.hpp"
-
+#include "dynamics/b3_body.hpp"
 
 bool compute_mass_properties_3D(const b3MatrixXd& vertices,
                                 const b3MatrixXi& faces,
@@ -40,7 +37,7 @@ box3d::b3Mesh::b3Mesh(const std::string &obj_file_name)
 }
 
 
-void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3PoseD &xf, int32 childIndex) const
+void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, int32 childIndex) const
 {
     b3_NOT_USED(childIndex);
 
@@ -65,9 +62,12 @@ box3d::b3Shape *box3d::b3Mesh::clone() const
 }
 
 
-void box3d::b3Mesh::compute_mass_properties(box3d::b3MassProperty &massData, float density) const
+void box3d::b3Mesh::compute_mass_properties(box3d::b3MassProperty &mass_data, double density) const
 {
-    mesh_properties(massData.m_volume, massData.m_CoG, massData.m_Inertia);
+
+    mesh_properties(mass_data.m_volume, mass_data.m_center, mass_data.m_Inertia);
+
+    mass_data.m_mass = mass_data.m_volume * density;
 }
 
 
@@ -79,7 +79,6 @@ void box3d::b3Mesh::get_view_data(box3d::b3ViewData *view_data) const
 
 
 bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
-
 
     // 0 0 1
     // 1 0 0
@@ -139,23 +138,18 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
 }
 
 
-bool box3d::b3Mesh::mesh_properties(double& volume, b3PoseD& CoG, b3Inertia& Inertia) const
+bool box3d::b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, b3Matrix3d& Inertia) const
 {
-    b3Vector3d tmp_center; b3Matrix3d tmp_inertia;
-
-    bool success = compute_mass_properties_3D(m_V, m_F, volume, tmp_center, tmp_inertia);
+    bool success = compute_mass_properties_3D(m_V, m_F, volume, CoG, Inertia);
 
     if (!success)
         return false;
-
-    CoG.set_linear(tmp_center);
-    Inertia.set_inertia(tmp_inertia);
 
     return true;
 }
 
 
-void box3d::b3Mesh::recenter(const b3PoseD &new_center)
+void box3d::b3Mesh::recenter(const b3TransformD &new_center)
 {
     // TODO: do a transform in this function
     auto eigen_new_center = new_center.linear().eigen_vector3();
@@ -165,22 +159,11 @@ void box3d::b3Mesh::recenter(const b3PoseD &new_center)
 
 b3MatrixXd box3d::b3Mesh::transform() const
 {
-    switch (m_body->get_type()) {
-        case b3BodyType::b3_RIGID:
-        {
-            return transform_rigid(((b3BodyRigid*)m_body)->get_pose());
-
-        }
-        case b3BodyType::b3_AFFINE:
-        {
-            auto q = ((b3BodyAffine*)m_body)->get_q();
-            return transform_affine(((b3BodyAffine*)m_body)->get_q());
-        }
-    }
+    return transform_rigid(m_body->get_pose());
 }
 
 
-b3MatrixXd box3d::b3Mesh::transform_rigid(const b3PoseD& pose) const
+b3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
 {
     // Because the mesh vertices are rowwise, we need to transpose the matrix
     b3Matrix3d R_T = pose.rotation_matrix().transpose();
@@ -189,31 +172,6 @@ b3MatrixXd box3d::b3Mesh::transform_rigid(const b3PoseD& pose) const
     return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
 }
 
-
-b3MatrixXd box3d::b3Mesh::transform_affine(const b3Vector12d &affine_q) const
-{
-    b3MatrixXd result = m_V;
-    for (int i = 0; i < m_V.rows(); ++i) {
-        Eigen::Matrix<double, 3, 12> J = get_affine_jacobian(i);
-
-        result.row(i) = (J * affine_q).transpose();
-    }
-    return result;
-}
-
-
-Eigen::Matrix<double, 3, 12> box3d::b3Mesh::get_affine_jacobian(int row_index) const {
-    Eigen::Matrix<double, 3, 12> J;
-    Eigen::RowVector3d vertex = m_V.row(row_index);
-
-    J.setZero();
-    J.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
-    J.block(0, 3, 1, 3) = vertex;
-    J.block(1, 6, 1, 3) = vertex;
-    J.block(2, 9, 1, 3) = vertex;
-
-    return J;
-}
 
 // The method is introduced by Mirtich and utilized by Geometric Tools Engine
 // For more details please access:
@@ -305,7 +263,8 @@ bool compute_mass_properties_3D(const b3MatrixXd& vertices,
     integral[8] /= 120; /* yz */
     integral[9] /= 120; /* xz */
 
-    // mass
+    // though we are calculating the mass, actually this is the volume
+    // because here we assume the density is 1
     mass = integral[0];
     if (mass <= 0 || !std::isfinite(mass)) {
         return false;

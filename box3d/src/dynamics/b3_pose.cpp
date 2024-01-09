@@ -6,7 +6,7 @@
 
 
 template <typename T>
-box3d::b3Pose<T>::b3Pose()
+box3d::b3Transform<T>::b3Transform()
 {
     m_p.set_zero();
     m_r.set_zero();
@@ -14,12 +14,12 @@ box3d::b3Pose<T>::b3Pose()
 
 
 template<typename T>
-box3d::b3Pose<T>::b3Pose(const T &x,
-                         const T &y,
-                         const T &z,
-                         const T &r_x,
-                         const T &r_y,
-                         const T &r_z):
+box3d::b3Transform<T>::b3Transform(const T &x,
+                                   const T &y,
+                                   const T &z,
+                                   const T &r_x,
+                                   const T &r_y,
+                                   const T &r_z):
     m_p(b3Vector3<T>(x,   y,   z)),
     m_r(b3Vector3<T>(r_x, r_y, r_z))
 {
@@ -28,12 +28,12 @@ box3d::b3Pose<T>::b3Pose(const T &x,
 
 
 template<typename T>
-box3d::b3Pose<T>::b3Pose(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation)
+box3d::b3Transform<T>::b3Transform(Eigen::Vector3<T> position, Eigen::Vector3<T> rotation)
 {
     m_p = b3Vector3<T>(position);
     m_r = b3Vector3<T>(rotation);
 }
 
 
-template class box3d::b3Pose<float>;
-template class box3d::b3Pose<double>;
+template class box3d::b3Transform<float>;
+template class box3d::b3Transform<double>;

@@ -69,6 +69,8 @@ class box3d::b3Node {
      */
     int32 m_height;
 
+    bool m_moved;
+
 public:
 
     /**
@@ -85,6 +87,7 @@ public:
     }
 
 };
+
 
 class box3d::b3DynamicTree {
 
@@ -141,6 +144,17 @@ public:
 
     bool move_proxy(int32 proxy_id, const b3AABB& aabb);
 
+    inline bool was_moved(int32 proxyId) const {
+        b3_assert(0 <= proxyId && proxyId < m_node_capacity);
+        return m_nodes[proxyId].m_moved;
+    }
+
+    inline void clear_moved(int32 proxyId)
+    {
+        b3_assert(0 <= proxyId && proxyId < m_node_capacity);
+        m_nodes[proxyId].m_moved = false;
+    }
+
     const b3AABB& get_AABB(int32 proxy_id) const {
 
         b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
@@ -148,7 +162,10 @@ public:
         return m_nodes[proxy_id].m_aabb;
     }
 
-    inline b3FixtureProxy* get_fixture_proxy(int32 proxy_id) const;
+    inline b3FixtureProxy* get_fixture_proxy(int32 proxy_id) const {
+        b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
+        return m_nodes[proxy_id].fixture_proxy;
+    }
 
     /**
      * @brief iterator the tree to find overlap AABB
@@ -196,6 +213,33 @@ private:
     int32 balance(int32 i_A);
 
 };
+
+
+template<typename T>
+void box3d::b3DynamicTree::query(T* callback, const b3AABB& aabb) const {
+
+    std::stack<int32> stack;
+    stack.push(m_root);
+
+    while (stack.size() > 0) {
+        int32 node_id = stack.top(); stack.pop();
+        if(node_id == b3_NULL_NODE) {
+            continue;
+        }
+
+        const b3Node* node = m_nodes + node_id;
+
+        if(b3AABB::overlapped(node->m_aabb, aabb)) {
+            if(node->is_leaf()) {
+                // TODO: check here
+                callback->query_callback(node_id);
+            } else {
+                stack.push(node->m_child1);
+                stack.push(node->m_child2);
+            }
+        }
+    }
+}
 
 
 #endif //BOX3D_B3_BVH_HPP

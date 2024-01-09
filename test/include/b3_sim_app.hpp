@@ -30,23 +30,13 @@ class b3SimApp {
 
     b3GUIViewer m_viewer;
 
-    TestEntry m_test_series[MAX_TEST];
-
-    TestBase* m_test;
-
-    int m_test_count;
-
 public:
 
-    b3SimApp();
+    b3SimApp() = default;
 
-    ~b3SimApp();
+    ~b3SimApp() = default;
 
-    void load_scene(const std::string& scene_str);
-
-    int register_test(const char* name, TestCreateFcn* fcn);
-
-    int launch(bool gui);
+    int launch();
 
     inline void set_gui_fps(double fps) {
         m_viewer.set_max_fps(fps);
