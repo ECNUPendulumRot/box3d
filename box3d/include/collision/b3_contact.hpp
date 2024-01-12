@@ -1,5 +1,5 @@
-#ifndef B3_CONTACT_HPP
-#define B3_CONTACT_HPP
+#ifndef BOX3D_CONTACT_HPP
+#define BOX3D_CONTACT_HPP
 
 #include "common/b3_allocator.hpp"
 #include "geometry/b3_shape.hpp"
@@ -9,7 +9,7 @@ namespace box3d {
 
     class b3Contact;
 
-    class b3ContactEdge;
+    struct b3ContactEdge;
 
     struct b3ContactRegister;
 
@@ -133,4 +133,4 @@ protected:
 
 
 
-#endif
+#endif // BOX3D_CONTACT_HPP

@@ -91,10 +91,10 @@ public:
         return 0;
     };
 
-    virtual void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 childIndex) const {
+    virtual void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const {
         b3_NOT_USED(aabb);
         b3_NOT_USED(xf);
-        b3_NOT_USED(childIndex);
+        b3_NOT_USED(child_index);
     };
 
     virtual void compute_mass_properties(b3MassProperty& mass_data, double density) const {

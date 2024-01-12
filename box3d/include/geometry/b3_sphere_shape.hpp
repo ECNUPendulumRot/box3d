@@ -1,0 +1,49 @@
+
+#ifndef BOX3D_B3SPHERESHAPE_HPP
+#define BOX3D_B3SPHERESHAPE_HPP
+
+
+#include "geometry/b3_shape.hpp"
+
+
+namespace box3d {
+    
+    class b3SphereShape;
+
+} // namespace box3d
+
+
+class box3d::b3SphereShape : public b3Shape {
+
+    b3Vector3d m_centroid;
+
+public:
+    
+    b3SphereShape();
+
+    int32 get_child_count() const override {
+        return 1;
+    }
+
+    b3Vector3d get_centroid_of_sphere() const {
+        return m_centroid;
+    }
+
+    void set_as_sphere(double radius);
+
+    b3Shape* clone() const override;
+
+    void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const override;
+
+    void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
+
+    double get_radius() const {
+        return m_radius;
+    }
+
+    void get_view_data(b3ViewData* view_data) const override;
+};
+
+
+
+#endif // BOX3D_B3SPHERESHAPE_HPP

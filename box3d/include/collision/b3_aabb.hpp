@@ -17,6 +17,7 @@ class box3d::b3AABB {
 
     friend class b3Mesh;
     friend class b3CubeShape;
+    friend class b3SphereShape;
     friend class b3DynamicTree;
 
     /**

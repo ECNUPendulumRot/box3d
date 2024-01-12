@@ -1,6 +1,6 @@
 
-#ifndef B3_DISTANCE_PROXY_HPP
-#define B3_DISTANCE_PROXY_HPP
+#ifndef BOX3D_DISTANCE_PROXY_HPP
+#define BOX3D_DISTANCE_PROXY_HPP
 
 #include "common/b3_types.hpp"
 #include "dynamics/b3_body.hpp"
@@ -52,4 +52,4 @@ public:
     }
 };
 
-#endif
+#endif // BOX3D_DISTANCE_PROXY_HPP
