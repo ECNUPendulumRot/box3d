@@ -89,20 +89,20 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
             // two end of sphere
             // actually are (0, 0, 1) and (0, 0, -1)
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_radius * v2;
-            view_data->m_V.row(index++) = -m_radius * v2;
+            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
+            view_data->m_V.row(index++) = m_centroid.eigen_vector3() - m_radius * v2;
             break;
         }
 
         for(int j = 0; j < k_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_radius * v2;
+            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
         }
 
         v2 = -v1;
         for(int j = 0; j < k_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_radius * v2;
+            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
         }
     }
 
