@@ -3,6 +3,7 @@
 #define BOX3D_B3_COLLISION_HPP
 
 #include "common/b3_types.hpp"
+#include "dynamics/b3_pose.hpp"
 
 namespace box3d {
 
@@ -14,6 +15,9 @@ namespace box3d {
 
     struct b3ContactFeature;
 
+    class b3SphereShape;
+
+    class b3CubeShape;
 }
 
 
@@ -67,5 +71,21 @@ struct box3d::b3Manifold {
     int32 point_count;								///< the number of manifold points
 
 };
+
+
+/// Compute the collision manifold between two circles.
+void b3_collide_spheres(box3d::b3Manifold* manifold,
+					    const box3d::b3SphereShape* sphere_a, 
+                        const b3TransformD& xf_a,
+					    const box3d::b3SphereShape* sphere_b, 
+                        const b3TransformD& xf_b);
+
+/// Compute the collision manifold between circle and cube
+void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
+                                const box3d::b3CubeShape* cube_a, 
+                                const b3TransformD& xf_a,
+                                const box3d::b3SphereShape* sphere_b,
+                                const b3TransformD& xf_b);
+
 
 #endif //BOX3D_B3_COLLISION_HPP
