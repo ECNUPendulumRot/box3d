@@ -7,15 +7,34 @@
 
 
 namespace box3d {
+
+    struct b3SphereConfig;
     
     class b3SphereShape;
 
 } // namespace box3d
 
 
+struct box3d::b3SphereConfig {
+
+    int m_segments;
+
+    b3Matrix3d m_rot_y, m_rot_z;
+
+    int m_vertices_rows;
+    int m_faces_rows;
+    int m_ring_points_count;
+
+    b3SphereConfig();
+};
+
+
 class box3d::b3SphereShape : public b3Shape {
 
     b3Vector3d m_centroid;
+
+    // control generate sphere view data
+    static const b3SphereConfig m_config;
 
 public:
     
