@@ -32,16 +32,24 @@ struct box3d::b3ContactFeature
     };
 
     uint8 indexA;		///< Feature index on shapeA
+
     uint8 indexB;		///< Feature index on shapeB
+
     uint8 typeA;		///< The feature type on shapeA
+
     uint8 typeB;		///< The feature type on shapeB
+
 };
 
 
 union box3d::b3ContactID {
+
     b3ContactFeature cf;
+
     uint32 key;					///< Used to quickly compare contact ids.
+
 };
+
 
 struct box3d::b3ManifoldPoint {
 
@@ -57,18 +65,26 @@ struct box3d::b3ManifoldPoint {
 
 struct box3d::b3Manifold {
 
-    enum Type
-    {
+    enum Type {
+
         e_circles,
+
         e_faceA,
-        e_faceB
+
+        e_faceB,
+
+        e_edges
     };
 
-    b3ManifoldPoint points[8];	///< the points of contact
-    b3Vector3d local_normal;								///< not use for Type::e_points
-    b3Vector3d local_point;								///< usage depends on manifold type
-    Type type;
-    int32 point_count;								///< the number of manifold points
+    b3ManifoldPoint m_points[4];	///< the points of contact
+
+    b3Vector3d m_local_normal;								///< not use for Type::e_points
+
+    b3Vector3d m_local_point;								///< usage depends on manifold type
+
+    Type m_type;
+
+    int32 m_point_count;								///< the number of manifold points
 
 };
 

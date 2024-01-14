@@ -39,19 +39,19 @@ struct box3d::b3ViewData {
      * @brief Vertices of the mesh
      * @details Each row is vertex's x, y, z coordinates
      */
-    b3MatrixXd m_V;
+    E3MatrixXd m_V;
 
     /**
      * @brief Faces of the mesh
      * @details Each row is a face with 3 indexes to vertex
      */
-    b3MatrixXi m_F;
+    E3MatrixXi m_F;
 
-    b3MatrixXd vertexes() const {
+    E3MatrixXd vertexes() const {
         return m_V;
     }
 
-    b3MatrixXi faces() const {
+    E3MatrixXi faces() const {
         return m_F;
     }
 
@@ -69,8 +69,6 @@ protected:
      * This is used for extending the AABB of the shape for collision test
      */
     double m_radius = 0;
-
-protected:
 
     /**
      * @brief Next mesh in the list
@@ -125,6 +123,12 @@ public:
     void set_next(b3Shape* next) {
         m_next = next;
     }
+
+    double get_radius() const {
+        return m_radius;
+    }
+
 };
 
-#endif //BOX3D_B3_SHAPE_CPP
+
+#endif //BOX3D_B3_SHAPE_HPP

@@ -16,6 +16,14 @@ namespace box3d {
 
 
 template <typename T>
+inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v) {
+
+    return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
+
+}
+
+
+template <typename T>
 class box3d::b3Matrix3 {
 
     // m_ts is col major;
@@ -89,6 +97,8 @@ public:
     }
 
 };
+
+
 
 
 #endif //BOX3D_B3_MATRIX_HPP

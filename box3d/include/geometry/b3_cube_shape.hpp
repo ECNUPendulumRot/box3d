@@ -15,6 +15,8 @@ namespace box3d{
 
 class box3d::b3CubeShape : public b3Shape {
 
+public:
+
     b3Vector3d m_centroid;
 
     b3Vector3d m_vertices[8];
@@ -24,8 +26,6 @@ class box3d::b3CubeShape : public b3Shape {
     b3Vector3d m_xyz;
 
     b3Vector3d m_h_xyz;
-    
-public:
 
     b3CubeShape();
 
@@ -41,10 +41,6 @@ public:
 
     int32 get_child_count() const override {
         return 1;
-    }
-
-    inline b3Vector3d get_half_xyz() const {
-        return m_h_xyz;
     }
 
     void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 childIndex) const override;
