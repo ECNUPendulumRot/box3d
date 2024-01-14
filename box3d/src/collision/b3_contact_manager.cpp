@@ -54,7 +54,8 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
         edge = edge->m_next;
     }
 
-    b3Contact* contact = b3Contact::create(fixture_a, fixture_b);
+    // b3Contact* contact = b3Contact::create(fixture_a, fixture_b);
+    b3Contact* contact = b3Contact::create(fixture_a, 0, fixture_b, 0);
 
     if(contact == nullptr) {
         return;
@@ -131,7 +132,7 @@ void box3d::b3ContactManager::collide()
         // box2d do a overlap in the broad-phase ??
 
         // do a narrow phase
-        current_contact->update();
+        // current_contact->update();
         current_contact = current_contact->get_next();
     }
 }

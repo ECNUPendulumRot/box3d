@@ -101,9 +101,9 @@ public:
         return b3Vector3<T>(rotation_matrix() * v.eigen_vector3() + m_p.eigen_vector3());
     }
 
-    inline b3Vector3d<T> transform_local(const b3Vector3d<T>& v) const {
-        return b3Vector3d<T>((v - m_p).eigen_vector3() * rotation_matrix());
-    }
+    // inline b3Vector3<T> transform_local(const b3Vector3<T>& v) const {
+    //     return b3Vector3<T>((v - m_p).eigen_vector3().transform() * rotation_matrix());
+    // }
 
 };
 

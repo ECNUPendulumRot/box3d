@@ -46,7 +46,7 @@ void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
 
     /// Compute the center of sphere position on cube frame
     b3Vector3d c_local = xf_b.transform(sphere_b->get_centroid_of_sphere());
-    c_local = xf_a.transform_local(c_local);
+    // c_local = xf_a.transform_local(c_local);
 
     // traverse six face normal to find 
 

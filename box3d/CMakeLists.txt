@@ -41,7 +41,7 @@ set(B3D_HEADER_FILES
         include/geometry/b3_sphere_shape.hpp
         include/common/b3_time_step.hpp
         include/collision/b3_collision.hpp
-        include/collision/b3_cube_contact.hpp
+        include/collision/b3CubeContact.hpp
         include/collision/b3_sphere_contact.hpp
 
 )

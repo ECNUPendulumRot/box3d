@@ -8,6 +8,7 @@
 #include "geometry/b3_shape.hpp"
 #include "geometry/b3_mesh.hpp"
 #include "geometry/b3_cube_shape.hpp"
+#include "geometry/b3_sphere_shape.hpp"
 
 #include "utils/b3_log.hpp"
 #include "utils/b3_json.hpp"

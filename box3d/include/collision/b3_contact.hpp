@@ -120,6 +120,8 @@ public:
 
 protected:
 
+    friend class b3ContactManager;
+
     static void initialize_registers();
 
     static void add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* destroy_fcn,
