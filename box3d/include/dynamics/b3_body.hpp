@@ -24,6 +24,7 @@ namespace box3d {
     class b3Fixture;
 
     class b3FixtureDef;
+
 }
 
 
@@ -58,9 +59,9 @@ class box3d::b3Body {
 
     double m_inv_mass = 0.0;
 
-    b3Matrix3d m_inertia = b3Matrix3d::Zero();
+    E3Matrix3d m_inertia = E3Matrix3d::Zero();
 
-    b3Matrix3d m_inv_inertia = b3Matrix3d::Zero();
+    E3Matrix3d m_inv_inertia = E3Matrix3d::Zero();
 
     b3Vector3d m_force;
 

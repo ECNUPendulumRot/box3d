@@ -71,7 +71,7 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
     // z = r * sin(a)
     // x = r * cos(a) * cos(b)
     // y = r * cos(a) * sin(b)
-    b3Matrix3d rot_y, rot_z;
+    E3Matrix3d rot_y, rot_z;
     rot_y << cos_inc, 0, sin_inc,
              0, 1, 0,
              -sin_inc, 0, cos_inc;

@@ -3,7 +3,7 @@
 
 
 box3d::b3Inertia::b3Inertia():
-    m_I(b3Matrix3d::Identity()),
+    m_I(E3Matrix3d::Identity()),
     m_rel_p(nullptr)
 {
     ;

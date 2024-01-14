@@ -17,7 +17,7 @@ namespace box3d {
 
 class box3d::b3Inertia {
 
-    b3Matrix3d m_I;
+    E3Matrix3d m_I;
 
     b3TransformD* m_rel_p;
 
@@ -44,11 +44,11 @@ public:
         m_I(2, 2) = zz;
     };
 
-    inline void set_inertia(const b3Matrix3d& I){
+    inline void set_inertia(const E3Matrix3d& I){
         m_I = I;
     };
 
-    b3Matrix3d get_inertia_matrix() const {
+    E3Matrix3d get_inertia_matrix() const {
         return m_I;
     }
 
@@ -67,7 +67,7 @@ struct box3d::b3MassProperty {
      */
     b3Vector3d m_center;
 
-    b3Matrix3d m_Inertia;
+    E3Matrix3d m_Inertia;
 
 };
 

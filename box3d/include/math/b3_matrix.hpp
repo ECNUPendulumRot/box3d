@@ -1,138 +1,94 @@
-// Algorithms used in this file is part of libigl
-// just for easier compiling.
-// For more information, please access:
-// https://github.com/libigl/libigl
 
 #ifndef BOX3D_B3_MATRIX_HPP
 #define BOX3D_B3_MATRIX_HPP
 
 
-#include <vector>
-#include <Eigen/Sparse>
+#include <memory>
 
-template <typename T>
-inline int b3_max_size(const std::vector<T> & V)
-{
-    int max_size = -1;
-    for(
-            typename std::vector<T>::const_iterator iter = V.begin();
-            iter != V.end();
-            iter++)
-    {
-        int size = (int)iter->size();
-        max_size = (max_size > size ? max_size : size);
-    }
-    return max_size;
+#include "math/b3_vector.hpp"
+
+
+namespace box3d {
+
+    template <typename T>
+    class b3Matrix3;
 }
 
 
 template <typename T>
-inline int b3_min_size(const std::vector<T> & V)
-{
-    int min_size = -1;
-    for(
-            typename std::vector<T>::const_iterator iter = V.begin();
-            iter != V.end();
-            iter++)
-    {
-        int size = (int)iter->size();
-        // have to handle base case
-        if(min_size == -1)
-        {
-            min_size = size;
-        }else{
-            min_size = (min_size < size ? min_size : size);
-        }
-    }
-    return min_size;
-}
+class box3d::b3Matrix3 {
 
+    // m_ts is col major;
+    union {
+        T m_ts[9];
+        struct {
+            T m_11, m_21, m_31;
+            T m_12, m_22, m_32;
+            T m_13, m_23, m_33;
+        };
+    };
 
-template <typename T, typename Derived>
-inline bool b3_list_to_matrix(const std::vector<std::vector<T > > & V,Eigen::PlainObjectBase<Derived>& M)
-{
-    // number of rows
-    int m = V.size();
-    if(m == 0) {
-        M.resize(Derived::RowsAtCompileTime>=0?Derived::RowsAtCompileTime:0,
-                 Derived::ColsAtCompileTime>=0?Derived::ColsAtCompileTime:0);
-        return true;
-    }
-    // number of columns
-    int n = b3_min_size(V);
-    if(n != b3_max_size(V))
-    {
-        return false;
-    }
-    assert(n != -1);
-    // Resize output
-    M.resize(m,n);
+public:
 
-    // Loop over rows
-    for(int i = 0;i < m; i++) {
-        // Loop over cols
-        for(int j = 0; j < n;j++) {
-            M(i,j) = V[i][j];
-        }
+    b3Matrix3() {
+        memset(m_ts, 0, sizeof(T) * 9);
     }
 
-    return true;
-}
-
-
-template <typename DerivedF, typename T>
-void b3_adjacency_matrix(
-        const Eigen::MatrixBase<DerivedF> & F,
-        Eigen::SparseMatrix<T>& A)
-{
-    using namespace std;
-    using namespace Eigen;
-    typedef typename DerivedF::Scalar Index;
-
-    typedef Triplet<T> IJV;
-    vector<IJV > ijv;
-    ijv.reserve(F.size()*2);
-    // Loop over **simplex** (i.e., **not quad**)
-    for(int i = 0;i<F.rows();i++)
-    {
-        // Loop over this **simplex**
-        for(int j = 0;j<F.cols();j++)
-            for(int k = j+1;k<F.cols();k++)
-            {
-                // Get indices of edge: s --> d
-                Index s = F(i,j);
-                Index d = F(i,k);
-                ijv.push_back(IJV(s,d,1));
-                ijv.push_back(IJV(d,s,1));
-            }
+    b3Matrix3(const b3Matrix3 &other) {
+        memcpy(m_ts, other.m_ts, sizeof(T) * 9);
     }
 
-    const Index n = F.maxCoeff()+1;
-    A.resize(n,n);
-    switch(F.cols())
-    {
-        case 3:
-            A.reserve(6*(F.maxCoeff()+1));
-            break;
-        case 4:
-            A.reserve(26*(F.maxCoeff()+1));
-            break;
+    explicit b3Matrix3(const Eigen::Matrix3<T>& m) {
+        m_11 = m(0, 0);
+        m_21 = m(1, 0);
+        m_31 = m(2, 0);
+        m_12 = m(0, 1);
+        m_22 = m(1, 1);
+        m_32 = m(2, 1);
+        m_13 = m(0, 2);
+        m_23 = m(1, 2);
+        m_33 = m(2, 2);
     }
-    A.setFromTriplets(ijv.begin(),ijv.end());
 
-    // Force all non-zeros to be one
-
-    // Iterate over outside
-    for(int k=0; k<A.outerSize(); ++k)
-    {
-        // Iterate over inside
-        for(typename Eigen::SparseMatrix<T>::InnerIterator it (A,k); it; ++it)
-        {
-            assert(it.value() != 0);
-            A.coeffRef(it.row(),it.col()) = 1;
-        }
+    inline b3Vector3<T> col(const int i) {
+        return b3Vector3<T>(m_ts[i * 3], m_ts[i * 3 + 1], m_ts[i * 3 + 2]);
     }
-}
+
+    inline b3Vector3<T> row(const int i) {
+        return b3Vector3<T>(m_ts[i], m_ts[i + 3], m_ts[i + 6]);
+    }
+
+    inline b3Matrix3<T> transpose() const {
+        b3Matrix3<T> m;
+        m.m_11 = m_11;
+        m.m_21 = m_12;
+        m.m_31 = m_13;
+        m.m_12 = m_21;
+        m.m_22 = m_22;
+        m.m_32 = m_23;
+        m.m_13 = m_31;
+        m.m_23 = m_32;
+        m.m_33 = m_33;
+        return m;
+    }
+
+    inline void set_zero() {
+        m_ts = {T(0)};
+    }
+
+    inline void set_identity() {
+        m_11 = T(1);
+        m_21 = T(0);
+        m_31 = T(0);
+        m_12 = T(0);
+        m_22 = T(1);
+        m_32 = T(0);
+        m_13 = T(0);
+        m_23 = T(0);
+        m_33 = T(1);
+    }
+
+};
 
 
 #endif //BOX3D_B3_MATRIX_HPP

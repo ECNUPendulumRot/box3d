@@ -7,7 +7,7 @@
 #define BOX3D_B3_GEOMETRY_HPP
 
 
-#include "math/b3_matrix.hpp"
+#include "math/b3_matrix_operation.hpp"
 
 
 template <typename DerivedF, typename DerivedE>

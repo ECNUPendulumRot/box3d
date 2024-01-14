@@ -14,7 +14,7 @@ inline T b3_sqrt(T x) {
 }
 
 template <typename T>
-inline T b3_fabs(T x) {
+inline T b3_abs(T x) {
     return x > 0 ? x : -x;
 }
 

@@ -18,6 +18,7 @@ void box3d::b3CubeShape::set_as_box(double hx, double hy, double hz)
 
     m_centroid.set_zero();
 
+    // TODO: check the order of the axis
     m_vertices[0].set(hx , -hy, -hz);
     m_vertices[1].set(hx , hy , -hz);
     m_vertices[2].set(-hx, hy , -hz);
@@ -36,6 +37,8 @@ void box3d::b3CubeShape::set_as_box(double hx, double hy, double hz)
     m_normals[5].set(-1.0f, 0.0f, 0.0f);
 
     m_xyz.set(2 * hx, 2 * hy, 2 * hz);
+    m_h_xyz.set(hx, hy, hz);
+
 }
 
 

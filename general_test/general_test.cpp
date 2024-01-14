@@ -5,11 +5,13 @@
 #include <Eigen/Core>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-
+#include <type_traits>
 
 int main(int argc, char* argv[]) {
 
     Eigen::MatrixXd m = Eigen::Matrix3d();
+
+    static_assert(std::is_trivial_v<Eigen::Vector3d> == true);
 
     std::cout << sizeof(Eigen::MatrixXd) << std::endl;
     std::cout << sizeof(Eigen::MatrixXi) << std::endl;

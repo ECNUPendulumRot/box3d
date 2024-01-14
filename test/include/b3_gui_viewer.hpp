@@ -70,7 +70,7 @@ class b3GUIViewer {
 
     b3ViewShapePair* m_pair_list;
 
-    b3Matrix3d m_transform;
+    E3Matrix3d m_transform;
 
     int m_current_test = -1;
 

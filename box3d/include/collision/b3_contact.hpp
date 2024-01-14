@@ -49,6 +49,8 @@ struct box3d::b3ContactRegister {
 
 class box3d::b3Contact {
 
+protected:
+
     b3Fixture* m_fixture_a;
     b3Fixture* m_fixture_b;
 

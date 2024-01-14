@@ -3,12 +3,18 @@
 #define BOX3D_B3_POSE_HPP
 
 
-#include "common/b3_types.hpp"
 #include <Eigen/Geometry>
 
+#include "common/b3_types.hpp"
+
+#include "math/b3_matrix.hpp"
+
+
 namespace box3d {
+
     template <typename T>
     class b3Transform;
+
 }
 
 
@@ -16,14 +22,19 @@ template <typename T>
 class box3d::b3Transform {
 
     /**
-     * The position part of the pose relative to m_rel_p.
+     * The position part of the pose.
      */
     b3Vector3<T> m_p;
 
     /**
-     * The orientation part of the pose relative to m_rel_p.
+     * The orientation part of the pose.
      */
     b3Vector3<T> m_r;
+
+    /**
+     * The rotation matrix of the pose.
+     */
+    b3Matrix3d m_r_t;
 
 public:
 
@@ -70,10 +81,12 @@ public:
 
     inline void set_angular(b3Vector3<T> p){
         m_r = p;
+        m_r_t = rotation_matrix();
     };
 
     inline void set_angular(const T& x, const T& y, const T& z){
         m_r = b3Vector3<T>(x, y, z);
+        m_r_t = rotation_matrix();
     };
 
     inline b3Vector3<T> linear() const {
@@ -84,7 +97,11 @@ public:
         return m_r;
     };
 
-    inline b3Matrix3<T> rotation_matrix() const {
+    inline b3Matrix3<T> rotation_matrix_b3() const {
+        return m_r_t;
+    };
+
+    inline E3Matrix3<T> rotation_matrix() const {
         if (m_r.is_zero()) {
             return Eigen::Matrix3<T>::Identity();
         } else {

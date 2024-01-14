@@ -10,6 +10,7 @@ namespace box3d {
 
 }
 
+
 class box3d::b3SphereContact : public b3Contact {
 
 public:

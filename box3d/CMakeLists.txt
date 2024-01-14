@@ -8,7 +8,6 @@ set(B3D_HEADER_FILES
         include/collision/b3_bvh.hpp
         include/collision/b3_aabb.hpp
         include/collision/b3_fixture.hpp
-        include/collision/b3_rigid_fixture.hpp
         include/collision/b3_broad_phase.hpp
 
         include/collision/b3_contact_manager.hpp
@@ -29,7 +28,7 @@ set(B3D_HEADER_FILES
         include/utils/b3_json.hpp
         include/utils/b3_timer.hpp
 
-        include/math/b3_matrix.hpp
+        include/math/b3_matrix_operation.hpp
         include/math/b3_vector.hpp
         include/math/b3_min_max.hpp
         include/math/b3_math.hpp
@@ -43,6 +42,7 @@ set(B3D_HEADER_FILES
         include/collision/b3_collision.hpp
         include/collision/b3_cube_contact.hpp
         include/collision/b3_sphere_contact.hpp
+        include/math/b3_matrix.hpp
 
 )
 
@@ -70,6 +70,8 @@ set(B3D_SOURCE_FILES
         src/utils/b3_log.cpp
         src/geometry/b3_cube_shape.cpp
         src/geometry/b3_sphere_shape.cpp
+        src/collision/b3_cube_contact.cpp
+        src/collision/b3_collide_cube.cpp
 
 )
 

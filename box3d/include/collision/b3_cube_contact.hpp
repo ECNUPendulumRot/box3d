@@ -1,9 +1,11 @@
 
-#ifndef BOX3D_B3CUBECONTACT_HPP
-#define BOX3D_B3CUBECONTACT_HPP
+#ifndef BOX3D_B3_CUBE_CONTACT_HPP
+#define BOX3D_B3_CUBE_CONTACT_HPP
+
 
 #include "collision/b3_contact.hpp"
 #include "collision/b3_collision.hpp"
+
 
 namespace box3d {
 
@@ -13,8 +15,6 @@ namespace box3d {
 
 
 class box3d::b3CubeContact: public b3Contact {
-
-
 
 protected:
 
@@ -27,7 +27,8 @@ protected:
     virtual ~b3CubeContact() = default;
 
     void evaluate(b3Manifold* manifold, const b3TransformD& xf_a, const b3TransformD& xf_b) override;
+
 };
 
 
-#endif //BOX3D_B3CUBECONTACT_HPP
+#endif //BOX3D_B3_CUBE_CONTACT_HPP

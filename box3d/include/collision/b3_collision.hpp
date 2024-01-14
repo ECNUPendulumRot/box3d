@@ -88,4 +88,10 @@ void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
                                 const b3TransformD& xf_b);
 
 
+void b3_collide_cube(box3d::b3Manifold* manifold,
+                     const box3d::b3CubeShape* cube_A,
+                     const b3TransformD& xf_A,
+                     const box3d::b3CubeShape* cube_B,
+                     const b3TransformD& xf_B);
+
 #endif //BOX3D_B3_COLLISION_HPP

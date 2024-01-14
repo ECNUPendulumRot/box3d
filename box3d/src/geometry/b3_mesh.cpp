@@ -8,7 +8,7 @@
 
 #include "geometry/b3_geometry.hpp"
 
-#include "math/b3_matrix.hpp"
+#include "math/b3_matrix_operation.hpp"
 
 #include "utils/b3_io.hpp"
 #include "common/b3_types.hpp"
@@ -16,16 +16,16 @@
 #include "common/b3_allocator.hpp"
 #include "dynamics/b3_body.hpp"
 
-bool compute_mass_properties_3D(const b3MatrixXd& vertices,
-                                const b3MatrixXi& faces,
+bool compute_mass_properties_3D(const E3MatrixXd& vertices,
+                                const E3MatrixXi& faces,
                                 double& mass,
                                 b3Vector3d& center,
-                                b3Matrix3d& inertia);
+                                E3Matrix3d& inertia);
 
 box3d::b3Mesh::b3Mesh():
-    m_V(b3MatrixXd(0, 0)),
-    m_E(b3MatrixXi(0, 0)),
-    m_F(b3MatrixXi(0, 0))
+    m_V(E3MatrixXd(0, 0)),
+    m_E(E3MatrixXi(0, 0)),
+    m_F(E3MatrixXi(0, 0))
 {
     ;
 }
@@ -41,10 +41,10 @@ void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, 
 {
     b3_NOT_USED(childIndex);
 
-    b3Matrix3d R_T = xf.rotation_matrix().transpose();
+    E3Matrix3d R_T = xf.rotation_matrix().transpose();
     Eigen::RowVector3d p_T = xf.linear().eigen_vector3().transpose();
 
-    b3MatrixXd trans =  m_V * R_T + p_T.replicate(m_V.rows(), 1);
+    E3MatrixXd trans = m_V * R_T + p_T.replicate(m_V.rows(), 1);
     Eigen::Vector3d aabb_min = trans.colwise().minCoeff();
     Eigen::Vector3d aabb_max = trans.colwise().maxCoeff();
 
@@ -83,8 +83,8 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
     // 0 0 1
     // 1 0 0
     // 0 1 0
-    static b3Matrix3d transform = [](){
-        b3Matrix3d m;
+    static E3Matrix3d transform = [](){
+        E3Matrix3d m;
         m.setIdentity();
         m.col(0).swap(m.col(1));
         m.col(1).swap(m.col(2));
@@ -138,7 +138,7 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
 }
 
 
-bool box3d::b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, b3Matrix3d& Inertia) const
+bool box3d::b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, E3Matrix3d& Inertia) const
 {
     bool success = compute_mass_properties_3D(m_V, m_F, volume, CoG, Inertia);
 
@@ -157,16 +157,16 @@ void box3d::b3Mesh::recenter(const b3TransformD &new_center)
 }
 
 
-b3MatrixXd box3d::b3Mesh::transform() const
+E3MatrixXd box3d::b3Mesh::transform() const
 {
     return transform_rigid(m_body->get_pose());
 }
 
 
-b3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
+E3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
 {
     // Because the mesh vertices are rowwise, we need to transpose the matrix
-    b3Matrix3d R_T = pose.rotation_matrix().transpose();
+    E3Matrix3d R_T = pose.rotation_matrix().transpose();
     Eigen::RowVector3d p_T = pose.linear().eigen_vector3().transpose();
 
     return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();
@@ -176,11 +176,11 @@ b3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
 // The method is introduced by Mirtich and utilized by Geometric Tools Engine
 // For more details please access:
 // https://www.geometrictools.com/Documentation/PolyhedralMassProperties.pdf
-bool compute_mass_properties_3D(const b3MatrixXd& vertices,
-                                const b3MatrixXi& faces,
+bool compute_mass_properties_3D(const E3MatrixXd& vertices,
+                                const E3MatrixXi& faces,
                                 double& mass,
                                 b3Vector3d& center,
-                                b3Matrix3d& inertia)
+                                E3Matrix3d& inertia)
 {
     if (faces.size() == 0 || faces.cols() != 3) {
         return false;

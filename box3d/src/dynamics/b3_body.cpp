@@ -9,7 +9,7 @@
 
 box3d::b3Body::b3Body(const box3d::b3BodyDef &body_def):
     m_volume(0.0),
-    m_inertia(b3Matrix3d::Zero())
+    m_inertia(E3Matrix3d::Zero())
 {
     m_type = body_def.m_type;
 
@@ -56,8 +56,8 @@ void box3d::b3Body::reset_mass_data()
 {
     m_mass = 0.0;
     m_inv_mass = 0.0;
-    m_inertia = b3Matrix3d::Zero();
-    m_inv_inertia = b3Matrix3d::Zero();
+    m_inertia = E3Matrix3d::Zero();
+    m_inv_inertia = E3Matrix3d::Zero();
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
@@ -85,7 +85,7 @@ void box3d::b3Body::reset_mass_data()
     }
 
     if (m_inertia.determinant() > 0) {
-        b3Matrix3d bias_center;
+        E3Matrix3d bias_center;
 
         double bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
         double byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
@@ -104,8 +104,8 @@ void box3d::b3Body::reset_mass_data()
         m_inv_inertia = m_inertia.inverse();
 
     } else {
-        m_inv_inertia = b3Matrix3d::Zero();
-        m_inv_inertia = b3Matrix3d::Zero();
+        m_inv_inertia = E3Matrix3d::Zero();
+        m_inv_inertia = E3Matrix3d::Zero();
     }
 
     // TODO: check whether m_sweep is needed
