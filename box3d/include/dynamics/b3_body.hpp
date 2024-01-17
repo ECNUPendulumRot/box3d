@@ -78,6 +78,17 @@ class box3d::b3Body {
 
     b3Body* m_next = nullptr;
 
+
+    //////////////// Island ////////////////////////////////
+    int32 m_island_index;
+
+    uint32 m_flags = 0;
+
+    //////
+    enum {
+        e_island_flag = 1
+    };
+
 public:
 
     /**
@@ -111,6 +122,26 @@ public:
         return m_xf;
     }
 
+    b3TransformD get_velocity() const {
+        return m_velocity;
+    }
+
+    int32 get_island_index() const {
+        return m_island_index;
+    }
+
+    double get_inv_mass() const {
+        return m_inv_mass;
+    }
+
+    b3Matrix3d get_inv_inertia() const {
+        return m_inv_inertia;
+    }
+
+    b3Vector3d get_local_center() const {
+        return m_local_center;
+    }
+
     inline void set_next(b3Body* next) {
         m_next = next;
     }
@@ -125,6 +156,10 @@ public:
 
     inline void set_contact_list(b3ContactEdge* contact_list) {
         m_contact_list = contact_list;
+    }
+
+    inline void set_island_index(int32 index) {
+        m_island_index = index;
     }
 
 private:

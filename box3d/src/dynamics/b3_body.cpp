@@ -30,6 +30,9 @@ box3d::b3Fixture* box3d::b3Body::create_fixture(const box3d::b3FixtureDef &def) 
     // In this line, the proxies are allocated, but not assigned
     fixture->create_fixture(def, this);
 
+    // add shape pointer in the class world
+    m_world->add_shape(fixture->get_shape());
+
     // create proxies for the fixture
     auto* broad_phase = m_world->get_broad_phase();
     fixture->create_proxy(broad_phase, m_xf);
@@ -98,9 +101,10 @@ void box3d::b3Body::reset_mass_data()
                        -bxy, byy,  -byz,
                        -bxz, -byz, bzz;
 
-        b3_assert(bias_center.determinant() > 0.0);
-
         m_inertia -= m_mass * bias_center;
+
+        b3_assert(m_inertia.determinant() > 0.0);
+
         m_inv_inertia = m_inertia.inverse();
 
     } else {

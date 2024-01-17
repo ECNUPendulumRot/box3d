@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include <vector>
+
 #include "spdlog/spdlog.h"
 
 #include "igl/Timer.h"
@@ -74,6 +76,8 @@ class b3GUIViewer {
 
     int m_current_test = -1;
 
+    std::vector<int> m_view_id_vector;
+
 public:
 
     b3GUIViewer();
@@ -95,6 +99,8 @@ private:
     void redraw_mesh();
 
     void add_meshes();
+
+    void clear_meshes();
 
 };
 

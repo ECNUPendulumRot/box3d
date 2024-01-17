@@ -54,8 +54,7 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
         edge = edge->m_next;
     }
 
-    // b3Contact* contact = b3Contact::create(fixture_a, fixture_b);
-    b3Contact* contact = b3Contact::create(fixture_a, 0, fixture_b, 0);
+    b3Contact* contact = b3Contact::create(fixture_a, index_a, fixture_b, index_b);
 
     if(contact == nullptr) {
         return;
@@ -69,29 +68,28 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
     m_contact_list = contact;
 
     // Connect to island graph
-    // delete ? 
 
     // Connect to body A
-    // b3ContactEdge* node_a = contact->get_node_a();
-    // node_a->set_other(body_b);
-    // node_a->set_contact(contact);
-    // node_a->set_prev(nullptr);
-    // node_a->set_next(body_a->get_contact_list());
-    // if(body_a->get_contact_list() != nullptr) {
-    //     body_a->get_contact_list()->set_prev(node_a);
-    // }
-    // body_a->set_contact_list(node_a);
+    b3ContactEdge* node_a = contact->get_node_a();
+    node_a->m_other = body_b;
+    node_a->m_contact = contact;
+    node_a->m_prev = nullptr;
+    node_a->m_next = body_a->get_contact_list();
+    if(body_a->get_contact_list() != nullptr) {
+        body_a->get_contact_list()->m_prev = node_a;
+    }
+    body_a->set_contact_list(node_a);
 
     // Connect to body B
-    // b3ContactEdge* node_b = contact->get_node_b();
-    // node_b->set_other(body_a);
-    // node_b->set_contact(contact);
-    // node_b->set_prev(nullptr);
-    // node_b->set_next(body_b->get_contact_list());
-    // if(body_b->get_contact_list() != nullptr) {
-    //     body_b->get_contact_list()->set_prev(node_b);
-    // }
-    // body_b->set_contact_list(node_b);
+    b3ContactEdge* node_b = contact->get_node_b();
+    node_b->m_other = body_a;
+    node_b->m_contact = contact;
+    node_b->m_prev = nullptr;
+    node_b->m_next = body_b->get_contact_list();
+    if(body_b->get_contact_list() != nullptr) {
+        body_b->get_contact_list()->m_prev = node_b;
+    }
+    body_b->set_contact_list(node_b);
 
     ++m_contact_count;
 }
@@ -100,39 +98,86 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
 void box3d::b3ContactManager::destory(b3Contact* contact)
 {
     
-    if(contact->get_prev()) {
-        contact->get_prev()->set_next(contact->get_next());
+    if(contact->prev()) {
+        contact->prev()->set_next(contact->next());
     }
 
-    if(contact->get_next()) {
-        contact->get_next()->set_prev(contact->get_prev());
+    if(contact->next()) {
+        contact->next()->set_prev(contact->prev());
     }
 
     if(contact == m_contact_list) {
-        m_contact_list = contact->get_next();
+        m_contact_list = contact->next();
     }
 
     // remove form body a
-    
-    // remove form body b
+    // not use firend class.
+    if(contact->get_node_a()->m_prev) {
+        contact->get_node_a()->m_prev->m_next = contact->get_node_a()->m_next;
+    }
+    if(contact->get_node_a()->m_next) {
+        contact->get_node_a()->m_next->m_prev = contact->get_node_a()->m_prev;
+    }
+    b3Body* body_a = contact->get_fixture_a()->get_body();
+    if(contact->get_node_a() == body_a->get_contact_list()) {
+        body_a->set_contact_list(contact->get_node_a()->m_next);
+    }
 
+    // remove form body b
+    if(contact->get_node_b()->m_prev) {
+        contact->get_node_b()->m_prev->m_next = contact->get_node_b()->m_next;
+    }
+    if(contact->get_node_b()->m_next) {
+        contact->get_node_b()->m_next->m_prev = contact->get_node_b()->m_prev;
+    }
+    b3Body* body_b = contact->get_fixture_b()->get_body();
+    if(contact->get_node_b() == body_b->get_contact_list()) {
+        body_b->set_contact_list(contact->get_node_b()->m_next);
+    }
+
+    b3_free(contact);
+    --m_contact_count;
 }
 
 
 void box3d::b3ContactManager::collide()
 {
 
-    b3Contact* current_contact = m_contact_list;
+    b3Contact* contact = m_contact_list;
 
-    while(current_contact) {
+    while(contact) {
+
+        b3Body* body_a = contact->get_fixture_a()->get_body();
+        b3Body* body_b = contact->get_fixture_b()->get_body();
         
         // is this pair shouldn't collide,
         // destory this contact
 
-        // box2d do a overlap in the broad-phase ??
+        bool active_a = body_a->get_type() != b3BodyType::b3_static_body;
+        bool active_b = body_b->get_type() != b3BodyType::b3_static_body;
 
-        // do a narrow phase
-        // current_contact->update();
-        current_contact = current_contact->get_next();
+        if(active_a == false && active_b == false) {
+            contact = contact->next();
+            continue;
+        }
+
+        int32 index_a = contact->get_child_index_a();
+        int32 index_b = contact->get_child_index_b();
+        const b3AABB& aabb_a = contact->get_fixture_a()->get_fixture_proxy(index_a)->m_aabb;
+        const b3AABB& aabb_b = contact->get_fixture_b()->get_fixture_proxy(index_b)->m_aabb;
+
+        bool overlap = box3d::b3AABB::overlapped(aabb_a, aabb_b);
+
+        if(!overlap) {
+            b3Contact* destory_c = contact;
+            contact = contact->next();
+            destory(destory_c);
+            continue;
+        }
+
+        // the contact persist 
+        // TODO: add a contact lisitener: a callback function
+        contact->update();
+        contact = contact->next();
     }
 }

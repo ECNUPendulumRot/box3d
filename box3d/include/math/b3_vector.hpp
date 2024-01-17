@@ -108,6 +108,14 @@ public:
         return *this;
     }
 
+    template<typename U>
+    inline b3Vector3& operator*(U s) {
+        m_x *= s;
+        m_y *= s;
+        m_z *= s;
+        return *this;
+    }
+
     template <typename U>
     inline b3Vector3& operator/=(U s) {
         return *this *= (U(1.0) / s);

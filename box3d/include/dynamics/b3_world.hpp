@@ -2,7 +2,8 @@
 #ifndef BOX3D_B3_WORLD_HPP
 #define BOX3D_B3_WORLD_HPP
 
-#include  <filesystem>
+#include <filesystem>
+#include <vector>
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
@@ -11,6 +12,8 @@
 
 #include "collision/b3_broad_phase.hpp"
 #include "collision/b3_contact_manager.hpp"
+
+#include "dynamics/b3_island.hpp"
 
 namespace box3d {
 
@@ -41,6 +44,8 @@ class box3d::b3World {
 
     bool m_new_contacts = false;
 
+    std::vector<b3Island*> m_island_list;
+
 public:
 
     b3World();
@@ -64,13 +69,19 @@ public:
         return m_shape_count;
     }
 
-    b3Shape* get_shape(int id) const {
-
-        if (id >= m_shape_count)
-            return nullptr;
-
-        return &m_shape_list[id];
+    b3Shape* get_shape_list() const {
+        return m_shape_list;
     }
+
+    // b3Shape* get_shape(int id) const {
+
+    //     if (id >= m_shape_count)
+    //         return nullptr;
+
+    //     return m_shape_list[id];
+    // }
+
+    void add_shape(b3Shape* shape);
 
     void set_gravity(const b3Vector3d& gravity) {
         m_gravity = gravity;
@@ -92,6 +103,8 @@ public:
     inline void awake_contact_check() {
         m_new_contacts = true;
     }
+
+    void generate_island();
 
 protected:
 

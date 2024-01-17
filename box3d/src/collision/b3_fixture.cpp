@@ -13,6 +13,7 @@ void box3d::b3Fixture::create_fixture(const box3d::b3FixtureDef &f_def, box3d::b
     m_body = body;
 
     m_shape = f_def.get_shape()->clone();
+    m_shape->set_relative_body(body);
 
     m_proxies = (b3FixtureProxy*)b3_alloc(sizeof(b3FixtureProxy));
 
@@ -40,7 +41,7 @@ void box3d::b3Fixture::create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_x
     {
         b3FixtureProxy* proxy = m_proxies + i;
         m_shape->get_bound_aabb(&proxy->m_aabb, m_xf, i);
-        proxy->m_proxy_id = broad_phase->create_proxy(m_proxies->m_aabb, m_proxies);
+        proxy->m_proxy_id = broad_phase->create_proxy(proxy->m_aabb, proxy);
         proxy->m_fixture = this;
         proxy->m_child_id = i;
     }

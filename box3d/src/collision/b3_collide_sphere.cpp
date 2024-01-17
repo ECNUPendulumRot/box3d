@@ -15,7 +15,9 @@ void b3_collide_spheres(box3d::b3Manifold* manifold,
     b3Vector3d ca = xf_a.transform(sphere_a->get_centroid_of_sphere());
     b3Vector3d cb = xf_b.transform(sphere_b->get_centroid_of_sphere());
 
-    double sq_distance = (cb - ca).dot(cb - ca);
+    b3Vector3d ab = cb - ca;
+
+    double sq_distance = ab.dot(ab);
     double radius = sphere_a->get_radius() + sphere_b->get_radius();
 
     if(sq_distance > radius * radius) {
@@ -25,11 +27,16 @@ void b3_collide_spheres(box3d::b3Manifold* manifold,
 
     manifold->type = manifold->e_circles;
     manifold->point_count = 1;
-    manifold->local_normal.set_zero();
-    manifold->local_point = sphere_a->get_centroid_of_sphere();
+    manifold->local_normal = ab.normalized();
+
+    double penetration = b3_sqrt(sq_distance) - radius;
     
-    manifold->points[0].m_local_point = sphere_b->get_centroid_of_sphere();
+    double length = sphere_a->get_radius() + penetration / 2;
+
+    // the collide point on the world frame
+    manifold->points[0].m_local_point = ca + manifold->local_normal * length;
     manifold->points[0].id.key = 0;
+    manifold->m_penetration = penetration;
 }
 
 

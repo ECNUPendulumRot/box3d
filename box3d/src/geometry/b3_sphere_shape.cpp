@@ -2,6 +2,8 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "common/b3_allocator.hpp"
 
+#include "dynamics/b3_body.hpp"
+
 
 #define K_SEGMENTS 20
 
@@ -94,13 +96,17 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
     Eigen::Vector3d v2;
     int index = 0;
 
+    // transform the center of sphere to world frame
+    auto body_pose = m_body->get_pose();
+    Eigen::Vector3d world_center = m_body->get_pose().transform(m_centroid).eigen_vector3();
+
     for(int i = 1; i < m_config.m_segments; ++i) {
         v1 = rot_y * v1;
         v2 = v1;
 
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
+            view_data->m_V.row(index++) = world_center + m_radius * v2;
         }
 
         v2 = v1;
@@ -108,15 +114,15 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         v2.x() = -v2_x;
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
+            view_data->m_V.row(index++) = world_center + m_radius * v2;
         }
     }
 
     v1 = rot_y * v1;
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     v2 = rot_z * v1;
-    view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
-    view_data->m_V.row(index++) = m_centroid.eigen_vector3() - m_radius * v2;
+    view_data->m_V.row(index++) = world_center + m_radius * v2;
+    view_data->m_V.row(index++) = world_center - m_radius * v2;
         
 
     // the number of rings is k_segments - 1, 
