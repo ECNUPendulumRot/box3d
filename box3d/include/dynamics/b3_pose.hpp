@@ -118,6 +118,10 @@ public:
         return m_r_t * v + m_p;
     }
 
+    // inline b3Vector3<T> transform_local(const b3Vector3<T>& v) const {
+    //     return b3Vector3<T>((v - m_p).eigen_vector3().transform() * rotation_matrix());
+    // }
+
 };
 
 

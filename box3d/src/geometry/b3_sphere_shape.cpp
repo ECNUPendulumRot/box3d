@@ -2,7 +2,38 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "common/b3_allocator.hpp"
 
-#include <Eigen/Dense>
+#include "dynamics/b3_body.hpp"
+
+
+#define K_SEGMENTS 20
+
+const box3d::b3SphereConfig box3d::b3SphereShape::m_config;
+
+
+box3d::b3SphereConfig::b3SphereConfig() {
+
+    m_segments = K_SEGMENTS;
+    
+    double k_increments = b3_pi / m_segments;
+    double sin_inc = sin(k_increments);
+    double cos_inc = cos(k_increments);
+
+    m_rot_y <<  cos_inc,        0,      sin_inc,
+                0,              1,      0,
+                -sin_inc,       0,      cos_inc;
+
+    m_rot_z <<  cos_inc,    -sin_inc,   0,
+                sin_inc,    cos_inc,    0,
+                0,          0,          1;
+
+    // the sphere is divided into two points on the end of sphere
+    // and %m_segments - 1% rings. 
+    // Every ring has %m_ring_points_count% points.
+    m_ring_points_count = 2 * m_segments;
+    m_vertices_rows = m_ring_points_count * (m_segments - 1) + 2;
+    m_faces_rows = (m_segments - 1) * 2 * m_ring_points_count;
+}
+
 
 box3d::b3SphereShape::b3SphereShape() {
     m_radius = 0;
@@ -55,115 +86,105 @@ box3d::b3Shape* box3d::b3SphereShape::clone() const {
 
 
 void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
-    // default is divide 2
-    const int k_segments = 8;
-    const double k_increments = b3_pi / k_segments;
 
-    double sin_inc = sin(k_increments);
-    double cos_inc = cos(k_increments);
+    view_data->m_V.resize(m_config.m_vertices_rows, 3);
+    
+    const b3Matrix3d& rot_y = m_config.m_rot_y;
+    const b3Matrix3d& rot_z = m_config.m_rot_z;
 
-    // Sample n rings on the sphere
-    // Sample n points on the ring
-    // At both ends of the sphere, the sampling points are the same, so one is need.
-    view_data->m_V.resize(2 * k_segments * (k_segments - 1) + 2, 3);
-
-    // Perform rotation to avoid additional trigonometry.
-    // z = r * sin(a)
-    // x = r * cos(a) * cos(b)
-    // y = r * cos(a) * sin(b)
-    E3Matrix3d rot_y, rot_z;
-    rot_y << cos_inc, 0, sin_inc,
-             0, 1, 0,
-             -sin_inc, 0, cos_inc;
-
-    rot_z << cos_inc, 0, -sin_inc,
-             sin_inc, 0, cos_inc,
-             0, 0, 1;
     Eigen::Vector3d v1(0, 0, 1);
+    Eigen::Vector3d v2;
     int index = 0;
-    for(int i = 0; i < k_segments; ++i) {
+
+    // transform the center of sphere to world frame
+    auto body_pose = m_body->get_pose();
+    Eigen::Vector3d world_center = m_body->get_pose().transform(m_centroid).eigen_vector3();
+
+    for(int i = 1; i < m_config.m_segments; ++i) {
         v1 = rot_y * v1;
-        Eigen::Vector3d v2 = v1;
+        v2 = v1;
 
-        if(i == k_segments - 1) {
-            // two end of sphere
-            // actually are (0, 0, 1) and (0, 0, -1)
+        for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() - m_radius * v2;
-            break;
+            view_data->m_V.row(index++) = world_center + m_radius * v2;
         }
 
-        for(int j = 0; j < k_segments; ++j) {
+        v2 = v1;
+        double v2_x = v2.x();
+        v2.x() = -v2_x;
+        for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
-        }
-
-        v2 = -v1;
-        for(int j = 0; j < k_segments; ++j) {
-            v2 = rot_z * v2;
-            view_data->m_V.row(index++) = m_centroid.eigen_vector3() + m_radius * v2;
+            view_data->m_V.row(index++) = world_center + m_radius * v2;
         }
     }
 
-    int rows = view_data->m_V.rows();
-
-    // now we have 2n(n-1) + 2 points(n = k_segments)
-    // 0 - 2n-1 are the first ring and ordering
-    // 2n - 4n-1 are the second ring and ordering 
-    // ....
-    // the 2n(n-1)th point is end of the point on the sphere(-z)
-    // the 2n(n-1)+1th point is end of the point on the sphere(z)
+    v1 = rot_y * v1;
+    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
+    v2 = rot_z * v1;
+    view_data->m_V.row(index++) = world_center + m_radius * v2;
+    view_data->m_V.row(index++) = world_center - m_radius * v2;
+        
 
     // the number of rings is k_segments - 1, 
     // every adjacent ring need construct the triangle face.
     
     // the number of points on one ring
-    int point_number = 2 * k_segments;
 
     // point_number + point_number + (k_segments - 1 - 1) * 2 * point_number;
     // = (k_segments - 1) * 2 * point_number
-    view_data->m_F.resize((k_segments - 1) * 2 * point_number, 3);
-
+    view_data->m_F.resize(m_config.m_faces_rows, 3);
+    index = 0;
     {
         // the point (0, 0, 1) with the first ring
-        int first = rows - 1;
+        int first = m_config.m_vertices_rows - 1;
         int second = 0;
-        view_data->m_F.row(index++) << first, second, point_number - 1;
-        for(int j = 1; j < point_number; ++j) {
+
+        view_data->m_F.row(index++) << first, second, m_config.m_ring_points_count - 1;
+
+        for(int j = 1; j < m_config.m_ring_points_count; ++j) {
             view_data->m_F.row(index++) << first, second, second + 1;
             second = second + 1;
         }
     }
     {
         // the point (0, 0, -1) with the last ring
-        int first = rows - 2;
-        int second = rows - point_number - 2;
-        // rows - 2point_num - 3 + 1 = rows - 2point_num - 2
-        view_data->m_F.row(index++) << first, second, rows - 3;
-        for(int j = 1; j < point_number; ++j) {
+        int first = m_config.m_vertices_rows - 2;
+        int second = m_config.m_vertices_rows - m_config.m_ring_points_count - 2;
+
+        view_data->m_F.row(index++) << first, second, m_config.m_vertices_rows - 3;
+
+        for(int j = 1; j < m_config.m_ring_points_count; ++j) {
             view_data->m_F.row(index++) << first, second, second + 1;
             second = second + 1;
         }
     }
 
-
-    // the number of ring is k_segment - 1
-    for(int i = 0; i < k_segments - 2; ++i) {
-        // construct face between adjacent ring.
-        // first ring points are the index: [point_number * i, point_number * (i + 1) -1]
-        // second ring points are the index: [point_number * (i + 1), point_number * (i + 2) - 1] 
-        int first_ring_index = point_number * i;
-        int second_ring_index = first_ring_index + point_number;
-        // first construct two face index overflow
-        // first ring start, end  and second ring end
-        // first ring start, and second ring start and end
-        int second_ring_end = second_ring_index + point_number - 1;
-        view_data->m_F.row(index++) << first_ring_index, second_ring_index - 1, second_ring_index;
-        view_data->m_F.row(index++) << second_ring_index - 1, second_ring_index, second_ring_end;
+    int first_ring_index = -1;
+    int second_ring_index = 0;
+    for(int i = 0; i < m_config.m_segments - 2; ++i) {
         
-        for(int j = 1; j < point_number; ++j) {
-            view_data->m_F.row(index++) << first_ring_index, second_ring_index, second_ring_index - 1;
+        // construct face between adjacent ring.
+
+        first_ring_index++;
+        second_ring_index = first_ring_index + m_config.m_ring_points_count;
+        // first construct two face index overflow
+        // first ring start, end  and second ring start
+        // first ring end, and second ring start and end
+        view_data->m_F.row(index++) << first_ring_index, 
+                                       second_ring_index - 1, 
+                                       second_ring_index;
+        view_data->m_F.row(index++) << second_ring_index - 1, 
+                                       second_ring_index, 
+                                       second_ring_index + m_config.m_ring_points_count - 1;
+        // two near ring
+        // first ring points index(based on first_ring_index):    0, 1, 2, 3, ……， n-2, n-1, 0
+        //                                                                              ------
+        //                                                                              |    /| 
+        //                                                                              |  /  |
+        //                                                                              |-----
+        // second ring points index(based on second_ring_index):  0, 1, 2, 3, ……， n-2, n-1, 0
+        for(int j = 1; j < m_config.m_ring_points_count; ++j) {
+            view_data->m_F.row(index++) << first_ring_index, second_ring_index, second_ring_index + 1;
             second_ring_index++;
             view_data->m_F.row(index++) << first_ring_index, second_ring_index, first_ring_index + 1;
             first_ring_index++;

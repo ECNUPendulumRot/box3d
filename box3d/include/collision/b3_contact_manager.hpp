@@ -24,7 +24,7 @@ class box3d::b3ContactManager {
 
     b3BroadPhase m_broad_phase;
 
-    b3Contact* m_contact_list;
+    b3Contact* m_contact_list = nullptr;
 
     int32 m_contact_count = 0;
 
@@ -42,6 +42,14 @@ public:
 
     b3BroadPhase* get_broad_phase() {
         return &m_broad_phase;
+    }
+
+    int32 get_contact_count() const {
+        return m_contact_count;
+    }
+
+    b3Contact* get_contact_list() const {
+        return m_contact_list;
     }
 
 };

@@ -22,13 +22,13 @@ namespace box3d {
 
 struct box3d::b3ContactEdge {
 
-    b3Body* m_other;
+    b3Body* m_other = nullptr;
 
-    b3Contact* m_contact;
+    b3Contact* m_contact = nullptr;
 
-    b3ContactEdge* m_prev;
+    b3ContactEdge* m_prev = nullptr;
 
-    b3ContactEdge* m_next;
+    b3ContactEdge* m_next = nullptr;
 
 };
 
@@ -70,9 +70,36 @@ protected:
 
     static bool s_initialized;
 
+
+    ////////// Coefficients related to the material of the object ///////////
+    // TODO： 
+    double m_restitution;
+
+    uint32 m_flags = 0;
+
 public:
 
     b3Contact(b3Fixture* f_A, int32 index_A, b3Fixture* f_B, int32 index_B);
+
+    enum {
+        e_island_flag = 1,
+        e_touching_flag = 1 << 1
+    };
+
+    void set_flag(uint32 flag) {
+        m_flags |= flag;
+    }
+
+    void unset_flag(uint32 flag) {
+        m_flags &= ~flag;
+    }
+
+    bool test_flag(uint32 flag) {
+        if(m_flags & flag) {
+            return true;
+        }
+        return false;
+    }
 
     inline b3Fixture* get_fixture_a() const {
         return m_fixture_a;
@@ -82,11 +109,19 @@ public:
         return m_fixture_b;
     }
 
-    inline b3Contact* get_prev() const {
+    b3ContactEdge* get_node_a() {
+        return &m_node_a;
+    }
+
+    b3ContactEdge* get_node_b() {
+        return &m_node_b;
+    }
+
+    inline b3Contact* prev() const {
         return m_prev;
     }
 
-    inline b3Contact* get_next() const {
+    inline b3Contact* next() const {
         return m_next;
     }
 
@@ -118,9 +153,15 @@ public:
         return &m_manifold;
     }
 
+    double get_restitution() const {
+        return m_restitution;
+    }
+
     virtual void evaluate(b3Manifold* manifold, const b3TransformD& xfA, const b3TransformD& xfB) = 0;
 
 protected:
+
+    friend class b3ContactManager;
 
     static void initialize_registers();
 
@@ -130,6 +171,8 @@ protected:
     static b3Contact* create(b3Fixture* fixture_A, int32 index_A, b3Fixture* fixture_B, int32 index_B);
 
     static void destroy(b3Contact* contact);
+
+    void update();
 };
 
 

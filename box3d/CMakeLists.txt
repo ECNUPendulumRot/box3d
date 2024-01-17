@@ -4,6 +4,7 @@ set(B3D_HEADER_FILES
         include/common/b3_types.hpp
         include/common/b3_allocator.hpp
         include/common/b3_common.hpp
+        include/common/b3_time_step.hpp
 
         include/collision/b3_bvh.hpp
         include/collision/b3_aabb.hpp
@@ -12,6 +13,9 @@ set(B3D_HEADER_FILES
 
         include/collision/b3_contact_manager.hpp
         include/collision/b3_contact.hpp
+        include/collision/b3_collision.hpp
+        include/collision/b3CubeContact.hpp
+        include/collision/b3_sphere_contact.hpp
 
 
         include/dynamics/b3_pose.hpp
@@ -19,9 +23,13 @@ set(B3D_HEADER_FILES
         include/dynamics/b3_inertia.hpp
         include/dynamics/b3_world.hpp
         include/dynamics/b3_body_def.hpp
+        include/dynamics/b3_island.hpp
 
         include/geometry/b3_mesh.hpp
         include/geometry/b3_geometry.hpp
+        include/geometry/b3_shape.hpp
+        include/geometry/b3_cube_shape.hpp
+        include/geometry/b3_sphere_shape.hpp
 
         include/utils/b3_io.hpp
         include/utils/b3_log.hpp
@@ -35,14 +43,8 @@ set(B3D_HEADER_FILES
 
 
         include/solver/b3_solver.hpp
-        include/geometry/b3_shape.hpp
-        include/geometry/b3_cube_shape.hpp
-        include/geometry/b3_sphere_shape.hpp
-        include/common/b3_time_step.hpp
-        include/collision/b3_collision.hpp
-        include/collision/b3_cube_contact.hpp
-        include/collision/b3_sphere_contact.hpp
-        include/math/b3_matrix.hpp
+        include/solver/b3_si_solver.hpp
+        include/solver/b3_contact_constraint.hpp
 
 )
 
@@ -63,15 +65,16 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_inertia.cpp
         src/dynamics/b3_world.cpp
         src/dynamics/b3_body.cpp
+        src/dynamics/b3_island.cpp
 
         src/geometry/b3_mesh.cpp
+        src/geometry/b3_cube_shape.cpp
+        src/geometry/b3_sphere_shape.cpp
 
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
-        src/geometry/b3_cube_shape.cpp
-        src/geometry/b3_sphere_shape.cpp
-        src/collision/b3_cube_contact.cpp
-        src/collision/b3_collide_cube.cpp
+
+        src/solver/b3_si_solver.cpp
 
 )
 

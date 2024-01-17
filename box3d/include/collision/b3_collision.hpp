@@ -98,6 +98,9 @@ struct box3d::b3Manifold {
 
     int32 m_point_count;								///< the number of manifold points
 
+    //////
+    double m_penetration;
+
 };
 
 

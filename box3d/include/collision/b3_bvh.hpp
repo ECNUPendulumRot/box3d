@@ -222,7 +222,8 @@ void box3d::b3DynamicTree::query(T* callback, const b3AABB& aabb) const {
     stack.push(m_root);
 
     while (stack.size() > 0) {
-        int32 node_id = stack.top(); stack.pop();
+        int32 node_id = stack.top(); 
+        stack.pop();
         if(node_id == b3_NULL_NODE) {
             continue;
         }

@@ -123,13 +123,18 @@ public:
     b3Shape* get_shape() const {
         return m_shape;
     }
-
+ 
     void set_shape(b3Shape* shape) {
         m_shape = shape;
     }
 
     inline b3ShapeType get_shape_type() const {
         return m_shape->get_type();
+    }
+
+    b3FixtureProxy* get_fixture_proxy(int index) {
+        b3_assert(index >= 0 && index < m_proxy_count);
+        return (m_proxies + index);
     }
 };
 

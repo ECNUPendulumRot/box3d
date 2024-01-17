@@ -3,13 +3,14 @@
 #include "collision/b3_fixture.hpp"
 #include "dynamics/b3_body.hpp"
 
+#include "collision/b3_sphere_contact.hpp"
 
 box3d::b3ContactRegister box3d::b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 bool box3d::b3Contact::s_initialized = false;
 
 void box3d::b3Contact::initialize_registers()
 {
-
+    add_type(b3SphereContact::create, b3SphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_sphere);
 }
 
 
@@ -25,16 +26,6 @@ box3d::b3Contact::b3Contact(box3d::b3Fixture *f_A, int32 index_A, box3d::b3Fixtu
 
     m_prev = nullptr;
     m_next = nullptr;
-
-    m_node_a.m_contact = nullptr;
-    m_node_a.m_prev = nullptr;
-    m_node_a.m_next = nullptr;
-    m_node_a.m_other = nullptr;
-
-    m_node_b.m_contact = nullptr;
-    m_node_b.m_prev = nullptr;
-    m_node_b.m_next = nullptr;
-    m_node_b.m_other = nullptr;
 
     m_manifold.point_count = 0;
 }
@@ -110,6 +101,27 @@ void box3d::b3Contact::destroy(box3d::b3Contact *contact)
 }
 
 
+// Update the contact manifold and touching status.
+void box3d::b3Contact::update() {
+    
+    // TODO: add warm start, reuse normal and tangent impluse
+    // b3Manifold old_manifold = m_manifold
 
+    b3Body* body_a = m_fixture_a->get_body();
+    b3Body* body_b = m_fixture_b->get_body();
+
+    const b3TransformD xf_a = body_a->get_pose();
+    const b3TransformD xf_b = body_b->get_pose();
+
+    // TODO: add sensor ?
+
+    evaluate(&m_manifold, xf_a, xf_b);
+
+    if(m_manifold.point_count > 0) {
+        m_flags |= e_touching_flag;
+    } else {
+        m_flags &= ~e_touching_flag;
+    }
+}
 
 
