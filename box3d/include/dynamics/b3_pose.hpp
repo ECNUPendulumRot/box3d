@@ -21,6 +21,8 @@ namespace box3d {
 template <typename T>
 class box3d::b3Transform {
 
+public:
+
     /**
      * The position part of the pose.
      */
@@ -35,8 +37,6 @@ class box3d::b3Transform {
      * The rotation matrix of the pose.
      */
     b3Matrix3d m_r_t;
-
-public:
 
     /**
      * @brief Construct a new b3Transform object
@@ -115,11 +115,7 @@ public:
     };
 
     inline b3Vector3<T> transform(const b3Vector3<T>& v) const {
-        return b3Vector3<T>(rotation_matrix() * v.eigen_vector3() + m_p.eigen_vector3());
-    }
-
-    inline b3Vector3d<T> transform_local(const b3Vector3d<T>& v) const {
-        return b3Vector3d<T>((v - m_p).eigen_vector3() * rotation_matrix());
+        return m_r_t * v + m_p;
     }
 
 };

@@ -9,15 +9,18 @@ namespace box3d {
 
     union b3ContactID;
 
+    class b3SphereShape;
+
+    class b3CubeShape;
+
+    struct b3ClipVertex;
+
     struct b3Manifold;
 
     struct b3ManifoldPoint;
 
     struct b3ContactFeature;
 
-    class b3SphereShape;
-
-    class b3CubeShape;
 }
 
 
@@ -25,19 +28,19 @@ namespace box3d {
 /// This must be 4 bytes or less.
 struct box3d::b3ContactFeature
 {
-    enum Type
-    {
-        e_vertex = 0,
-        e_face = 1
+    enum Type {
+        e_f_p = 0x01,
+        e_e_e = 0x02,
+        e_p_f = 0x04
     };
 
-    uint8 indexA;		///< Feature index on shapeA
+    uint8 type;
 
-    uint8 indexB;		///< Feature index on shapeB
+    uint8 index_1;
 
-    uint8 typeA;		///< The feature type on shapeA
+    uint8 index_2;
 
-    uint8 typeB;		///< The feature type on shapeB
+    uint8 index_ext;
 
 };
 
@@ -47,6 +50,15 @@ union box3d::b3ContactID {
     b3ContactFeature cf;
 
     uint32 key;					///< Used to quickly compare contact ids.
+
+};
+
+
+struct box3d::b3ClipVertex {
+
+    b3Vector3d v;
+
+    b3ContactID id;
 
 };
 
@@ -69,9 +81,9 @@ struct box3d::b3Manifold {
 
         e_circles,
 
-        e_faceA,
+        e_face_A,
 
-        e_faceB,
+        e_face_B,
 
         e_edges
     };

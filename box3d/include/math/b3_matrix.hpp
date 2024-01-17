@@ -58,11 +58,11 @@ public:
         m_33 = m(2, 2);
     }
 
-    inline b3Vector3<T> col(const int i) {
+    inline b3Vector3<T> col(const int i) const {
         return b3Vector3<T>(m_ts[i * 3], m_ts[i * 3 + 1], m_ts[i * 3 + 2]);
     }
 
-    inline b3Vector3<T> row(const int i) {
+    inline b3Vector3<T> row(const int i) const {
         return b3Vector3<T>(m_ts[i], m_ts[i + 3], m_ts[i + 6]);
     }
 

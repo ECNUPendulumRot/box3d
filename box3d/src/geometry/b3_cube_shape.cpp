@@ -36,6 +36,26 @@ void box3d::b3CubeShape::set_as_box(double hx, double hy, double hz)
     m_normals[4].set(1.0f, 0.0f, 0.0f);
     m_normals[5].set(-1.0f, 0.0f, 0.0f);
 
+    m_faces[0] = {0, 1, 2, 3};
+    m_faces[1] = {1, 2, 6, 5};
+    m_faces[2] = {4, 5, 6, 7};
+    m_faces[3] = {0, 3, 7, 4};
+    m_faces[4] = {0, 1, 5, 4};
+    m_faces[5] = {2, 3, 7, 6};
+
+    m_edges[0]  = {0, 1};
+    m_edges[1]  = {1, 2};
+    m_edges[2]  = {2, 3};
+    m_edges[3]  = {3, 0};
+    m_edges[4]  = {4, 5};
+    m_edges[5]  = {5, 6};
+    m_edges[6]  = {6, 7};
+    m_edges[7]  = {7, 4};
+    m_edges[8]  = {0, 4};
+    m_edges[9]  = {1, 5};
+    m_edges[10] = {2, 6};
+    m_edges[11] = {3, 7};
+
     m_xyz.set(2 * hx, 2 * hy, 2 * hz);
     m_h_xyz.set(hx, hy, hz);
 
