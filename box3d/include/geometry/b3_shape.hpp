@@ -5,35 +5,30 @@
 
 #include "common/b3_types.hpp"
 
-#include "dynamics/b3_pose.hpp"
-
-#include "collision/b3_aabb.hpp"
-
-#include "dynamics/b3_inertia.hpp"
+#include "dynamics/b3_transform.hpp"
 
 
-namespace box3d {
+/////////// Forward Delaration ///////////
 
-    class b3Shape;
+class b3Body;
 
-    class b3ViewData;
+class b3AABB;
 
-    enum b3ShapeType {
-        e_type_not_defined = -1,
-        e_mesh       = 0,
-        e_cube       = 1,
-        e_sphere     = 2,
-        e_type_count = 3
-    };
+class b3MassProperty;
 
-    ///////////////////////
-
-    class b3Body;
-
-}
+//////////////////////////////////////////
 
 
-struct box3d::b3ViewData {
+enum b3ShapeType {
+    e_type_not_defined = -1,
+    e_mesh       = 0,
+    e_cube       = 1,
+    e_sphere     = 2,
+    e_type_count = 3
+};
+
+
+struct b3ViewData {
 
     /**
      * @brief Vertices of the mesh
@@ -47,6 +42,7 @@ struct box3d::b3ViewData {
      * @details Each row is a face with 3 indexes to vertex
      */
     int* m_F;
+
     int m_face_count;
 
     typedef  struct {
@@ -64,7 +60,7 @@ struct box3d::b3ViewData {
 };
 
 
-class box3d::b3Shape {
+class b3Shape {
 
 protected:
 

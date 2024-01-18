@@ -6,14 +6,8 @@
 #include <chrono>
 #include <thread>
 
-namespace box3d {
 
-    class b3Timer;
-
-}
-
-
-class box3d::b3Timer {
+class b3Timer {
 
     std::chrono::steady_clock::time_point m_t0;
 
@@ -53,7 +47,7 @@ public:
 
 };
 
-std::chrono::duration<double> box3d::b3Timer::m_sleep_adjust = std::chrono::duration<double>(0);
-double box3d::b3Timer::m_filter_param = 0.1;
+std::chrono::duration<double> b3Timer::m_sleep_adjust = std::chrono::duration<double>(0);
+double b3Timer::m_filter_param = 0.1;
 
 #endif //BOX3D_B3_TIMER_HPP

@@ -7,20 +7,16 @@
 #include "collision/b3_broad_phase.hpp"
 
 
-namespace box3d {
+/////////// Forward Delaration ///////////
 
-    class b3Contact;
+class b3FixtureProxy;
 
-    class b3Fixture;
+class b3Contact;
 
-    class b3FixtureProxy;
-
-    class b3ContactManager;
-
-}
+//////////////////////////////////////////
 
 
-class box3d::b3ContactManager {
+class b3ContactManager {
 
     b3BroadPhase m_broad_phase;
 

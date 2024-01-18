@@ -6,13 +6,6 @@
 #include "geometry/b3_shape.hpp"
 
 
-namespace box3d{
-
-    class b3CubeShape;
-
-}
-
-
 struct b3EdgeIndex {
 
     int32 v1;
@@ -39,7 +32,7 @@ union b3FaceIndex {
 };
 
 
-class box3d::b3CubeShape : public b3Shape {
+class b3CubeShape : public b3Shape {
 
 public:
 

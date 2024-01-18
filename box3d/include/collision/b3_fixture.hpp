@@ -2,29 +2,11 @@
 #ifndef BOX3D_B3_FIXTURE_HPP
 #define BOX3D_B3_FIXTURE_HPP
 
-#include "geometry/b3_mesh.hpp"
-#include "collision/b3_aabb.hpp"
-#include "dynamics/b3_body.hpp"
-#include "dynamics/b3_body_def.hpp"
+
 #include "geometry/b3_shape.hpp"
 
-namespace box3d {
 
-    class b3Fixture;
-
-    struct b3FixtureProxy;
-
-    class b3FixtureDef;
-
-    /////////////////////
-
-    class b3Body;
-
-    class b3BroadPhase;
-}
-
-
-struct box3d::b3FixtureDef {
+struct b3FixtureDef {
 
     double m_restitution = 0.0;
 
@@ -60,7 +42,7 @@ public:
 };
 
 
-struct box3d::b3FixtureProxy {
+struct b3FixtureProxy {
 
     enum {
 
@@ -84,7 +66,7 @@ struct box3d::b3FixtureProxy {
 };
 
 
-class box3d::b3Fixture {
+class b3Fixture {
 
     friend class b3Body;
 

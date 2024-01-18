@@ -1,7 +1,7 @@
 #ifndef BOX3D_HPP
 #define BOX3D_HPP
 
-#include "dynamics/b3_pose.hpp"
+#include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_world.hpp"
 #include "dynamics/b3_body_def.hpp"
 

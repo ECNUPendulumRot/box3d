@@ -4,15 +4,9 @@
 
 #include <common/b3_types.hpp>
 
-namespace box3d {
-    
-    struct b3VelocityConstraintPoint;
-
-    struct b3ContactVelocityConstraint;
-}
 
 
-struct box3d::b3VelocityConstraintPoint {
+struct b3VelocityConstraintPoint {
     b3Vector3d m_ra;
     b3Vector3d m_rb;
     double m_normal_impulse = 0;
@@ -25,7 +19,7 @@ struct box3d::b3VelocityConstraintPoint {
 };
 
 
-struct box3d::b3ContactVelocityConstraint {
+struct b3ContactVelocityConstraint {
     b3VelocityConstraintPoint m_points[4];
     b3Vector3d m_normal;
     int32 m_index_a;

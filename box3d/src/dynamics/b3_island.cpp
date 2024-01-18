@@ -6,7 +6,7 @@
 #include "common/b3_allocator.hpp"
 
 
-box3d::b3Island::b3Island(int32 body_capacity, int32 contact_capacity): 
+b3Island::b3Island(int32 body_capacity, int32 contact_capacity): 
                           m_body_capacity(body_capacity),
                           m_contact_capacity(contact_capacity) {
     
@@ -22,7 +22,7 @@ box3d::b3Island::b3Island(int32 body_capacity, int32 contact_capacity):
 }
 
 
-void box3d::b3Island::add_body(b3Body* body) {
+void b3Island::add_body(b3Body* body) {
     b3_assert(m_body_count < m_body_capacity);
 
     body->set_island_index(m_body_count);
@@ -31,7 +31,7 @@ void box3d::b3Island::add_body(b3Body* body) {
 }
 
 
-void box3d::b3Island::add_contact(b3Contact* contact) {
+void b3Island::add_contact(b3Contact* contact) {
     b3_assert(m_contact_count < m_contact_capacity);
 
     m_contacts[m_contact_count] = contact;
@@ -39,12 +39,12 @@ void box3d::b3Island::add_contact(b3Contact* contact) {
 }
 
 
-box3d::b3Island::~b3Island() {
+b3Island::~b3Island() {
     b3_free(m_contacts);
 }
 
 
-void box3d::b3Island::solve(const double dt) {
+void b3Island::solve(const double dt) {
     // Integrate velocities and apply damping is already finish
 
     // Init velocity constraints

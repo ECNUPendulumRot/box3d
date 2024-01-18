@@ -2,19 +2,20 @@
 #ifndef BOX3D_B3_ISLAND_HPP
 #define BOX3D_B3_ISLAND_HPP
 
+
 #include "common/b3_types.hpp"
 
-namespace box3d {
 
-    class b3Island;
+/////////// Forward Delaration ///////////
 
-    ////////
-    class b3Body;
-    class b3Contact;
-}
+class b3Contact;
+
+class b3Body;
+
+//////////////////////////////////////////
 
 
-class box3d::b3Island {
+class b3Island {
 
     int32 m_body_count;
 	int32 m_contact_count;

@@ -4,13 +4,13 @@
 #include "common/b3_allocator.hpp"
 
 
-box3d::b3CubeShape::b3CubeShape()
+b3CubeShape::b3CubeShape()
 {
     m_radius = b3_polygon_radius;
 }
 
 
-void box3d::b3CubeShape::set_as_box(double hx, double hy, double hz)
+void b3CubeShape::set_as_box(double hx, double hy, double hz)
 {
     b3_assert(hx > 0.0f);
     b3_assert(hy > 0.0f);
@@ -62,7 +62,7 @@ void box3d::b3CubeShape::set_as_box(double hx, double hy, double hz)
 }
 
 
-void box3d::b3CubeShape::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, int32 childIndex) const
+void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3TransformD &xf, int32 childIndex) const
 {
     b3_NOT_USED(childIndex);
 
@@ -81,7 +81,7 @@ void box3d::b3CubeShape::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD 
 }
 
 
-void box3d::b3CubeShape::compute_mass_properties(box3d::b3MassProperty &mass_data, double density) const
+void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, double density) const
 {
     mass_data.m_center = m_centroid;
 
@@ -105,7 +105,7 @@ void box3d::b3CubeShape::compute_mass_properties(box3d::b3MassProperty &mass_dat
 }
 
 
-void box3d::b3CubeShape::get_view_data(box3d::b3ViewData *view_data) const
+void b3CubeShape::get_view_data(b3ViewData *view_data) const
 {
     view_data->m_vertex_count = 8;
 
@@ -140,7 +140,7 @@ void box3d::b3CubeShape::get_view_data(box3d::b3ViewData *view_data) const
 }
 
 
-box3d::b3Shape *box3d::b3CubeShape::clone() const
+b3Shape *b3CubeShape::clone() const
 {
     void* mem = b3_alloc(sizeof(b3CubeShape));
     auto* clone = new (mem) b3CubeShape;

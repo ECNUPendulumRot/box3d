@@ -12,6 +12,13 @@
 #include <stack>
 
 
+/////////// Forward Delaration ///////////
+
+class b3FixtureProxy;
+
+//////////////////////////////////////////
+
+
 #define b3_NULL_NODE (-1)
 
 #define b3_NULL_HEIGHT (-1)
@@ -19,18 +26,7 @@
 #define b3_LEAF_HEIGHT (0)
 
 
-namespace box3d {
-
-    class b3Node;
-
-    class b3DynamicTree;
-
-    class b3FixtureProxy;
-
-}
-
-
-class box3d::b3Node {
+class b3Node {
 
     friend class b3DynamicTree;
 
@@ -89,7 +85,7 @@ public:
 };
 
 
-class box3d::b3DynamicTree {
+class b3DynamicTree {
 
     /**
      * The root node of the dynamic tree.
@@ -155,7 +151,7 @@ public:
         m_nodes[proxyId].m_moved = false;
     }
 
-    const b3AABB& get_AABB(int32 proxy_id) const {
+    inline const b3AABB& get_AABB(int32 proxy_id) const {
 
         b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
 
@@ -216,7 +212,7 @@ private:
 
 
 template<typename T>
-void box3d::b3DynamicTree::query(T* callback, const b3AABB& aabb) const {
+void b3DynamicTree::query(T* callback, const b3AABB& aabb) const {
 
     std::stack<int32> stack;
     stack.push(m_root);

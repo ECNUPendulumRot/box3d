@@ -7,6 +7,7 @@
 #include <vector>
 #include <Eigen/Core>
 
+
 bool read_obj(const std::string& obj_file_name,
               std::vector<std::vector<double>>& V,
               std::vector<std::vector<double>>& TC,

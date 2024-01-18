@@ -4,17 +4,9 @@
 
 
 #include "collision/b3_contact.hpp"
-#include "collision/b3_collision.hpp"
 
 
-namespace box3d {
-
-    class b3CubeContact;
-
-}
-
-
-class box3d::b3CubeContact: public b3Contact {
+class b3CubeContact: public b3Contact {
 
 protected:
 

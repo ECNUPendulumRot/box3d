@@ -5,7 +5,7 @@
 #include "dynamics/b3_body.hpp"
 
 
-void box3d::b3Fixture::create_fixture(const box3d::b3FixtureDef &f_def, box3d::b3Body *body)
+void b3Fixture::create_fixture(const b3FixtureDef &f_def, b3Body *body)
 {
     m_restitution = f_def.get_restitution();
     m_friction = f_def.get_friction();
@@ -31,7 +31,7 @@ void box3d::b3Fixture::create_fixture(const box3d::b3FixtureDef &f_def, box3d::b
 }
 
 
-void box3d::b3Fixture::create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf)
+void b3Fixture::create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf)
 {
     b3_assert(m_proxy_count == 0);
     m_proxy_count = m_shape->get_child_count();

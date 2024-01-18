@@ -7,6 +7,7 @@
 
 #include <Eigen/Core>
 
+
 template <typename T, int dim, int max_dim>
 void from_json(const nlohmann::json& json, Eigen::Matrix<T, dim, 1, Eigen::ColMajor, max_dim, 1>& vector)
 {

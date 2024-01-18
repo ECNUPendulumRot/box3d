@@ -1,16 +1,20 @@
 
 #include "geometry/b3_sphere_shape.hpp"
+
 #include "common/b3_allocator.hpp"
 
+#include "collision/b3_aabb.hpp"
+
+#include "dynamics/b3_mass_property.hpp"
 #include "dynamics/b3_body.hpp"
 
 
 #define K_SEGMENTS 20
 
-const box3d::b3SphereConfig box3d::b3SphereShape::m_config;
+const b3SphereConfig b3SphereShape::m_config;
 
 
-box3d::b3SphereConfig::b3SphereConfig() {
+b3SphereConfig::b3SphereConfig() {
 
     m_segments = K_SEGMENTS;
     
@@ -18,13 +22,15 @@ box3d::b3SphereConfig::b3SphereConfig() {
     double sin_inc = sin(k_increments);
     double cos_inc = cos(k_increments);
 
-    m_rot_y <<  cos_inc,        0,      sin_inc,
-                0,              1,      0,
-                -sin_inc,       0,      cos_inc;
+    b3Vector3d rot_col_1(cos_inc, 0, -sin_inc);
+    b3Vector3d rot_col_2(0, 1, 0);
+    b3Vector3d rot_col_3(sin_inc, 0, cos_inc);
+    m_rot_y = b3Matrix3d(rot_col_1, rot_col_2, rot_col_3);
 
-    m_rot_z <<  cos_inc,    -sin_inc,   0,
-                sin_inc,    cos_inc,    0,
-                0,          0,          1;
+    rot_col_1 = {cos_inc, -sin_inc, 0};
+    rot_col_2 = {sin_inc, cos_inc, 0};
+    rot_col_3 = {0, 0, 1};
+    m_rot_z = b3Matrix3d(rot_col_1, rot_col_2, rot_col_3);
 
     // the sphere is divided into two points on the end of sphere
     // and %m_segments - 1% rings. 
@@ -35,19 +41,19 @@ box3d::b3SphereConfig::b3SphereConfig() {
 }
 
 
-box3d::b3SphereShape::b3SphereShape() {
+b3SphereShape::b3SphereShape() {
     m_radius = 0;
     m_type = e_sphere;
 }
 
 
-void box3d::b3SphereShape::set_as_sphere(double radius) {
+void b3SphereShape::set_as_sphere(double radius) {
     m_radius = radius;
     m_centroid.set_zero();
 }
 
 
-void box3d::b3SphereShape::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD& xf, int32 child_index) const {
+void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3TransformD& xf, int32 child_index) const {
     
     b3_NOT_USED(child_index);
 
@@ -60,7 +66,7 @@ void box3d::b3SphereShape::get_bound_aabb(box3d::b3AABB *aabb, const b3Transform
 }
 
 
-void box3d::b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double density) const {
+void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double density) const {
 
     mass_data.m_center = m_centroid;
 
@@ -77,7 +83,7 @@ void box3d::b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, do
 }
 
 
-box3d::b3Shape* box3d::b3SphereShape::clone() const {
+b3Shape* b3SphereShape::clone() const {
     
     void* mem = b3_alloc(sizeof(b3SphereShape));
     auto* clone = new (mem) b3SphereShape;
@@ -86,23 +92,23 @@ box3d::b3Shape* box3d::b3SphereShape::clone() const {
 }
 
 
-void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
+void b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
     view_data->m_vertex_count = m_config.m_vertices_rows;
 
     void* mem = b3_alloc(view_data->m_vertex_count * 3 * sizeof(double));
     view_data->m_V = new (mem) double;
     
-    const E3Matrix3d& rot_y = m_config.m_rot_y;
-    const E3Matrix3d& rot_z = m_config.m_rot_z;
+    const b3Matrix3d& rot_y = m_config.m_rot_y;
+    const b3Matrix3d& rot_z = m_config.m_rot_z;
 
-    Eigen::Vector3d v1(0, 0, 1);
-    Eigen::Vector3d v2;
+    b3Vector3d v1(0, 0, 1);
+    b3Vector3d v2;
     int index = 0;
 
     // transform the center of sphere to world frame
     auto body_pose = m_body->get_pose();
-    Eigen::Vector3d world_center = m_body->get_pose().transform(m_centroid).eigen_vector3();
+    b3Vector3d world_center = m_body->get_pose().transform(m_centroid);
 
     for(int i = 1; i < m_config.m_segments; ++i) {
         v1 = rot_y * v1;
@@ -112,7 +118,7 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
             v2 = rot_z * v2;
 
 
-            Eigen::Vector3d v = world_center + m_radius * v2;
+            b3Vector3d v = world_center + m_radius * v2;
             view_data->m_V[index++] = v.x();
             view_data->m_V[index++] = v.y();
             view_data->m_V[index++] = v.z();
@@ -123,7 +129,7 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         v2.x() = -v2_x;
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            Eigen::Vector3d v = world_center + m_radius * v2;
+            b3Vector3d v = world_center + m_radius * v2;
             view_data->m_V[index++] = v.x();
             view_data->m_V[index++] = v.y();
             view_data->m_V[index++] = v.z();
@@ -134,7 +140,7 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     v2 = rot_z * v1;
 
-    Eigen::Vector3d v = world_center + m_radius * v2;
+    b3Vector3d v = world_center + m_radius * v2;
     view_data->m_V[index++] = v.x();
     view_data->m_V[index++] = v.y();
     view_data->m_V[index++] = v.z();

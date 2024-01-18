@@ -22,7 +22,7 @@ bool compute_mass_properties_3D(const E3MatrixXd& vertices,
                                 b3Vector3d& center,
                                 E3Matrix3d& inertia);
 
-box3d::b3Mesh::b3Mesh():
+b3Mesh::b3Mesh():
     m_V(E3MatrixXd(0, 0)),
     m_E(E3MatrixXi(0, 0)),
     m_F(E3MatrixXi(0, 0))
@@ -31,13 +31,13 @@ box3d::b3Mesh::b3Mesh():
 }
 
 
-box3d::b3Mesh::b3Mesh(const std::string &obj_file_name)
+b3Mesh::b3Mesh(const std::string &obj_file_name)
 {
     read_obj(obj_file_name);
 }
 
 
-void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, int32 childIndex) const
+void b3Mesh::get_bound_aabb(b3AABB *aabb, const b3TransformD &xf, int32 childIndex) const
 {
     b3_NOT_USED(childIndex);
 
@@ -53,7 +53,7 @@ void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, 
 }
 
 
-box3d::b3Shape *box3d::b3Mesh::clone() const
+b3Shape *b3Mesh::clone() const
 {
     void* mem = b3_alloc(sizeof(b3Mesh));
     b3Mesh* clone = new (mem) b3Mesh;
@@ -62,7 +62,7 @@ box3d::b3Shape *box3d::b3Mesh::clone() const
 }
 
 
-void box3d::b3Mesh::compute_mass_properties(box3d::b3MassProperty &mass_data, double density) const
+void b3Mesh::compute_mass_properties(b3MassProperty &mass_data, double density) const
 {
 
     mesh_properties(mass_data.m_volume, mass_data.m_center, mass_data.m_Inertia);
@@ -71,14 +71,14 @@ void box3d::b3Mesh::compute_mass_properties(box3d::b3MassProperty &mass_data, do
 }
 
 
-void box3d::b3Mesh::get_view_data(box3d::b3ViewData *view_data) const
+void b3Mesh::get_view_data(b3ViewData *view_data) const
 {
     view_data->m_V = transform();
     view_data->m_F = m_F;
 }
 
 
-bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
+bool b3Mesh::read_obj(const std::string &obj_file_name) {
 
     // 0 0 1
     // 1 0 0
@@ -138,7 +138,7 @@ bool box3d::b3Mesh::read_obj(const std::string &obj_file_name) {
 }
 
 
-bool box3d::b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, E3Matrix3d& Inertia) const
+bool b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, E3Matrix3d& Inertia) const
 {
     bool success = compute_mass_properties_3D(m_V, m_F, volume, CoG, Inertia);
 
@@ -149,7 +149,7 @@ bool box3d::b3Mesh::mesh_properties(double& volume, b3Vector3d& CoG, E3Matrix3d&
 }
 
 
-void box3d::b3Mesh::recenter(const b3TransformD &new_center)
+void b3Mesh::recenter(const b3TransformD &new_center)
 {
     // TODO: do a transform in this function
     auto eigen_new_center = new_center.linear().eigen_vector3();
@@ -157,13 +157,13 @@ void box3d::b3Mesh::recenter(const b3TransformD &new_center)
 }
 
 
-E3MatrixXd box3d::b3Mesh::transform() const
+E3MatrixXd b3Mesh::transform() const
 {
     return transform_rigid(m_body->get_pose());
 }
 
 
-E3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
+E3MatrixXd b3Mesh::transform_rigid(const b3TransformD& pose) const
 {
     // Because the mesh vertices are rowwise, we need to transpose the matrix
     E3Matrix3d R_T = pose.m_r_t.transpose().eigen_matrix3();

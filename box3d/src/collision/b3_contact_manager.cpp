@@ -1,17 +1,19 @@
 
 #include "collision/b3_contact_manager.hpp"
-#include "collision/b3_contact.hpp"
 
+#include "collision/b3_contact.hpp"
 #include "collision/b3_fixture.hpp"
 
+#include "dynamics/b3_body.hpp"
 
-void box3d::b3ContactManager::find_new_contact()
+
+void b3ContactManager::find_new_contact()
 {
     m_broad_phase.update_pairs(this);
 }
 
 
-void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b)
+void b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b)
 {
 
     b3Fixture* fixture_a = fixture_proxy_a->get_fixture();
@@ -95,7 +97,7 @@ void box3d::b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3Fixtur
 }
 
 
-void box3d::b3ContactManager::destory(b3Contact* contact)
+void b3ContactManager::destory(b3Contact* contact)
 {
     
     if(contact->prev()) {
@@ -140,7 +142,7 @@ void box3d::b3ContactManager::destory(b3Contact* contact)
 }
 
 
-void box3d::b3ContactManager::collide()
+void b3ContactManager::collide()
 {
 
     b3Contact* contact = m_contact_list;
@@ -166,7 +168,7 @@ void box3d::b3ContactManager::collide()
         const b3AABB& aabb_a = contact->get_fixture_a()->get_fixture_proxy(index_a)->m_aabb;
         const b3AABB& aabb_b = contact->get_fixture_b()->get_fixture_proxy(index_b)->m_aabb;
 
-        bool overlap = box3d::b3AABB::overlapped(aabb_a, aabb_b);
+        bool overlap = b3AABB::overlapped(aabb_a, aabb_b);
 
         if(!overlap) {
             b3Contact* destory_c = contact;

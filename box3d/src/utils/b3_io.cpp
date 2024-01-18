@@ -3,6 +3,7 @@
 
 #include "utils/b3_log.hpp"
 
+
 std::string remove_newline(std::string s) {
     s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
     return s;
