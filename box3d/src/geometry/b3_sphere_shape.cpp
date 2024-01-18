@@ -89,8 +89,8 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
     view_data->m_V.resize(m_config.m_vertices_rows, 3);
     
-    const b3Matrix3d& rot_y = m_config.m_rot_y;
-    const b3Matrix3d& rot_z = m_config.m_rot_z;
+    const E3Matrix3d& rot_y = m_config.m_rot_y;
+    const E3Matrix3d& rot_z = m_config.m_rot_z;
 
     Eigen::Vector3d v1(0, 0, 1);
     Eigen::Vector3d v2;
@@ -146,6 +146,7 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
             second = second + 1;
         }
     }
+
     {
         // the point (0, 0, -1) with the last ring
         int first = m_config.m_vertices_rows - 2;

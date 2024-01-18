@@ -41,7 +41,7 @@ void box3d::b3Mesh::get_bound_aabb(box3d::b3AABB *aabb, const b3TransformD &xf, 
 {
     b3_NOT_USED(childIndex);
 
-    E3Matrix3d R_T = xf.rotation_matrix().transpose();
+    E3Matrix3d R_T = xf.rotation_matrix().transpose().eigen_matrix3();
     Eigen::RowVector3d p_T = xf.linear().eigen_vector3().transpose();
 
     E3MatrixXd trans = m_V * R_T + p_T.replicate(m_V.rows(), 1);
@@ -166,7 +166,7 @@ E3MatrixXd box3d::b3Mesh::transform() const
 E3MatrixXd box3d::b3Mesh::transform_rigid(const b3TransformD& pose) const
 {
     // Because the mesh vertices are rowwise, we need to transpose the matrix
-    E3Matrix3d R_T = pose.rotation_matrix().transpose();
+    E3Matrix3d R_T = pose.m_r_t.transpose().eigen_matrix3();
     Eigen::RowVector3d p_T = pose.linear().eigen_vector3().transpose();
 
     return (m_V * R_T + p_T.replicate(m_V.rows(), 1)).eval();

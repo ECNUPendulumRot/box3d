@@ -101,12 +101,12 @@ public:
         return m_r_t;
     };
 
-    inline E3Matrix3<T> rotation_matrix() const {
+    inline b3Matrix3<T> rotation_matrix() const {
         if (m_r.is_zero()) {
-            return Eigen::Matrix3<T>::Identity();
+            return b3Matrix3<T>::identity();
         } else {
             Eigen::AngleAxis<T> angle_axis(m_r.length(), m_r.normalized().eigen_vector3());
-            return angle_axis.toRotationMatrix();
+            return b3Matrix3<T>(angle_axis.toRotationMatrix());
         }
     }
 

@@ -19,7 +19,7 @@ struct box3d::b3SphereConfig {
 
     int m_segments;
 
-    b3Matrix3d m_rot_y, m_rot_z;
+    E3Matrix3d m_rot_y, m_rot_z;
 
     int m_vertices_rows;
     int m_faces_rows;

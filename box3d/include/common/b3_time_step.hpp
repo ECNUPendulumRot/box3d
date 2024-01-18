@@ -14,13 +14,13 @@ namespace box3d {
 struct box3d::b3TimeStep {
 
     // time step
-    float m_dt;
+    double m_dt;
 
     // inverse time step (0 if dt == 0).
-    float m_inv_dt;
+    double m_inv_dt;
 
     // dt * inv_dt0
-    float m_dt_ratio;
+    double m_dt_ratio;
 
     int32 m_velocity_iterations;
 

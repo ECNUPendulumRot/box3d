@@ -117,7 +117,7 @@ void box3d::b3Contact::update() {
 
     evaluate(&m_manifold, xf_a, xf_b);
 
-    if(m_manifold.point_count > 0) {
+    if(m_manifold.m_point_count > 0) {
         m_flags |= e_touching_flag;
     } else {
         m_flags &= ~e_touching_flag;

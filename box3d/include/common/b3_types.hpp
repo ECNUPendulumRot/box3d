@@ -34,6 +34,9 @@ template <typename T>
 using E3Vector12 = Eigen::Matrix<T, 12, 1>;
 
 template <typename T>
+using E3Vector3 = Eigen::Matrix<T, 3, 1>;
+
+template <typename T>
 using E3Vector9 = Eigen::Matrix<T, 9, 1>;
 
 template <typename T>
@@ -60,6 +63,9 @@ using E3Matrix12f = E3Matrix12<float>;
 using E3MatrixXi = E3MatrixX<int>;
 using E3MatrixXd = E3MatrixX<double>;
 using E3MatrixXf = E3MatrixX<float>;
+
+using E3Vector3d = E3Vector3<double>;
+using E3Vector3f = E3Vector3<float>;
 
 using b3Vector3d = box3d::b3Vector3<double>;
 using b3Vector3f = box3d::b3Vector3<float>;

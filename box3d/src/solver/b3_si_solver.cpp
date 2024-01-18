@@ -107,10 +107,10 @@ void box3d::b3SISolver::init_velocity_constraints() {
             b3Vector3d rb_n = vcp->m_rb.cross(vc->m_normal);
 
             // JM_INV_J
-            // TODO: repalce with ours
-            double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b + 
-                         ra_n.eigen_vector3().transpose() * vc->m_inv_I_a * ra_n.eigen_vector3() + 
-                         rb_n.eigen_vector3().transpose() * vc->m_inv_I_b * rb_n.eigen_vector3();
+            // In box3d, a col vector multiply a matrix is the transpose of the vector multiply the matrix.
+            double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
+                        (ra_n * vc->m_inv_I_a).dot(ra_n) +
+                        (rb_n * vc->m_inv_I_b).dot(rb_n);
 
             vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
 
@@ -158,8 +158,8 @@ void box3d::b3SISolver::solve_velocity_constraints() {
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-        if(point_count == 1) {
-            for(int32 j = 0; j < vc->m_point_count; ++j) {
+        if (point_count == 1) {
+            for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
                 b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
@@ -177,13 +177,13 @@ void box3d::b3SISolver::solve_velocity_constraints() {
                 b3Vector3d impluse = lambda * vc->m_normal;
                 // TODO: replace b3Matrix
                 v_a = v_a - vc->m_inv_mass_a * impluse;
-                Eigen::Vector3d temp = vc->m_inv_I_a * vcp->m_ra.cross(impluse).eigen_vector3();
+                b3Vector3d temp = vc->m_inv_I_a * vcp->m_ra.cross(impluse);
                 // w_a -= vc->m_inv_I_a * vcp->m_ra.cross(impluse).eigen_vector3();
                 b3Vector3d delat_w_a(temp.x(), temp.y(), temp.z());
                 w_a = w_a - delat_w_a;
 
                 v_b = v_b + vc->m_inv_mass_b * impluse;
-                temp = vc->m_inv_I_a * vcp->m_ra.cross(impluse).eigen_vector3();
+                temp = vc->m_inv_I_a * vcp->m_ra.cross(impluse);
                 // w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
                 b3Vector3d delat_w_b(temp.x(), temp.y(), temp.z());
                 w_b = w_b + delat_w_b;

@@ -108,8 +108,8 @@ void box3d::b3Body::reset_mass_data()
         m_inv_inertia = m_inertia.inverse();
 
     } else {
-        m_inv_inertia = E3Matrix3d::Zero();
-        m_inv_inertia = E3Matrix3d::Zero();
+        m_inv_inertia = b3Matrix3d::zero();
+        m_inv_inertia = b3Matrix3d::zero();
     }
 
     // TODO: check whether m_sweep is needed

@@ -14,7 +14,7 @@ set(B3D_HEADER_FILES
         include/collision/b3_contact_manager.hpp
         include/collision/b3_contact.hpp
         include/collision/b3_collision.hpp
-        include/collision/b3CubeContact.hpp
+        include/collision/b3_cube_contact.hpp
         include/collision/b3_sphere_contact.hpp
 
 
@@ -59,7 +59,7 @@ set(B3D_SOURCE_FILES
 
         src/collision/b3_sphere_contact.cpp
         src/collision/b3_collide_sphere.cpp
-
+        src/collision/b3_collide_cube.cpp
 
         src/dynamics/b3_pose.cpp
         src/dynamics/b3_inertia.cpp

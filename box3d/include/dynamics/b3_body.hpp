@@ -59,9 +59,9 @@ class box3d::b3Body {
 
     double m_inv_mass = 0.0;
 
-    E3Matrix3d m_inertia = E3Matrix3d::Zero();
+    b3Matrix3d m_inertia = b3Matrix3d::zero();
 
-    E3Matrix3d m_inv_inertia = E3Matrix3d::Zero();
+    b3Matrix3d m_inv_inertia = b3Matrix3d::zero();
 
     b3Vector3d m_force;
 
@@ -81,11 +81,11 @@ class box3d::b3Body {
 
 
     //////////////// Island ////////////////////////////////
+
     int32 m_island_index;
 
     uint32 m_flags = 0;
 
-    //////
     enum {
         e_island_flag = 1
     };
