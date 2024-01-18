@@ -4,10 +4,10 @@
 #include "geometry/b3_cube_shape.hpp"
 
 
-void b3_collide_spheres(box3d::b3Manifold* manifold,
-					    const box3d::b3SphereShape* sphere_a, 
+void b3_collide_spheres(b3Manifold* manifold,
+					    const b3SphereShape* sphere_a, 
                         const b3TransformD& xf_a,
-					    const box3d::b3SphereShape* sphere_b, 
+					    const b3SphereShape* sphere_b, 
                         const b3TransformD& xf_b) {
     
     manifold->m_point_count = 0;
@@ -40,10 +40,10 @@ void b3_collide_spheres(box3d::b3Manifold* manifold,
 }
 
 
-void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
-                                const box3d::b3CubeShape* cube_a,
+void b3_collide_cube_and_sphere(b3Manifold* manifold,
+                                const b3CubeShape* cube_a,
                                 const b3TransformD& xf_a,
-                                const box3d::b3SphereShape* sphere_b,
+                                const b3SphereShape* sphere_b,
                                 const b3TransformD& xf_b) {
     
     manifold->m_point_count = 0;

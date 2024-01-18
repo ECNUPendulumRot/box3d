@@ -18,12 +18,12 @@ set(B3D_HEADER_FILES
         include/collision/b3_sphere_contact.hpp
 
 
-        include/dynamics/b3_pose.hpp
+        include/dynamics/b3_transform.hpp
         include/dynamics/b3_body.hpp
-        include/dynamics/b3_inertia.hpp
         include/dynamics/b3_world.hpp
         include/dynamics/b3_body_def.hpp
         include/dynamics/b3_island.hpp
+        include/dynamics/b3_mass_property.hpp
 
         # include/geometry/b3_mesh.hpp
         include/geometry/b3_geometry.hpp
@@ -58,11 +58,10 @@ set(B3D_SOURCE_FILES
         src/collision/b3_contact_manager.cpp
 
         src/collision/b3_sphere_contact.cpp
+        src/collision/b3_cube_contact.cpp
         src/collision/b3_collide_sphere.cpp
         src/collision/b3_collide_cube.cpp
 
-        src/dynamics/b3_pose.cpp
-        src/dynamics/b3_inertia.cpp
         src/dynamics/b3_world.cpp
         src/dynamics/b3_body.cpp
         src/dynamics/b3_island.cpp

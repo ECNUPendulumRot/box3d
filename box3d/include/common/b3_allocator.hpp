@@ -13,4 +13,5 @@ inline void b3_free(void* mem) {
     free(mem);
 }
 
+
 #endif //BOX3D_B3_ALLOCATOR_HPP

@@ -5,30 +5,24 @@
 
 #include "common/b3_allocator.hpp"
 
-#include "geometry/b3_mesh.hpp"
-
-#include "dynamics/b3_pose.hpp"
+#include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_body_def.hpp"
-#include "geometry/b3_shape.hpp"
-#include "collision/b3_contact.hpp"
 
 
-namespace box3d {
+/////////// Forward Delaration ///////////
 
-    class b3Body;
+class b3World;
 
-    class b3World;
+class b3FixtureDef;
 
-    ////////////////////
+class b3Fixture;
 
-    class b3Fixture;
+class b3ContactEdge;
 
-    class b3FixtureDef;
-
-}
+//////////////////////////////////////////
 
 
-class box3d::b3Body {
+class b3Body {
 
     friend class b3World;
 
@@ -97,7 +91,7 @@ public:
      */
     b3Body() = default;
 
-    explicit b3Body(const box3d::b3BodyDef &body_def);
+    explicit b3Body(const b3BodyDef& body_def);
 
     b3Fixture* create_fixture(const b3FixtureDef& def);
 

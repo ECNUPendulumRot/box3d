@@ -7,6 +7,7 @@
 #include <cfloat>
 #include <cmath>
 
+
 #define b3_assert(A) assert(A)
 
 #define b3_double_epsilon DBL_EPSILON
@@ -27,5 +28,6 @@
 #define b3_aabb_extension (0.1 * b3_length_units_per_meter)
 
 #define b3_max_double DBL_MAX
+
 
 #endif //BOX3D_B3_COMMON_HPP

@@ -2,29 +2,12 @@
 #ifndef BOX3D_B3_SOLVER_HPP
 #define BOX3D_B3_SOLVER_HPP
 
-#include "dynamics/b3_pose.hpp"
+#include "dynamics/b3_transform.hpp"
 
 #include "common/b3_allocator.hpp"
 
-namespace box3d {
 
-    class b3Solver;
-
-    ///////////////////
-
-    class b3World;
-
-    class b3Island;
-
-    class b3Contact;
-
-    struct b3ContactVelocityConstraint;
-
-    struct b3TimeStep;
-}
-
-
-class box3d::b3Solver {
+class b3Solver {
 
 protected:
 

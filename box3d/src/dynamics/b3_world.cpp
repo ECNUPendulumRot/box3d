@@ -6,7 +6,7 @@
 
 #include "solver/b3_si_solver.hpp"
 
-box3d::b3World::b3World():
+b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
 {
@@ -14,7 +14,7 @@ box3d::b3World::b3World():
 }
 
 
-box3d::b3World::~b3World()
+b3World::~b3World()
 {
     // TODO: think about how to destruct
     b3_free(m_shape_list);
@@ -22,7 +22,7 @@ box3d::b3World::~b3World()
 }
 
 
-void box3d::b3World::test_step()
+void b3World::test_step()
 {
     b3Body* body = m_body_list;
 
@@ -32,7 +32,7 @@ void box3d::b3World::test_step()
 }
 
 
-void box3d::b3World::solve(double delta_t)
+void b3World::solve(double delta_t)
 {
     b3Body* body = m_body_list;
 
@@ -53,7 +53,7 @@ void box3d::b3World::solve(double delta_t)
 }
 
 
-box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
+b3Body *b3World::create_body(const b3BodyDef &def)
 {
     b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
 
@@ -77,14 +77,14 @@ box3d::b3Body *box3d::b3World::create_body(const box3d::b3BodyDef &def)
 }
 
 
-void box3d::b3World::add_shape(b3Shape* shape) {
+void b3World::add_shape(b3Shape* shape) {
     shape->set_next(m_shape_list);
     m_shape_list = shape;
     m_shape_count++;
 }
 
 
-box3d::b3Shape *box3d::b3World::create_shape(const std::filesystem::path &file_path)
+b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
 {
     std::string fs_string = file_path.string();
 
@@ -101,7 +101,7 @@ box3d::b3Shape *box3d::b3World::create_shape(const std::filesystem::path &file_p
 }
 
 
-void box3d::b3World::clear()
+void b3World::clear()
 {
     b3Shape* shape = m_shape_list;
 
@@ -123,7 +123,7 @@ void box3d::b3World::clear()
     m_island_list.clear();
 }
 
-void box3d::b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
+void b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
 {
     // ff new fixtures were added, we need to find the new contacts.
     if (m_new_contacts) {
@@ -168,7 +168,7 @@ void box3d::b3World::step(double dt, int32 velocity_iterations, int32 position_i
 }
 
 
-void box3d::b3World::generate_island() {
+void b3World::generate_island() {
         
     // clear all island flag.
     for(b3Body* body = m_body_list; body; body = body->next()) {

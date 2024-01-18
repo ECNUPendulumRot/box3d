@@ -4,14 +4,9 @@
 
 #include "geometry/b3_shape.hpp"
 
-namespace box3d {
-
-    class b3PlaneShape;
-
-}
 
 
-class box3d::b3PlaneShape : public b3Shape {
+class b3PlaneShape : public b3Shape {
 
     b3Vector3d m_point;
 

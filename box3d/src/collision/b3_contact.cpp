@@ -5,16 +5,16 @@
 
 #include "collision/b3_sphere_contact.hpp"
 
-box3d::b3ContactRegister box3d::b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
-bool box3d::b3Contact::s_initialized = false;
+b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
+bool b3Contact::s_initialized = false;
 
-void box3d::b3Contact::initialize_registers()
+void b3Contact::initialize_registers()
 {
     add_type(b3SphereContact::create, b3SphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_sphere);
 }
 
 
-box3d::b3Contact::b3Contact(box3d::b3Fixture *f_A, int32 index_A, box3d::b3Fixture *f_B, int32 index_B)
+b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_B)
 {
     // TODO: check enable_flags
 
@@ -31,7 +31,7 @@ box3d::b3Contact::b3Contact(box3d::b3Fixture *f_A, int32 index_A, box3d::b3Fixtu
 }
 
 
-void box3d::b3Contact::add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* destroy_fcn,
+void b3Contact::add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* destroy_fcn,
                                 b3ShapeType type_A, b3ShapeType type_B)
 {
     b3_assert(0 <= type_A && type_A < b3ShapeType::e_type_count);
@@ -49,9 +49,9 @@ void box3d::b3Contact::add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroy
 
 }
 
-box3d::b3Contact* box3d::b3Contact::create(
-    box3d::b3Fixture *fixture_A, int32 index_A,
-    box3d::b3Fixture *fixture_B, int32 index_B)
+b3Contact* b3Contact::create(
+    b3Fixture *fixture_A, int32 index_A,
+    b3Fixture *fixture_B, int32 index_B)
 {
     if (!s_initialized) {
         initialize_registers();
@@ -77,7 +77,7 @@ box3d::b3Contact* box3d::b3Contact::create(
 }
 
 
-void box3d::b3Contact::destroy(box3d::b3Contact *contact)
+void b3Contact::destroy(b3Contact *contact)
 {
     b3_assert(s_initialized == true);
 
@@ -102,7 +102,7 @@ void box3d::b3Contact::destroy(box3d::b3Contact *contact)
 
 
 // Update the contact manifold and touching status.
-void box3d::b3Contact::update() {
+void b3Contact::update() {
     
     // TODO: add warm start, reuse normal and tangent impluse
     // b3Manifold old_manifold = m_manifold

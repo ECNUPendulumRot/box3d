@@ -7,13 +7,8 @@
 
 #include "common/b3_types.hpp"
 
-namespace box3d {
 
-    class b3AABB;
-}
-
-
-class box3d::b3AABB {
+class b3AABB {
 
     friend class b3Mesh;
     friend class b3CubeShape;

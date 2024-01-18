@@ -15,18 +15,8 @@
 
 #include "dynamics/b3_island.hpp"
 
-namespace box3d {
 
-    class b3World;
-
-    ////////////////
-
-    class b3Body;
-
-}
-
-
-class box3d::b3World {
+class b3World {
 
     b3Body* m_body_list;
 

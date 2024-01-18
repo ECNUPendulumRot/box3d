@@ -7,7 +7,7 @@
 #include "collision/b3_fixture.hpp"
 
 
-box3d::b3Body::b3Body(const box3d::b3BodyDef &body_def):
+b3Body::b3Body(const b3BodyDef &body_def):
     m_volume(0.0),
     m_inertia(E3Matrix3d::Zero())
 {
@@ -22,7 +22,7 @@ box3d::b3Body::b3Body(const box3d::b3BodyDef &body_def):
 }
 
 
-box3d::b3Fixture* box3d::b3Body::create_fixture(const box3d::b3FixtureDef &def) {
+b3Fixture* b3Body::create_fixture(const b3FixtureDef &def) {
 
     void* memory = b3_alloc(sizeof(b3Fixture));
     auto* fixture = new(memory) b3Fixture;
@@ -55,7 +55,7 @@ box3d::b3Fixture* box3d::b3Body::create_fixture(const box3d::b3FixtureDef &def) 
 }
 
 
-void box3d::b3Body::reset_mass_data()
+void b3Body::reset_mass_data()
 {
     m_mass = 0.0;
     m_inv_mass = 0.0;

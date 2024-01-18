@@ -4,14 +4,8 @@
 
 #include "collision/b3_contact.hpp"
 
-namespace box3d {
 
-    class b3SphereContact;
-
-}
-
-
-class box3d::b3SphereContact : public b3Contact {
+class b3SphereContact : public b3Contact {
 
 public:
 

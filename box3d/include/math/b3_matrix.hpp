@@ -8,29 +8,9 @@
 #include "math/b3_vector.hpp"
 #include "common/b3_common.hpp"
 
-namespace box3d {
-
-    template <typename T>
-    class b3Matrix3;
-
-}
-
 
 template <typename T>
-inline box3d::b3Matrix3<T> operator*(const box3d::b3Matrix3<T>& M, const T& s);
-
-template <typename T>
-inline box3d::b3Matrix3<T> operator*(const T& s, const box3d::b3Matrix3<T>& M);
-
-template <typename T>
-inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v);
-
-template <typename T>
-inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, box3d::b3Matrix3<T> M);
-
-
-template <typename T>
-class box3d::b3Matrix3 {
+class b3Matrix3 {
 
     // m_ts is col major;
     union {
@@ -179,25 +159,25 @@ public:
 
 
 template <typename T>
-inline box3d::b3Matrix3<T> operator*(const box3d::b3Matrix3<T>& M, const T& s) {
-    return box3d::b3Matrix3(M.col(0) * s, M.col(1) * s, M.col(2) * s);
+inline b3Matrix3<T> operator*(const b3Matrix3<T>& M, const T& s) {
+    return b3Matrix3(M.col(0) * s, M.col(1) * s, M.col(2) * s);
 }
 
 
 template <typename T>
-inline box3d::b3Matrix3<T> operator*(const T& s, const box3d::b3Matrix3<T>& M) {
+inline b3Matrix3<T> operator*(const T& s, const b3Matrix3<T>& M) {
     return M * s;
 }
 
 
 template <typename T>
-inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v) {
+inline b3Vector3<T> operator*(b3Matrix3<T> M, const b3Vector3<T>& v) {
     return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
 }
 
 
 template <typename T>
-inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, box3d::b3Matrix3<T> M) {
+inline b3Vector3<T> operator*(const b3Vector3<T>& v, b3Matrix3<T> M) {
     return M * v;
 }
 

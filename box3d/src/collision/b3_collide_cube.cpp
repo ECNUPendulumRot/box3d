@@ -5,7 +5,7 @@
 
 
 // project the box onto a separation axis called axis
-static double transform_to_axis(const box3d::b3CubeShape& box, const b3TransformD& xf, const b3Vector3d& axis)
+static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, const b3Vector3d& axis)
 {
     const b3Matrix3d& R = xf.m_r_t;
     const b3Vector3d& half_xyz = box.m_h_xyz;
@@ -15,8 +15,8 @@ static double transform_to_axis(const box3d::b3CubeShape& box, const b3Transform
 
 
 // check whether two box will overlap under selected axis
-static void overlap_on_axis(const box3d::b3CubeShape& cube_A, const b3TransformD& xf_A,
-                     const box3d::b3CubeShape& cube_B, const b3TransformD& xf_B,
+static void overlap_on_axis(const b3CubeShape& cube_A, const b3TransformD& xf_A,
+                     const b3CubeShape& cube_B, const b3TransformD& xf_B,
                      const b3Vector3d& axis, double& penetration)
 {
     // project two objects onto the axis.
@@ -35,9 +35,9 @@ static void overlap_on_axis(const box3d::b3CubeShape& cube_A, const b3TransformD
 
 // test face seperation of cube_B from cube_A
 static double face_separation(
-        box3d::b3Manifold* manifold,
-        const box3d::b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const box3d::b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
+        b3Manifold* manifold,
+        const b3CubeShape* cube_A, const b3TransformD& xf_A,
+        const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
 {
 
     double max_penetration = -b3_max_double;
@@ -64,9 +64,9 @@ static double face_separation(
 
 
 static double edge_separation(
-    box3d::b3Manifold* manifold,
-    const box3d::b3CubeShape* cube_A, const b3TransformD& xf_A,
-    const box3d::b3CubeShape* cube_B, const b3TransformD& xf_B,
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B,
     int32& edge_index_a, int32& edge_index_b)
 {
     double max_penetration = -b3_max_double;
@@ -110,9 +110,9 @@ static double edge_separation(
 }
 
 
-static bool b3_find_incident_face(box3d::b3ClipVertex c[4],
-                                  const box3d::b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
-                                  const box3d::b3CubeShape* cube2, const b3TransformD& xf2)
+static bool b3_find_incident_face(b3ClipVertex c[4],
+                                  const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
+                                  const b3CubeShape* cube2, const b3TransformD& xf2)
 {
     const b3Vector3d* normals1 = cube1->m_normals;
 
@@ -146,7 +146,7 @@ static bool b3_find_incident_face(box3d::b3ClipVertex c[4],
 
     for (int32 i = 0; i < 4; ++i) {
         c[i].v = xf2.transform(vertices2[edges2[incident_face.e[i]].v1]);
-        c[i].id.cf.type = box3d::b3ContactFeature::e_f_p;
+        c[i].id.cf.type = b3ContactFeature::e_f_p;
         c[i].id.cf.index_1 = (uint8)face1;
         c[i].id.cf.index_2 = (uint8)edges2[incident_face.e[i]].v1;
         c[i].id.cf.index_ext  = (uint8)incident_face.e[i];
@@ -163,8 +163,8 @@ static inline uint8 sign_of_distance(double val) {
 
 
 // Sutherland-Hodgman clipping.
-static int32 b3_clip_segment_to_face(box3d::b3ClipVertex* v_out, int32& v_out_count,
-                                      const box3d::b3ClipVertex* v_in, const int32& v_in_count,
+static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
+                                      const b3ClipVertex* v_in, const int32& v_in_count,
                                       const b3Vector3d& n, double offset,
                                       int32 edge_index_clip, int32 incident_face_index)
 {
@@ -208,8 +208,8 @@ static int32 b3_clip_segment_to_face(box3d::b3ClipVertex* v_out, int32& v_out_co
         v_out[count].id.cf.index_1 = edge_index_clip;
         v_out[count].id.cf.index_2 = v_out[count].id.cf.index_ext;
 
-        if (v_in[i].id.cf.type == box3d::b3ContactFeature::e_e_e &&
-            v_in[next_i].id.cf.type == box3d::b3ContactFeature::e_e_e) {
+        if (v_in[i].id.cf.type == b3ContactFeature::e_e_e &&
+            v_in[next_i].id.cf.type == b3ContactFeature::e_e_e) {
 
             v_out[count].id.cf.type = type;
             v_out[count].id.cf.index_2 = incident_face_index;
@@ -227,9 +227,9 @@ static int32 b3_clip_segment_to_face(box3d::b3ClipVertex* v_out, int32& v_out_co
 
 
 static void create_face_contact(
-    box3d::b3Manifold* manifold,
-    const box3d::b3CubeShape* cube_A, const b3TransformD& xf_A,
-    const box3d::b3CubeShape* cube_B, const b3TransformD& xf_B,
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B,
     const int32& face_index_A,  const int32& face_index_B,
     const double& separation_A, const double& separation_B,
     const double& total_radius)
@@ -331,7 +331,7 @@ static void create_face_contact(
         double separation = n.dot(clip_points4[i].v) - front_offset;
 
         if (separation <= total_radius) {
-            box3d::b3ManifoldPoint* cp = manifold->m_points + point_count;
+            b3ManifoldPoint* cp = manifold->m_points + point_count;
             cp->m_local_point = clip_points4[i].v;
             cp->id = clip_points4[i].id;
 
@@ -343,9 +343,9 @@ static void create_face_contact(
 
 
 void create_edge_contact(
-    box3d::b3Manifold* manifold,
-    const box3d::b3CubeShape* cube_A, const b3TransformD& xf_A,
-    const box3d::b3CubeShape* cube_B, const b3TransformD& xf_B,
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B,
     const int32& edge_index_A,  const int32& edge_index_B,
     const double& separation_edge)
 {
@@ -393,9 +393,9 @@ void create_edge_contact(
 }
 
 void b3_collide_cube(
-        box3d::b3Manifold* manifold,
-        const box3d::b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const box3d::b3CubeShape* cube_B, const b3TransformD& xf_B)
+        b3Manifold* manifold,
+        const b3CubeShape* cube_A, const b3TransformD& xf_A,
+        const b3CubeShape* cube_B, const b3TransformD& xf_B)
 {
 
     manifold->m_point_count = 0;

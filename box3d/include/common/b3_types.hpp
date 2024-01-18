@@ -22,7 +22,9 @@ using uint32 = unsigned int ;
 
 using uint64 = unsigned long long;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////
+
 
 template <typename T>
 using E3Matrix3 = Eigen::Matrix<T, 3, 3>;
@@ -67,11 +69,11 @@ using E3MatrixXf = E3MatrixX<float>;
 using E3Vector3d = E3Vector3<double>;
 using E3Vector3f = E3Vector3<float>;
 
-using b3Vector3d = box3d::b3Vector3<double>;
-using b3Vector3f = box3d::b3Vector3<float>;
+using b3Vector3d = b3Vector3<double>;
+using b3Vector3f = b3Vector3<float>;
 
-using b3Matrix3d = box3d::b3Matrix3<double>;
-using b3Matrix3f = box3d::b3Matrix3<float>;
+using b3Matrix3d = b3Matrix3<double>;
+using b3Matrix3f = b3Matrix3<float>;
 
 
 #endif //BOX3D_B3_TYPES_HPP

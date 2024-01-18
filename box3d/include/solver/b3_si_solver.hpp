@@ -4,12 +4,8 @@
 
 #include "solver/b3_solver.hpp"
 
-namespace box3d {
-    class b3SISolver;
-}
 
-
-class box3d::b3SISolver : public box3d::b3Solver {
+class b3SISolver : public b3Solver {
 
 public:
 

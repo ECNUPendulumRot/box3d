@@ -4,7 +4,7 @@
 #include "collision/b3_fixture.hpp"
 
 
-box3d::b3BroadPhase::b3BroadPhase()
+b3BroadPhase::b3BroadPhase()
 {
     m_proxy_count = 0;
 
@@ -18,7 +18,7 @@ box3d::b3BroadPhase::b3BroadPhase()
 }
 
 
-int32 box3d::b3BroadPhase::create_proxy(const box3d::b3AABB &aabb, b3FixtureProxy* fixture_proxy)
+int32 b3BroadPhase::create_proxy(const b3AABB &aabb, b3FixtureProxy* fixture_proxy)
 {
     int32 proxy_id = m_tree.create_bvh_proxy(aabb, fixture_proxy);
 
@@ -32,7 +32,7 @@ int32 box3d::b3BroadPhase::create_proxy(const box3d::b3AABB &aabb, b3FixtureProx
 }
 
 
-void box3d::b3BroadPhase::buffer_move(int32 proxy_id)
+void b3BroadPhase::buffer_move(int32 proxy_id)
 {
     if (m_move_count == m_move_capacity) {
 
@@ -51,7 +51,7 @@ void box3d::b3BroadPhase::buffer_move(int32 proxy_id)
 }
 
 
-void box3d::b3BroadPhase::move_proxy(int32 proxy_id, const box3d::b3AABB &aabb)
+void b3BroadPhase::move_proxy(int32 proxy_id, const b3AABB &aabb)
 {
     bool buffer = m_tree.move_proxy(proxy_id, aabb);
     if (buffer) {
@@ -61,7 +61,7 @@ void box3d::b3BroadPhase::move_proxy(int32 proxy_id, const box3d::b3AABB &aabb)
 
 
 // bool 
-void box3d::b3BroadPhase::query_callback(int32 proxy_id)
+void b3BroadPhase::query_callback(int32 proxy_id)
 {
     // self intersection
     if(proxy_id == m_query_proxy_id) {

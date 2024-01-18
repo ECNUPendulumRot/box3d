@@ -8,7 +8,7 @@
 #include "collision/b3_fixture.hpp"
 
 
-box3d::b3Node::b3Node():
+b3Node::b3Node():
     m_aabb(b3AABB()),
     m_child1(b3_NULL_NODE),
     m_child2(b3_NULL_NODE),
@@ -18,7 +18,7 @@ box3d::b3Node::b3Node():
 }
 
 
-box3d::b3DynamicTree::b3DynamicTree()
+b3DynamicTree::b3DynamicTree()
 {
     m_root = b3_NULL_NODE;
 
@@ -41,13 +41,13 @@ box3d::b3DynamicTree::b3DynamicTree()
 }
 
 
-box3d::b3DynamicTree::~b3DynamicTree()
+b3DynamicTree::~b3DynamicTree()
 {
     b3_free(m_nodes);
 }
 
 
-int32 box3d::b3DynamicTree::create_bvh_proxy(const box3d::b3AABB &aabb, box3d::b3FixtureProxy* fixture_proxy)
+int32 b3DynamicTree::create_bvh_proxy(const b3AABB &aabb, b3FixtureProxy* fixture_proxy)
 {
 
     int32 bvh_proxy_id = assign_node();
@@ -68,7 +68,7 @@ int32 box3d::b3DynamicTree::create_bvh_proxy(const box3d::b3AABB &aabb, box3d::b
 }
 
 
-void box3d::b3DynamicTree::destroy_bvh_proxy(int32 proxy_id)
+void b3DynamicTree::destroy_bvh_proxy(int32 proxy_id)
 {
     b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
     b3_assert(m_nodes[proxy_id].is_leaf());
@@ -77,7 +77,7 @@ void box3d::b3DynamicTree::destroy_bvh_proxy(int32 proxy_id)
 }
 
 
-int32 box3d::b3DynamicTree::assign_node()
+int32 b3DynamicTree::assign_node()
 {
     // If there is no empty node in allocated m_nodes,
     // then expands the m_nodes
@@ -102,7 +102,7 @@ int32 box3d::b3DynamicTree::assign_node()
 }
 
 
-void box3d::b3DynamicTree::recycle_node(int32 i_node)
+void b3DynamicTree::recycle_node(int32 i_node)
 {
     b3_assert(0 <= i_node && i_node <= m_node_capacity);
     b3_assert(0 <= m_node_count);
@@ -114,7 +114,7 @@ void box3d::b3DynamicTree::recycle_node(int32 i_node)
 }
 
 
-void box3d::b3DynamicTree::insert_to_leaf(int32 leaf)
+void b3DynamicTree::insert_to_leaf(int32 leaf)
 {
     if (m_root == b3_NULL_NODE) {
         m_root = leaf;
@@ -252,7 +252,7 @@ void box3d::b3DynamicTree::insert_to_leaf(int32 leaf)
     }
 }
 
-void box3d::b3DynamicTree::remove_leaf(int32 leaf)
+void b3DynamicTree::remove_leaf(int32 leaf)
 {
     if (leaf == m_root) {
         m_root = b3_NULL_NODE;
@@ -302,7 +302,7 @@ void box3d::b3DynamicTree::remove_leaf(int32 leaf)
 }
 
 
-void box3d::b3DynamicTree::expand_node_list(int32 count)
+void b3DynamicTree::expand_node_list(int32 count)
 {
 
     // Check whether the list is full
@@ -330,7 +330,7 @@ void box3d::b3DynamicTree::expand_node_list(int32 count)
 }
 
 
-int32 box3d::b3DynamicTree::balance(int32 i_A)
+int32 b3DynamicTree::balance(int32 i_A)
 {
     b3_assert(i_A != b3_NULL_NODE);
 
@@ -455,7 +455,7 @@ int32 box3d::b3DynamicTree::balance(int32 i_A)
     return i_A;
 }
 
-bool box3d::b3DynamicTree::move_proxy(int32 proxy_id, const box3d::b3AABB &aabb)
+bool b3DynamicTree::move_proxy(int32 proxy_id, const b3AABB &aabb)
 {
     b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
 

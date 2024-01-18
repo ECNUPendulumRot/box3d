@@ -12,7 +12,7 @@
 #include "common/b3_time_step.hpp"
 
 
-void box3d::b3SISolver::initialize(b3Island* island, b3TimeStep* timestep) {
+void b3SISolver::initialize(b3Island* island, b3TimeStep* timestep) {
 
     m_timestep = timestep;
     
@@ -87,7 +87,7 @@ void box3d::b3SISolver::initialize(b3Island* island, b3TimeStep* timestep) {
 }
 
 
-void box3d::b3SISolver::init_velocity_constraints() {
+void b3SISolver::init_velocity_constraints() {
     for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
@@ -130,7 +130,7 @@ void box3d::b3SISolver::init_velocity_constraints() {
 }
 
 
-int box3d::b3SISolver::solve() {
+int b3SISolver::solve() {
     
     init_velocity_constraints();
 
@@ -146,7 +146,7 @@ int box3d::b3SISolver::solve() {
 }
 
 
-void box3d::b3SISolver::solve_velocity_constraints() {
+void b3SISolver::solve_velocity_constraints() {
     for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 

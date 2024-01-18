@@ -5,22 +5,19 @@
 #include "geometry/b3_shape.hpp"
 #include "collision/b3_collision.hpp"
 
-namespace box3d {
 
-    class b3Contact;
+/////////// Forward Delaration ///////////
 
-    struct b3ContactEdge;
+class b3Body;
 
-    struct b3ContactRegister;
+class b3Contact;
 
-    /////////////////////
+class b3Fixture;
 
-    class b3Fixture;
+//////////////////////////////////////////
 
-    class b3Body;
-}
 
-struct box3d::b3ContactEdge {
+struct b3ContactEdge {
 
     b3Body* m_other = nullptr;
 
@@ -33,12 +30,13 @@ struct box3d::b3ContactEdge {
 };
 
 
-typedef box3d::b3Contact* b3ContactCreateFcn(box3d::b3Fixture* fixture_A, int32 index_A,
-                                             box3d::b3Fixture* fixture_B, int32 index_B);
+typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
+                                      b3Fixture* fixture_B, int32 index_B);
 
-typedef void b3ContactDestroyFcn(box3d::b3Contact* contact);
+typedef void b3ContactDestroyFcn(b3Contact* contact);
 
-struct box3d::b3ContactRegister {
+
+struct b3ContactRegister {
 
     b3ContactCreateFcn* create_fcn;
     b3ContactDestroyFcn* destroy_fcn;
@@ -47,7 +45,7 @@ struct box3d::b3ContactRegister {
 };
 
 
-class box3d::b3Contact {
+class b3Contact {
 
 protected:
 
@@ -174,8 +172,6 @@ protected:
 
     void update();
 };
-
-
 
 
 #endif // BOX3D_CONTACT_HPP

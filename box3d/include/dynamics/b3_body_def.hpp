@@ -3,25 +3,10 @@
 #define BOX3D_B3_BODY_DEF_HPP
 
 
-#include "dynamics/b3_pose.hpp"
-
-#include <filesystem>
-#include <nlohmann/json.hpp>
+#include "dynamics/b3_transform.hpp"
 
 
-namespace box3d {
-
-    class b3BodyDef;
-
-    class b3BodyDefInner;
-
-    class b3BodyDefRigid;
-
-    enum class b3BodyType;
-}
-
-
-enum class box3d::b3BodyType {
+enum class b3BodyType {
 
     b3_type_not_defined = -1,
 
@@ -36,7 +21,7 @@ enum class box3d::b3BodyType {
 };
 
 
-struct box3d::b3BodyDef {
+struct b3BodyDef {
 
     friend class b3Body;
 

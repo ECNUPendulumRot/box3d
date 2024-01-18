@@ -24,7 +24,7 @@ namespace box3d {
 }
 
 
-class box3d::b3Mesh: public b3Shape {
+class b3Mesh: public b3Shape {
 
     friend class b3World;
 

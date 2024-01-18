@@ -5,17 +5,15 @@
 #include "collision/b3_bvh.hpp"
 #include "common/b3_types.hpp"
 
-namespace box3d {
 
-    class b3BroadPhase;
+/////////// Forward Delaration ///////////
 
-    struct b3Pair;
+class b3FixtureProxy;
 
-    class b3FixtureProxy;
-}
+//////////////////////////////////////////
 
 
-struct box3d::b3Pair {
+struct b3Pair {
 
     int32 proxy_id_a;
     int32 proxy_id_b;
@@ -23,7 +21,7 @@ struct box3d::b3Pair {
 };
 
 
-class box3d::b3BroadPhase {
+class b3BroadPhase {
 
     enum {
         e_null_proxy = -1
@@ -76,9 +74,10 @@ private:
 
 };
 
+
 // TODO: move this to cpp file
 template<typename T>
-void box3d::b3BroadPhase::update_pairs(T* callback) {
+void b3BroadPhase::update_pairs(T* callback) {
 
     // reset pair buffer
     m_pair_count = 0;

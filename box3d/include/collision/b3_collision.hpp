@@ -3,30 +3,21 @@
 #define BOX3D_B3_COLLISION_HPP
 
 #include "common/b3_types.hpp"
-#include "dynamics/b3_pose.hpp"
+#include "dynamics/b3_transform.hpp"
 
-namespace box3d {
 
-    union b3ContactID;
+/////////// Forward Delaration ///////////
 
-    class b3SphereShape;
+class b3CubeShape;
 
-    class b3CubeShape;
+class b3SphereShape;
 
-    struct b3ClipVertex;
-
-    struct b3Manifold;
-
-    struct b3ManifoldPoint;
-
-    struct b3ContactFeature;
-
-}
+//////////////////////////////////////////
 
 
 /// The features that intersect to form the contact point
 /// This must be 4 bytes or less.
-struct box3d::b3ContactFeature
+struct b3ContactFeature
 {
     enum Type {
         e_f_p = 0x01,
@@ -45,7 +36,7 @@ struct box3d::b3ContactFeature
 };
 
 
-union box3d::b3ContactID {
+union b3ContactID {
 
     b3ContactFeature cf;
 
@@ -54,7 +45,7 @@ union box3d::b3ContactID {
 };
 
 
-struct box3d::b3ClipVertex {
+struct b3ClipVertex {
 
     b3Vector3d v;
 
@@ -63,7 +54,7 @@ struct box3d::b3ClipVertex {
 };
 
 
-struct box3d::b3ManifoldPoint {
+struct b3ManifoldPoint {
 
     b3Vector3d m_local_point;		///< usage depends on manifold type
 
@@ -75,7 +66,7 @@ struct box3d::b3ManifoldPoint {
 };
 
 
-struct box3d::b3Manifold {
+struct b3Manifold {
 
     enum Type {
 
@@ -105,24 +96,24 @@ struct box3d::b3Manifold {
 
 
 /// Compute the collision manifold between two circles.
-void b3_collide_spheres(box3d::b3Manifold* manifold,
-					    const box3d::b3SphereShape* sphere_a, 
+void b3_collide_spheres(b3Manifold* manifold,
+					    const b3SphereShape* sphere_a,
                         const b3TransformD& xf_a,
-					    const box3d::b3SphereShape* sphere_b, 
+					    const b3SphereShape* sphere_b,
                         const b3TransformD& xf_b);
 
 /// Compute the collision manifold between circle and cube
-void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
-                                const box3d::b3CubeShape* cube_a, 
+void b3_collide_cube_and_sphere(b3Manifold* manifold,
+                                const b3CubeShape* cube_a,
                                 const b3TransformD& xf_a,
-                                const box3d::b3SphereShape* sphere_b,
+                                const b3SphereShape* sphere_b,
                                 const b3TransformD& xf_b);
 
 
-void b3_collide_cube(box3d::b3Manifold* manifold,
-                     const box3d::b3CubeShape* cube_A,
+void b3_collide_cube(b3Manifold* manifold,
+                     const b3CubeShape* cube_A,
                      const b3TransformD& xf_A,
-                     const box3d::b3CubeShape* cube_B,
+                     const b3CubeShape* cube_B,
                      const b3TransformD& xf_B);
 
 #endif //BOX3D_B3_COLLISION_HPP

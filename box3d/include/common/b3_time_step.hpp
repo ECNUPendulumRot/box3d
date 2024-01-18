@@ -5,13 +5,7 @@
 #include "common/b3_types.hpp"
 
 
-namespace box3d {
-
-    struct b3TimeStep;
-
-}
-
-struct box3d::b3TimeStep {
+struct b3TimeStep {
 
     // time step
     double m_dt;
@@ -29,5 +23,6 @@ struct box3d::b3TimeStep {
     bool m_warm_starting;
 
 };
+
 
 #endif //BOX3D_B3_TIME_STEP_HPP
