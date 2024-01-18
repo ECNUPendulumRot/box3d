@@ -70,9 +70,10 @@ void box3d::b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, do
 
     double ixx = 0.4 * mass_data.m_mass * m_radius * m_radius;
 
-    mass_data.m_Inertia << ixx, 0.0, 0.0, 
-                           0.0, ixx, 0.0,
-                           0.0, 0.0, ixx;
+    mass_data.m_Inertia = b3Matrix3d::zero();
+    mass_data.m_Inertia(0, 0) = ixx;
+    mass_data.m_Inertia(1, 1) = ixx;
+    mass_data.m_Inertia(2, 2) = ixx;
 }
 
 

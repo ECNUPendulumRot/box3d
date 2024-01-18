@@ -48,7 +48,7 @@ void box3d::b3SISolver::initialize(b3Island* island, b3TimeStep* timestep) {
 		b3Body* body_b = fixture_b->get_body();
 		b3Manifold* manifold = contact->get_manifold();
 
-		int32 point_count = manifold->point_count;
+		int32 point_count = manifold->m_point_count;
 
 		b3_assert(point_count > 0);
 
@@ -74,7 +74,7 @@ void box3d::b3SISolver::initialize(b3Island* island, b3TimeStep* timestep) {
 
         for(int32 j = 0; j < point_count; j++) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
-            b3ManifoldPoint* manifold_point = manifold->points + j;
+            b3ManifoldPoint* manifold_point = manifold->m_points + j;
 
             vcp->m_ra = manifold_point->m_local_point - center_a;
             vcp->m_rb = manifold_point->m_local_point - center_b;

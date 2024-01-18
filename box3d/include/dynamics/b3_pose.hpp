@@ -36,7 +36,7 @@ public:
     /**
      * The rotation matrix of the pose.
      */
-    b3Matrix3d m_r_t;
+    b3Matrix3<T> m_r_t;
 
     /**
      * @brief Construct a new b3Transform object

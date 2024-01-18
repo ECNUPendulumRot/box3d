@@ -10,7 +10,7 @@ void b3_collide_spheres(box3d::b3Manifold* manifold,
 					    const box3d::b3SphereShape* sphere_b, 
                         const b3TransformD& xf_b) {
     
-    manifold->point_count = 0;
+    manifold->m_point_count = 0;
 
     b3Vector3d ca = xf_a.transform(sphere_a->get_centroid_of_sphere());
     b3Vector3d cb = xf_b.transform(sphere_b->get_centroid_of_sphere());
@@ -25,17 +25,17 @@ void b3_collide_spheres(box3d::b3Manifold* manifold,
         return;
     }
 
-    manifold->type = manifold->e_circles;
-    manifold->point_count = 1;
-    manifold->local_normal = ab.normalized();
+    manifold->m_type = manifold->e_circles;
+    manifold->m_point_count = 1;
+    manifold->m_local_normal = ab.normalized();
 
     double penetration = b3_sqrt(sq_distance) - radius;
     
     double length = sphere_a->get_radius() + penetration / 2;
 
     // the collide point on the world frame
-    manifold->points[0].m_local_point = ca + manifold->local_normal * length;
-    manifold->points[0].id.key = 0;
+    manifold->m_points[0].m_local_point = ca + manifold->m_local_normal * length;
+    manifold->m_points[0].id.key = 0;
     manifold->m_penetration = penetration;
 }
 
@@ -46,7 +46,7 @@ void b3_collide_cube_and_sphere(box3d::b3Manifold* manifold,
                                 const box3d::b3SphereShape* sphere_b,
                                 const b3TransformD& xf_b) {
     
-    manifold->point_count = 0;
+    manifold->m_point_count = 0;
 
     /// shallow penetration and deep penetration
     /// the center of sphere is in the cube ?

@@ -59,8 +59,8 @@ void box3d::b3Body::reset_mass_data()
 {
     m_mass = 0.0;
     m_inv_mass = 0.0;
-    m_inertia = E3Matrix3d::Zero();
-    m_inv_inertia = E3Matrix3d::Zero();
+    m_inertia = b3Matrix3d::zero();
+    m_inv_inertia = b3Matrix3d::zero();
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
@@ -77,7 +77,6 @@ void box3d::b3Body::reset_mass_data()
         f->get_mass_data(mass_data);
         m_mass += mass_data.m_mass;
 
-
         local_center += mass_data.m_mass * mass_data.m_center;
         m_inertia += mass_data.m_Inertia;
     }
@@ -88,7 +87,7 @@ void box3d::b3Body::reset_mass_data()
     }
 
     if (m_inertia.determinant() > 0) {
-        E3Matrix3d bias_center;
+
 
         double bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
         double byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
@@ -97,9 +96,10 @@ void box3d::b3Body::reset_mass_data()
         double bxz = local_center.x() * local_center.z();
         double byz = local_center.y() * local_center.z();
 
-        bias_center << bxx,  -bxy, -bxz,
-                       -bxy, byy,  -byz,
-                       -bxz, -byz, bzz;
+        b3Vector3d col1(bxx, -bxy, -bxz);
+        b3Vector3d col2(-bxy, byy, -byz);
+        b3Vector3d col3(-bxz, -byz, bzz);
+        b3Matrix3d bias_center(col1, col2, col3);
 
         m_inertia -= m_mass * bias_center;
 

@@ -67,7 +67,7 @@ struct box3d::b3MassProperty {
      */
     b3Vector3d m_center;
 
-    E3Matrix3d m_Inertia;
+    b3Matrix3d m_Inertia;
 
 };
 

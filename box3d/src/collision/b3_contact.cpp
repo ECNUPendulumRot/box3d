@@ -27,7 +27,7 @@ box3d::b3Contact::b3Contact(box3d::b3Fixture *f_A, int32 index_A, box3d::b3Fixtu
     m_prev = nullptr;
     m_next = nullptr;
 
-    m_manifold.point_count = 0;
+    m_manifold.m_point_count = 0;
 }
 
 
@@ -84,7 +84,7 @@ void box3d::b3Contact::destroy(box3d::b3Contact *contact)
     b3Fixture* fixture_A = contact->get_fixture_a();
     b3Fixture* fixture_B = contact->get_fixture_b();
 
-    if (contact->m_manifold.point_count > 0) {
+    if (contact->m_manifold.m_point_count > 0) {
         // TODO: check this set_awake
         // fixture_A->get_body()->set_awake(true);
         // fixture_B->get_body()->set_awake(true);

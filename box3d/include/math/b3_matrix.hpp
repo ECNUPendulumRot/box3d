@@ -6,30 +6,27 @@
 #include <memory>
 
 #include "math/b3_vector.hpp"
-
-#include "common/b3_types.hpp"
+#include "common/b3_common.hpp"
 
 namespace box3d {
 
     template <typename T>
     class b3Matrix3;
-}
-
-
-template <typename T>
-inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v) {
-
-    return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
 
 }
 
 
 template <typename T>
-inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, box3d::b3Matrix3<T> M) {
+inline box3d::b3Matrix3<T> operator*(const box3d::b3Matrix3<T>& M, const T& s);
 
-    return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
+template <typename T>
+inline box3d::b3Matrix3<T> operator*(const T& s, const box3d::b3Matrix3<T>& M);
 
-}
+template <typename T>
+inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v);
+
+template <typename T>
+inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, box3d::b3Matrix3<T> M);
 
 
 template <typename T>
@@ -116,12 +113,57 @@ public:
         m_33 = T(1);
     }
 
+    inline T determinant() {
+        return m_11 * (m_22 * m_33 - m_32 * m_23) -
+               m_21 * (m_12 * m_33 - m_32 * m_13) +
+               m_31 * (m_12 * m_23 - m_22 * m_13);
+    }
+
+    inline b3Matrix3 inverse() {
+
+        double det = determinant();
+        b3_assert(det > 0);
+        double inv_det = 1.0 / det;
+
+        b3Matrix3 inv;
+        inv.m_11 =  inv_det * (m_22 * m_33 - m_23 * m_32);
+        inv.m_21 = -inv_det * (m_12 * m_33 - m_13 * m_32);
+        inv.m_31 =  inv_det * (m_12 * m_23 - m_22 * m_13);
+        inv.m_12 = -inv_det * (m_21 * m_33 - m_23 * m_31);
+        inv.m_22 =  inv_det * (m_11 * m_33 - m_13 * m_31);
+        inv.m_32 = -inv_det * (m_11 * m_23 - m_21 * m_13);
+        inv.m_13 =  inv_det * (m_21 * m_32 - m_22 * m_31);
+        inv.m_23 = -inv_det * (m_11 * m_32 - m_12 * m_31);
+        inv.m_33 =  inv_det * (m_11 * m_22 - m_12 * m_21);
+
+        return inv * inv_det;
+    }
+
     Eigen::Matrix3<T> eigen_matrix3() const {
         Eigen::Matrix3<T> m;
         m.col(0) = m_col1.eigen_vector3();
         m.col(1) = m_col2.eigen_vector3();
         m.col(2) = m_col3.eigen_vector3();
         return m;
+    }
+
+    inline b3Matrix3& operator-=(const b3Matrix3<T>& M) {
+        m_col1 -= M.m_col1;
+        m_col2 -= M.m_col2;
+        m_col3 -= M.m_col3;
+        return *this;
+    }
+
+    inline b3Matrix3& operator+=(const b3Matrix3<T>& M) {
+        m_col1 += M.m_col1;
+        m_col2 += M.m_col2;
+        m_col3 += M.m_col3;
+        return *this;
+    }
+
+    inline T& operator()(const int i, const int j) {
+        b3_assert(0 <= i && i < 3 && j <= 0 && j < 3);
+        return m_ts[3 * j + i];
     }
 
     static b3Matrix3 identity() {
@@ -136,6 +178,27 @@ public:
 };
 
 
+template <typename T>
+inline box3d::b3Matrix3<T> operator*(const box3d::b3Matrix3<T>& M, const T& s) {
+    return box3d::b3Matrix3(M.col(0) * s, M.col(1) * s, M.col(2) * s);
+}
 
+
+template <typename T>
+inline box3d::b3Matrix3<T> operator*(const T& s, const box3d::b3Matrix3<T>& M) {
+    return M * s;
+}
+
+
+template <typename T>
+inline box3d::b3Vector3<T> operator*(box3d::b3Matrix3<T> M, const box3d::b3Vector3<T>& v) {
+    return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
+}
+
+
+template <typename T>
+inline box3d::b3Vector3<T> operator*(const box3d::b3Vector3<T>& v, box3d::b3Matrix3<T> M) {
+    return M * v;
+}
 
 #endif //BOX3D_B3_MATRIX_HPP

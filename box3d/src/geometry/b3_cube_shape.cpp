@@ -98,9 +98,10 @@ void box3d::b3CubeShape::compute_mass_properties(box3d::b3MassProperty &mass_dat
     double i22 = ot * mass_data.m_mass * (x2 + z2);
     double i33 = ot * mass_data.m_mass * (x2 + y2);
 
-    mass_data.m_Inertia << i11, 0.0, 0.0,
-                           0.0, i22, 0.0,
-                           0.0, 0.0, i33;
+    mass_data.m_Inertia = b3Matrix3d::zero();
+    mass_data.m_Inertia(0, 0) = i11;
+    mass_data.m_Inertia(1, 1) = i22;
+    mass_data.m_Inertia(2, 2) = i33;
 }
 
 
