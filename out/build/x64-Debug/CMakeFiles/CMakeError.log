@@ -1,0 +1,563 @@
+Performing C++ SOURCE FILE Test EIGEN_COMPILER_SUPPORT_CPP11 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-bxa843
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_3e7e5 && [1/2] Building CXX object CMakeFiles\cmTC_3e7e5.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++11”
+[2/2] Linking CXX executable cmTC_3e7e5.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-q2tsb8
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_eb8df && [1/2] Building CXX object CMakeFiles\cmTC_eb8df.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_eb8df.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-0lneyw
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_ddd28 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\ccACayJa.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_ddd28.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\ccDNn0oe.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\ccDNn0oe.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_ddd28.exe
+FAILED: cmTC_ddd28.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_ddd28.exe -Wl,--out-implib,libcmTC_ddd28.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-0lneyw && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-0lneyw/cmTC_ddd28.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_ddd28.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_ddd28.exe -Wl,--out-implib,libcmTC_ddd28.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-erujx8
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_75242 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_75242.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_75242.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_75242.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_75242.exe
+FAILED: cmTC_75242.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_75242.dir/testFortranCompiler.f.obj -o cmTC_75242.exe -Wl,--out-implib,libcmTC_75242.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-erujx8 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-erujx8/cmTC_75242.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-53vnui
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_a1b4b && [1/2] Building CXX object CMakeFiles\cmTC_a1b4b.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_a1b4b.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-q6yvgf
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_e8f9e && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\ccvW87P2.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_e8f9e.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\ccX4v4He.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\ccX4v4He.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_e8f9e.exe
+FAILED: cmTC_e8f9e.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_e8f9e.exe -Wl,--out-implib,libcmTC_e8f9e.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-q6yvgf && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-q6yvgf/cmTC_e8f9e.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_e8f9e.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_e8f9e.exe -Wl,--out-implib,libcmTC_e8f9e.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-t2jep3
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_98c75 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_98c75.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_98c75.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_98c75.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_98c75.exe
+FAILED: cmTC_98c75.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_98c75.dir/testFortranCompiler.f.obj -o cmTC_98c75.exe -Wl,--out-implib,libcmTC_98c75.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-t2jep3 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-t2jep3/cmTC_98c75.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-gedz13
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_ecb8d && [1/2] Building CXX object CMakeFiles\cmTC_ecb8d.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_ecb8d.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-v0zc47
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_00f42 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\cclTG6ny.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_00f42.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\ccZhbj0I.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\ccZhbj0I.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_00f42.exe
+FAILED: cmTC_00f42.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_00f42.exe -Wl,--out-implib,libcmTC_00f42.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-v0zc47 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-v0zc47/cmTC_00f42.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_00f42.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_00f42.exe -Wl,--out-implib,libcmTC_00f42.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-n6dpi5
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_20419 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_20419.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_20419.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_20419.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_20419.exe
+FAILED: cmTC_20419.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_20419.dir/testFortranCompiler.f.obj -o cmTC_20419.exe -Wl,--out-implib,libcmTC_20419.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-n6dpi5 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-n6dpi5/cmTC_20419.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-noihh3
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_53685 && [1/2] Building CXX object CMakeFiles\cmTC_53685.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_53685.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-vz84by
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_1c60b && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\ccdCqXVg.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_1c60b.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\ccxYHjgo.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\ccxYHjgo.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_1c60b.exe
+FAILED: cmTC_1c60b.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_1c60b.exe -Wl,--out-implib,libcmTC_1c60b.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-vz84by && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-vz84by/cmTC_1c60b.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_1c60b.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_1c60b.exe -Wl,--out-implib,libcmTC_1c60b.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-34qml6
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_4b982 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_4b982.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_4b982.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_4b982.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_4b982.exe
+FAILED: cmTC_4b982.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_4b982.dir/testFortranCompiler.f.obj -o cmTC_4b982.exe -Wl,--out-implib,libcmTC_4b982.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-34qml6 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-34qml6/cmTC_4b982.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-xnvhks
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_2ec6c && [1/2] Building CXX object CMakeFiles\cmTC_2ec6c.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_2ec6c.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-m1vav7
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_1bb57 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\cc1fmbUZ.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_1bb57.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\cc5NCyv9.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\cc5NCyv9.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_1bb57.exe
+FAILED: cmTC_1bb57.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_1bb57.exe -Wl,--out-implib,libcmTC_1bb57.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-m1vav7 && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-m1vav7/cmTC_1bb57.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_1bb57.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_1bb57.exe -Wl,--out-implib,libcmTC_1bb57.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-74b03s
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_3bfd2 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_3bfd2.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_3bfd2.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_3bfd2.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_3bfd2.exe
+FAILED: cmTC_3bfd2.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_3bfd2.dir/testFortranCompiler.f.obj -o cmTC_3bfd2.exe -Wl,--out-implib,libcmTC_3bfd2.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-74b03s && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-74b03s/cmTC_3bfd2.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_std=cpp03 failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-gqdvqp
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_416e2 && [1/2] Building CXX object CMakeFiles\cmTC_416e2.dir\src.cxx.obj
+cl: 命令行 warning D9002 :忽略未知选项“-std=c++03”
+[2/2] Linking CXX executable cmTC_416e2.exe
+
+
+Source file was:
+int main() { return 0; }
+
+Detecting Fortran compiler ABI info failed to compile with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-y9ermr
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_2c848 && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90-pp.f90
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -cpp=C:\Users\15530\AppData\Local\Temp\ccPDSvwD.f90 -E -quiet -v -iprefix D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/ -U_REENTRANT D:/visualStudio/ide/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.25/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -fsyntax-only
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../include"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"
+ignoring duplicate directory "D:/MinGW-w64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/mingw/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-cpp' '-v' '-E' '-o' 'CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90-pp.f90' '-mtune=core2' '-march=nocona'
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_2c848.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/f951.exe CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90-pp.f90 -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -quiet -dumpbase CMakeFortranCompilerABI.F90-pp.f90 -mtune=core2 -march=nocona -auxbase-strip CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj -version -fpreprocessed -fintrinsic-modules-path D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/finclude -o C:\Users\15530\AppData\Local\Temp\ccTHc30P.s
+GNU Fortran (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+GNU Fortran2008 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) version 8.1.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 8.1.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+ D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -I D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules -o CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj C:\Users\15530\AppData\Local\Temp\ccTHc30P.s
+GNU assembler version 2.30 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.30
+COMPILER_PATH=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../libexec/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/;D:/MinGW-w64/mingw64/bin/../lib/gcc/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/lib/;D:/MinGW-w64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../
+COLLECT_GCC_OPTIONS='-I' 'D:\visualStudio\ide\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.25\Modules' '-v' '-fpreprocessed' '-c' '-o' 'CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj' '-mtune=core2' '-march=nocona'
+[4/4] Linking Fortran executable cmTC_2c848.exe
+FAILED: cmTC_2c848.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 -v CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_2c848.exe -Wl,--out-implib,libcmTC_2c848.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-y9ermr && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-y9ermr/cmTC_2c848.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+Driving: D:\MinGW-w64\mingw64\bin\gfortran.exe /machine:x64 -v CMakeFiles/cmTC_2c848.dir/CMakeFortranCompilerABI.F90.obj -o cmTC_2c848.exe -Wl,--out-implib,libcmTC_2c848.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -l gfortran -shared-libgcc
+gfortran.exe: error: /machine:x64: No such file or directory
+Using built-in specs.
+COLLECT_GCC=D:\MinGW-w64\mingw64\bin\gfortran.exe
+COLLECT_LTO_WRAPPER=D:/MinGW-w64/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
+Target: x86_64-w64-mingw32
+Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=win32 --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-win32-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-win32-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
+Thread model: win32
+gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project) 
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the Fortran compiler works failed with the following output:
+Change Dir: E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-nyi31v
+
+Run Build Command(s):D:\VISUALSTUDIO\IDE\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\Ninja\ninja.exe cmTC_0b56a && [1/4] Building Fortran preprocessed CMakeFiles/cmTC_0b56a.dir/testFortranCompiler.f-pp.f
+[2/4] Generating Fortran dyndep file CMakeFiles/cmTC_0b56a.dir/Fortran.dd
+[3/4] Building Fortran object CMakeFiles/cmTC_0b56a.dir/testFortranCompiler.f.obj
+[4/4] Linking Fortran executable cmTC_0b56a.exe
+FAILED: cmTC_0b56a.exe 
+cmd.exe /C "cd . && D:\MinGW-w64\mingw64\bin\gfortran.exe  /machine:x64 CMakeFiles/cmTC_0b56a.dir/testFortranCompiler.f.obj -o cmTC_0b56a.exe -Wl,--out-implib,libcmTC_0b56a.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cmd.exe /C "cd /D E:\box3d\out\build\x64-Debug\CMakeFiles\CMakeScratch\TryCompile-nyi31v && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file E:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary E:/box3d/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-nyi31v/cmTC_0b56a.exe -installedDir E:/vcpkg/installed/x64-windows/bin -OutVariable out""
+gfortran.exe: error: /machine:x64: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+

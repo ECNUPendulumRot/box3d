@@ -121,7 +121,11 @@ void b3GUIViewer::add_meshes() {
 
         box3d::b3ViewData view_data;
         shape->get_view_data(&view_data);
-        m_viewer.data(viewer_id).set_mesh(view_data.vertexes(), view_data.faces());
+
+        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+
+        m_viewer.data(viewer_id).set_mesh(vertices, faces);
 
         // TODO: use b3_alloc
         // auto* pair = new b3ViewShapePair(viewer_id, index);
@@ -171,7 +175,10 @@ void b3GUIViewer::redraw_mesh() {
 
         box3d::b3ViewData view_data;
         shape->get_view_data(&view_data);
-        m_viewer.data(m_view_id_vector[index]).set_mesh(view_data.vertexes(), view_data.faces());
+        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+
+        m_viewer.data(m_view_id_vector[index]).set_mesh(vertices, faces);
 
         index++;
 

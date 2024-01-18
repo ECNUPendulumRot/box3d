@@ -87,7 +87,10 @@ box3d::b3Shape* box3d::b3SphereShape::clone() const {
 
 void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
-    view_data->m_V.resize(m_config.m_vertices_rows, 3);
+    view_data->m_vertex_count = m_config.m_vertices_rows;
+
+    void* mem = b3_alloc(view_data->m_vertex_count * 3 * sizeof(double));
+    view_data->m_V = new (mem) double;
     
     const E3Matrix3d& rot_y = m_config.m_rot_y;
     const E3Matrix3d& rot_z = m_config.m_rot_z;
@@ -106,7 +109,12 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = world_center + m_radius * v2;
+
+
+            Eigen::Vector3d v = world_center + m_radius * v2;
+            view_data->m_V[index++] = v.x();
+            view_data->m_V[index++] = v.y();
+            view_data->m_V[index++] = v.z();
         }
 
         v2 = v1;
@@ -114,15 +122,26 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         v2.x() = -v2_x;
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
-            view_data->m_V.row(index++) = world_center + m_radius * v2;
+            Eigen::Vector3d v = world_center + m_radius * v2;
+            view_data->m_V[index++] = v.x();
+            view_data->m_V[index++] = v.y();
+            view_data->m_V[index++] = v.z();
         }
     }
 
     v1 = rot_y * v1;
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     v2 = rot_z * v1;
-    view_data->m_V.row(index++) = world_center + m_radius * v2;
-    view_data->m_V.row(index++) = world_center - m_radius * v2;
+
+    Eigen::Vector3d v = world_center + m_radius * v2;
+    view_data->m_V[index++] = v.x();
+    view_data->m_V[index++] = v.y();
+    view_data->m_V[index++] = v.z();
+
+    v = world_center - m_radius * v2;
+    view_data->m_V[index++] = v.x();
+    view_data->m_V[index++] = v.y();
+    view_data->m_V[index++] = v.z();
         
 
     // the number of rings is k_segments - 1, 
@@ -132,17 +151,26 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
     // point_number + point_number + (k_segments - 1 - 1) * 2 * point_number;
     // = (k_segments - 1) * 2 * point_number
-    view_data->m_F.resize(m_config.m_faces_rows, 3);
+
+    view_data->m_face_count = m_config.m_faces_rows;
+    mem = b3_alloc(view_data->m_face_count * 3 * sizeof(int));
+    view_data->m_F = new (mem) int;
+
     index = 0;
     {
         // the point (0, 0, 1) with the first ring
         int first = m_config.m_vertices_rows - 1;
         int second = 0;
 
-        view_data->m_F.row(index++) << first, second, m_config.m_ring_points_count - 1;
+        view_data->m_F[index++] = first;
+        view_data->m_F[index++] = second;
+        view_data->m_F[index++] = m_config.m_ring_points_count - 1;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            view_data->m_F.row(index++) << first, second, second + 1;
+            view_data->m_F[index++] = first;
+            view_data->m_F[index++] = second;
+            view_data->m_F[index++] = second + 1;
+
             second = second + 1;
         }
     }
@@ -152,10 +180,14 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         int first = m_config.m_vertices_rows - 2;
         int second = m_config.m_vertices_rows - m_config.m_ring_points_count - 2;
 
-        view_data->m_F.row(index++) << first, second, m_config.m_vertices_rows - 3;
+        view_data->m_F[index++] = first;
+        view_data->m_F[index++] = second;
+        view_data->m_F[index++] = m_config.m_vertices_rows - 3;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            view_data->m_F.row(index++) << first, second, second + 1;
+            view_data->m_F[index++] = first;
+            view_data->m_F[index++] = second;
+            view_data->m_F[index++] = second + 1;
             second = second + 1;
         }
     }
@@ -171,12 +203,13 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         // first construct two face index overflow
         // first ring start, end  and second ring start
         // first ring end, and second ring start and end
-        view_data->m_F.row(index++) << first_ring_index, 
-                                       second_ring_index - 1, 
-                                       second_ring_index;
-        view_data->m_F.row(index++) << second_ring_index - 1, 
-                                       second_ring_index, 
-                                       second_ring_index + m_config.m_ring_points_count - 1;
+        view_data->m_F[index++] = first_ring_index;
+        view_data->m_F[index++] = second_ring_index - 1;
+        view_data->m_F[index++] = second_ring_index;
+        view_data->m_F[index++] = second_ring_index - 1;
+        view_data->m_F[index++] = second_ring_index;
+        view_data->m_F[index++] = second_ring_index + m_config.m_ring_points_count - 1;
+
         // two near ring
         // first ring points index(based on first_ring_index):    0, 1, 2, 3, ……， n-2, n-1, 0
         //                                                                              ------
@@ -185,9 +218,15 @@ void box3d::b3SphereShape::get_view_data(b3ViewData* view_data) const {
         //                                                                              |-----
         // second ring points index(based on second_ring_index):  0, 1, 2, 3, ……， n-2, n-1, 0
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            view_data->m_F.row(index++) << first_ring_index, second_ring_index, second_ring_index + 1;
+            view_data->m_F[index++] = first_ring_index;
+            view_data->m_F[index++] = second_ring_index;
+            view_data->m_F[index++] = second_ring_index + 1;
+
             second_ring_index++;
-            view_data->m_F.row(index++) << first_ring_index, second_ring_index, first_ring_index + 1;
+
+            view_data->m_F[index++] = first_ring_index;
+            view_data->m_F[index++] = second_ring_index;
+            view_data->m_F[index++] = first_ring_index + 1;
             first_ring_index++;
         }
     }

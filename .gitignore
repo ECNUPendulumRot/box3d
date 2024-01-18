@@ -7,3 +7,5 @@
 # build files
 build/*
 build-debug/*
+
+out/*

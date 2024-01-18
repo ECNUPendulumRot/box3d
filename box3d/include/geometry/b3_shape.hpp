@@ -39,20 +39,26 @@ struct box3d::b3ViewData {
      * @brief Vertices of the mesh
      * @details Each row is vertex's x, y, z coordinates
      */
-    E3MatrixXd m_V;
+    double* m_V;
+    int m_vertex_count;
 
     /**
      * @brief Faces of the mesh
      * @details Each row is a face with 3 indexes to vertex
      */
-    E3MatrixXi m_F;
+    int* m_F;
+    int m_face_count;
 
-    E3MatrixXd vertexes() const {
-        return m_V;
-    }
+    typedef  struct {
+        int fv0;
+        int fv1;
+        int fv2;
+    } FaceIndice;
 
-    E3MatrixXi faces() const {
-        return m_F;
+    inline void set_face_row(int face_index, const FaceIndice& face) {
+        *(m_F + 3 * face_index)    = face.fv0;
+        *(m_F + 3 * face_index + 1) = face.fv1;
+        *(m_F + 3 * face_index + 2) = face.fv2;
     }
 
 };

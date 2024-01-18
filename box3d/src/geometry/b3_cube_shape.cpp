@@ -106,30 +106,36 @@ void box3d::b3CubeShape::compute_mass_properties(box3d::b3MassProperty &mass_dat
 
 void box3d::b3CubeShape::get_view_data(box3d::b3ViewData *view_data) const
 {
-    view_data->m_V.resize(8, 3);
-    view_data->m_V << m_vertices[0].eigen_vector3().transpose(),
-                      m_vertices[1].eigen_vector3().transpose(),
-                      m_vertices[2].eigen_vector3().transpose(),
-                      m_vertices[3].eigen_vector3().transpose(),
-                      m_vertices[4].eigen_vector3().transpose(),
-                      m_vertices[5].eigen_vector3().transpose(),
-                      m_vertices[6].eigen_vector3().transpose(),
-                      m_vertices[7].eigen_vector3().transpose();
+    view_data->m_vertex_count = 8;
 
-    view_data->m_F.resize(12, 3);
+    void* mem = b3_alloc(view_data->m_vertex_count * 3 * sizeof(double));
 
-    view_data->m_F << 0, 1, 2,
-                      0, 2, 3,
-                      4, 5, 6,
-                      4, 6, 7,
-                      0, 1, 5,
-                      0, 5, 4,
-                      1, 2, 6,
-                      1, 6, 5,
-                      2, 3, 7,
-                      2, 7, 6,
-                      3, 0, 4,
-                      3, 4, 7;
+    view_data->m_V = new (mem) double;
+
+    int index = 0;
+    for (const b3Vector3d& vertex : m_vertices) {
+        view_data->m_V[index++] = vertex.x();
+        view_data->m_V[index++] = vertex.y();
+        view_data->m_V[index++] = vertex.z();
+    }
+
+    view_data->m_face_count = 12;
+
+    mem = b3_alloc(view_data->m_face_count * 3 * sizeof(int));
+    view_data->m_F = new (mem) int;
+
+    view_data->set_face_row(0, {0, 1, 2});
+    view_data->set_face_row(1, {0, 2, 3});
+    view_data->set_face_row(2,  {4, 5, 6});
+    view_data->set_face_row(3,  {4, 6, 7});
+    view_data->set_face_row(4,  {0, 1, 5});
+    view_data->set_face_row(5,  {0, 5, 4});
+    view_data->set_face_row(6,  {1, 2, 6});
+    view_data->set_face_row(7,  {1, 6, 5});
+    view_data->set_face_row(8,  {2, 3, 7});
+    view_data->set_face_row(9,  {2, 7, 6});
+    view_data->set_face_row(10, {3, 0, 4});
+    view_data->set_face_row(11, {3, 4, 7});
 }
 
 
