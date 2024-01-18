@@ -21,8 +21,13 @@ struct box3d::b3SphereConfig {
 
     E3Matrix3d m_rot_y, m_rot_z;
 
-    int m_vertices_rows;
-    int m_faces_rows;
+    int m_vertices_count;
+    int m_faces_count;
+
+    // size = count * 3;
+    int m_vertices_size;
+    int m_faces_size;
+
     int m_ring_points_count;
 
     b3SphereConfig();
@@ -60,7 +65,7 @@ public:
         return m_radius;
     }
 
-    void get_view_data(b3ViewData* view_data) const override;
+    void init_view_data() override;
 };
 
 

@@ -87,6 +87,11 @@ protected:
      */
     b3Body* m_body = nullptr;
 
+    /**
+     * @brief This is used for gui
+     */
+    b3ViewData* m_view_data = nullptr;
+
 public:
 
     virtual ~b3Shape() = default;
@@ -106,9 +111,16 @@ public:
         b3_NOT_USED(density);
     };
 
-    virtual void get_view_data(b3ViewData* view_data) const {
-        b3_NOT_USED(view_data);
-    };
+    b3ViewData* get_view_data() {
+        if(m_view_data == nullptr) {
+            init_view_data();
+        }
+        return m_view_data;
+    }
+
+    virtual void init_view_data() {
+
+    }
 
     virtual b3Shape* clone() const {
         return nullptr;
