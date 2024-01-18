@@ -90,7 +90,9 @@ protected:
 
 public:
 
-    virtual ~b3Shape() = default;
+    virtual ~b3Shape() {
+        b3_free(m_view_data);
+    }
 
     virtual int32 get_child_count() const {
         return 0;

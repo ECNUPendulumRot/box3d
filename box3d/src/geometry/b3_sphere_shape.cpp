@@ -131,6 +131,7 @@ void b3SphereShape::init_view_data() {
 
         v2 = v1;
         double v2_x = v2.x();
+
         v2.x() = -v2_x;
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
@@ -167,14 +168,14 @@ void b3SphereShape::init_view_data() {
     // point_number + point_number + (k_segments - 1 - 1) * 2 * point_number;
     // = (k_segments - 1) * 2 * point_number
 
-    m_view_data->m_face_count = m_config.m_faces_rows;
-    mem = b3_alloc(m_view_data->m_face_count * 3 * sizeof(int));
+    m_view_data->m_face_count = m_config.m_faces_count;
+    mem = b3_alloc(m_config.m_faces_size * sizeof(int));
     m_view_data->m_F = new (mem) int;
 
     index = 0;
     {
         // the point (0, 0, 1) with the first ring
-        int first = m_config.m_vertices_rows - 1;
+        int first = m_config.m_vertices_count - 1;
         int second = 0;
 
         m_view_data->m_F[index++] = first;
@@ -192,12 +193,12 @@ void b3SphereShape::init_view_data() {
 
     {
         // the point (0, 0, -1) with the last ring
-        int first = m_config.m_vertices_rows - 2;
-        int second = m_config.m_vertices_rows - m_config.m_ring_points_count - 2;
+        int first = m_config.m_vertices_count - 2;
+        int second = m_config.m_vertices_count - m_config.m_ring_points_count - 2;
 
         m_view_data->m_F[index++] = first;
         m_view_data->m_F[index++] = second;
-        m_view_data->m_F[index++] = m_config.m_vertices_rows - 3;
+        m_view_data->m_F[index++] = m_config.m_vertices_count - 3;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
             m_view_data->m_F[index++] = first;

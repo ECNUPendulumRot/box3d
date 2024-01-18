@@ -71,7 +71,7 @@ public:
 
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
-    void get_view_data(b3ViewData* view_data) const override;
+    void init_view_data() override;
 
     b3Shape* clone() const override;
 
