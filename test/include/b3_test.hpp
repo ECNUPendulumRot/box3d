@@ -26,7 +26,7 @@ class TestBase {
 
 protected:
 
-    box3d::b3World* m_world;
+    b3World* m_world;
 
 public:
 
@@ -37,7 +37,7 @@ public:
 
     virtual void simulation_step();
 
-    box3d::b3World* get_world() {
+    b3World* get_world() {
         return m_world;
     }
 

@@ -41,7 +41,7 @@ b3GUIViewer::b3GUIViewer()
 }
 
 
-bool b3GUIViewer::set_world(box3d::b3World *world) {
+bool b3GUIViewer::set_world(b3World *world) {
 
     m_world = world;
 
@@ -112,14 +112,14 @@ void b3GUIViewer::add_meshes() {
 
     int shape_count = m_world->get_shape_count();
 
-    box3d::b3Shape* shape = m_world->get_shape_list();
+    b3Shape* shape = m_world->get_shape_list();
 
     while(shape) {
         int viewer_id = m_viewer.append_mesh(true); 
         m_view_id_vector.push_back(viewer_id);
 
 
-        box3d::b3ViewData view_data;
+        b3ViewData view_data;
         shape->get_view_data(&view_data);
 
         Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
@@ -164,7 +164,7 @@ void b3GUIViewer::redraw_mesh() {
 
     b3ViewShapePair* pair = m_pair_list;
 
-    box3d::b3Shape* shape = m_world->get_shape_list();
+    b3Shape* shape = m_world->get_shape_list();
 
     int index = 0;
 
@@ -173,7 +173,7 @@ void b3GUIViewer::redraw_mesh() {
         // int viewer_id = pair->get_viewer_id();
         // int mesh_id = pair->get_mesh_id();
 
-        box3d::b3ViewData view_data;
+        b3ViewData view_data;
         shape->get_view_data(&view_data);
         Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
         Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);

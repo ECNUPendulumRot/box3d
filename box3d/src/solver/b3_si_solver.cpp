@@ -2,12 +2,13 @@
 #include "solver/b3_si_solver.hpp"
 
 #include "dynamics/b3_island.hpp"
-
 #include "dynamics/b3_body.hpp"
 
 #include "solver/b3_contact_constraint.hpp"
 
 #include "collision/b3_fixture.hpp"
+#include "collision/b3_collision.hpp"
+#include "collision/b3_contact.hpp"
 
 #include "common/b3_time_step.hpp"
 

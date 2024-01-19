@@ -126,7 +126,7 @@ void b3SphereShape::get_view_data(b3ViewData* view_data) const {
 
         v2 = v1;
         double v2_x = v2.x();
-        v2.x() = -v2_x;
+        v2.m_x = -v2_x;
         for(int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
             b3Vector3d v = world_center + m_radius * v2;

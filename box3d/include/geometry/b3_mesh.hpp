@@ -12,18 +12,6 @@
 #include "geometry/b3_shape.hpp"
 
 
-namespace box3d {
-
-    class b3Mesh;
-
-///////////////////////////
-
-    class b3World;
-
-    class b3Body;
-}
-
-
 class b3Mesh: public b3Shape {
 
     friend class b3World;

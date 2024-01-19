@@ -3,6 +3,7 @@
 
 #include "dynamics/b3_world.hpp"
 #include "dynamics/b3_body_def.hpp"
+#include "dynamics/b3_mass_property.hpp"
 
 #include "collision/b3_fixture.hpp"
 

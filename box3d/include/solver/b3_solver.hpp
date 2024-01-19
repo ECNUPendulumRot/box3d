@@ -7,6 +7,21 @@
 #include "common/b3_allocator.hpp"
 
 
+/////////// Forward Delaration ///////////
+
+class b3TimeStep;
+
+class b3Contact;
+
+class b3World;
+
+class b3Island;
+
+class b3ContactVelocityConstraint;
+
+//////////////////////////////////////////
+
+
 class b3Solver {
 
 protected:

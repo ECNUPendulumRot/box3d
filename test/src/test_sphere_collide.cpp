@@ -8,8 +8,6 @@ public:
 
     TestSphereCollide() {
 
-        using namespace box3d;
-
         m_world->set_gravity(b3Vector3d(0, 0, 0));
 
         // create a dynamic body

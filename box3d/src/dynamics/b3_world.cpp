@@ -4,6 +4,7 @@
 #include "common/b3_allocator.hpp"
 #include "common/b3_time_step.hpp"
 
+#include "collision/b3_contact.hpp"
 #include "solver/b3_si_solver.hpp"
 
 b3World::b3World():

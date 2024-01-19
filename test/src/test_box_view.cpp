@@ -7,8 +7,6 @@ public:
 
     TestBoxView() {
 
-        using namespace box3d;
-
         // create a dynamic body
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;

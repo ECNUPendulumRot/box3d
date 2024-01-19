@@ -66,7 +66,7 @@ class b3GUIViewer {
 
     CategoryMenu m_menu;
 
-    box3d::b3World* m_world;
+    b3World* m_world;
 
     TestBase* m_test = nullptr;
 
@@ -84,7 +84,7 @@ public:
 
     void launch();
 
-    bool set_world(box3d::b3World* world);
+    bool set_world(b3World* world);
 
     inline void set_max_fps(double fps) {
         m_viewer.core().animation_max_fps = fps;

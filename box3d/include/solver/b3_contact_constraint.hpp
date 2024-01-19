@@ -5,7 +5,6 @@
 #include <common/b3_types.hpp>
 
 
-
 struct b3VelocityConstraintPoint {
     b3Vector3d m_ra;
     b3Vector3d m_rb;

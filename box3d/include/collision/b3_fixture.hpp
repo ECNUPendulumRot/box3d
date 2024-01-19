@@ -5,6 +5,16 @@
 
 #include "geometry/b3_shape.hpp"
 
+#include "collision/b3_aabb.hpp"
+
+/////////// Forward Delaration ///////////
+
+class b3Fixture;
+
+class b3BroadPhase;
+
+//////////////////////////////////////////
+
 
 struct b3FixtureDef {
 
@@ -59,7 +69,7 @@ struct b3FixtureProxy {
     // the id of the proxy of the child shape
     int32 m_child_id = -1;
 
-    b3Fixture* get_fixture() const {
+    inline b3Fixture* get_fixture() const {
         return m_fixture;
     }
 
@@ -79,8 +89,6 @@ class b3Fixture {
     b3Shape* m_shape = nullptr;
 
     b3Body* m_body = nullptr;
-
-    b3BodyType m_type = b3BodyType::b3_type_not_defined;
 
     b3FixtureProxy* m_proxies = nullptr;
 
@@ -119,5 +127,6 @@ public:
         return (m_proxies + index);
     }
 };
+
 
 #endif //BOX3D_B3_FIXTURE_HPP

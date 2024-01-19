@@ -6,7 +6,7 @@
 
 TestBase::TestBase()
 {
-    m_world = new box3d::b3World;
+    m_world = new b3World;
     m_world->set_gravity(b3Vector3d(0.0, 0.0, -10.0));
 }
 

@@ -48,9 +48,9 @@ public:
      */
     inline double get_surface_area(){
 
-        double f1 =  (m_max.x() - m_min.x()) * (m_max.y() - m_min.y());
-        double f2 =  (m_max.x() - m_min.x()) * (m_max.z() - m_min.z());
-        double f3 =  (m_max.y() - m_min.y()) * (m_max.z() - m_min.z());
+        double f1 =  (m_max.m_x - m_min.m_x) * (m_max.m_y - m_min.m_y);
+        double f2 =  (m_max.m_x - m_min.m_x) * (m_max.m_z - m_min.m_z);
+        double f3 =  (m_max.m_y - m_min.m_y) * (m_max.m_z - m_min.m_z);
         return 2.0 * f1 * f2 * f3;
     }
 
@@ -67,13 +67,13 @@ public:
 
         bool result = true;
 
-        result = result && m_min.x() <= other.m_min.x();
-        result = result && m_min.y() <= other.m_min.y();
-        result = result && m_min.z() <= other.m_min.z();
+        result = result && m_min.m_x <= other.m_min.m_x;
+        result = result && m_min.m_y <= other.m_min.m_y;
+        result = result && m_min.m_z <= other.m_min.m_z;
 
-        result = result && m_max.x() >= other.m_max.x();
-        result = result && m_max.y() >= other.m_max.y();
-        result = result && m_max.z() >= other.m_max.z();
+        result = result && m_max.m_x >= other.m_max.m_x;
+        result = result && m_max.m_y >= other.m_max.m_y;
+        result = result && m_max.m_z >= other.m_max.m_z;
 
         return result;
     }

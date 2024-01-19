@@ -235,8 +235,6 @@ static void create_face_contact(
     const double& total_radius)
 
 {
-    using namespace box3d;
-
     const double k_tol = 0.1 * b3_linear_slop;
 
     const b3CubeShape* cube1;
@@ -349,8 +347,6 @@ void create_edge_contact(
     const int32& edge_index_A,  const int32& edge_index_B,
     const double& separation_edge)
 {
-    using namespace box3d;
-
     const b3Vector3d& v1_A = xf_A.transform(cube_A->m_vertices[cube_A->m_edges[edge_index_A].v1]);
     const b3Vector3d& v2_A = xf_A.transform(cube_A->m_vertices[cube_A->m_edges[edge_index_A].v2]);
     const b3Vector3d& v1_B = xf_B.transform(cube_B->m_vertices[cube_B->m_edges[edge_index_B].v1]);
@@ -391,6 +387,7 @@ void create_edge_contact(
     manifold->m_points[0].m_local_point = c_B;
     manifold->m_points[0].id = id;
 }
+
 
 void b3_collide_cube(
         b3Manifold* manifold,

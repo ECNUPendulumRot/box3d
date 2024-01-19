@@ -1,7 +1,12 @@
 
 #include "geometry/b3_cube_shape.hpp"
+
 #include "common/b3_common.hpp"
 #include "common/b3_allocator.hpp"
+
+#include "dynamics/b3_mass_property.hpp"
+
+#include "collision/b3_aabb.hpp"
 
 
 b3CubeShape::b3CubeShape()

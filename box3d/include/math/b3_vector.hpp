@@ -12,7 +12,7 @@
 
 
 template <typename T>
-class b3Vector3 {
+struct b3Vector3 {
 
     union {
         T m_ts[3];
@@ -20,8 +20,6 @@ class b3Vector3 {
             T m_x, m_y, m_z;
         };
     };
-
-public:
 
     b3Vector3() {
         m_x = m_y = m_z = T(0);
