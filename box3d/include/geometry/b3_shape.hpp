@@ -4,7 +4,7 @@
 
 
 #include "common/b3_types.hpp"
-
+#include "common/b3_allocator.hpp"
 #include "dynamics/b3_transform.hpp"
 
 

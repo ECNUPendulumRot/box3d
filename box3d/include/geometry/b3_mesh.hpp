@@ -59,7 +59,7 @@ public:
 
     b3Shape* clone() const override;
 
-    void get_view_data(b3ViewData* view_data) const override;
+    void init_view_data() override;
 
     /**
      * @brief Read a mesh from an ascii obj file

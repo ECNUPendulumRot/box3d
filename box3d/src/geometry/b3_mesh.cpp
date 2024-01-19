@@ -71,7 +71,7 @@ void b3Mesh::compute_mass_properties(b3MassProperty &mass_data, double density) 
 }
 
 
-void b3Mesh::get_view_data(b3ViewData *view_data) const
+void b3Mesh::init_view_data(b3ViewData *view_data) const
 {
     view_data->m_V = transform();
     view_data->m_F = m_F;

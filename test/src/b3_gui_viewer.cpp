@@ -119,11 +119,11 @@ void b3GUIViewer::add_meshes() {
         m_view_id_vector.push_back(viewer_id);
 
 
-        b3ViewData view_data;
-        shape->get_view_data(&view_data);
+        b3ViewData* view_data;
+        view_data = shape->get_view_data();
 
-        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data->m_V, view_data->m_vertex_count, 3);
+        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data->m_F, view_data->m_face_count, 3);
 
         m_viewer.data(viewer_id).set_mesh(vertices, faces);
 
@@ -173,10 +173,10 @@ void b3GUIViewer::redraw_mesh() {
         // int viewer_id = pair->get_viewer_id();
         // int mesh_id = pair->get_mesh_id();
 
-        b3ViewData view_data;
-        shape->get_view_data(&view_data);
-        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+        b3ViewData* view_data;
+        view_data = shape->get_view_data();
+        Eigen::Map<E3MatrixXd, Eigen::RowMajor> vertices(view_data->m_V, view_data->m_vertex_count, 3);
+        Eigen::Map<E3MatrixXi, Eigen::RowMajor> faces(view_data->m_F, view_data->m_face_count, 3);
 
         m_viewer.data(m_view_id_vector[index]).set_mesh(vertices, faces);
 
