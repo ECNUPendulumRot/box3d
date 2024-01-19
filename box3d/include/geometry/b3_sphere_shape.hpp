@@ -12,9 +12,18 @@ struct b3SphereConfig {
 
     b3Matrix3d m_rot_y, m_rot_z;
 
+<<<<<<< HEAD
+    int m_vertices_count;
+    int m_faces_count;
+
+    // size = count * 3;
+    int m_vertices_size;
+    int m_faces_size;
+=======
     int m_vertices_rows;
 
     int m_faces_rows;
+>>>>>>> origin/xzy-dev
 
     int m_ring_points_count;
 
@@ -54,7 +63,7 @@ public:
         return m_radius;
     }
 
-    void get_view_data(b3ViewData* view_data) const override;
+    void init_view_data() override;
 };
 
 

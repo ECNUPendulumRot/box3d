@@ -35,6 +35,7 @@ set(B3D_HEADER_FILES
         include/utils/b3_log.hpp
         include/utils/b3_json.hpp
         include/utils/b3_timer.hpp
+        include/common/b3_block_allocator.hpp
 
         include/math/b3_matrix_operation.hpp
         include/math/b3_vector.hpp
@@ -61,6 +62,8 @@ set(B3D_SOURCE_FILES
         src/collision/b3_cube_contact.cpp
         src/collision/b3_collide_sphere.cpp
         src/collision/b3_collide_cube.cpp
+
+        src/common/b3_block_allocator.cpp
 
         src/dynamics/b3_world.cpp
         src/dynamics/b3_body.cpp
