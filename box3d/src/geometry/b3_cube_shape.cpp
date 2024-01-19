@@ -114,7 +114,7 @@ void b3CubeShape::init_view_data()
 {
     m_view_data->m_vertex_count = 8;
 
-    void* mem = b3_alloc(m_view_data->m_vertex_count * 3 * sizeof(double));
+    void* mem = m_block_allocator->allocate(m_view_data->m_vertex_count * 3 * sizeof(double));
 
     m_view_data->m_V = new (mem) double;
 
@@ -127,7 +127,7 @@ void b3CubeShape::init_view_data()
 
     m_view_data->m_face_count = 12;
 
-    mem = b3_alloc(m_view_data->m_face_count * 3 * sizeof(int));
+    mem = m_block_allocator->allocate(m_view_data->m_face_count * 3 * sizeof(int));
     m_view_data->m_F = new (mem) int;
 
     m_view_data->set_face_row(0, {0, 1, 2});
@@ -147,7 +147,7 @@ void b3CubeShape::init_view_data()
 
 b3Shape *b3CubeShape::clone() const
 {
-    void* mem = b3_alloc(sizeof(b3CubeShape));
+    void* mem = m_block_allocator->allocate(sizeof(b3CubeShape));
     auto* clone = new (mem) b3CubeShape;
     *clone = *this;
     return clone;

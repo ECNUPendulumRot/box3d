@@ -4,8 +4,9 @@
 #include "collision/b3_broad_phase.hpp"
 #include "dynamics/b3_body.hpp"
 
+#include "common/b3_block_allocator.hpp"
 
-void b3Fixture::create_fixture(const b3FixtureDef &f_def, b3Body *body)
+void b3Fixture::create_fixture(b3BlockAllocator* block_allocator, const b3FixtureDef &f_def, b3Body *body)
 {
     m_restitution = f_def.get_restitution();
     m_friction = f_def.get_friction();
@@ -14,13 +15,12 @@ void b3Fixture::create_fixture(const b3FixtureDef &f_def, b3Body *body)
 
     m_shape = f_def.get_shape()->clone();
     m_shape->set_relative_body(body);
-
-    m_proxies = (b3FixtureProxy*)b3_alloc(sizeof(b3FixtureProxy));
+    m_shape->set_block_allocator(block_allocator);
 
     int32 child_count = m_shape->get_child_count();
 
     // m_proxies has as many proxies as number of children shapes
-    m_proxies = (b3FixtureProxy*)b3_alloc(child_count * sizeof(b3FixtureProxy));
+    m_proxies = (b3FixtureProxy*)block_allocator->allocate(child_count * sizeof(b3FixtureProxy));
 
     for (int32 i = 0; i < child_count; ++i) {
         m_proxies[i].m_fixture = nullptr;

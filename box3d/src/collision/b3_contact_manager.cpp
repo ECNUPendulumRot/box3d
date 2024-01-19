@@ -6,6 +6,8 @@
 
 #include "dynamics/b3_body.hpp"
 
+#include "common/b3_block_allocator.hpp"
+
 
 void b3ContactManager::find_new_contact()
 {
@@ -56,7 +58,7 @@ void b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy*
         edge = edge->m_next;
     }
 
-    b3Contact* contact = b3Contact::create(fixture_a, index_a, fixture_b, index_b);
+    b3Contact* contact = b3Contact::create(fixture_a, index_a, fixture_b, index_b, m_block_allocator);
 
     if(contact == nullptr) {
         return;
@@ -137,7 +139,7 @@ void b3ContactManager::destory(b3Contact* contact)
         body_b->set_contact_list(contact->get_node_b()->m_next);
     }
 
-    b3_free(contact);
+    m_block_allocator->free(contact, sizeof(b3Contact));
     --m_contact_count;
 }
 

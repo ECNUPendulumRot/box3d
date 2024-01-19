@@ -1,8 +1,7 @@
 
 #include "collision/b3_broad_phase.hpp"
-#include "common/b3_allocator.hpp"
 #include "collision/b3_fixture.hpp"
-
+#include "common/b3_block_allocator.hpp"
 
 b3BroadPhase::b3BroadPhase()
 {
@@ -10,11 +9,20 @@ b3BroadPhase::b3BroadPhase()
 
     m_pair_count = 0;
     m_pair_capacity = 16;
-    m_pair_buffer = (b3Pair*)b3_alloc(m_pair_capacity * sizeof(b3Pair));
+
+    // Allocate memory space after the initialization of m_block_allocator
 
     m_move_count = 0;
     m_move_capacity = 16;
-    m_move_buffer = (int32*)b3_alloc(m_move_capacity * sizeof(int32));
+
+}
+
+
+void b3BroadPhase::set_block_allocator(b3BlockAllocator* block_allocator) {
+    m_block_allocator = block_allocator;
+
+    m_pair_buffer = (b3Pair*)m_block_allocator->allocate(m_pair_capacity * sizeof(b3Pair));
+    m_move_buffer = (int32*)m_block_allocator->allocate(m_move_capacity * sizeof(int32));
 }
 
 
@@ -40,10 +48,10 @@ void b3BroadPhase::buffer_move(int32 proxy_id)
 
         m_move_capacity *= 2;
 
-        m_move_buffer = (int32*)b3_alloc(m_move_capacity * sizeof(int32));
+        m_move_buffer = (int32*)m_block_allocator->allocate(m_move_capacity * sizeof(int32));
 
         memcpy(m_move_buffer, old_buffer, m_move_count * sizeof(int32));
-        b3_free(old_buffer);
+        m_block_allocator->free(old_buffer, m_move_count * sizeof(int32));
     }
 
     m_move_buffer[m_move_count] = proxy_id;
@@ -81,9 +89,10 @@ void b3BroadPhase::query_callback(int32 proxy_id)
 
         b3Pair* old_buffer = m_pair_buffer;
         m_pair_capacity *= 2;
-        m_pair_buffer = (b3Pair*)b3_alloc(m_pair_capacity * sizeof(b3Pair));
+        m_pair_buffer = (b3Pair*)m_block_allocator->allocate(m_pair_capacity * sizeof(b3Pair));
         memcpy(m_pair_buffer, old_buffer, m_pair_count * sizeof(b3Pair));
-        b3_free(old_buffer);
+
+        m_block_allocator->free(old_buffer, m_pair_count * sizeof(b3Pair));
     }
 
     // add pair

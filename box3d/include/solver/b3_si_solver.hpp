@@ -9,11 +9,13 @@ class b3SISolver : public b3Solver {
 
 public:
 
+    b3SISolver() = delete;
+
+    b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+
     void initialize(b3World* world) {
         
     }
-
-    void initialize(b3Island* island, b3TimeStep* timestep);
 
     void init_velocity_constraints();
 

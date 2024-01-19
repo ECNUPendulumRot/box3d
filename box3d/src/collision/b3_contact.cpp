@@ -51,7 +51,7 @@ void b3Contact::add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* de
 
 b3Contact* b3Contact::create(
     b3Fixture *fixture_A, int32 index_A,
-    b3Fixture *fixture_B, int32 index_B)
+    b3Fixture *fixture_B, int32 index_B, b3BlockAllocator* block_allocator)
 {
     if (!s_initialized) {
         initialize_registers();
@@ -67,9 +67,9 @@ b3Contact* b3Contact::create(
     b3ContactCreateFcn* create_fcn = s_registers[type_A][type_B].create_fcn;
     if (create_fcn) {
         if (s_registers[type_A][type_B].primary) {
-            return create_fcn(fixture_A, index_A, fixture_B, index_B);
+            return create_fcn(fixture_A, index_A, fixture_B, index_B, block_allocator);
         } else {
-            return create_fcn(fixture_B, index_B, fixture_A, index_A);
+            return create_fcn(fixture_B, index_B, fixture_A, index_A, block_allocator);
         }
     } else {
         return nullptr;
@@ -77,7 +77,7 @@ b3Contact* b3Contact::create(
 }
 
 
-void b3Contact::destroy(b3Contact *contact)
+void b3Contact::destroy(b3Contact *contact, b3BlockAllocator* block_allocator)
 {
     b3_assert(s_initialized == true);
 
@@ -97,7 +97,7 @@ void b3Contact::destroy(b3Contact *contact)
     b3_assert(0 <= type_B && type_B < b3ShapeType::e_type_count);
 
     b3ContactDestroyFcn* destroy_fcn = s_registers[type_A][type_B].destroy_fcn;
-    destroy_fcn(contact);
+    destroy_fcn(contact, block_allocator);
 }
 
 

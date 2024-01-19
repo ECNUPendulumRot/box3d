@@ -11,7 +11,7 @@ b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
 {
-    ;
+    m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
 
@@ -59,8 +59,8 @@ b3Body *b3World::create_body(const b3BodyDef &def)
     b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
 
     // allocate memory for the body
-    void* memory = b3_alloc(sizeof (b3Body));
-    auto* body = new(memory) b3Body(def);
+    void* mem = m_block_allocator.allocate(sizeof(b3Body));
+    auto* body = new (mem) b3Body(def);
 
     body->set_world(this);
 
@@ -89,7 +89,7 @@ b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
 {
     std::string fs_string = file_path.string();
 
-    void* memory = b3_alloc(sizeof(b3Shape));
+    void* memory = m_block_allocator.allocate(sizeof(b3Shape));
 
     // TODO: implement creation of shape from world
     auto* shape = new(memory) b3Shape;
@@ -104,12 +104,14 @@ b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
 
 void b3World::clear()
 {
+    // TODO: Check this function
     b3Shape* shape = m_shape_list;
 
     // Free all meshes
     while (shape != nullptr) {
         auto* next = shape->next();
-        b3_free(shape);
+        // b3_free(shape);
+        m_block_allocator.free(shape, sizeof(shape));
         shape = next;
     }
 
@@ -117,11 +119,14 @@ void b3World::clear()
     b3Body* body = m_body_list;
     while (body != nullptr) {
         auto* next = body->next();
-        b3_free(body);
+        // b3_free(body);
+        m_block_allocator.free(body, sizeof(body));
         body = next;
     }
 
-    m_island_list.clear();
+    for(b3Island* island : m_island_list) {
+        m_block_allocator.free(island, sizeof(island));
+    }
 }
 
 void b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
@@ -160,9 +165,7 @@ void b3World::step(double dt, int32 velocity_iterations, int32 position_iteratio
 
     // island solve velocity constraints and integrate position
     for(b3Island* island : m_island_list) {
-        b3SISolver solver;
-        solver.initialize(island, &step);
-
+        b3SISolver solver(&m_block_allocator, island, &step);
         solver.solve();
     }
 
@@ -179,8 +182,11 @@ void b3World::generate_island() {
         contact->unset_flag(b3Contact::e_island_flag);
     }
 
+    int32 island_count = m_island_list.size();
+    int32 island_index = 0;
+
     // build all islands
-    void* mem = b3_alloc(m_body_count * sizeof(b3Body*));
+    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body*));
     b3Body** stack = new (mem) b3Body*;
     for(b3Body* body = m_body_list; body; body = body->next()) {
         
@@ -188,7 +194,19 @@ void b3World::generate_island() {
             continue;
         }
 
-        b3Island* island = new b3Island(m_body_count, m_contact_manager.get_contact_count());
+        // void* mem = m_block_allocator.allocate(sizeof(b3Island));
+        // b3Island* island = new (mem) b3Island(m_body_count, m_contact_manager.get_contact_count());
+        b3Island* island = nullptr;
+        if(island_index < island_count) {
+            // reuse the memory space
+            island = m_island_list[island_index];
+            island->clear();
+            island_index++;
+        } else {
+            void* mem = m_block_allocator.allocate(sizeof(b3Island));
+            island = new (mem) b3Island(&m_block_allocator, m_body_count, m_contact_manager.get_contact_count());
+            m_island_list.push_back(island);
+        }
 
         int32 stack_count = 0;
         stack[stack_count++] = body;
@@ -227,8 +245,6 @@ void b3World::generate_island() {
         m_island_list.push_back(island);
     }
 }
-
-
 
 
 

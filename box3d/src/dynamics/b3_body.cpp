@@ -25,11 +25,13 @@ b3Body::b3Body(const b3BodyDef &body_def):
 
 b3Fixture* b3Body::create_fixture(const b3FixtureDef &def) {
 
-    void* memory = b3_alloc(sizeof(b3Fixture));
+    b3_assert(m_world != nullptr);
+
+    void* memory = m_world->get_block_allocator()->allocate(sizeof(b3Fixture));
     auto* fixture = new(memory) b3Fixture;
 
     // In this line, the proxies are allocated, but not assigned
-    fixture->create_fixture(def, this);
+    fixture->create_fixture(m_world->get_block_allocator(), def, this);
 
     // add shape pointer in the class world
     m_world->add_shape(fixture->get_shape());
@@ -118,5 +120,15 @@ void b3Body::reset_mass_data()
 }
 
 
+void b3Body::destory_fixtures() {
+
+    // TODO: Check this function
+    while(m_fixture_list) {
+        b3Fixture* destory_fixture = m_fixture_list;
+        m_fixture_list = m_fixture_list->m_next;
+
+        m_world->get_block_allocator()->free(destory_fixture, sizeof(b3Fixture));
+    }
+}
 
 

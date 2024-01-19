@@ -10,6 +10,8 @@
 
 class b3FixtureProxy;
 
+class b3BlockAllocator;
+
 //////////////////////////////////////////
 
 
@@ -45,6 +47,8 @@ class b3BroadPhase {
 
     int32 m_query_proxy_id;
 
+    b3BlockAllocator* m_block_allocator = nullptr;
+
 public:
 
     b3BroadPhase();
@@ -67,10 +71,11 @@ public:
     // bool query_callback(int32 proxy_id);
     void query_callback(int32 proxy_id);
 
+    void set_block_allocator(b3BlockAllocator* block_allocator);
+
 private:
 
     void buffer_move(int32 proxy_id);
-
 
 };
 

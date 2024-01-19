@@ -169,7 +169,8 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
                                       int32 edge_index_clip, int32 incident_face_index)
 {
     // calculate all the distances from the vertices to the plane
-    double distance[v_in_count];
+    // double distance[v_in_count];
+    double distance[8];
 
     for (int32 i = 0; i < v_in_count; i++) {
         double dist = n.dot(v_in[i].v) - offset;
@@ -223,6 +224,9 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
         ++count;
 
     }
+
+    // TODO
+    return 0;
 }
 
 

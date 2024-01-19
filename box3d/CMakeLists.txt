@@ -5,6 +5,7 @@ set(B3D_HEADER_FILES
         include/common/b3_allocator.hpp
         include/common/b3_common.hpp
         include/common/b3_time_step.hpp
+        include/common/b3_block_allocator.hpp
 
         include/collision/b3_bvh.hpp
         include/collision/b3_aabb.hpp
@@ -35,7 +36,6 @@ set(B3D_HEADER_FILES
         include/utils/b3_log.hpp
         include/utils/b3_json.hpp
         include/utils/b3_timer.hpp
-        include/common/b3_block_allocator.hpp
 
         include/math/b3_matrix_operation.hpp
         include/math/b3_vector.hpp
@@ -76,6 +76,7 @@ set(B3D_SOURCE_FILES
         src/utils/b3_io.cpp
         src/utils/b3_log.cpp
 
+        src/solver/b3_solver.cpp
         src/solver/b3_si_solver.cpp
 
 )

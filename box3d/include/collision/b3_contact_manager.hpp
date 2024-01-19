@@ -13,6 +13,8 @@ class b3FixtureProxy;
 
 class b3Contact;
 
+class b3BlockAllocator;
+
 //////////////////////////////////////////
 
 
@@ -23,6 +25,8 @@ class b3ContactManager {
     b3Contact* m_contact_list = nullptr;
 
     int32 m_contact_count = 0;
+
+    b3BlockAllocator* m_block_allocator = nullptr;
 
 public:
 
@@ -48,6 +52,10 @@ public:
         return m_contact_list;
     }
 
+    void set_block_allocator(b3BlockAllocator* block_allocator) {
+        m_block_allocator = block_allocator;
+        m_broad_phase.set_block_allocator(block_allocator);
+    }
 };
 
 

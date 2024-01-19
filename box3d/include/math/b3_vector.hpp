@@ -37,6 +37,8 @@ struct b3Vector3 {
         m_x = *it++;
         m_y = *it++;
         m_z = *it;
+
+        return *this;
     }
 
     explicit inline b3Vector3(const Eigen::Vector3<T>& v) {

@@ -1,10 +1,10 @@
 #ifndef BOX3D_CONTACT_HPP
 #define BOX3D_CONTACT_HPP
 
-#include "common/b3_allocator.hpp"
 #include "geometry/b3_shape.hpp"
 #include "collision/b3_collision.hpp"
 
+#include "common/b3_block_allocator.hpp"
 
 /////////// Forward Delaration ///////////
 
@@ -31,9 +31,10 @@ struct b3ContactEdge {
 
 
 typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
-                                      b3Fixture* fixture_B, int32 index_B);
+                                      b3Fixture* fixture_B, int32 index_B,
+                                      b3BlockAllocator* block_allocator);
 
-typedef void b3ContactDestroyFcn(b3Contact* contact);
+typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockAllocator* block_allocator);
 
 
 struct b3ContactRegister {
@@ -166,9 +167,9 @@ protected:
     static void add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* destroy_fcn,
                          b3ShapeType type_A, b3ShapeType type_B);
 
-    static b3Contact* create(b3Fixture* fixture_A, int32 index_A, b3Fixture* fixture_B, int32 index_B);
+    static b3Contact* create(b3Fixture* fixture_A, int32 index_A, b3Fixture* fixture_B, int32 index_B, b3BlockAllocator* block_allocator);
 
-    static void destroy(b3Contact* contact);
+    static void destroy(b3Contact* contact, b3BlockAllocator* block_allocator);
 
     void update();
 };

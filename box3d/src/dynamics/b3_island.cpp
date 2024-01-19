@@ -3,22 +3,21 @@
 #include "dynamics/b3_body.hpp"
 #include "collision/b3_contact.hpp"
 
-#include "common/b3_allocator.hpp"
+#include "common/b3_block_allocator.hpp"
 
 
-b3Island::b3Island(int32 body_capacity, int32 contact_capacity): 
-                          m_body_capacity(body_capacity),
-                          m_contact_capacity(contact_capacity) {
+b3Island::b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity):
+                                            m_body_capacity(body_capacity),
+                                            m_contact_capacity(contact_capacity) {
     
     m_body_count = 0;
     m_contact_count = 0;
 
-    void* mem = b3_alloc(m_body_capacity * sizeof(b3Body*));
+    void* mem = block_allocator->allocate(m_body_capacity * sizeof(b3Body*));
     m_bodies = new (mem) b3Body*;
 
-    mem = b3_alloc(m_contact_capacity * sizeof(b3Contact*));
+    mem = block_allocator->allocate(m_contact_capacity * sizeof(b3Contact*));
     m_contacts = new (mem) b3Contact*;
-
 }
 
 

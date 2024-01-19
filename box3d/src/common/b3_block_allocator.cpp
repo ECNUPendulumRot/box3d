@@ -55,7 +55,6 @@ static const b3SizeMap b3_size_map;
 
 
 struct b3Chunk {
-    int32 m_block_size;
     b3Block* m_blocks;
 };
 
@@ -118,7 +117,6 @@ void* b3BlockAllocator::allocate(int32 size) {
         b3Chunk* chunk = m_chunks + m_chunk_count;
         chunk->m_blocks = (b3Block*)b3_alloc(b3_chunk_size);
         int32 block_size = b3_block_sizes[index];
-        chunk->m_block_size = block_size;
         int32 block_count = b3_chunk_size / block_size;
 
         b3_assert(block_count * block_size < b3_chunk_size);

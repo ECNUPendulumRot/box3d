@@ -4,8 +4,7 @@
 
 #include "dynamics/b3_transform.hpp"
 
-#include "common/b3_allocator.hpp"
-
+#include "solver/b3_contact_constraint.hpp"
 
 /////////// Forward Delaration ///////////
 
@@ -18,6 +17,8 @@ class b3World;
 class b3Island;
 
 class b3ContactVelocityConstraint;
+
+class b3BlockAllocator;
 
 //////////////////////////////////////////
 
@@ -35,23 +36,25 @@ protected:
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
-    b3TimeStep* m_timestep;
+    b3TimeStep* m_timestep = nullptr;
+
+    b3BlockAllocator* m_block_allocator = nullptr;
 
 public:
 
-    virtual void initialize(b3World* world) = 0;
+    b3Solver() = delete;
 
-    virtual void initialize(b3Island* island, b3TimeStep* step) = 0;
+    b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+
+    virtual void initialize(b3World* world) = 0;
 
     virtual int solve() = 0;
 
-    virtual ~b3Solver() {
-        b3_free(m_contacts);
-        b3_free(m_positions);
-        b3_free(m_velocities);
-        b3_free(m_velocity_constraints);
-    }
+    ~b3Solver();
     
 };
+
+
+
 
 #endif //BOX3D_B3_SOLVER_HPP

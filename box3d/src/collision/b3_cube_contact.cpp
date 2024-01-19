@@ -6,17 +6,18 @@
 
 b3Contact* b3CubeContact::create(
     b3Fixture *fixture_a, int32 index_a,
-    b3Fixture *fixture_b, int32 index_b)
+    b3Fixture *fixture_b, int32 index_b,
+    b3BlockAllocator* block_allocator)
 {
-    void* mem = b3_alloc(sizeof(b3CubeContact));
+    void* mem = block_allocator->allocate(sizeof(b3CubeContact));
     return new (mem) b3CubeContact(fixture_a, fixture_b);
 }
 
 
-void b3CubeContact::destroy(b3Contact *contact)
+void b3CubeContact::destroy(b3Contact *contact, b3BlockAllocator* block_allocator)
 {
     ((b3CubeContact*)contact)->~b3CubeContact();
-    b3_free(contact);
+    block_allocator->free(contact, sizeof(b3CubeContact));
 }
 
 

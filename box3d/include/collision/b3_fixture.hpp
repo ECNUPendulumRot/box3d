@@ -98,7 +98,7 @@ class b3Fixture {
 
 public:
 
-    void create_fixture(const b3FixtureDef& f_def, b3Body* body);
+    void create_fixture(b3BlockAllocator* block_allocator,  const b3FixtureDef& f_def, b3Body* body);
 
     void create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf);
 

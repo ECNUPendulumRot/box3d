@@ -16,6 +16,8 @@
 
 class b3FixtureProxy;
 
+class b3BlockAllocator;
+
 //////////////////////////////////////////
 
 
@@ -112,12 +114,16 @@ class b3DynamicTree {
      */
     int32 m_free_list;
 
+    b3BlockAllocator* m_block_allocator = nullptr;
+
 public:
 
     /**
      * @brief Construct a new b3DynamicTree object
      */
     b3DynamicTree();
+
+    void set_block_allocator(b3BlockAllocator* block_allocator);
 
     /**
      * @brief Destroy the b3DynamicTree object

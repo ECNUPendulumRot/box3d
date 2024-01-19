@@ -88,8 +88,8 @@ void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double de
 
 b3Shape* b3SphereShape::clone() const {
     
-    void* mem = b3_alloc(sizeof(b3SphereShape));
-    auto* clone = new (mem) b3SphereShape;
+    void* memery = m_block_allocator->allocate(sizeof(b3SphereShape));
+    auto* clone = new (memery) b3SphereShape;
     *clone = *this;
     return clone;
 }
@@ -102,7 +102,7 @@ void b3SphereShape::init_view_data() {
 
     m_view_data->m_vertex_count = m_config.m_vertices_count;
 
-    void* mem = b3_alloc(m_config.m_vertices_size * sizeof(double));
+    void* mem = m_block_allocator->allocate(m_config.m_vertices_size * sizeof(double));
     m_view_data->m_V = new (mem) double;
     
     const b3Matrix3d& rot_y = m_config.m_rot_y;
@@ -113,7 +113,6 @@ void b3SphereShape::init_view_data() {
     int index = 0;
 
     // transform the center of sphere to world frame
-    auto body_pose = m_body->get_pose();
     b3Vector3d world_center = m_body->get_pose().transform(m_centroid);
 
     for(int i = 1; i < m_config.m_segments; ++i) {
@@ -143,32 +142,27 @@ void b3SphereShape::init_view_data() {
     }
 
     v1 = rot_y * v1;
-    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     v2 = rot_z * v1;
 
-
+    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     b3Vector3d v = world_center + m_radius * v2;
     m_view_data->m_V[index++] = v.x();
     m_view_data->m_V[index++] = v.y();
     m_view_data->m_V[index++] = v.z();
 
-
     v = world_center - m_radius * v2;
     m_view_data->m_V[index++] = v.x();
     m_view_data->m_V[index++] = v.y();
     m_view_data->m_V[index++] = v.z();
-        
 
     // the number of rings is k_segments - 1, 
     // every adjacent ring need construct the triangle face.
-    
     // the number of points on one ring
-
     // point_number + point_number + (k_segments - 1 - 1) * 2 * point_number;
     // = (k_segments - 1) * 2 * point_number
 
     m_view_data->m_face_count = m_config.m_faces_count;
-    mem = b3_alloc(m_config.m_faces_size * sizeof(int));
+    mem = m_block_allocator->allocate(m_config.m_faces_size * sizeof(int));
     m_view_data->m_F = new (mem) int;
 
     index = 0;

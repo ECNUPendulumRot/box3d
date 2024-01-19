@@ -17,7 +17,7 @@ class b3FixtureDef;
 
 class b3Fixture;
 
-class b3ContactEdge;
+struct b3ContactEdge;
 
 //////////////////////////////////////////
 
@@ -156,6 +156,8 @@ public:
     inline void set_island_index(int32 index) {
         m_island_index = index;
     }
+
+    void destory_fixtures();
 
 private:
 

@@ -1,11 +1,11 @@
 
 #include "collision/b3_bvh.hpp"
 
-#include "common/b3_allocator.hpp"
-
 #include "common/b3_common.hpp"
 
 #include "collision/b3_fixture.hpp"
+
+#include "common/b3_block_allocator.hpp"
 
 
 b3Node::b3Node():
@@ -25,25 +25,33 @@ b3DynamicTree::b3DynamicTree()
     m_node_capacity = 16;
     m_node_count = 0;
 
-    m_nodes = (b3Node*) b3_alloc(m_node_capacity * sizeof(b3Node));
+    m_free_list = 0;
+
+    // Allocate memory space after the initialization of m_block_allocator
+}
+
+
+void b3DynamicTree::set_block_allocator(b3BlockAllocator* block_allocator) {
+    m_block_allocator = block_allocator;
+
+    m_nodes = (b3Node*) m_block_allocator->allocate(m_node_capacity * sizeof(b3Node));
     memset(m_nodes, 0, m_node_capacity * sizeof(b3Node));
 
     for (int32 i = 0; i < m_node_capacity - 1; ++i) {
         m_nodes[i].m_next = i + 1;
         m_nodes[i].m_height = b3_NULL_HEIGHT;
-
     }
 
     m_nodes[m_node_capacity - 1].m_next = b3_NULL_NODE;
     m_nodes[m_node_capacity - 1].m_height = b3_NULL_HEIGHT;
-
-    m_free_list = 0;
 }
 
 
 b3DynamicTree::~b3DynamicTree()
 {
-    b3_free(m_nodes);
+    m_block_allocator->free(m_nodes, m_node_capacity * sizeof(b3Node));
+    // In the class b3World delete.
+    m_block_allocator = nullptr;
 }
 
 
@@ -313,9 +321,9 @@ void b3DynamicTree::expand_node_list(int32 count)
     // TODO: check if this is the best way to expand the list
     // Copy old nodes to a larger list of nodes
     b3Node* old_nodes = m_nodes;
-    m_nodes = (b3Node*) b3_alloc(m_node_capacity * sizeof(b3Node));
+    m_nodes = (b3Node*) m_block_allocator->allocate(m_node_capacity * sizeof(b3Node));
     memcpy(m_nodes, old_nodes, m_node_count * sizeof(b3Node));
-    b3_free(old_nodes);
+    m_block_allocator->free(old_nodes, m_node_count * sizeof(b3Node));
 
     // Establish relationship between nodes in the list
     for (int32 i = m_node_count; i < m_node_capacity - 1; ++i) {

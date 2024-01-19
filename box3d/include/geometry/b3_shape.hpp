@@ -4,9 +4,9 @@
 
 
 #include "common/b3_types.hpp"
-#include "common/b3_allocator.hpp"
 #include "dynamics/b3_transform.hpp"
 
+#include "common/b3_block_allocator.hpp"
 
 /////////// Forward Delaration ///////////
 
@@ -88,10 +88,12 @@ protected:
      */
     b3ViewData* m_view_data = nullptr;
 
+    b3BlockAllocator* m_block_allocator = nullptr;
+
 public:
 
     virtual ~b3Shape() {
-        b3_free(m_view_data);
+        m_block_allocator->free(m_view_data, sizeof(b3ViewData));
     }
 
     virtual int32 get_child_count() const {
@@ -130,6 +132,10 @@ public:
 
     void set_relative_body(b3Body* body) {
         m_body = body;
+    }
+
+    void set_block_allocator(b3BlockAllocator* block_allocator) {
+        m_block_allocator = block_allocator;
     }
 
     b3Shape* next() const {

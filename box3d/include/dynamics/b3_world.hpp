@@ -15,6 +15,8 @@
 
 #include "dynamics/b3_island.hpp"
 
+#include "common/b3_block_allocator.hpp"
+
 
 class b3World {
 
@@ -29,6 +31,8 @@ class b3World {
     b3Vector3d m_gravity = b3Vector3d(0, 0, 0);
 
     double m_hz = 60;
+
+    b3BlockAllocator m_block_allocator;
 
     b3ContactManager m_contact_manager;
 
@@ -96,9 +100,14 @@ public:
 
     void generate_island();
 
+    inline b3BlockAllocator* get_block_allocator() {
+        return &m_block_allocator;
+    }
+
 protected:
 
     void solve(double delta_t);
+
 
 };
 
