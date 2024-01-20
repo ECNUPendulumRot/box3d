@@ -17,6 +17,7 @@ set(B3D_HEADER_FILES
         include/collision/b3_collision.hpp
         include/collision/b3_cube_contact.hpp
         include/collision/b3_sphere_contact.hpp
+        include/collision/b3_cube_sphere_contact.hpp
 
 
         include/dynamics/b3_transform.hpp
@@ -62,6 +63,7 @@ set(B3D_SOURCE_FILES
         src/collision/b3_cube_contact.cpp
         src/collision/b3_collide_sphere.cpp
         src/collision/b3_collide_cube.cpp
+        src/collision/b3_cube_sphere_contact.cpp
 
         src/common/b3_block_allocator.cpp
 

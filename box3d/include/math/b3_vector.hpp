@@ -118,6 +118,14 @@ struct b3Vector3 {
         return *this / length();
     }
 
+    inline b3Vector3 abs() const {
+        return b3Vector3(b3_abs(m_x), b3_abs(m_y), b3_abs(m_z));
+    }
+
+    inline b3Vector3 array_dot(const b3Vector3<T>& v) const {
+        return b3Vector3(m_x * v.m_x, m_y * v.m_y, m_z * v.m_z);
+    }
+
     inline T length() const {
         return b3_sqrt<T>(length2());
     }
@@ -127,6 +135,10 @@ struct b3Vector3 {
     }
 
     inline T operator[](int i) const {
+        return m_ts[i];
+    }
+
+    inline T& operator[](int i) {
         return m_ts[i];
     }
 

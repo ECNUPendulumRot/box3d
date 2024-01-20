@@ -41,7 +41,7 @@ public:
         return 1;
     }
 
-    b3Vector3d get_centroid_of_sphere() const {
+    b3Vector3d get_centroid() const {
         return m_centroid;
     }
 

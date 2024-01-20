@@ -29,10 +29,10 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz)
     m_vertices[2].set(-hx, hy , -hz);
     m_vertices[3].set(-hx, -hy, -hz);
 
-    m_vertices[0].set(hx , -hy, hz);
-    m_vertices[1].set(hx , hy , hz);
-    m_vertices[2].set(-hx, hy , hz);
-    m_vertices[3].set(-hx, -hy, hz);
+    m_vertices[4].set(hx , -hy, hz);
+    m_vertices[5].set(hx , hy , hz);
+    m_vertices[6].set(-hx, hy , hz);
+    m_vertices[7].set(-hx, -hy, hz);
 
     m_normals[0].set(0.0f, 0.0f, -1.0f);
     m_normals[1].set(0.0f, 1.0f, 0.0f);
