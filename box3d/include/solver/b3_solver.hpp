@@ -14,6 +14,8 @@ class b3Contact;
 
 class b3World;
 
+class b3Body;
+
 class b3Island;
 
 class b3ContactVelocityConstraint;
@@ -39,6 +41,10 @@ protected:
     b3TimeStep* m_timestep = nullptr;
 
     b3BlockAllocator* m_block_allocator = nullptr;
+
+    b3Body** m_bodies;
+
+    void write_states_back();
 
 public:
 

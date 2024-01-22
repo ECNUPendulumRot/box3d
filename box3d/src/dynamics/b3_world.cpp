@@ -63,6 +63,8 @@ b3Body *b3World::create_body(const b3BodyDef &def)
     auto* body = new (mem) b3Body(def);
 
     body->set_world(this);
+    // TODO: add all external forces
+    body->apply_gravity(m_gravity);
 
     // add to the double linked list
     body->m_prev = nullptr;
@@ -105,27 +107,20 @@ b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
 void b3World::clear()
 {
     // TODO: Check this function
-    b3Shape* shape = m_shape_list;
-
-    // Free all meshes
-    while (shape != nullptr) {
-        auto* next = shape->next();
-        // b3_free(shape);
-        m_block_allocator.free(shape, sizeof(shape));
-        shape = next;
-    }
-
     // Free all bodies
     b3Body* body = m_body_list;
     while (body != nullptr) {
         auto* next = body->next();
         // b3_free(body);
-        m_block_allocator.free(body, sizeof(body));
+        body->destory_fixtures();
+        // TODO: free contact and contact edge etc related to body (destroy a body)
+        m_block_allocator.free(body, sizeof(b3Body));
         body = next;
     }
 
     for(b3Island* island : m_island_list) {
-        m_block_allocator.free(island, sizeof(island));
+        island->~b3Island();
+        m_block_allocator.free(island, sizeof(b3Island));
     }
 }
 
@@ -147,24 +142,28 @@ void b3World::step(double dt, int32 velocity_iterations, int32 position_iteratio
     // update contacts
     m_contact_manager.collide();
 
-    // integrate velocity
-    b3Body* body = m_body_list;
-
-    while (body != nullptr) {
-
-        auto rigid_velocity = body->m_velocity;
-        // TODO: ad extern force
-        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * body->m_inv_mass * dt);
-
-        body->m_velocity = rigid_velocity;
-
-        body = body->next();
-    }
+    // integrate velocity should not in the world,
+    // it should in the island solver
+    //    b3Body* body = m_body_list;
+    //
+    //    while (body != nullptr) {
+    //
+    //        auto rigid_velocity = body->m_velocity;
+    //        // TODO: ad extern force
+    //        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * body->m_inv_mass * dt);
+    //
+    //        body->m_velocity = rigid_velocity;
+    //
+    //        body = body->next();
+    //    }
     // generate islands
     generate_island();
 
     // island solve velocity constraints and integrate position
     for(b3Island* island : m_island_list) {
+        if(island->get_contacts_count() > 0) {
+            int x = 10;
+        }
         b3SISolver solver(&m_block_allocator, island, &step);
         solver.solve();
     }
@@ -194,8 +193,6 @@ void b3World::generate_island() {
             continue;
         }
 
-        // void* mem = m_block_allocator.allocate(sizeof(b3Island));
-        // b3Island* island = new (mem) b3Island(m_body_count, m_contact_manager.get_contact_count());
         b3Island* island = nullptr;
         if(island_index < island_count) {
             // reuse the memory space
@@ -242,7 +239,6 @@ void b3World::generate_island() {
             }
         }
 
-        m_island_list.push_back(island);
     }
 }
 

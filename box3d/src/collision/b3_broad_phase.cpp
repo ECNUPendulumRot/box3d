@@ -20,6 +20,7 @@ b3BroadPhase::b3BroadPhase()
 
 void b3BroadPhase::set_block_allocator(b3BlockAllocator* block_allocator) {
     m_block_allocator = block_allocator;
+    m_tree.set_block_allocator(block_allocator);
 
     m_pair_buffer = (b3Pair*)m_block_allocator->allocate(m_pair_capacity * sizeof(b3Pair));
     m_move_buffer = (int32*)m_block_allocator->allocate(m_move_capacity * sizeof(int32));

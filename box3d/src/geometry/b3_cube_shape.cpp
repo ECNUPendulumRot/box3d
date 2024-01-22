@@ -8,6 +8,8 @@
 
 #include "collision/b3_aabb.hpp"
 
+#include "dynamics/b3_body.hpp"
+
 
 b3CubeShape::b3CubeShape()
 {
@@ -118,13 +120,6 @@ void b3CubeShape::init_view_data()
 
     m_view_data->m_V = new (mem) double;
 
-    int index = 0;
-    for (const b3Vector3d& vertex : m_vertices) {
-        m_view_data->m_V[index++] = vertex.x();
-        m_view_data->m_V[index++] = vertex.y();
-        m_view_data->m_V[index++] = vertex.z();
-    }
-
     m_view_data->m_face_count = 12;
 
     mem = m_block_allocator->allocate(m_view_data->m_face_count * 3 * sizeof(int));
@@ -142,6 +137,17 @@ void b3CubeShape::init_view_data()
     m_view_data->set_face_row(9,  {2, 7, 6});
     m_view_data->set_face_row(10, {3, 0, 4});
     m_view_data->set_face_row(11, {3, 4, 7});
+}
+
+
+void b3CubeShape::reset_view_data() {
+    int index = 0;
+    for (const b3Vector3d& vertex : m_vertices) {
+        b3Vector3d v = m_body->get_pose().transform(vertex);
+        m_view_data->m_V[index++] = v.x();
+        m_view_data->m_V[index++] = v.y();
+        m_view_data->m_V[index++] = v.z();
+    }
 }
 
 

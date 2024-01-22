@@ -116,6 +116,9 @@ int b3SISolver::solve() {
         m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
     }
 
+    // copy state buffers back to the bodies.
+    write_states_back();
+
     return 0;
 }
 

@@ -1,4 +1,4 @@
-
+﻿
 #include "collision/b3_collision.hpp"
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_cube_shape.hpp"
@@ -29,7 +29,12 @@ void b3_collide_spheres(b3Manifold* manifold,
 
     manifold->m_type = b3Manifold::e_circles;
     manifold->m_point_count = 1;
-    manifold->m_local_normal = ab.normalized();
+
+    if(ab.is_zero()) {
+        manifold->m_local_normal = b3Vector3d(1.0, 0, 0);
+    } else {
+        manifold->m_local_normal = ab.normalized();
+    }
 
     double penetration = (b3_sqrt(sq_distance) - radius) / 2.0;
     

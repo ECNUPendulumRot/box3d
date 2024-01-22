@@ -115,10 +115,18 @@ public:
         if(m_view_data == nullptr) {
             init_view_data();
         }
+
+        // object maybe has velocity
+        reset_view_data();
+
         return m_view_data;
     }
 
     virtual void init_view_data() {
+
+    }
+
+    virtual void reset_view_data() {
 
     }
 

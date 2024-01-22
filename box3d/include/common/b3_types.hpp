@@ -32,6 +32,9 @@ using E3Matrix3 = Eigen::Matrix<T, 3, 3>;
 template <typename T>
 using E3MatrixX = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
 
+template <typename T, int Major>
+using E3MapMatrixX = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Major>>;
+
 template <typename T>
 using E3Vector12 = Eigen::Matrix<T, 12, 1>;
 

@@ -119,14 +119,21 @@ void* b3BlockAllocator::allocate(int32 size) {
         int32 block_size = b3_block_sizes[index];
         int32 block_count = b3_chunk_size / block_size;
 
-        b3_assert(block_count * block_size < b3_chunk_size);
+        b3_assert(block_count * block_size <= b3_chunk_size);
 
+        int8* start = (int8*)chunk->m_blocks;
         for(int32 i = 0; i < block_count - 1; ++i) {
-            b3Block* block = (b3Block*)(chunk->m_blocks + block_size * i);
-            b3Block* next  = (b3Block*)(chunk->m_blocks + block_size * (i + 1));
+            // b3Block* block = (b3Block*)((int8*)chunk->m_blocks + block_size * i);
+            b3Block* block = (b3Block*)(start);
+
+            start += block_size;
+
+            b3Block* next = (b3Block*)(start);
+            // b3Block* next  = (b3Block*)((int8*)chunk->m_blocks + block_size * (i + 1));
             block->m_next = next;
+
         }
-        b3Block* last = (b3Block*)(chunk->m_blocks + block_size * (block_count - 1));
+        b3Block* last = (b3Block*)((int8*)chunk->m_blocks + block_size * (block_count - 1));
         last->m_next = nullptr;
 
         m_free_lists[index] = chunk->m_blocks->m_next;
@@ -138,7 +145,7 @@ void* b3BlockAllocator::allocate(int32 size) {
 
 
 void b3BlockAllocator::free(void* p, int32 size) {
-    if(size == 0) {
+    if(size == 0 || p == nullptr) {
         return;
     }
     b3_assert(size > 0);

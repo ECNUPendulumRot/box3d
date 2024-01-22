@@ -13,7 +13,7 @@ public:
         // create a dynamic body
         b3TransformD pose, velocity;
         pose.set_linear(b3Vector3d(-5, 0, 0));
-        velocity.set_linear(b3Vector3d(1, 0, 0));
+        velocity.set_linear(b3Vector3d(10, 0, 0));
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;

@@ -11,15 +11,24 @@
 
 b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
     m_timestep = step;
+    m_block_allocator = block_allocator;
 
     m_contact_count = island->get_contacts_count();
     m_contacts = island->get_contacts();
 
-    void* memory = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_velocity_constraints = new (memory) b3ContactVelocityConstraint;
+    b3_assert(m_contact_count >= 0);
+
+    void* memory;
+    if(m_contact_count > 0) {
+        memory = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
+        m_velocity_constraints = new (memory) b3ContactVelocityConstraint;
+    } else {
+        m_velocity_constraints = nullptr;
+    }
 
     m_body_count = island->get_body_count();
-    b3Body** bodies = island->get_bodies();
+    b3_assert(m_body_count > 0);
+    m_bodies = island->get_bodies();
 
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_positions = new (memory) b3TransformD;
@@ -28,8 +37,38 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     m_velocities = new (memory) b3TransformD;
 
     for(int32 i = 0; i < m_body_count; ++i) {
-        m_positions[i] = bodies[i]->get_pose();
-        m_velocities[i] = bodies[i]->get_velocity();
+
+        b3Body* b = m_bodies[i];
+        m_positions[i] = b->get_pose();
+        b3TransformD velocity = b->get_velocity();
+
+        // integrate velocity
+        if(b->get_type() == b3BodyType::b3_dynamic_body) {
+            b3Vector3d v = velocity.linear();
+            b3Vector3d w = velocity.angular();
+
+            v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
+            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+
+            // TODO: apply damping
+
+            velocity.set_linear(v);
+            velocity.set_angular(w);
+        }
+
+        m_velocities[i] = velocity;
+    }
+}
+
+
+void b3Solver::write_states_back() {
+    for(int32 i = 0; i < m_body_count; ++i) {
+        b3Body* body = m_bodies[i];
+
+        body->set_pose(m_positions[i]);
+        body->set_velocity(m_velocities[i]);
+
+        // TODO: if we need SynchronizeTransform() ?
     }
 }
 

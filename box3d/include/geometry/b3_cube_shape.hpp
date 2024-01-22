@@ -73,6 +73,8 @@ public:
 
     void init_view_data() override;
 
+    void reset_view_data() override;
+
     b3Shape* clone() const override;
 
 };

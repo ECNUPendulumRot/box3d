@@ -59,6 +59,10 @@ class b3Body {
 
     b3Vector3d m_force;
 
+    b3Vector3d m_gravity;
+
+    b3Vector3d m_torque;
+
     ///////////////// Collision Properties /////////////////
 
     b3ContactEdge* m_contact_list = nullptr;
@@ -105,6 +109,30 @@ public:
         return m_type;
     }
 
+    inline b3Vector3d get_force() const {
+        return m_force;
+    }
+
+    inline b3Vector3d get_gravity() const {
+        return m_gravity;
+    }
+
+    inline b3Vector3d get_torque() const {
+        return m_torque;
+    }
+
+    void apply_force(b3Vector3d& force) {
+        m_force = force;
+    }
+
+    void apply_gravity(b3Vector3d& gravity) {
+        m_gravity = gravity * m_mass;
+    }
+
+    void apply_torque(b3Vector3d& torque) {
+        m_torque = torque;
+    }
+
     b3ContactEdge* get_contact_list() const {
         return m_contact_list;
     }
@@ -117,8 +145,16 @@ public:
         return m_xf;
     }
 
+    void set_pose(b3TransformD& xf) {
+        m_xf = xf;
+    }
+
     b3TransformD get_velocity() const {
         return m_velocity;
+    }
+
+    void set_velocity(b3TransformD& velocity) {
+        m_velocity = velocity;
     }
 
     int32 get_island_index() const {

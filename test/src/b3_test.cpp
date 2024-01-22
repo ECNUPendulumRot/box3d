@@ -14,7 +14,7 @@ TestBase::TestBase()
 void TestBase::simulation_step()
 {
     // m_world->test_step();
-    m_world->step(1 / 60, 8, 8);
+    m_world->step(1.0 / 60, 8, 8);
 }
 
 

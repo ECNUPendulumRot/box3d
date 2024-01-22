@@ -126,6 +126,7 @@ public:
         b3_assert(index >= 0 && index < m_proxy_count);
         return (m_proxies + index);
     }
+
 };
 
 

@@ -142,7 +142,7 @@ public:
     }
 
     inline T& operator()(const int i, const int j) {
-        b3_assert(0 <= i && i < 3 && j <= 0 && j < 3);
+        b3_assert(0 <= i && i < 3 && 0 <= j && j < 3);
         return m_ts[3 * j + i];
     }
 

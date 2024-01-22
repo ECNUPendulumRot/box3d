@@ -7,6 +7,10 @@
 
 #include "collision/b3_fixture.hpp"
 
+///////////  free the shape memory space belong to fixture //////////////
+#include "geometry/b3_cube_shape.hpp"
+#include "geometry/b3_sphere_shape.hpp"
+
 
 b3Body::b3Body(const b3BodyDef &body_def):
     m_volume(0.0),
@@ -122,12 +126,23 @@ void b3Body::reset_mass_data()
 
 void b3Body::destory_fixtures() {
 
+    b3_assert(m_world != nullptr);
+
     // TODO: Check this function
     while(m_fixture_list) {
-        b3Fixture* destory_fixture = m_fixture_list;
+        b3Fixture* destroy_fixture = m_fixture_list;
         m_fixture_list = m_fixture_list->m_next;
 
-        m_world->get_block_allocator()->free(destory_fixture, sizeof(b3Fixture));
+        b3Shape* destroy_shape = destroy_fixture->get_shape();
+
+        if(destroy_shape->get_type() == b3ShapeType::e_sphere) {
+            m_world->get_block_allocator()->free(destroy_shape, sizeof(b3SphereShape));
+        } else if(destroy_shape->get_type() == b3ShapeType::e_cube) {
+            m_world->get_block_allocator()->free(destroy_shape, sizeof(b3CubeShape));
+        } else {
+            // TODO: deal with other situation
+        }
+        m_world->get_block_allocator()->free(destroy_fixture, sizeof(b3Fixture));
     }
 }
 

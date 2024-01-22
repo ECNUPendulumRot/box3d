@@ -13,9 +13,9 @@ void b3Fixture::create_fixture(b3BlockAllocator* block_allocator, const b3Fixtur
     m_density = f_def.get_density();
     m_body = body;
 
+    f_def.get_shape()->set_block_allocator(block_allocator);
     m_shape = f_def.get_shape()->clone();
     m_shape->set_relative_body(body);
-    m_shape->set_block_allocator(block_allocator);
 
     int32 child_count = m_shape->get_child_count();
 
