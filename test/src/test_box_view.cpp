@@ -1,7 +1,7 @@
 
-#include "b3_test.hpp"
+#include "b3_scene_test.hpp"
 
-class TestBoxView: public TestBase {
+class TestBoxView: public SceneTestBase {
 
 public:
 
@@ -26,10 +26,10 @@ public:
         cube->create_fixture(fixture_def);
     }
 
-    static TestBase* create() {
+    static SceneTestBase* create() {
         return new TestBoxView;
     }
 };
 
-static int test_index = register_test("Debug", "box view", TestBoxView::create);
+static int test_index = register_scene_test("Debug", "box view", TestBoxView::create);
 

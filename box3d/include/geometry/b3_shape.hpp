@@ -111,13 +111,13 @@ public:
         b3_NOT_USED(density);
     };
 
-    b3ViewData* get_view_data() {
+    b3ViewData* get_view_data(const b3TransformD& xf) {
         if(m_view_data == nullptr) {
             init_view_data();
         }
 
         // object maybe has velocity
-        reset_view_data();
+        setup_view_data(xf);
 
         return m_view_data;
     }
@@ -126,8 +126,8 @@ public:
 
     }
 
-    virtual void reset_view_data() {
-
+    virtual void setup_view_data(const b3TransformD& xf) {
+        b3_NOT_USED(xf);
     }
 
     virtual b3Shape* clone() const {
@@ -154,8 +154,12 @@ public:
         m_next = next;
     }
 
-    double get_radius() const {
+    virtual double get_radius() const {
         return m_radius;
+    }
+
+    b3Body* get_body() const {
+        return m_body;
     }
 
 };

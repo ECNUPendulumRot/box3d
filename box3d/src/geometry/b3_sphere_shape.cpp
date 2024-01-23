@@ -191,7 +191,7 @@ void b3SphereShape::init_view_data() {
 }
 
 
-void b3SphereShape::reset_view_data() {
+void b3SphereShape::setup_view_data(const b3TransformD& xf) {
     const b3Matrix3d& rot_y = m_config.m_rot_y;
     const b3Matrix3d& rot_z = m_config.m_rot_z;
 
@@ -200,7 +200,7 @@ void b3SphereShape::reset_view_data() {
     int index = 0;
 
     // transform the center of sphere to world frame
-    b3Vector3d world_center = m_body->get_pose().transform(m_centroid);
+    b3Vector3d world_center = xf.transform(m_centroid);
 
     for(int i = 1; i < m_config.m_segments; ++i) {
         v1 = rot_y * v1;

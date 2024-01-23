@@ -68,14 +68,18 @@ class b3GUIViewer {
 
     b3World* m_world;
 
-    TestBase* m_test = nullptr;
+    SceneTestBase* m_scene_test = nullptr;
+
+    UnitTestBase* m_unit_test = nullptr;
 
     b3ViewShapePair* m_pair_list;
 
-    E3Matrix3d m_transform;
+    Eigen::Matrix3d m_transform;
 
-    int m_current_test = -1;
-
+    int m_current_scene_test = -1;
+    int m_current_unit_test = -1;
+    int m_shape_count = -1;
+    b3Shape* m_shape_list = nullptr;
     std::vector<int> m_view_id_vector;
 
 public:
@@ -101,6 +105,8 @@ private:
     void add_meshes();
 
     void clear_meshes();
+
+    bool check_test_index();
 
 };
 

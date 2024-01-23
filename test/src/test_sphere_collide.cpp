@@ -1,8 +1,8 @@
 
-#include "b3_test.hpp"
+#include "b3_scene_test.hpp"
 
 
-class TestSphereCollide: public TestBase {
+class TestSphereCollide: public SceneTestBase {
 
 public:
 
@@ -40,9 +40,9 @@ public:
         sphere2->create_fixture(fixture_def);
     }
 
-    static TestBase* create() {
+    static SceneTestBase* create() {
         return new TestSphereCollide;
     }
 };
 
-static int test_index = register_test("Debug", "sphere collide", TestSphereCollide::create);
+static int test_index = register_scene_test("Debug", "sphere collide", TestSphereCollide::create);

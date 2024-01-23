@@ -2,9 +2,28 @@
 #include "../include/b3_gui_viewer.hpp"
 #include "utils/b3_log.hpp"
 
-#include "b3_test.hpp"
+#include "b3_scene_test.hpp"
 
-static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
+namespace {
+
+    void dpi_aware(int* width, int* height)
+    {
+        // Get the DPI of the primary monitor
+        using namespace igl::opengl::glfw;
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+        if (monitor == nullptr)
+            return;
+        float xscale, yscale;
+        glfwGetMonitorContentScale(monitor, &xscale, &yscale);
+        (*width)  *= xscale;
+        (*height) *= yscale;
+
+    }
+}
+
+
+static inline bool compare_tests(const SceneTestEntry& a, const SceneTestEntry& b)
 {
     int result = strcmp(a.category, b.category);
     if (result == 0)
@@ -18,7 +37,7 @@ static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
 
 static void sort_tests()
 {
-    std::sort(g_test_entries, g_test_entries + g_test_count, compare_tests);
+    std::sort(g_scene_test_entries, g_scene_test_entries + g_scene_test_count, compare_tests);
 }
 
 
@@ -36,7 +55,7 @@ b3GUIViewer::b3GUIViewer()
     m_transform.col(1).swap(m_transform.col(2));
 
     sort_tests();
-
+    m_viewer.core().viewport = Eigen::Vector4f(0, 0, 1280, 720);
     m_viewer.core().camera_eye = Eigen::Vector3f(0, 0, 10.0f);
 }
 
@@ -75,22 +94,43 @@ void b3GUIViewer::launch()
 }
 
 
+
+
+bool b3GUIViewer::check_test_index() {
+    if (m_menu.m_selected_scene_test == -1 && m_menu.m_selected_unit_test == -1)
+        return false;
+
+    if (m_menu.m_selected_scene_test != -1 && m_menu.m_selected_scene_test != m_current_scene_test) {
+        m_current_scene_test = m_menu.m_selected_scene_test;
+        if (m_scene_test != nullptr) {
+            delete m_scene_test;
+        }
+        m_scene_test = g_scene_test_entries[m_menu.m_selected_scene_test].create_fcn();
+        m_world = m_scene_test->get_world();
+        clear_meshes();
+        add_meshes();
+        return true;
+    }
+
+    if (m_menu.m_selected_unit_test != -1 && m_menu.m_selected_unit_test != m_current_unit_test) {
+        m_current_unit_test = m_menu.m_selected_unit_test;
+        if (m_unit_test != nullptr)
+            delete m_unit_test;
+        m_unit_test = g_unit_test_entries[m_menu.m_selected_unit_test].create_fcn();
+        return true;
+    }
+    return false;
+}
+
 bool b3GUIViewer::pre_draw_loop()
 {
     // make sure that two variables are initialized to -1
-    if (m_menu.m_selected_test != m_current_test) {
-        m_current_test = m_menu.m_selected_test;
-
-        if (m_test != nullptr)
-            delete m_test;
-        m_test = g_test_entries[m_menu.m_selected_test].create_fcn();
-        m_world = m_test->get_world();
+    if (check_test_index()) {
         clear_meshes();
         add_meshes();
     }
-
-    if (m_test != nullptr)
-        m_test->simulation_step();
+    if (m_scene_test != nullptr)
+        m_scene_test->step();
 
     redraw_mesh();
 
@@ -110,17 +150,23 @@ void b3GUIViewer::simulation_step()
 
 void b3GUIViewer::add_meshes() {
 
-    int shape_count = m_world->get_shape_count();
+    if (m_current_scene_test != -1) {
+        m_shape_count = m_world->get_shape_count();
+        m_shape_list = m_world->get_shape_list();
+    }
 
-    b3Shape* shape = m_world->get_shape_list();
+    if (m_current_unit_test != -1) {
+        m_shape_count = m_unit_test->get_shape_count();
+        m_shape_list = m_unit_test->get_shape_list();
+    }
 
+    b3Shape* shape = m_shape_list;
     while(shape) {
         int viewer_id = m_viewer.append_mesh(true); 
         m_view_id_vector.push_back(viewer_id);
 
-
         b3ViewData* view_data;
-        view_data = shape->get_view_data();
+        view_data = shape->get_view_data(shape->get_body()->get_pose());
 
         E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data->m_V, view_data->m_vertex_count, 3);
         E3MapMatrixX<int, Eigen::RowMajor> faces(view_data->m_F, view_data->m_face_count, 3);
@@ -158,13 +204,11 @@ void b3GUIViewer::clear_meshes() {
 
 void b3GUIViewer::redraw_mesh() {
 
-    if(m_world == nullptr) {
+    if(m_shape_list == nullptr) {
         return;
     }
 
-    b3ViewShapePair* pair = m_pair_list;
-
-    b3Shape* shape = m_world->get_shape_list();
+    b3Shape* shape = m_shape_list;
 
     int index = 0;
 
@@ -174,7 +218,7 @@ void b3GUIViewer::redraw_mesh() {
         // int mesh_id = pair->get_mesh_id();
 
         b3ViewData* view_data;
-        view_data = shape->get_view_data();
+        view_data = shape->get_view_data(shape->get_body()->get_pose());
         E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data->m_V, view_data->m_vertex_count, 3);
         E3MapMatrixX<int, Eigen::RowMajor> faces(view_data->m_F, view_data->m_face_count, 3);
 
@@ -182,10 +226,11 @@ void b3GUIViewer::redraw_mesh() {
 
         index++;
 
-        // pair = pair->next();
         shape = shape->next();
     }
 
 }
+
+
 
 

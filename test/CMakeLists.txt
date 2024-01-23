@@ -11,19 +11,22 @@ igl_include(glfw)
 
 set(TEST_HEADER_FILES
     include/b3_sim_app.hpp
-    include/b3_test.hpp
+        include/b3_scene_test.hpp
     include/b3_gui_viewer.hpp
     include/b3_category_menu.hpp
+        include/b3_unit_test.hpp
 
 )
 
 set(TEST_SOURCE_FILES
     test_app.cpp
     src/b3_sim_app.cpp
-    src/b3_test.cpp
+        src/b3_scene_test.cpp
     src/b3_gui_viewer.cpp
     src/test_box_view.cpp
     src/test_sphere_collide.cpp
+        src/b3_unit_test.cpp
+        src/unit_test_box_collide.cpp
 )
 
 add_executable(

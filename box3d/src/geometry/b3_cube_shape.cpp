@@ -140,10 +140,10 @@ void b3CubeShape::init_view_data()
 }
 
 
-void b3CubeShape::reset_view_data() {
+void b3CubeShape::setup_view_data(const b3TransformD& xf) {
     int index = 0;
     for (const b3Vector3d& vertex : m_vertices) {
-        b3Vector3d v = m_body->get_pose().transform(vertex);
+        b3Vector3d v = xf.transform(vertex);
         m_view_data->m_V[index++] = v.x();
         m_view_data->m_V[index++] = v.y();
         m_view_data->m_V[index++] = v.z();

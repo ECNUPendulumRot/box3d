@@ -53,15 +53,14 @@ public:
 
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
-    double get_radius() const {
+    double get_radius() const override {
         return m_radius;
     }
 
     void init_view_data() override;
 
-    void reset_view_data() override;
+    void setup_view_data(const b3TransformD& xf) override;
 };
-
 
 
 #endif // BOX3D_B3SPHERESHAPE_HPP

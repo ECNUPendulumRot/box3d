@@ -8,7 +8,7 @@
 
 #include <CLI/CLI.hpp>
 
-#include "b3_test.hpp"
+#include "b3_scene_test.hpp"
 #include "b3_gui_viewer.hpp"
 
 #define MAX_TEST 256
