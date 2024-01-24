@@ -173,9 +173,9 @@ void init() {
 
 int igl_index[2] = { -1, -1 };
 void add_mesh(int color_index, b3SphereShape& sphere) {
-    b3ViewData* view_data = sphere.get_view_data();
-    E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data->m_V, view_data->m_vertex_count, 3);
-    E3MapMatrixX<int, Eigen::RowMajor> faces(view_data->m_F, view_data->m_face_count, 3);
+    b3ViewData view_data = sphere.get_view_data(body[color_index].get_pose());
+    E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+    E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
 
     if(igl_index[color_index] == -1) {
         igl_index[color_index] = viewer.append_mesh(true);
