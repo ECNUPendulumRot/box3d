@@ -18,7 +18,6 @@ namespace {
         glfwGetMonitorContentScale(monitor, &xscale, &yscale);
         (*width)  *= xscale;
         (*height) *= yscale;
-
     }
 
     static const Eigen::IOFormat RowVectorFmt(Eigen::FullPrecision,
@@ -58,7 +57,7 @@ namespace {
 }
 
 
-static inline bool compare_tests(const SceneTestEntry& a, const SceneTestEntry& b)
+static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
 {
     int result = strcmp(a.category, b.category);
     if (result == 0)
@@ -72,14 +71,12 @@ static inline bool compare_tests(const SceneTestEntry& a, const SceneTestEntry& 
 
 static void sort_tests()
 {
-    std::sort(g_scene_test_entries, g_scene_test_entries + g_scene_test_count, compare_tests);
+    std::sort(g_test_entries, g_test_entries + g_test_count, compare_tests);
 }
 
 
 b3GUIViewer::b3GUIViewer()
 {
-    m_world = nullptr;
-
     // Set up the transformation matrix
     // 0 1 0
     // 0 0 1
@@ -90,35 +87,33 @@ b3GUIViewer::b3GUIViewer()
     m_transform.transposeInPlace();
 
     sort_tests();
+
+    // set up the camera
     m_viewer.core().viewport = Eigen::Vector4f(0, 0, 1280, 720);
-    m_viewer.core().camera_eye = Eigen::Vector3f(0, 0, 10.0f);
-}
-
-
-bool b3GUIViewer::set_world(b3World *world) {
-
-    m_world = world;
-
-    if (world->empty()){
-        return false;
-    } else {
-        printf("world not empty\n");
-    }
-    return true;
+    m_viewer.core().camera_eye = Eigen::Vector3f(4, 4, 4);
+    m_viewer.core().camera_center = Eigen::Vector3f(-3, 0, 0);
+    //m_viewer.core().camera_view_angle = 95;
 }
 
 
 void b3GUIViewer::launch()
 {
-    m_viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_NO_ROTATION);
+    // m_viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_NO_ROTATION);
     // m_viewer.core().orthographic = true;
     m_viewer.core().is_animating = true;
     // m_viewer.core().lighting_factor = 0.0;
     m_viewer.core().animation_max_fps = 60.0;
+    m_viewer.core().background_color << 0.6, 0.6, 0.6, 0.6;
 
+    // lighting
+    m_viewer.core().lighting_factor = 0.4;
+    m_viewer.core().light_position = Eigen::Vector3f(50, 50, 50);
+
+    // add GUI plugin
     m_viewer.plugins.push_back(&m_plugin);
     m_plugin.widgets.push_back(&m_menu);
 
+    // set up the callback for pre_draw
     m_viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer&) {
         return pre_draw_loop();
     };
@@ -128,33 +123,48 @@ void b3GUIViewer::launch()
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 1, 0), Eigen::RowVector3d(0, 1, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 0, 1), Eigen::RowVector3d(0, 0, 1));
 
+    add_ground();
+
     m_viewer.launch(false, "Simulation");
 }
 
 
+void b3GUIViewer::add_ground() {
+    int g_s = 10;
+
+    Eigen::RowVector3d c = Eigen::RowVector3d(0, 0, 0);
+
+    Eigen::RowVector3d v1;
+    Eigen::RowVector3d v2;
+    Eigen::RowVector3d v3;
+    Eigen::RowVector3d v4;
+
+    for (int i = 0; i <= 2 * g_s; i++) {
+        v1 = Eigen::RowVector3d(-g_s, -1, i - g_s);
+        v2 = Eigen::RowVector3d(g_s, -1, i - g_s);
+
+        v3 = Eigen::RowVector3d(i - g_s, -1, -g_s);
+        v4 = Eigen::RowVector3d(i - g_s, -1, g_s);
+
+        m_viewer.data().add_edges(v1, v2, c);
+        m_viewer.data().add_edges(v3, v4, c);
+    }
+}
+
+
 bool b3GUIViewer::check_test_index() {
-    if (m_menu.m_selected_scene_test == -1 && m_menu.m_selected_unit_test == -1)
+    if (m_menu.m_selected_test == -1)
         return false;
 
-    if (m_menu.m_selected_scene_test != -1 && m_menu.m_selected_scene_test != m_current_scene_test) {
-        m_current_scene_test = m_menu.m_selected_scene_test;
-        m_current_unit_test = -1;
-        if (m_test != nullptr) {
-            delete m_test;
-        }
-        m_test = g_scene_test_entries[m_menu.m_selected_scene_test].create_fcn();
-        return true;
-    }
+    if (m_menu.m_selected_test != -1 && m_menu.m_selected_test == m_current_test)
+        return false;
 
-    if (m_menu.m_selected_unit_test != -1 && m_menu.m_selected_unit_test != m_current_unit_test) {
-        m_current_unit_test = m_menu.m_selected_unit_test;
-        m_current_scene_test = -1;
-        if (m_test != nullptr)
-            delete m_test;
-        m_test = g_unit_test_entries[m_menu.m_selected_unit_test].create_fcn();
-        return true;
+    m_current_test = m_menu.m_selected_test;
+    if (m_test != nullptr) {
+        delete m_test;
     }
-    return false;
+    m_test = g_test_entries[m_menu.m_selected_test].create_fcn();
+    return true;
 }
 
 bool b3GUIViewer::pre_draw_loop()
@@ -164,8 +174,8 @@ bool b3GUIViewer::pre_draw_loop()
         clear_meshes();
         add_meshes();
     }
-    if (m_scene_test != nullptr)
-        m_scene_test->step();
+    if (m_test != nullptr)
+        m_test->step();
 
     redraw_mesh();
 
@@ -198,12 +208,12 @@ void b3GUIViewer::add_meshes() {
 
         E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
         E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+
         vertices *= m_transform;
 
         std::string s = matrix_str(vertices, 3);
         std::cout << s <<std::endl;
         m_viewer.data(id).set_mesh(vertices, faces);
-
         shape = shape->next();
     }
 }
@@ -239,6 +249,8 @@ void b3GUIViewer::redraw_mesh() {
     }
 
 }
+
+
 
 
 

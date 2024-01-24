@@ -69,4 +69,4 @@ public :
 
 };
 
-int register_index = register_unit_test("box collide", UnitTestBoxCollide::create);
+int register_index = register_test("unit test", "box collide", UnitTestBoxCollide::create);

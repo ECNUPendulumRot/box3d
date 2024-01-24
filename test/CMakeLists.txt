@@ -22,12 +22,11 @@ set(TEST_HEADER_FILES
 set(TEST_SOURCE_FILES
     test_app.cpp
         src/sim_app.cpp
-        src/scene_test.cpp
         src/gui_viewer.cpp
     src/test_box_view.cpp
         src/unit_test_sphere_collide.cpp
-        src/unit_test.cpp
         src/unit_test_box_collide.cpp
+        src/test.cpp
 )
 
 add_executable(

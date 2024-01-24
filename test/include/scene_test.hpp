@@ -6,18 +6,7 @@
 #include "box3d.hpp"
 #include "test.hpp"
 
-
-struct SceneTestEntry
-{
-    const char* category;
-
-    const char* name;
-
-    TestCreateFcn* create_fcn;
-};
-
-
-int register_scene_test(const char* category, const char* name, TestCreateFcn* fcn);
+class b3World;
 
 class SceneTestBase: public TestBase {
 
@@ -27,15 +16,19 @@ protected:
 
 public:
 
-    SceneTestBase();
+    SceneTestBase(){
+        m_world = new b3World;
+        m_world->set_gravity(b3Vector3d(0.0, 0.0, -10.0));
+    }
 
-    // TODO: check the destructor.
     ~SceneTestBase() {
         m_world->clear();
         delete m_world;
     };
 
-    void step() override;
+    void step() override {
+        m_world->step(1.0 / 60, 8, 8);
+    }
 
     b3Shape* get_shape_list() const override {
         return m_world->get_shape_list();
@@ -46,9 +39,5 @@ public:
     }
 };
 
-#define MAX_TEST 256
-
-extern SceneTestEntry g_scene_test_entries[MAX_TEST];
-extern int g_scene_test_count;
 
 #endif //BOX3D_SCENE_TEST_HPP

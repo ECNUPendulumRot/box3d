@@ -5,20 +5,7 @@
 
 #include "test.hpp"
 #include "box3d.hpp"
-#include <Eigen/Dense>
 
-class UnitTestBase;
-
-
-struct UnitTestEntry
-{
-    const char* name;
-
-    TestCreateFcn* create_fcn;
-};
-
-
-int register_unit_test(const char* name, TestCreateFcn* fcn);
 
 class UnitTestBase: public TestBase {
 
@@ -45,9 +32,5 @@ public:
     }
 };
 
-#define MAX_TEST 256
-
-extern UnitTestEntry g_unit_test_entries[MAX_TEST];
-extern int g_unit_test_count;
 
 #endif //BOX3D_UNIT_TEST_HPP

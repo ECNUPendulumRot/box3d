@@ -31,5 +31,5 @@ public:
     }
 };
 
-static int test_index = register_scene_test("Debug", "box view", TestBoxView::create);
+static int test_index = register_test("Debug", "box view", TestBoxView::create);
 

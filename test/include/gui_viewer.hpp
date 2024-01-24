@@ -64,15 +64,14 @@ class b3GUIViewer {
 
     ImGuiPlugin m_plugin;
 
-    CategoryMenu m_menu;
+    Gui m_menu;
 
     TestBase* m_test = nullptr;
 
     // The transform matrix for
     Eigen::Matrix3d m_transform;
 
-    int m_current_scene_test = -1;
-    int m_current_unit_test = -1;
+    int m_current_test = -1;
     int m_shape_count = -1;
 
     // The space for mesh data in data_list of viewer
@@ -96,8 +95,6 @@ private:
 
     bool pre_draw_loop();
 
-    void simulation_step();
-
     void redraw_mesh();
 
     void add_meshes();
@@ -105,6 +102,8 @@ private:
     void clear_meshes();
 
     bool check_test_index();
+
+    void add_ground();
 
 };
 
