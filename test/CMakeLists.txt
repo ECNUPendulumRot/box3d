@@ -37,10 +37,10 @@ add_executable(
     test_all_class_size.cpp
 )
 
- add_executable(
-     test_sphere_view_data
-     test_sphere_view_data.cpp
- )
+add_executable(
+    test_sphere_manifold
+    unit_test/test_sphere_manifold.cpp
+)
 
 target_include_directories(test_app
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -52,10 +52,10 @@ target_link_libraries(test_app
 
 target_link_libraries(
     test_all_class_size
-    PUBLIC
-    box3d
+    PUBLIC box3d
 )
 
- target_link_libraries(test_sphere_view_data
-     PUBLIC box3d igl::glfw
- )
+target_link_libraries(
+    test_sphere_manifold
+    PUBLIC box3d igl::glfw
+)

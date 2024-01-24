@@ -109,6 +109,8 @@ void b3SphereShape::init_view_data() {
     mem = m_block_allocator->allocate(m_config.m_faces_size * sizeof(int));
     m_view_data->m_F = new (mem) int;
 
+    // warning： all vertices of a face need Counterclockwise order
+
     // the number of rings is k_segments - 1,
     // every adjacent ring need construct the triangle face.
     // the number of points on one ring
@@ -121,8 +123,8 @@ void b3SphereShape::init_view_data() {
         int second = 0;
 
         m_view_data->m_F[index++] = first;
-        m_view_data->m_F[index++] = second;
         m_view_data->m_F[index++] = m_config.m_ring_points_count - 1;
+        m_view_data->m_F[index++] = second;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
             m_view_data->m_F[index++] = first;
@@ -136,17 +138,19 @@ void b3SphereShape::init_view_data() {
     {
         // the point (0, 0, -1) with the last ring
         int first = m_config.m_vertices_count - 2;
-        int second = m_config.m_vertices_count - m_config.m_ring_points_count - 2;
+        int second = m_config.m_vertices_count - 3;
 
         m_view_data->m_F[index++] = first;
+        m_view_data->m_F[index++] = m_config.m_vertices_count - m_config.m_ring_points_count - 2;
         m_view_data->m_F[index++] = second;
-        m_view_data->m_F[index++] = m_config.m_vertices_count - 3;
+
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
             m_view_data->m_F[index++] = first;
             m_view_data->m_F[index++] = second;
-            m_view_data->m_F[index++] = second + 1;
-            second = second + 1;
+            second = second - 1;
+            m_view_data->m_F[index++] = second;
+
         }
     }
 
@@ -165,8 +169,8 @@ void b3SphereShape::init_view_data() {
         m_view_data->m_F[index++] = second_ring_index - 1;
         m_view_data->m_F[index++] = second_ring_index;
         m_view_data->m_F[index++] = second_ring_index - 1;
-        m_view_data->m_F[index++] = second_ring_index;
         m_view_data->m_F[index++] = second_ring_index + m_config.m_ring_points_count - 1;
+        m_view_data->m_F[index++] = second_ring_index;
 
         // two near ring
         // first ring points index(based on first_ring_index):    0, 1, 2, 3, ……， n-2, n-1, 0

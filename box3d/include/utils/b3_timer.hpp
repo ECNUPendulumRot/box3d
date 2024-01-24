@@ -45,6 +45,14 @@ public:
 
     }
 
+    void reset() {
+        m_t0 = std::chrono::steady_clock::now();
+    }
+
+    double get_time_ms() {
+        std::chrono::duration<double> duration = std::chrono::steady_clock::now() - m_t0;
+        return duration.count() * 1000.0;
+    }
 };
 
 std::chrono::duration<double> b3Timer::m_sleep_adjust = std::chrono::duration<double>(0);

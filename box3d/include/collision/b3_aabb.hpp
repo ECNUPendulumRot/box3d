@@ -42,6 +42,14 @@ public:
         return 0.5 * (m_max - m_min);
     }
 
+    inline b3Vector3d min() const {
+        return m_min;
+    }
+
+    inline b3Vector3d max() const {
+        return m_max;
+    }
+
     /**
      * @brief Get the surface area of the AABB.
      * @return The surface area of the AABB.
