@@ -1,5 +1,5 @@
 
-#include "b3_scene_test.hpp"
+#include "scene_test.hpp"
 
 #include <fstream>
 
@@ -23,7 +23,7 @@ SceneTestEntry g_scene_test_entries[MAX_TEST] = {{nullptr} };
 int g_scene_test_count = 0;
 
 
-int register_scene_test(const char *category, const char *name, SceneTestCreateFcn *fcn)
+int register_scene_test(const char *category, const char *name, TestCreateFcn *fcn)
 {
     int index = g_scene_test_count;
     if (index < MAX_TEST)

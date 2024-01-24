@@ -1,5 +1,5 @@
 
-#include "b3_scene_test.hpp"
+#include "scene_test.hpp"
 
 class TestBoxView: public SceneTestBase {
 
@@ -26,7 +26,7 @@ public:
         cube->create_fixture(fixture_def);
     }
 
-    static SceneTestBase* create() {
+    static TestBase* create() {
         return new TestBoxView;
     }
 };

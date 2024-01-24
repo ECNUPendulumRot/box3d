@@ -38,6 +38,7 @@ public:
     b3Transform(const b3Transform& other) {
         m_p = other.m_p;
         m_r = other.m_r;
+        m_r_t = other.m_r_t;
     }
 
     /**

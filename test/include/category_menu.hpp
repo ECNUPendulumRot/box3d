@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_CATEGORY_MENU_HPP
-#define BOX3D_B3_CATEGORY_MENU_HPP
+#ifndef BOX3D_CATEGORY_MENU_HPP
+#define BOX3D_CATEGORY_MENU_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -8,8 +8,8 @@
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 
-#include "b3_scene_test.hpp"
-#include "b3_unit_test.hpp"
+#include "scene_test.hpp"
+#include "unit_test.hpp"
 
 class CategoryMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
@@ -121,4 +121,4 @@ public:
 
 };
 
-#endif //BOX3D_B3_CATEGORY_MENU_HPP
+#endif //BOX3D_CATEGORY_MENU_HPP

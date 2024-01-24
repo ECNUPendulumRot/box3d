@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_SIM_APP_HPP
-#define BOX3D_B3_SIM_APP_HPP
+#ifndef BOX3D_SIM_APP_HPP
+#define BOX3D_SIM_APP_HPP
 
 
 #include <filesystem>
@@ -8,8 +8,8 @@
 
 #include <CLI/CLI.hpp>
 
-#include "b3_scene_test.hpp"
-#include "b3_gui_viewer.hpp"
+#include "scene_test.hpp"
+#include "gui_viewer.hpp"
 
 #define MAX_TEST 256
 
@@ -47,4 +47,4 @@ private:
 };
 
 
-#endif //BOX3D_B3_SIM_APP_HPP
+#endif //BOX3D_SIM_APP_HPP

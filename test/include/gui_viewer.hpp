@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_GUI_VIEWER_HPP
-#define BOX3D_B3_GUI_VIEWER_HPP
+#ifndef BOX3D_GUI_VIEWER_HPP
+#define BOX3D_GUI_VIEWER_HPP
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "b3_category_menu.hpp"
+#include "category_menu.hpp"
 
 #include "box3d.hpp"
 
@@ -66,21 +66,19 @@ class b3GUIViewer {
 
     CategoryMenu m_menu;
 
-    b3World* m_world;
+    TestBase* m_test = nullptr;
 
-    SceneTestBase* m_scene_test = nullptr;
-
-    UnitTestBase* m_unit_test = nullptr;
-
-    b3ViewShapePair* m_pair_list;
-
+    // The transform matrix for
     Eigen::Matrix3d m_transform;
 
     int m_current_scene_test = -1;
     int m_current_unit_test = -1;
     int m_shape_count = -1;
+
+    // The space for mesh data in data_list of viewer
+    int m_viewer_used_count = 0;
+
     b3Shape* m_shape_list = nullptr;
-    std::vector<int> m_view_id_vector;
 
 public:
 
@@ -111,4 +109,4 @@ private:
 };
 
 
-#endif //BOX3D_B3_GUI_VIEWER_HPP
+#endif //BOX3D_GUI_VIEWER_HPP

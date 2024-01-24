@@ -1,5 +1,5 @@
 
-#include "b3_unit_test.hpp"
+#include "unit_test.hpp"
 
 class UnitTestBoxCollide: public UnitTestBase {
 
@@ -29,22 +29,26 @@ public :
         body_A = new b3Body();
         body_A->set_pose(xf_A);
         cube_A->set_relative_body(body_A);
+        cube_A->set_block_allocator(&m_allocator);
 
-        xf_B.set_linear(b3Vector3d(3, 0, 0));
+
+        xf_B.set_linear(b3Vector3d(0, 3, 0));
         xf_B.set_angular(0, 0, 0);
         cube_B = new b3CubeShape();
         cube_B->set_as_box(hf_B.m_x, hf_B.m_y, hf_B.m_z);
         body_B = new b3Body();
         body_B->set_pose(xf_B);
         cube_B->set_relative_body(body_B);
+        cube_B->set_block_allocator(&m_allocator);
 
         cube_A->set_next(cube_B);
-
     }
 
     ~UnitTestBoxCollide() override {
         delete cube_A;
         delete cube_B;
+        delete body_A;
+        delete body_B;
     }
 
     void step() override {
@@ -59,7 +63,7 @@ public :
         return cube_A;
     }
 
-    static UnitTestBase* create() {
+    static TestBase* create() {
         return new UnitTestBoxCollide();
     }
 
