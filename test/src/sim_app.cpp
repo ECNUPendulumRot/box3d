@@ -1,5 +1,5 @@
 
-#include "b3_sim_app.hpp"
+#include "sim_app.hpp"
 
 #include <spdlog/spdlog.h>
 

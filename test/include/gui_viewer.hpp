@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_GUI_VIEWER_HPP
-#define BOX3D_B3_GUI_VIEWER_HPP
+#ifndef BOX3D_GUI_VIEWER_HPP
+#define BOX3D_GUI_VIEWER_HPP
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "b3_category_menu.hpp"
+#include "category_menu.hpp"
 
 #include "box3d.hpp"
 
@@ -64,19 +64,20 @@ class b3GUIViewer {
 
     ImGuiPlugin m_plugin;
 
-    CategoryMenu m_menu;
-
-    b3World* m_world;
+    Gui m_menu;
 
     TestBase* m_test = nullptr;
 
-    b3ViewShapePair* m_pair_list;
-
-    E3Matrix3d m_transform;
+    // The transform matrix for
+    Eigen::Matrix3d m_transform;
 
     int m_current_test = -1;
+    int m_shape_count = -1;
 
-    std::vector<int> m_view_id_vector;
+    // The space for mesh data in data_list of viewer
+    int m_viewer_used_count = 0;
+
+    b3Shape* m_shape_list = nullptr;
 
 public:
 
@@ -94,15 +95,17 @@ private:
 
     bool pre_draw_loop();
 
-    void simulation_step();
-
     void redraw_mesh();
 
     void add_meshes();
 
     void clear_meshes();
 
+    bool check_test_index();
+
+    void add_ground();
+
 };
 
 
-#endif //BOX3D_B3_GUI_VIEWER_HPP
+#endif //BOX3D_GUI_VIEWER_HPP

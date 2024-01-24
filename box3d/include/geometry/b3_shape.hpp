@@ -34,16 +34,16 @@ struct b3ViewData {
      * @brief Vertices of the mesh
      * @details Each row is vertex's x, y, z coordinates
      */
-    double* m_V;
-    int m_vertex_count;
+    double* m_V = nullptr;
+    int m_vertex_count = 0;
 
     /**
      * @brief Faces of the mesh
      * @details Each row is a face with 3 indexes to vertex
      */
-    int* m_F;
+    int* m_F = nullptr;
 
-    int m_face_count;
+    int m_face_count = 0;
 
     typedef  struct {
         int fv0;
@@ -51,12 +51,21 @@ struct b3ViewData {
         int fv2;
     } FaceIndice;
 
-    inline void set_face_row(int face_index, const FaceIndice& face) {
-        *(m_F + 3 * face_index)    = face.fv0;
+    inline void set_vertex_row(int vertex_index, const b3Vector3d& vertex) const {
+        *(m_V + 3 * vertex_index)     = vertex.m_x;
+        *(m_V + 3 * vertex_index + 1) = vertex.m_y;
+        *(m_V + 3 * vertex_index + 2) = vertex.m_z;
+    }
+
+    inline void set_face_row(int face_index, const FaceIndice& face) const {
+        *(m_F + 3 * face_index)     = face.fv0;
         *(m_F + 3 * face_index + 1) = face.fv1;
         *(m_F + 3 * face_index + 2) = face.fv2;
     }
 
+    bool is_empty() const {
+        return m_vertex_count == 0 || m_face_count == 0;
+    }
 };
 
 
@@ -86,14 +95,15 @@ protected:
     /**
      * @brief This is used for gui
      */
-    b3ViewData* m_view_data = nullptr;
+    b3ViewData m_view_data;
 
     b3BlockAllocator* m_block_allocator = nullptr;
 
 public:
 
     virtual ~b3Shape() {
-        m_block_allocator->free(m_view_data, sizeof(b3ViewData));
+        m_block_allocator->free(m_view_data.m_V, 3 * sizeof(double) * m_view_data.m_vertex_count);
+        m_block_allocator->free(m_view_data.m_F, 3 * sizeof(int) * m_view_data.m_face_count);
     }
 
     virtual int32 get_child_count() const {
@@ -111,13 +121,13 @@ public:
         b3_NOT_USED(density);
     };
 
-    b3ViewData* get_view_data() {
-        if(m_view_data == nullptr) {
+    b3ViewData get_view_data(const b3TransformD& xf) {
+        if(m_view_data.is_empty()) {
             init_view_data();
         }
 
         // object maybe has velocity
-        reset_view_data();
+        setup_view_data(xf);
 
         return m_view_data;
     }
@@ -126,8 +136,8 @@ public:
 
     }
 
-    virtual void reset_view_data() {
-
+    virtual void setup_view_data(const b3TransformD& xf) {
+        b3_NOT_USED(xf);
     }
 
     virtual b3Shape* clone() const {
@@ -154,8 +164,12 @@ public:
         m_next = next;
     }
 
-    double get_radius() const {
+    virtual double get_radius() const {
         return m_radius;
+    }
+
+    b3Body* get_body() const {
+        return m_body;
     }
 
 };

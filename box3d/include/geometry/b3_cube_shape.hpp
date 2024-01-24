@@ -73,7 +73,7 @@ public:
 
     void init_view_data() override;
 
-    void reset_view_data() override;
+    void setup_view_data(const b3TransformD& xf) override;
 
     b3Shape* clone() const override;
 

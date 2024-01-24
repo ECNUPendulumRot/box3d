@@ -18,8 +18,6 @@ b3World::b3World():
 b3World::~b3World()
 {
     // TODO: think about how to destruct
-    b3_free(m_shape_list);
-    b3_free(m_body_list);
 }
 
 

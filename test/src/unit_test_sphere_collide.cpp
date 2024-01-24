@@ -1,8 +1,8 @@
 
-#include "b3_test.hpp"
+#include "scene_test.hpp"
 
 
-class TestSphereCollide: public TestBase {
+class TestSphereCollide: public SceneTestBase {
 
 public:
 
@@ -12,15 +12,15 @@ public:
 
         // create a dynamic body
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(-5, 0, 0));
-        velocity.set_linear(b3Vector3d(10, 0, 0));
+        pose.set_linear(b3Vector3d(0, -5, 0));
+        velocity.set_linear(b3Vector3d(0, 10, 0));
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere1 = m_world->create_body(body_def);
 
-        pose.set_linear(b3Vector3d(5, 0, 0));
+        pose.set_linear(b3Vector3d(0, 5, 0));
         velocity.set_linear(b3Vector3d(0, 0, 0));
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere2 = m_world->create_body(body_def);

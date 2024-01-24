@@ -1,7 +1,7 @@
 
-#include "b3_test.hpp"
+#include "scene_test.hpp"
 
-class TestBoxView: public TestBase {
+class TestBoxView: public SceneTestBase {
 
 public:
 

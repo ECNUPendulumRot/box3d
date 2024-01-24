@@ -1,4 +1,4 @@
-#include "b3_sim_app.hpp"
+#include "sim_app.hpp"
 
 int main(int argc, char* argv[]) {
 

@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_B3_CATEGORY_MENU_HPP
-#define BOX3D_B3_CATEGORY_MENU_HPP
+#ifndef BOX3D_CATEGORY_MENU_HPP
+#define BOX3D_CATEGORY_MENU_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -8,9 +8,10 @@
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 
-#include "b3_test.hpp"
+#include "scene_test.hpp"
+#include "unit_test.hpp"
 
-class CategoryMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
+class Gui: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -19,23 +20,39 @@ class CategoryMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 public:
 
     void draw_viewer_window() override {
+        int width, height;
+        glfwGetWindowSize(viewer->window, &width, &height);
+        printf("window size: %d, %d\n", width, height);
+        ///////////////////// The Main Menu Bar /////////////////////
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Open", "Ctrl+O")) {
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                }
+                if (ImGui::MenuItem("Exit", "Alt+F4")) {
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit")) {
+                if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
 
-        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+        ///////////////////////// The Test Menu /////////////////////////
+        ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetFrameHeight()), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
         bool _viewer_menu_visible = true;
         ImGui::Begin(
                 "Tests", &_viewer_menu_visible,
-                ImGuiWindowFlags_NoSavedSettings
+                 ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
         );
-        ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.4f);
-        if (callback_draw_viewer_menu) { callback_draw_viewer_menu(); }
-        else { draw_viewer_menu(); }
-        ImGui::PopItemWidth();
-        ImGui::End();
-    }
-
-    void draw_viewer_menu() override {
-
+        ImVec2 scene_window_pos = ImGui::GetWindowPos();
+        ImVec2 scene_window_size = ImGui::GetWindowSize();
         ImGuiTreeNodeFlags leaf_node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         leaf_node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -72,9 +89,10 @@ public:
                 category_index = i;
             }
         }
+        ImGui::End();
 
     }
 
 };
 
-#endif //BOX3D_B3_CATEGORY_MENU_HPP
+#endif //BOX3D_CATEGORY_MENU_HPP

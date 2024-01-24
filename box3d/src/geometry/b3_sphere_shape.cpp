@@ -98,16 +98,14 @@ b3Shape* b3SphereShape::clone() const {
 
 void b3SphereShape::init_view_data() {
 
-    m_view_data = new b3ViewData();
-
-    m_view_data->m_vertex_count = m_config.m_vertices_count;
+    m_view_data.m_vertex_count = m_config.m_vertices_count;
 
     void* mem = m_block_allocator->allocate(m_config.m_vertices_size * sizeof(double));
-    m_view_data->m_V = new (mem) double;
+    m_view_data.m_V = new (mem) double;
 
-    m_view_data->m_face_count = m_config.m_faces_count;
+    m_view_data.m_face_count = m_config.m_faces_count;
     mem = m_block_allocator->allocate(m_config.m_faces_size * sizeof(int));
-    m_view_data->m_F = new (mem) int;
+    m_view_data.m_F = new (mem) int;
 
     // warning： all vertices of a face need Counterclockwise order
 
@@ -122,14 +120,15 @@ void b3SphereShape::init_view_data() {
         int first = m_config.m_vertices_count - 1;
         int second = 0;
 
-        m_view_data->m_F[index++] = first;
-        m_view_data->m_F[index++] = m_config.m_ring_points_count - 1;
-        m_view_data->m_F[index++] = second;
+
+        m_view_data.m_F[index++] = first;
+        m_view_data.m_F[index++] = m_config.m_ring_points_count - 1;
+        m_view_data.m_F[index++] = second;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            m_view_data->m_F[index++] = first;
-            m_view_data->m_F[index++] = second;
-            m_view_data->m_F[index++] = second + 1;
+            m_view_data.m_F[index++] = first;
+            m_view_data.m_F[index++] = second;
+            m_view_data.m_F[index++] = second + 1;
 
             second = second + 1;
         }
@@ -140,17 +139,15 @@ void b3SphereShape::init_view_data() {
         int first = m_config.m_vertices_count - 2;
         int second = m_config.m_vertices_count - 3;
 
-        m_view_data->m_F[index++] = first;
-        m_view_data->m_F[index++] = m_config.m_vertices_count - m_config.m_ring_points_count - 2;
-        m_view_data->m_F[index++] = second;
-
+        m_view_data.m_F[index++] = first;
+        m_view_data.m_F[index++] = m_config.m_vertices_count - m_config.m_ring_points_count - 2;
+        m_view_data.m_F[index++] = second;
 
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            m_view_data->m_F[index++] = first;
-            m_view_data->m_F[index++] = second;
+            m_view_data.m_F[index++] = first;
+            m_view_data.m_F[index++] = second;
             second = second - 1;
-            m_view_data->m_F[index++] = second;
-
+            m_view_data.m_F[index++] = second;
         }
     }
 
@@ -165,12 +162,13 @@ void b3SphereShape::init_view_data() {
         // first construct two face index overflow
         // first ring start, end  and second ring start
         // first ring end, and second ring start and end
-        m_view_data->m_F[index++] = first_ring_index;
-        m_view_data->m_F[index++] = second_ring_index - 1;
-        m_view_data->m_F[index++] = second_ring_index;
-        m_view_data->m_F[index++] = second_ring_index - 1;
-        m_view_data->m_F[index++] = second_ring_index + m_config.m_ring_points_count - 1;
-        m_view_data->m_F[index++] = second_ring_index;
+
+        m_view_data.m_F[index++] = first_ring_index;
+        m_view_data.m_F[index++] = second_ring_index - 1;
+        m_view_data.m_F[index++] = second_ring_index;
+        m_view_data.m_F[index++] = second_ring_index - 1;
+        m_view_data.m_F[index++] = second_ring_index + m_config.m_ring_points_count - 1;
+        m_view_data.m_F[index++] = second_ring_index;
 
         // two near ring
         // first ring points index(based on first_ring_index):    0, 1, 2, 3, ……， n-2, n-1, 0
@@ -180,22 +178,22 @@ void b3SphereShape::init_view_data() {
         //                                                                              |-----
         // second ring points index(based on second_ring_index):  0, 1, 2, 3, ……， n-2, n-1, 0
         for(int j = 1; j < m_config.m_ring_points_count; ++j) {
-            m_view_data->m_F[index++] = first_ring_index;
-            m_view_data->m_F[index++] = second_ring_index;
-            m_view_data->m_F[index++] = second_ring_index + 1;
+            m_view_data.m_F[index++] = first_ring_index;
+            m_view_data.m_F[index++] = second_ring_index;
+            m_view_data.m_F[index++] = second_ring_index + 1;
 
             second_ring_index++;
 
-            m_view_data->m_F[index++] = first_ring_index;
-            m_view_data->m_F[index++] = second_ring_index;
-            m_view_data->m_F[index++] = first_ring_index + 1;
+            m_view_data.m_F[index++] = first_ring_index;
+            m_view_data.m_F[index++] = second_ring_index;
+            m_view_data.m_F[index++] = first_ring_index + 1;
             first_ring_index++;
         }
     }
 }
 
 
-void b3SphereShape::reset_view_data() {
+void b3SphereShape::setup_view_data(const b3TransformD& xf) {
     const b3Matrix3d& rot_y = m_config.m_rot_y;
     const b3Matrix3d& rot_z = m_config.m_rot_z;
 
@@ -204,7 +202,7 @@ void b3SphereShape::reset_view_data() {
     int index = 0;
 
     // transform the center of sphere to world frame
-    b3Vector3d world_center = m_body->get_pose().transform(m_centroid);
+    b3Vector3d world_center = xf.transform(m_centroid);
 
     for(int i = 1; i < m_config.m_segments; ++i) {
         v1 = rot_y * v1;
@@ -214,9 +212,9 @@ void b3SphereShape::reset_view_data() {
             v2 = rot_z * v2;
 
             b3Vector3d v = world_center + m_radius * v2;
-            m_view_data->m_V[index++] = v.x();
-            m_view_data->m_V[index++] = v.y();
-            m_view_data->m_V[index++] = v.z();
+            m_view_data.m_V[index++] = v.x();
+            m_view_data.m_V[index++] = v.y();
+            m_view_data.m_V[index++] = v.z();
         }
 
         v2 = v1;
@@ -225,9 +223,9 @@ void b3SphereShape::reset_view_data() {
             v2 = rot_z * v2;
 
             b3Vector3d v = world_center + m_radius * v2;
-            m_view_data->m_V[index++] = v.x();
-            m_view_data->m_V[index++] = v.y();
-            m_view_data->m_V[index++] = v.z();
+            m_view_data.m_V[index++] = v.x();
+            m_view_data.m_V[index++] = v.y();
+            m_view_data.m_V[index++] = v.z();
         }
     }
 
@@ -236,12 +234,12 @@ void b3SphereShape::reset_view_data() {
 
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
     b3Vector3d v = world_center + m_radius * v2;
-    m_view_data->m_V[index++] = v.x();
-    m_view_data->m_V[index++] = v.y();
-    m_view_data->m_V[index++] = v.z();
+    m_view_data.m_V[index++] = v.x();
+    m_view_data.m_V[index++] = v.y();
+    m_view_data.m_V[index++] = v.z();
 
     v = world_center - m_radius * v2;
-    m_view_data->m_V[index++] = v.x();
-    m_view_data->m_V[index++] = v.y();
-    m_view_data->m_V[index++] = v.z();
+    m_view_data.m_V[index++] = v.x();
+    m_view_data.m_V[index++] = v.y();
+    m_view_data.m_V[index++] = v.z();
 }
