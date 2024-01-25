@@ -33,9 +33,6 @@ set(B3D_HEADER_FILES
         include/geometry/b3_cube_shape.hpp
         include/geometry/b3_sphere_shape.hpp
 
-        include/utils/b3_io.hpp
-        include/utils/b3_log.hpp
-        include/utils/b3_json.hpp
         include/utils/b3_timer.hpp
 
         include/math/b3_matrix_operation.hpp
@@ -75,11 +72,9 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_cube_shape.cpp
         src/geometry/b3_sphere_shape.cpp
 
-        src/utils/b3_io.cpp
-        src/utils/b3_log.cpp
-
         src/solver/b3_solver.cpp
         src/solver/b3_si_solver.cpp
+        src/geometry/b3_shape.cpp
 
 )
 
@@ -92,22 +87,3 @@ target_include_directories(box3d
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-
-# Eigen
-include(eigen)
-target_link_libraries(box3d PUBLIC Eigen3::Eigen)
-
-# spdlog
-include(spdlog)
-target_link_libraries(box3d PUBLIC spdlog::spdlog)
-
-# nlohmann_json
-include(json)
-target_link_libraries(box3d PUBLIC nlohmann_json::nlohmann_json)
-
-# igl
-include(libigl)
-
-igl_include(glfw)
-igl_include(imgui)
-target_link_libraries(box3d PUBLIC igl::glfw igl::imgui)

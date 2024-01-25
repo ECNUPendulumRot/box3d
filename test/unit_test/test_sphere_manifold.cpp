@@ -9,6 +9,9 @@
 
 #include "utils/b3_timer.hpp"
 
+template <typename T, int Major>
+using E3MapMatrixX = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Major>>;
+
 b3BlockAllocator block_allocator;
 
 igl::opengl::glfw::Viewer viewer;
@@ -27,13 +30,13 @@ b3Body body[2];
 
 b3Manifold manifold;
 
-E3Vector3d colors[3] = {
-        E3Vector3d(1, 0, 0),
-        E3Vector3d(0, 1, 0),
-        E3Vector3d(0, 0, 1)
+Eigen::Vector3d colors[3] = {
+        Eigen::Vector3d(1, 0, 0),
+        Eigen::Vector3d(0, 1, 0),
+        Eigen::Vector3d(0, 0, 1)
 };
 
-E3MatrixXd point;
+Eigen::MatrixXd point;
 
 int select_object_index = -1;
 
@@ -174,6 +177,8 @@ void init() {
 
 int igl_index[2] = { -1, -1 };
 void add_mesh(int color_index, b3SphereShape& sphere) {
+
+
     b3ViewData view_data = sphere.get_view_data(body[color_index].get_pose());
     E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
     E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);

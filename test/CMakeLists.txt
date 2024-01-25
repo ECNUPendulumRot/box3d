@@ -1,19 +1,21 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
-include(cli11)
+
+
 include(libigl)
 igl_include(glfw)
+igl_include(imgui)
 
+include(json)
 
-
-
+include(spdlog)
 ###################### b3simapp ######################
 
 set(TEST_HEADER_FILES
         include/sim_app.hpp
         include/scene_test.hpp
         include/gui_viewer.hpp
-        include/category_menu.hpp
+        include/gui.hpp
         include/unit_test.hpp
         include/test.hpp
 
@@ -50,7 +52,7 @@ target_include_directories(test_app
 )
 
 target_link_libraries(test_app
-    PUBLIC box3d CLI11::CLI11 igl::glfw nlohmann_json::nlohmann_json
+    PUBLIC box3d CLI11::CLI11 igl::glfw nlohmann_json::nlohmann_json spdlog::spdlog igl::imgui
 )
 
 target_link_libraries(

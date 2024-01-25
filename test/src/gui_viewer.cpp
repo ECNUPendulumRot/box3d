@@ -1,8 +1,12 @@
 
-#include "../include/gui_viewer.hpp"
-#include "utils/b3_log.hpp"
+#include "gui_viewer.hpp"
 
 #include "scene_test.hpp"
+
+
+template <typename T, int Major>
+using MapMatrixX = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Major>>;
+
 
 namespace {
 
@@ -20,23 +24,13 @@ namespace {
         (*height) *= yscale;
     }
 
-    static const Eigen::IOFormat RowVectorFmt(Eigen::FullPrecision,
-                                              Eigen::DontAlignCols,
-                                              ", ",
-                                              ",\n",
-                                              "[",
-                                              "]",
-                                              "",
-                                              "");
+    static const Eigen::IOFormat RowVectorFmt(Eigen::FullPrecision,Eigen::DontAlignCols,
+                                              ", ",",\n",
+                                              "[","]","","");
 
-    static const Eigen::IOFormat MatrixFmt(Eigen::FullPrecision,
-                                           Eigen::DontAlignCols,
-                                           ", ",
-                                           ",\n",
-                                           "[",
-                                           "]",
-                                           "[",
-                                           "]");
+    static const Eigen::IOFormat MatrixFmt(Eigen::FullPrecision,Eigen::DontAlignCols,
+                                           ", ",",\n",
+                                           "[","]","[","]");
 
     std::string matrix_str(const Eigen::MatrixXd& x, const int precision)
     {
@@ -52,6 +46,30 @@ namespace {
             ssx << m.format(MatrixFmt);
         }
         return ssx.str();
+    }
+
+    bool same_position(const int& mouse_x, const int& mouse_y) {
+        static int last_x = -1;
+        static int last_y = -1;
+
+        if (b3_abs(mouse_x - last_x) < 5 && b3_abs(mouse_y - last_y) < 5) {
+            return true;
+        }
+        last_x = mouse_x;
+        last_y = mouse_y;
+        return false;
+    }
+
+    bool double_clicked(const int& mouse_x, const int& mouse_y, b3Timer& timer) {
+        if (!same_position(mouse_x, mouse_y)) {
+            return false;
+        }
+
+        if (timer.get_time_ms() > 200)
+            return false;
+
+        timer.reset();
+        return true;
     }
 
 }
@@ -119,10 +137,10 @@ void b3GUIViewer::launch()
     };
 
     // Draw the axis at the origin
-    m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(1, 0, 0), Eigen::RowVector3d(1, 0, 0));
-    m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 1, 0), Eigen::RowVector3d(0, 1, 0));
-    m_viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(0, 0, 1), Eigen::RowVector3d(0, 0, 1));
-
+    m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(1, 0 - 1, 0), Eigen::RowVector3d(1, 0, 0));
+    m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(0, 1 - 1, 0), Eigen::RowVector3d(0, 1, 0));
+    m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(0, 0 - 1, 1), Eigen::RowVector3d(0, 0, 1));
+    m_viewer.data().line_width = 1.25f;
     add_ground();
 
     m_viewer.launch(false, "Simulation");
@@ -206,8 +224,8 @@ void b3GUIViewer::add_meshes() {
         auto p = shape->get_body()->get_pose();
         view_data = shape->get_view_data(shape->get_body()->get_pose());
 
-        E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+        MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+        MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
 
         vertices *= m_transform;
 
@@ -238,8 +256,8 @@ void b3GUIViewer::redraw_mesh() {
 
     while (shape != nullptr) {
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
-        E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+        MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+        MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
         vertices *= m_transform;
         m_viewer.data(index + 1).set_mesh(vertices, faces);
 
@@ -248,6 +266,16 @@ void b3GUIViewer::redraw_mesh() {
         shape = shape->next();
     }
 
+}
+
+
+bool b3GUIViewer::call_back_mouse_down(b3GUIViewer::Viewer &viewer, int button, int modifier)
+{
+    if (!double_clicked(viewer.current_mouse_x, viewer.current_mouse_y, m_timer)) {
+        return false;
+    }
+
+    printf("double clicked\n");
 }
 
 

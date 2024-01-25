@@ -41,12 +41,6 @@ struct b3Vector3 {
         return *this;
     }
 
-    explicit inline b3Vector3(const Eigen::Vector3<T>& v) {
-        m_x = v.x();
-        m_y = v.y();
-        m_z = v.z();
-    }
-
     inline b3Vector3(T x, T y, T z) {
         m_x = x;
         m_y = y;
@@ -57,13 +51,6 @@ struct b3Vector3 {
         m_x = x;
         m_y = y;
         m_z = z;
-    }
-
-    inline b3Vector3& operator=(const Eigen::Vector3<T>& v) {
-        m_x = v.x();
-        m_y = v.y();
-        m_z = v.z();
-        return *this;
     }
 
     inline b3Vector3& operator+=(const b3Vector3& v) {

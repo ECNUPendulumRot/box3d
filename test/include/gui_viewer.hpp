@@ -6,52 +6,12 @@
 
 #include <vector>
 
-#include "spdlog/spdlog.h"
-
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "category_menu.hpp"
+#include "gui.hpp"
 
 #include "box3d.hpp"
-
-class b3ViewShapePair {
-
-    int m_viewer_id;
-
-    int m_shape_id;
-
-    b3ViewShapePair* m_next;
-
-public:
-
-    b3ViewShapePair(int viewer_id, int mesh_id):
-            m_viewer_id(viewer_id),
-            m_shape_id(mesh_id),
-            m_next(nullptr) {
-        ;
-    }
-
-    ~b3ViewShapePair() {
-        free(m_next);
-    }
-
-    inline int get_viewer_id() const {
-        return m_viewer_id;
-    }
-
-    inline int get_mesh_id() const {
-        return m_shape_id;
-    }
-
-    inline b3ViewShapePair* next() const {
-        return m_next;
-    }
-
-    void set_next(b3ViewShapePair* next) {
-        m_next = next;
-    }
-};
 
 
 class b3GUIViewer {
@@ -79,6 +39,8 @@ class b3GUIViewer {
 
     b3Shape* m_shape_list = nullptr;
 
+    b3Timer m_timer;
+
 public:
 
     b3GUIViewer();
@@ -104,6 +66,8 @@ private:
     bool check_test_index();
 
     void add_ground();
+
+    bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
 };
 

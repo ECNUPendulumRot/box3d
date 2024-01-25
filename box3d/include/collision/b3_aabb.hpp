@@ -10,7 +10,6 @@
 
 class b3AABB {
 
-    friend class b3Mesh;
     friend class b3CubeShape;
     friend class b3SphereShape;
     friend class b3DynamicTree;
@@ -30,8 +29,6 @@ public:
     b3AABB() = default;
 
     b3AABB(const b3Vector3d& lower_bound, const b3Vector3d& upper_bound);
-
-    b3AABB(const Eigen::Vector3d& lower_bound, const Eigen::Vector3d& upper_bound);
 
     /**
      * @brief Get the center coordinate of the AABB.

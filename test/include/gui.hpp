@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_CATEGORY_MENU_HPP
-#define BOX3D_CATEGORY_MENU_HPP
+#ifndef BOX3D_GUI_HPP
+#define BOX3D_GUI_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -22,7 +22,6 @@ public:
     void draw_viewer_window() override {
         int width, height;
         glfwGetWindowSize(viewer->window, &width, &height);
-        printf("window size: %d, %d\n", width, height);
         ///////////////////// The Main Menu Bar /////////////////////
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
@@ -95,4 +94,4 @@ public:
 
 };
 
-#endif //BOX3D_CATEGORY_MENU_HPP
+#endif //BOX3D_GUI_HPP

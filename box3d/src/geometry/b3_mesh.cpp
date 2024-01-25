@@ -10,7 +10,6 @@
 
 #include "math/b3_matrix_operation.hpp"
 
-#include "utils/b3_io.hpp"
 #include "common/b3_types.hpp"
 #include "common/b3_common.hpp"
 #include "common/b3_allocator.hpp"

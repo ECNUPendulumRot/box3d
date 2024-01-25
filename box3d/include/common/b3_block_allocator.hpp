@@ -2,7 +2,10 @@
 #ifndef BOX3D_B3_BLOCK_ALLOCATOR_HPP
 #define BOX3D_B3_BLOCK_ALLOCATOR_HPP
 
+
 #include "common/b3_types.hpp"
+#include <memory>
+
 
 const int32 b3_block_size_count = 14;
 
@@ -38,5 +41,6 @@ public:
     void clear();
 
 };
+
 
 #endif // BOX3D_B3_BLOCK_ALLOCATOR_HPP

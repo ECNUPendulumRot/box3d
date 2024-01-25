@@ -1,17 +1,11 @@
 
 #include "collision/b3_aabb.hpp"
 
+
 b3AABB::b3AABB(const b3Vector3d &lower_bound, const b3Vector3d& upper_bound)
 {
     m_min = lower_bound;
     m_max = upper_bound;
-}
-
-
-b3AABB::b3AABB(const Eigen::Vector3d &lower_bound, const Eigen::Vector3d &upper_bound)
-{
-    m_min = b3Vector3d(lower_bound);
-    m_max = b3Vector3d(upper_bound);
 }
 
 

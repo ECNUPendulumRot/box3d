@@ -1,8 +1,9 @@
 
-#include <limits>
 
 #include "common/b3_block_allocator.hpp"
 
+#include <cstring>
+#include <climits>
 #include "common/b3_allocator.hpp"
 
 //TODO: this const value need modify

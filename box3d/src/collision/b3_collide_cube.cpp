@@ -156,12 +156,6 @@ static bool b3_find_incident_face(b3ClipVertex c[4],
 }
 
 
-static inline uint8 sign_of_distance(double val) {
-    uint64 bits = *reinterpret_cast<uint64*>(&val);
-    return static_cast<uint8_t>(bits >> 63);
-}
-
-
 // Sutherland-Hodgman clipping.
 static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
                                       const b3ClipVertex* v_in, const int32& v_in_count,

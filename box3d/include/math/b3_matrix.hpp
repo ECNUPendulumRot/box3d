@@ -3,8 +3,7 @@
 #define BOX3D_B3_MATRIX_HPP
 
 
-#include <memory>
-
+#include <cstring>
 #include "math/b3_vector.hpp"
 #include "common/b3_common.hpp"
 
@@ -41,18 +40,6 @@ public:
         m_col1 = col1;
         m_col2 = col2;
         m_col3 = col3;
-    }
-
-    explicit b3Matrix3(const Eigen::Matrix3<T>& m) {
-        m_11 = m(0, 0);
-        m_21 = m(1, 0);
-        m_31 = m(2, 0);
-        m_12 = m(0, 1);
-        m_22 = m(1, 1);
-        m_32 = m(2, 1);
-        m_13 = m(0, 2);
-        m_23 = m(1, 2);
-        m_33 = m(2, 2);
     }
 
     inline b3Vector3<T> col(const int i) const {
@@ -117,14 +104,6 @@ public:
         inv.m_33 =  inv_det * (m_11 * m_22 - m_12 * m_21);
 
         return inv * inv_det;
-    }
-
-    Eigen::Matrix3<T> eigen_matrix3() const {
-        Eigen::Matrix3<T> m;
-        m.col(0) = m_col1.eigen_vector3();
-        m.col(1) = m_col2.eigen_vector3();
-        m.col(2) = m_col3.eigen_vector3();
-        return m;
     }
 
     inline b3Matrix3& operator-=(const b3Matrix3<T>& M) {

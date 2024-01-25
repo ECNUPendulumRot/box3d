@@ -14,7 +14,7 @@
 
 b3Body::b3Body(const b3BodyDef &body_def):
     m_volume(0.0),
-    m_inertia(E3Matrix3d::Zero())
+    m_inertia(b3Matrix3d::zero())
 {
     m_type = body_def.m_type;
 

@@ -3,8 +3,6 @@
 #define BOX3D_B3_TRANSFORM_HPP
 
 
-#include <Eigen/Geometry>
-
 #include "common/b3_types.hpp"
 
 #include "math/b3_matrix.hpp"
