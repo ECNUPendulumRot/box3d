@@ -109,9 +109,9 @@ struct b3Vector3 {
 
     inline bool is_zero() const{
         if constexpr (std::is_same_v<T, float>)
-            return m_x < b3_float_epsilon && m_y < b3_float_epsilon && m_z < b3_float_epsilon;
+            return b3_abs(m_x) < b3_float_epsilon && b3_abs(m_y) < b3_float_epsilon && b3_abs(m_z) < b3_float_epsilon;
         else
-            return m_x < b3_double_epsilon && m_y < b3_double_epsilon && m_z < b3_double_epsilon;
+            return b3_abs(m_x) < b3_double_epsilon && b3_abs(m_y) < b3_double_epsilon && b3_abs(m_z) < b3_double_epsilon;
     }
 
     inline b3Vector3 normalized() const {

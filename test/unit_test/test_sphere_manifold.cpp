@@ -18,8 +18,9 @@ b3TransformD xf[2];
 b3SphereShape sphere[2];
 double radius[2] = { 0.5, 0.5 };
 b3Vector3d position[2] = {
-        b3Vector3d(1, 1, 1),
-        b3Vector3d(0, 0, 0)
+        b3Vector3d(1.5, 1.5, 0.9),
+        // b3Vector3d(0, 0, 0)
+        b3Vector3d(1.2, 1.4, 0.1)
 };
 
 b3Body body[2];
@@ -183,7 +184,7 @@ void add_mesh(int color_index, b3SphereShape& sphere) {
 
     viewer.data(igl_index[color_index]).set_mesh(vertices, faces);
     Eigen::MatrixXd color(1, 4);
-    color << colors[color_index].x(), colors[color_index].y(), colors[color_index].z(), 0.2;
+    color << colors[color_index].x(), colors[color_index].y(), colors[color_index].z(), 0.1;
     viewer.data(igl_index[color_index]).set_colors(color);
     viewer.data(igl_index[color_index]).show_lines = false;
 }
@@ -216,27 +217,53 @@ bool callback_key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int
     return false;
 }
 
+void print_vector3d(const b3Vector3d& v) {
+    std::cout << v.x() << " " << v.y() << " " << v.z() << std::endl;
+}
+
 bool pre_draw(igl::opengl::glfw::Viewer& viewer) {
-    for(int i = 0; i < 2; ++i) {
-        add_mesh(i, sphere[i]);
-    }
+
+    viewer.data().clear_edges();
+    viewer.data().clear_points();
+    viewer.data().clear_labels();
 
     const b3TransformD xf_a = body[0].get_pose();
     const b3TransformD xf_b = body[1].get_pose();
-    b3_collide_spheres(&manifold, &sphere[0], xf_a, &sphere[1], xf_b);
+    for(int i = 0; i < 2; ++i) {
+        add_mesh(i, sphere[i]);
 
-    if(manifold.m_point_count > 0) {
-        b3Vector3d contact_point = manifold.m_points[0].m_local_point;
-        b3Vector3d contact_normal = manifold.m_local_normal;
-        double penetration = manifold.m_penetration;
+        if(manifold.m_point_count > 0) {
+//            std::cout << "xf_a: ";
+//            print_vector3d(xf_a.linear());
+//            std::cout << "xf_b: ";
+//            print_vector3d(xf_b.linear());
+            b3Vector3d contact_point = manifold.m_points[0].m_local_point;
+//            std::cout << "contact_point: ";
+//            print_vector3d(contact_point);
+            b3Vector3d contact_normal = manifold.m_local_normal;
+            double penetration = manifold.m_penetration;
+//            std::cout << "contact_normal: ";
+//            print_vector3d(contact_normal);
+//            std::cout << "penetration: " << penetration << std::endl;
 
-        Eigen::RowVector3d point(contact_point.x(), contact_point.y(), contact_point.z());
-        Eigen::RowVector3d normal(contact_normal.x(), contact_normal.y(), contact_normal.z());
-        Eigen::RowVector3d point_color(1, 1, 1);
-        viewer.data().add_points(point, point_color);
-        viewer.data().add_edges(point, point + 2 * normal, point_color);
-        viewer.data().add_label(point + 2 * normal, "penetration = " + std::to_string(penetration));
+            Eigen::RowVector3d point(contact_point.x(), contact_point.y(), contact_point.z());
+
+            Eigen::RowVector3d normal(contact_normal.x(), contact_normal.y(), contact_normal.z());
+            Eigen::RowVector3d point_color(0, 0, 0);
+            Eigen::RowVector3d point_b = point + 2 * normal;
+
+            viewer.data().add_points(point, point_color);
+            viewer.data().add_points(point_b, point_color);
+            viewer.data().point_size = 20;
+            viewer.data().add_edges(point, point_b, point_color);
+            viewer.data().line_width = 5;
+            std::string text = "penetration = " + std::to_string(penetration);
+            viewer.data().add_label(point_b.transpose() + 0.05 * normal.transpose(), text);
+        }
+
     }
+
+    b3_collide_spheres(&manifold, &sphere[0], xf_a, &sphere[1], xf_b);
 
     return false;
 }
@@ -253,6 +280,7 @@ int main() {
 
     viewer.core().is_animating = true;
     viewer.core().animation_max_fps = 60.0;
+    viewer.data().show_custom_labels = true;
 
 
     viewer.callback_pre_draw = &pre_draw;
