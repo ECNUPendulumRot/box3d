@@ -18,17 +18,21 @@ set(TEST_HEADER_FILES
         include/gui.hpp
         include/unit_test.hpp
         include/test.hpp
+        include/auxiliary_shape.hpp
 
 )
 
 set(TEST_SOURCE_FILES
-    test_app.cpp
+        test_app.cpp
         src/sim_app.cpp
         src/gui_viewer.cpp
-    src/test_box_view.cpp
+        src/test_box_view.cpp
         src/unit_test_sphere_collide.cpp
         src/unit_test_box_collide.cpp
+        src/unit_test_dynamic_tree.cpp
         src/test.cpp
+        src/auxiliary_shape.cpp
+
 )
 
 add_executable(

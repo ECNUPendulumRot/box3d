@@ -175,6 +175,19 @@ public:
     template<typename T>
     void query(T* callback, const b3AABB& aabb) const;
 
+
+    /// TODO: this function is used to test dynamic tree, delete this function
+    int get_node_capacity() const {
+        return m_node_capacity;
+    }
+    int get_node_count() const {
+        return m_node_count;
+    }
+    void get_node_info(int32 id, int32& height, b3AABB& aabb) {
+        height = m_nodes[id].m_height;
+        aabb = m_nodes[id].m_aabb;
+    }
+
 private:
 
     /**

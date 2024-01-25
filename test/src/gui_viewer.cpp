@@ -230,9 +230,35 @@ void b3GUIViewer::add_meshes() {
         vertices *= m_transform;
 
         std::string s = matrix_str(vertices, 3);
-        std::cout << s <<std::endl;
+        // std::cout << s <<std::endl;
         m_viewer.data(id).set_mesh(vertices, faces);
         shape = shape->next();
+    }
+
+    m_auxiliary_shape_count = m_test->get_auxiliary_shape_count();
+    m_auxiliary_shape_list = m_test->get_auxiliary_shape_list();
+
+    b3_assert(m_auxiliary_shape_count != -1);
+
+    if(m_auxiliary_shape_count == 0) {
+        return;
+    }
+
+    b3_assert(m_auxiliary_shape_list != nullptr);
+
+    b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
+    while(auxiliary_shape != nullptr) {
+
+        Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();
+        Eigen::MatrixXd edges_right = auxiliary_shape->get_edges_right();
+        Eigen::RowVector3d color = auxiliary_shape->get_color();
+
+        edges_left *= m_transform;
+        edges_right *= m_transform;
+
+        m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
+
+        auxiliary_shape = auxiliary_shape->next();
     }
 }
 
@@ -264,6 +290,21 @@ void b3GUIViewer::redraw_mesh() {
         index++;
 
         shape = shape->next();
+    }
+
+    b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
+    while(auxiliary_shape != nullptr) {
+
+        Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();
+        Eigen::MatrixXd edges_right = auxiliary_shape->get_edges_right();
+        Eigen::RowVector3d color = auxiliary_shape->get_color();
+
+        edges_left *= m_transform;
+        edges_right *= m_transform;
+
+        m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
+
+        auxiliary_shape = auxiliary_shape->next();
     }
 
 }
