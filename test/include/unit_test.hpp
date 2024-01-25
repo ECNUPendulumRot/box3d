@@ -5,7 +5,7 @@
 
 #include "test.hpp"
 #include "box3d.hpp"
-
+#include "auxiliary_shape.hpp"
 
 class UnitTestBase: public TestBase {
 
@@ -24,6 +24,14 @@ public:
     }
 
     b3Shape* get_shape_list() const override {
+        return nullptr;
+    }
+
+    int get_auxiliary_shape_count() const override {
+        return 0;
+    }
+
+    b3AuxiliaryShape* get_auxiliary_shape_list() const override {
         return nullptr;
     }
 

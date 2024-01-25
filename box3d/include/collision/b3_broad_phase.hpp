@@ -53,6 +53,11 @@ public:
 
     b3BroadPhase();
 
+    ///// TODO: test dynamic tree ////////////
+    b3DynamicTree* get_dynamic_tree() {
+        return &m_tree;
+    }
+
     int32 create_proxy(const b3AABB& aabb, b3FixtureProxy* fixture_proxy);
 
     const b3AABB& get_AABB(int32 proxy_id) const {

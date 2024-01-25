@@ -8,7 +8,7 @@
 
 class TestBase;
 class b3Shape;
-
+class b3AuxiliaryShape;
 
 using TestCreateFcn = TestBase*();
 
@@ -39,6 +39,14 @@ public:
     }
 
     virtual b3Shape* get_shape_list() const {
+        return nullptr;
+    }
+
+    virtual int get_auxiliary_shape_count() const {
+        return 0;
+    }
+
+    virtual b3AuxiliaryShape* get_auxiliary_shape_list() const {
         return nullptr;
     }
 

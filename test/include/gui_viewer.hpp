@@ -74,10 +74,13 @@ class b3GUIViewer {
     int m_current_test = -1;
     int m_shape_count = -1;
 
+    int m_auxiliary_shape_count = -1;
+
     // The space for mesh data in data_list of viewer
     int m_viewer_used_count = 0;
 
     b3Shape* m_shape_list = nullptr;
+    b3AuxiliaryShape* m_auxiliary_shape_list = nullptr;
 
 public:
 

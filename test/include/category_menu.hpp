@@ -22,7 +22,6 @@ public:
     void draw_viewer_window() override {
         int width, height;
         glfwGetWindowSize(viewer->window, &width, &height);
-        printf("window size: %d, %d\n", width, height);
         ///////////////////// The Main Menu Bar /////////////////////
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
