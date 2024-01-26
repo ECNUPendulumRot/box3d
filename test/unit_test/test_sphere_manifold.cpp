@@ -13,9 +13,8 @@ b3BlockAllocator block_allocator;
 
 igl::opengl::glfw::Viewer viewer;
 
-b3TransformD xf[2];
-
 b3SphereShape sphere[2];
+b3CubeShape cube;
 double radius[2] = { 0.5, 0.5 };
 b3Vector3d position[2] = {
         b3Vector3d(1.5, 1.5, 0.9),
@@ -91,7 +90,11 @@ void interact_object(Eigen::Vector3d& origin, Eigen::Vector3d& point) {
 
     b3AABB aabb;
     for(int i = 0; i < 2; ++i) {
-        sphere[i].get_bound_aabb(&aabb, xf[i], sphere[i].get_child_count());
+        if(i == 0) {
+            sphere[i].get_bound_aabb(&aabb, body[i].get_pose(), 0);
+        } else {
+            cube.get_bound_aabb(&aabb, body[i].get_pose(), 0);
+        }
         const b3Vector3d min_a = aabb.min();
         const b3Vector3d max_a = aabb.max();
         if(line_AABB_intersect(origin, direction, min_a, max_a)) {
@@ -162,9 +165,17 @@ void init() {
         sphere[i].set_block_allocator(&block_allocator);
         sphere[i].set_as_sphere(radius[i]);
         sphere[i].set_relative_body(&body[i]);
-        xf[i].set_linear(position[i]);
-        body[i].set_pose(xf[i]);
+
+        b3TransformD xf;
+        xf.set_linear(position[i]);
+        xf.set_angular(0, 0, 0);
+        body[i].set_pose(xf);
     }
+
+    cube.set_block_allocator(&block_allocator);
+    cube.set_as_box(0.5, 0.5, 0.5);
+    cube.set_relative_body(&body[1]);
+
 
     viewer.core().camera_eye = Eigen::Vector3f(0, 0, 5.0f);
     viewer.data().add_edges(Eigen::RowVector3d(0, 0, 0), Eigen::RowVector3d(1, 0, 0), Eigen::RowVector3d(1, 0, 0));
@@ -175,6 +186,21 @@ void init() {
 int igl_index[2] = { -1, -1 };
 void add_mesh(int color_index, b3SphereShape& sphere) {
     b3ViewData view_data = sphere.get_view_data(body[color_index].get_pose());
+    E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
+    E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+
+    if(igl_index[color_index] == -1) {
+        igl_index[color_index] = viewer.append_mesh(true);
+    }
+
+    viewer.data(igl_index[color_index]).set_mesh(vertices, faces);
+    Eigen::MatrixXd color(1, 4);
+    color << colors[color_index].x(), colors[color_index].y(), colors[color_index].z(), 0.1;
+    viewer.data(igl_index[color_index]).set_colors(color);
+    viewer.data(igl_index[color_index]).show_lines = false;
+}
+void add_mesh(int color_index /* = 1 */, b3CubeShape& cube) {
+    b3ViewData view_data = cube.get_view_data(body[color_index].get_pose());
     E3MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
     E3MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
 
@@ -230,21 +256,25 @@ bool pre_draw(igl::opengl::glfw::Viewer& viewer) {
     const b3TransformD xf_a = body[0].get_pose();
     const b3TransformD xf_b = body[1].get_pose();
     for(int i = 0; i < 2; ++i) {
-        add_mesh(i, sphere[i]);
+        if(i == 0) {
+            add_mesh(i, sphere[i]);
+        } else {
+            add_mesh(i, cube);
+        }
 
         if(manifold.m_point_count > 0) {
-//            std::cout << "xf_a: ";
-//            print_vector3d(xf_a.linear());
-//            std::cout << "xf_b: ";
-//            print_vector3d(xf_b.linear());
+            std::cout << "xf_a: ";
+            print_vector3d(xf_a.linear());
+            std::cout << "xf_b: ";
+            print_vector3d(xf_b.linear());
             b3Vector3d contact_point = manifold.m_points[0].m_local_point;
-//            std::cout << "contact_point: ";
-//            print_vector3d(contact_point);
+            std::cout << "contact_point: ";
+            print_vector3d(contact_point);
             b3Vector3d contact_normal = manifold.m_local_normal;
             double penetration = manifold.m_penetration;
-//            std::cout << "contact_normal: ";
-//            print_vector3d(contact_normal);
-//            std::cout << "penetration: " << penetration << std::endl;
+            std::cout << "contact_normal: ";
+            print_vector3d(contact_normal);
+            std::cout << "penetration: " << penetration << std::endl;
 
             Eigen::RowVector3d point(contact_point.x(), contact_point.y(), contact_point.z());
 
@@ -263,7 +293,8 @@ bool pre_draw(igl::opengl::glfw::Viewer& viewer) {
 
     }
 
-    b3_collide_spheres(&manifold, &sphere[0], xf_a, &sphere[1], xf_b);
+    // b3_collide_spheres(&manifold, &sphere[0], xf_a, &sphere[1], xf_b);
+    b3_collide_cube_and_sphere(&manifold, &cube, xf_b, &sphere[0], xf_a);
 
     return false;
 }
@@ -273,7 +304,8 @@ int main() {
     init();
 
     add_mesh(0, sphere[0]);
-    add_mesh(1, sphere[1]);
+    // add_mesh(1, sphere[1]);
+    add_mesh(1, cube);
 
     viewer.callback_mouse_down = &callback_mouse_down;
     viewer.callback_key_down = &callback_key_down;

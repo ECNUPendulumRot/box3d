@@ -87,9 +87,9 @@ static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* m
         // max penetration axis is x.
         if(penetration.x() > penetration.z()) {
             if(sphere_center.x() > 0) {
-                manifold->m_local_normal = cube_xf.transform(b3Vector3d(1.0, 0, 0));
+                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(1.0, 0, 0);
             } else {
-                manifold->m_local_normal = cube_xf.transform(b3Vector3d(-1.0, 0, 0));
+                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(-1.0, 0, 0);
             }
 
             manifold->m_penetration = penetration.x() / 2;
@@ -105,9 +105,9 @@ static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* m
         // max penetration axis is y.
         if(penetration.y() > penetration.z()) {
             if(sphere_center.y() > 0) {
-                manifold->m_local_normal = cube_xf.transform(b3Vector3d(0, 1.0, 0));
+                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(0, 1.0, 0);
             } else {
-                manifold->m_local_normal = cube_xf.transform(b3Vector3d(0, -1.0, 0));
+                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(0, -1.0, 0);
             }
 
             manifold->m_penetration = penetration.y() / 2;
@@ -122,9 +122,9 @@ static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* m
     }
 
     if(sphere_center.z() > 0) {
-        manifold->m_local_normal = cube_xf.transform(b3Vector3d(0, 0, 1.0));
+        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(0, 0, 1.0);
     } else {
-        manifold->m_local_normal = cube_xf.transform(b3Vector3d(0, 0, -1.0));
+        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3d(0, 0, -1.0);
     }
 
     manifold->m_penetration = penetration.z() / 2;
@@ -137,11 +137,19 @@ static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* m
 
 static void face_separation(b3Manifold* manifold, const b3Vector3d& axis, const b3Vector3d& sphere_center_local,
                             double total_radius, const b3CubeShape* cube, const b3TransformD& cube_xf) {
-
+    // axis maybe
+    // (1, 0, 0)
+    // (-1, 0, 0)
+    // (0, 1, 0)
+    // (0, -1, 0)
+    // (0, 0, 1)
+    // (0, 0, -1)
     double separation = b3_abs(sphere_center_local.dot(axis));
+    total_radius += b3_abs(cube->m_h_xyz.dot(axis));
     if(separation < total_radius) {
         manifold->m_point_count = 1;
-        manifold->m_local_normal = cube_xf.transform(axis);
+        // normal only need rotation
+        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * axis;
         manifold->m_penetration = (separation - total_radius) / 2.0;
         manifold->m_type = b3Manifold::e_circles;
         manifold->m_points[0].id.key = 0;
@@ -181,7 +189,7 @@ static void edge_separation(b3Manifold* manifold, const b3Vector3d& axis, const 
         manifold->m_penetration = (separation - total_radius) / 2.0;
 
         b3Vector3d local_normal = (sphere_center_local - project_point).normalized();
-        manifold->m_local_normal = cube_xf.transform(local_normal);
+        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * local_normal;
 
         manifold->m_points[0].id.key = 0;
 
@@ -199,7 +207,7 @@ static void vertex_separation(b3Manifold* manifold, const b3Vector3d& axis, cons
 
     if(separation < total_radius) {
         manifold->m_point_count = 1;
-        manifold->m_local_normal = cube_xf.transform(point.normalized());
+        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * point.normalized();
         manifold->m_type = b3Manifold::e_circles;
         manifold->m_penetration = (separation - total_radius) / 2.0;
         manifold->m_points[0].id.key = 0;
@@ -235,6 +243,9 @@ void b3_collide_cube_and_sphere(b3Manifold* manifold,
 
     // shallow penetration
     double total_radius = sphere_b->get_radius() + cube_a->get_radius();
+
+    printf("feature count: %d\n", feature.m_count);
+    printf("feature axis: %f, %f, %f\n", feature.m_axis.x(), feature.m_axis.y(), feature.m_axis.z());
 
     // b3Vector3d point = cube_a->m_h_xyz.array_dot(feature.m_axis);
     if(feature.m_count == 1) {
