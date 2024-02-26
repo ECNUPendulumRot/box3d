@@ -8,7 +8,7 @@
 
 class b3CubeContact: public b3Contact {
 
-protected:
+public:
 
     static b3Contact* create(b3Fixture* fixture_a, int32 index_a, b3Fixture* fixture_b, int32 index_b, b3BlockAllocator* block_allocator);
 

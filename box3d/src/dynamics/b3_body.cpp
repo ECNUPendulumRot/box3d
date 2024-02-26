@@ -128,13 +128,13 @@ void b3Body::synchronize_fixtures() {
     b3BroadPhase* broad_phase = m_world->get_broad_phase();
 
     // if this body is awake ?
-    {
-        b3TransformD xf1;
-        // TODO: get the position at the begin of the frame
-        for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
-            f->synchronize(broad_phase, xf1, m_xf);
-        }
-    }
+//    {
+//        b3TransformD xf1;
+//        // TODO: get the position at the begin of the frame
+//        for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
+//            f->synchronize(broad_phase, xf1, m_xf);
+//        }
+//    }
     // else
     {
         for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {

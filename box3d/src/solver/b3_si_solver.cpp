@@ -132,7 +132,7 @@ void b3SISolver::solve_velocity_constraints() {
         int32 point_count = vc->m_point_count;
 
         b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3d w_a = m_velocities[vc->m_index_a].linear();
+        b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
 
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();

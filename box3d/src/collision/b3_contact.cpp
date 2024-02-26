@@ -4,6 +4,8 @@
 #include "dynamics/b3_body.hpp"
 
 #include "collision/b3_sphere_contact.hpp"
+#include "collision/b3_cube_contact.hpp"
+#include "collision/b3_cube_sphere_contact.hpp"
 
 b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 bool b3Contact::s_initialized = false;
@@ -11,6 +13,8 @@ bool b3Contact::s_initialized = false;
 void b3Contact::initialize_registers()
 {
     add_type(b3SphereContact::create, b3SphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_sphere);
+    add_type(b3CubeContact::create, b3CubeContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_cube);
+    add_type(b3CubeAndSphereContact::create, b3CubeAndSphereContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_sphere);
 }
 
 

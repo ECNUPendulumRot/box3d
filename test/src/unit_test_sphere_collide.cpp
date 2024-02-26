@@ -45,4 +45,4 @@ public:
     }
 };
 
-static int test_index = register_test("Debug", "sphere collide", TestSphereCollide::create);
+static int test_index = register_test("Debug", "Spheres Collide", TestSphereCollide::create);
