@@ -218,8 +218,9 @@ void b3World::solve(b3TimeStep &step) {
         for(int32 i = 0; i < island->get_body_count(); ++i) {
             // Allow static bodies to participate in other islands
             b3Body* body = island->get_body(i);
-            // if b.type == static body
-            // body->m_flags &= ~b3Body::e_island_flag;
+            if(body->m_type == b3BodyType::b3_static_body) {
+                body->m_flags &= ~b3Body::e_island_flag;
+            }
         }
     }
 
@@ -232,7 +233,9 @@ void b3World::solve(b3TimeStep &step) {
             continue;
         }
 
-        // static body => continue;
+        if(b->m_type== b3BodyType::b3_static_body) {
+            continue;
+        }
 
         // Update fixtures(for broad-phase).
         b->synchronize_fixtures();
