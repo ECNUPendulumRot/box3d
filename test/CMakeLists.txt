@@ -6,8 +6,6 @@ include(libigl)
 igl_include(glfw)
 igl_include(imgui)
 
-include(json)
-
 include(spdlog)
 ###################### b3simapp ######################
 
@@ -19,6 +17,7 @@ set(TEST_HEADER_FILES
         include/unit_test.hpp
         include/test.hpp
         include/auxiliary_shape.hpp
+        include/mesh_list_view.hpp
 
 )
 
@@ -57,7 +56,7 @@ target_include_directories(test_app
 )
 
 target_link_libraries(test_app
-    PUBLIC box3d CLI11::CLI11 igl::glfw nlohmann_json::nlohmann_json spdlog::spdlog igl::imgui
+    PUBLIC box3d igl::glfw spdlog::spdlog igl::imgui
 )
 
 target_link_libraries(

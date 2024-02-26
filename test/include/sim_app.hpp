@@ -6,8 +6,6 @@
 #include <filesystem>
 #include <vector>
 
-#include <CLI/CLI.hpp>
-
 #include "scene_test.hpp"
 #include "gui_viewer.hpp"
 
@@ -25,8 +23,6 @@ class b3SimApp {
     std::vector<std::string> m_mesh_paths;
 
     std::vector<std::string> m_fixture_paths;
-
-    CLI::App m_app;
 
     b3GUIViewer m_viewer;
 

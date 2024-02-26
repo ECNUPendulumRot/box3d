@@ -1,6 +1,8 @@
 
 #include "gui_viewer.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "scene_test.hpp"
 
 
@@ -62,16 +64,14 @@ namespace {
 
     bool double_clicked(const int& mouse_x, const int& mouse_y, b3Timer& timer) {
         if (!same_position(mouse_x, mouse_y)) {
+            timer.reset();
             return false;
         }
 
-        if (timer.get_time_ms() > 200)
-            return false;
-
+        bool is_double_clicking = timer.get_time_ms() < 200;
         timer.reset();
-        return true;
+        return is_double_clicking;
     }
-
 }
 
 
@@ -128,14 +128,17 @@ void b3GUIViewer::launch()
     m_viewer.core().light_position = Eigen::Vector3f(50, 50, 50);
 
     // add GUI plugin
-    m_viewer.plugins.push_back(&m_plugin);
-    m_plugin.widgets.push_back(&m_menu);
+    m_viewer.plugins.push_back(&m_gui_plugin);
+    m_gui_plugin.widgets.push_back(&m_menu);
+    m_gui_plugin.widgets.push_back(&m_mesh_list);
 
     // set up the callback for pre_draw
     m_viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer&) {
         return pre_draw_loop();
     };
-
+    m_viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer& viewer, int button, int modifier) {
+        return call_back_mouse_down(viewer, button, modifier);
+    };
     // Draw the axis at the origin
     m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(1, 0 - 1, 0), Eigen::RowVector3d(1, 0, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(0, 1 - 1, 0), Eigen::RowVector3d(0, 1, 0));
@@ -185,6 +188,7 @@ bool b3GUIViewer::check_test_index() {
     return true;
 }
 
+
 bool b3GUIViewer::pre_draw_loop()
 {
     // make sure that two variables are initialized to -1
@@ -201,6 +205,20 @@ bool b3GUIViewer::pre_draw_loop()
 }
 
 
+// Check whether the data list in igl is enough to keep new mesh
+int b3GUIViewer::allocate_mesh(const int& index) {
+    int id;
+    if (index >= m_viewer_used_count) {
+        id = m_viewer.append_mesh(true);
+        m_viewer_used_count++;
+    } else {
+        id = index + 1;
+        m_viewer.data(id).clear();
+    }
+    return id;
+}
+
+
 void b3GUIViewer::add_meshes() {
 
     m_shape_count = m_test->get_shape_count();
@@ -210,28 +228,11 @@ void b3GUIViewer::add_meshes() {
     b3_assert(m_shape_count != -1);
 
     b3Shape* shape = m_shape_list;
+
     for (int i = 0; i < m_shape_count; i++) {
-        int id;
-        if (i >= m_viewer_used_count) {
-            id = m_viewer.append_mesh(true);
-            m_viewer_used_count++;
-        } else {
-            id = i + 1;
-            m_viewer.data(id).clear();
-        }
-
-        b3ViewData view_data;
-        auto p = shape->get_body()->get_pose();
-        view_data = shape->get_view_data(shape->get_body()->get_pose());
-
-        MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
-
-        vertices *= m_transform;
-
-        std::string s = matrix_str(vertices, 3);
-        // std::cout << s <<std::endl;
-        m_viewer.data(id).set_mesh(vertices, faces);
+        m_shapes.push_back(shape);
+        allocate_mesh(i);
+        m_mesh_list.add_object(i);
         shape = shape->next();
     }
 
@@ -267,6 +268,8 @@ void b3GUIViewer::clear_meshes() {
     for (int i = 1; i < m_viewer.data_list.size(); i++) {
         m_viewer.data(i).clear();
     }
+    m_mesh_list.clear();
+    m_shapes.clear();
 }
 
 
@@ -276,20 +279,15 @@ void b3GUIViewer::redraw_mesh() {
         return;
     }
 
-    b3Shape* shape = m_shape_list;
-
-    int index = 0;
-
-    while (shape != nullptr) {
+    for (int index = 0; index < m_shape_count; index++) {
+        b3Shape* shape = m_shapes[index];
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
         MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
         vertices *= m_transform;
         m_viewer.data(index + 1).set_mesh(vertices, faces);
-
-        index++;
-
-        shape = shape->next();
+        ImVec4& color = m_mesh_list.m_index_colors[index].color;
+        m_viewer.data(index + 1).set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
     }
 
     b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
@@ -314,12 +312,15 @@ void b3GUIViewer::redraw_mesh() {
 
 bool b3GUIViewer::call_back_mouse_down(b3GUIViewer::Viewer &viewer, int button, int modifier)
 {
-    if (!double_clicked(viewer.current_mouse_x, viewer.current_mouse_y, m_timer)) {
-        return false;
+    if (double_clicked(viewer.current_mouse_x, viewer.current_mouse_y, m_timer)) {
+        spdlog::log(spdlog::level::info, "double clicked");
+        // Add AABB intersect test here;
     }
 
-    printf("double clicked\n");
+    return false;
 }
+
+
 
 
 
