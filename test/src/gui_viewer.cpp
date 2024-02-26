@@ -139,6 +139,16 @@ void b3GUIViewer::launch()
     m_viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer& viewer, int button, int modifier) {
         return call_back_mouse_down(viewer, button, modifier);
     };
+
+    m_viewer.callback_key_pressed = [&](igl::opengl::glfw::Viewer& viewer, unsigned int key, int modifiers) {
+        spdlog::log(spdlog::level::info, "key pressed");
+        if (m_test != nullptr) {
+            spdlog::log(spdlog::level::info, "in test key pressed");
+            m_test->key_pressed(viewer, key, modifiers);
+        }
+        return false;
+    };
+
     // Draw the axis at the origin
     m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(1, 0 - 1, 0), Eigen::RowVector3d(1, 0, 0));
     m_viewer.data().add_edges(Eigen::RowVector3d(0, -1, 0), Eigen::RowVector3d(0, 1 - 1, 0), Eigen::RowVector3d(0, 1, 0));
@@ -195,6 +205,7 @@ bool b3GUIViewer::pre_draw_loop()
     if (check_test_index()) {
         clear_meshes();
         add_meshes();
+        m_mesh_list.set_test(m_test);
     }
     if (m_test != nullptr)
         m_test->step();

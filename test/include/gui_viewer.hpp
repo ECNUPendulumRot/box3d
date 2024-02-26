@@ -14,10 +14,13 @@
 #include "box3d.hpp"
 
 
+#include "scene_test.hpp"
+#include "unit_test.hpp"
+
+
 class b3GUIViewer {
 
     using Viewer = igl::opengl::glfw::Viewer;
-    using ImGuiMenu = igl::opengl::glfw::imgui::ImGuiMenu;
     using ImGuiPlugin = igl::opengl::glfw::imgui::ImGuiPlugin;
 
     Viewer m_viewer;
@@ -52,8 +55,6 @@ public:
     b3GUIViewer();
 
     void launch();
-
-    bool set_world(b3World* world);
 
     inline void set_max_fps(double fps) {
         m_viewer.core().animation_max_fps = fps;

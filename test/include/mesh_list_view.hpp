@@ -11,6 +11,9 @@
 
 #include <spdlog/spdlog.h>
 
+#include "test.hpp"
+
+
 struct MeshViewObject {
     int shape_id;
     ImVec4 color;
@@ -27,6 +30,8 @@ class MeshListView: public igl::opengl::glfw::imgui::ImGuiMenu {
     float list_width;
 
     std::vector<MeshViewObject> m_index_colors;
+
+    TestBase* m_test;
 
 public:
 
@@ -53,6 +58,9 @@ public:
         for (int i = 0; i < m_index_colors.size(); i++) {
             if (ImGui::Selectable(std::to_string(i).c_str(), m_selected_test == i, ImGuiSelectableFlags_SpanAllColumns)) {
                 m_selected_test = i;
+
+                if (m_test != nullptr)
+                    m_test->selected_object(m_selected_test);
             }
 
             if (m_selected_test == i) {
@@ -72,6 +80,10 @@ public:
 
     void clear() {
         m_index_colors.clear();
+    }
+
+    void set_test(TestBase* test) {
+        m_test = test;
     }
 };
 

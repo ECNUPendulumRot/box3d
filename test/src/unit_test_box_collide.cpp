@@ -1,6 +1,8 @@
 
 #include "unit_test.hpp"
 
+#include <spdlog/spdlog.h>
+
 class UnitTestBoxCollide: public UnitTestBase {
 
     b3TransformD xf_A;
@@ -18,6 +20,10 @@ class UnitTestBoxCollide: public UnitTestBase {
     b3Vector3d hf_A = b3Vector3d(1, 1, 1);
 
     b3Vector3d hf_B = b3Vector3d(1, 1, 1);
+
+
+    int selected_box = -1;
+    b3Body* selected_body = nullptr;
 
 public :
 
@@ -66,6 +72,43 @@ public :
     static TestBase* create() {
         return new UnitTestBoxCollide();
     }
+
+    void selected_object(const int& index) override {
+        if(index == 0) {
+            selected_body = body_A;
+        } else if(index == 1) {
+            selected_body = body_B;
+        }
+    }
+
+    void key_pressed(Viewer& viewer, unsigned int key, int modifiers) override {
+        spdlog::log(spdlog::level::info, "child key pressed");
+        if(selected_body == nullptr) {
+            return;
+        }
+        if(key == GLFW_KEY_UP) {
+            b3TransformD xf = selected_body->get_pose();
+            xf.set_linear(xf.linear() + b3Vector3d(-0.1, 0, 0));
+            spdlog::log(spdlog::level::info, "move forward");
+            selected_body->set_pose(xf);
+        } else if(key == GLFW_KEY_DOWN) {
+            b3TransformD xf = selected_body->get_pose();
+            xf.set_linear(xf.linear() + b3Vector3d(0.1, 0, 0));
+            spdlog::log(spdlog::level::info, "move backward");
+            selected_body->set_pose(xf);
+        } else if(key == GLFW_KEY_LEFT) {
+            b3TransformD xf = selected_body->get_pose();
+            xf.set_linear(xf.linear() + b3Vector3d(0, -0.1, 0));
+            spdlog::log(spdlog::level::info, "move left");
+            selected_body->set_pose(xf);
+        } else if(key == GLFW_KEY_RIGHT) {
+            b3TransformD xf = selected_body->get_pose();
+            xf.set_linear(xf.linear() + b3Vector3d(0, 0.1, 0));
+            spdlog::log(spdlog::level::info, "move right");
+            selected_body->set_pose(xf);
+        }
+    }
+
 
 };
 
