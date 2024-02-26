@@ -116,10 +116,6 @@ void b3World::clear()
         body = next;
     }
 
-    for(b3Island* island : m_island_list) {
-        island->~b3Island();
-        m_block_allocator.free(island, sizeof(b3Island));
-    }
 }
 
 void b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
@@ -154,23 +150,13 @@ void b3World::step(double dt, int32 velocity_iterations, int32 position_iteratio
     //
     //        body = body->next();
     //    }
-    // generate islands
-    generate_island();
 
-    // island solve velocity constraints and integrate position
-    for(b3Island* island : m_island_list) {
-        if(island->get_contacts_count() > 0) {
-            int x = 10;
-        }
-        b3SISolver solver(&m_block_allocator, island, &step);
-        solver.solve();
-    }
+    solve(step);
 
 }
 
 
-void b3World::generate_island() {
-        
+void b3World::solve(b3TimeStep &step) {
     // clear all island flag.
     for(b3Body* body = m_body_list; body; body = body->next()) {
         body->m_flags &= ~b3Body::e_island_flag;
@@ -179,28 +165,16 @@ void b3World::generate_island() {
         contact->unset_flag(b3Contact::e_island_flag);
     }
 
-    int32 island_count = m_island_list.size();
-    int32 island_index = 0;
+    void* mem = m_block_allocator.allocate(sizeof(b3Island));
+    b3Island* island = new (mem) b3Island(&m_block_allocator, m_body_count, m_contact_manager.get_contact_count());
 
     // build all islands
-    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body*));
+    mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body*));
     b3Body** stack = new (mem) b3Body*;
     for(b3Body* body = m_body_list; body; body = body->next()) {
-        
+
         if(body->m_flags & b3Body::e_island_flag) {
             continue;
-        }
-
-        b3Island* island = nullptr;
-        if(island_index < island_count) {
-            // reuse the memory space
-            island = m_island_list[island_index];
-            island->clear();
-            island_index++;
-        } else {
-            void* mem = m_block_allocator.allocate(sizeof(b3Island));
-            island = new (mem) b3Island(&m_block_allocator, m_body_count, m_contact_manager.get_contact_count());
-            m_island_list.push_back(island);
         }
 
         int32 stack_count = 0;
@@ -237,7 +211,36 @@ void b3World::generate_island() {
             }
         }
 
+        b3SISolver solver(&m_block_allocator, island, &step);
+        solver.solve();
+
+        // Post solve cleanup.
+        for(int32 i = 0; i < island->get_body_count(); ++i) {
+            // Allow static bodies to participate in other islands
+            b3Body* body = island->get_body(i);
+            // if b.type == static body
+            // body->m_flags &= ~b3Body::e_island_flag;
+        }
     }
+
+    m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
+
+    // TODO: synchronize ?
+    for(b3Body* b = m_body_list; b; b = b->m_next) {
+        // If a body was not in an island then it did not move.
+        if((b->m_flags & b3Body::e_island_flag) == 0) {
+            continue;
+        }
+
+        // static body => continue;
+
+        // Update fixtures(for broad-phase).
+        b->synchronize_fixtures();
+    }
+
+    // Look for new contacts
+    m_contact_manager.find_new_contact();
+
 }
 
 

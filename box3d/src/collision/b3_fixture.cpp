@@ -47,3 +47,23 @@ void b3Fixture::create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf)
     }
 
 }
+
+
+void b3Fixture::synchronize(b3BroadPhase *broad_phase, const b3TransformD &transform1, const b3TransformD &transform2) {
+    if(m_proxy_count == 0) {
+        return;
+    }
+
+    for(int32 i = 0; i <  m_proxy_count; ++i) {
+        b3FixtureProxy* proxy = m_proxies + i;
+
+        // Compute an AABB that covers the swept shape (may miss some rotation effect).
+        b3AABB aabb1, aabb2;
+        m_shape->get_bound_aabb(&aabb1, transform1, proxy->m_child_id);
+        m_shape->get_bound_aabb(&aabb2, transform2, proxy->m_child_id);
+
+        proxy->m_aabb.combine(aabb1, aabb2);
+
+        broad_phase->move_proxy(proxy->m_proxy_id, proxy->m_aabb);
+    }
+}

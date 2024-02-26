@@ -33,6 +33,8 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
         vc->m_contact_index = i;
         vc->m_point_count = point_count;
 
+        vc->m_normal = manifold->m_local_normal;
+
         vc->m_index_a = body_a->get_island_index();
         vc->m_inv_mass_a = body_a->get_inv_mass();
         vc->m_inv_I_a = body_a->get_inv_inertia();

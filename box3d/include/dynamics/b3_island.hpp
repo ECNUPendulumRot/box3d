@@ -60,6 +60,10 @@ public:
     b3Body** get_bodies() const {
         return m_bodies;
     }
+
+    b3Body* get_body(int32 index) {
+        return m_bodies[index];
+    }
 };
 
 

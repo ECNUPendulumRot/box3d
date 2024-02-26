@@ -199,6 +199,8 @@ private:
 
     void reset_mass_data();
 
+    void synchronize_fixtures();
+
 };
 
 
