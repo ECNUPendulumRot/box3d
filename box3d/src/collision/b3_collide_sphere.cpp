@@ -5,6 +5,7 @@
 
 #include "math/b3_math.hpp"
 
+#include <cstdio>
 
 void b3_collide_spheres(b3Manifold* manifold,
 					    const b3SphereShape* sphere_a, 

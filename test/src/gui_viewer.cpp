@@ -293,6 +293,8 @@ void b3GUIViewer::redraw_mesh() {
     }
 
     b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
+
+    m_viewer.data(m_viewer_used_count).clear_edges();
     while(auxiliary_shape != nullptr) {
 
         Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();

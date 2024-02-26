@@ -11,7 +11,7 @@
 
 #include "collision/b3_aabb.hpp"
 
-#define K_SEGMENTS 20
+#define K_SEGMENTS 16
 
 const b3SphereConfig b3SphereShape::m_config;
 

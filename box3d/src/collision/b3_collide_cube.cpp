@@ -33,7 +33,7 @@ static void overlap_on_axis(const b3CubeShape& cube_A, const b3TransformD& xf_A,
 }
 
 
-// test face seperation of cube_B from cube_A
+// test face seperation of cube_B from sphere_A
 static double face_separation(
         b3Manifold* manifold,
         const b3CubeShape* cube_A, const b3TransformD& xf_A,
@@ -47,7 +47,7 @@ static double face_separation(
 
     for (int32 i = 0; i < 6; ++i) {
 
-        // get the separation normal of cube_A in the world frame.
+        // get the separation normal of sphere_A in the world frame.
         const b3Vector3d& n = R_a * cube_A->m_normals[i];
 
         double penetration = 0.0;
@@ -80,7 +80,7 @@ static double edge_separation(
     // to find edge-edge contact, we should test all edges pairs of two cubes.
     for (int32 i = 0; i < 12; ++i) {
 
-        // get the normal of edge on cube_A in the world frame.
+        // get the normal of edge on sphere_A in the world frame.
         const b3Vector3d& v1_a = R_a * cube_A->m_vertices[cube_A->m_edges[i].v1];
         const b3Vector3d& v2_a = R_a * cube_A->m_vertices[cube_A->m_edges[i].v2];
         const b3Vector3d& e_n_a = (v2_a - v1_a).normalized();
@@ -396,14 +396,14 @@ void b3_collide_cube(
     manifold->m_point_count = 0;
     double total_radius = cube_A->get_radius() + cube_B->get_radius();
 
-    // firstly separate cube_B from cube_A
+    // firstly separate cube_B from sphere_A
     int32 face_index_A;
     double separation_A = face_separation(manifold, cube_A, xf_A, cube_B, xf_B, face_index_A);
     if (separation_A > total_radius) {
         return;
     }
 
-    // then separate cube_A from cube_B
+    // then separate sphere_A from cube_B
     int32 face_index_B;
     double separation_B = face_separation(manifold, cube_B, xf_B, cube_A, xf_A, face_index_B);
     if (separation_B > total_radius) {

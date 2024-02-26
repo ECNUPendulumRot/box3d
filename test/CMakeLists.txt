@@ -32,6 +32,7 @@ set(TEST_SOURCE_FILES
         src/unit_test_dynamic_tree.cpp
         src/test.cpp
         src/auxiliary_shape.cpp
+        src/unit_test_sphere_view.cpp
 
 )
 
