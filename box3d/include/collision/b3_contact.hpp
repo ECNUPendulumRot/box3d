@@ -72,7 +72,7 @@ protected:
 
     ////////// Coefficients related to the material of the object ///////////
     // TODO： 
-    double m_restitution;
+    double m_restitution = 1.0;
 
     uint32 m_flags = 0;
 

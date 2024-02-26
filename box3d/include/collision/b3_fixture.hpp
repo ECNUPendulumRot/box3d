@@ -127,6 +127,10 @@ public:
         return (m_proxies + index);
     }
 
+private:
+
+    void synchronize(b3BroadPhase* broad_phase, const b3TransformD& transform1, const b3TransformD& transform2);
+
 };
 
 

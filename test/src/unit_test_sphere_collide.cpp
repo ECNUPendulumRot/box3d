@@ -12,7 +12,7 @@ public:
 
         // create a dynamic body
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(0, -5, 0));
+        pose.set_linear(b3Vector3d(0, -2, 0));
         velocity.set_linear(b3Vector3d(0, 10, 0));
 
         b3BodyDef body_def;
@@ -20,7 +20,7 @@ public:
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere1 = m_world->create_body(body_def);
 
-        pose.set_linear(b3Vector3d(0, 5, 0));
+        pose.set_linear(b3Vector3d(0, 2, 0));
         velocity.set_linear(b3Vector3d(0, 0, 0));
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere2 = m_world->create_body(body_def);
