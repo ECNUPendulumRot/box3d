@@ -10,7 +10,7 @@
 #include "igl/opengl/glfw/Viewer.h"
 
 #include "gui.hpp"
-
+#include "mesh_list_view.hpp"
 #include "box3d.hpp"
 
 
@@ -22,9 +22,10 @@ class b3GUIViewer {
 
     Viewer m_viewer;
 
-    ImGuiPlugin m_plugin;
+    ImGuiPlugin m_gui_plugin;
 
     Gui m_menu;
+    MeshListView m_mesh_list;
 
     TestBase* m_test = nullptr;
 
@@ -38,6 +39,8 @@ class b3GUIViewer {
 
     // The space for mesh data in data_list of viewer
     int m_viewer_used_count = 0;
+
+    std::vector<b3Shape*> m_shapes;
 
     b3Shape* m_shape_list = nullptr;
     b3AuxiliaryShape* m_auxiliary_shape_list = nullptr;
@@ -72,6 +75,7 @@ private:
 
     bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
+    int allocate_mesh(const int& index);
 };
 
 

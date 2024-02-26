@@ -14,6 +14,7 @@
 b3CubeShape::b3CubeShape()
 {
     m_radius = b3_polygon_radius;
+    m_type = e_cube;
 }
 
 
