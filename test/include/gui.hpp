@@ -91,15 +91,15 @@ public:
         ImGui::End();
 
         ///////////////////////// Some Useful Tools /////////////////////////
-        ImGui::SetNextWindowPos(ImVec2(0.0f, test_list_pos.y + test_list_size.y), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
-        ImGui::Begin(
-                "Tests", &_viewer_menu_visible,
-                ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
-        );
-
-        ImGui::End();
+//        ImGui::SetNextWindowPos(ImVec2(0.0f, test_list_pos.y + test_list_size.y), ImGuiCond_FirstUseEver);
+//        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
+//        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
+//        ImGui::Begin(
+//                "Tests", &_viewer_menu_visible,
+//                ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
+//        );
+//
+//        ImGui::End();
 
     }
 

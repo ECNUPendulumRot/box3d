@@ -254,8 +254,8 @@ void b3GUIViewer::add_meshes() {
     if(auxiliary_shape_count == 0) {
         return;
     }
-
     b3_assert(auxiliary_shape_list != nullptr);
+
 
     b3AuxiliaryShape* auxiliary_shape = auxiliary_shape_list;
     for (int i = 0; i < auxiliary_shape_count; i++) {
@@ -292,7 +292,8 @@ void b3GUIViewer::redraw_mesh() {
         m_viewer.data(index + 1).set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
     }
 
-    m_viewer.data(m_viewer_used_count).clear();
+    m_viewer.data(m_viewer_used_count).clear_edges();
+
     for (int index = 0; index < m_auxiliary_shapes.size(); index++) {
         b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shapes[index];
         Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();
