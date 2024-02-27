@@ -33,7 +33,6 @@ int main() {
     std::cout << "b3MassProperty: "     << sizeof(b3MassProperty)       << "  ";
     std::cout << "b3Matrix3f: "         << sizeof(b3Matrix3f)           << "  ";
     std::cout << "b3Matrix3d: "         << sizeof(b3Matrix3d)           << "  ";
-    std::cout << "b3Mess: "             << sizeof(b3Mesh)               << "  ";
     std::cout << "b3Node: "             << sizeof(b3Node)               << "  ";
     std::cout << "b3Pair: "             << sizeof(b3Pair)               << "  ";
     std::cout << "b3Shape: "            << sizeof(b3Shape)              << "  ";
