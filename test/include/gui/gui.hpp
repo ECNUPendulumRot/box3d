@@ -4,12 +4,14 @@
 
 #include "igl/opengl/glfw/Viewer.h"
 
-#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
-#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include "igl/opengl/glfw/imgui/ImGuiPlugin.h"
+#include "igl/opengl/glfw/imgui/ImGuiMenu.h"
+#include "igl/opengl/glfw/imgui/ImGuiHelpers.h"
 
 #include "scene_test.hpp"
 #include "unit_test.hpp"
+#include "imgui_ext.hpp"
+
 
 class Gui: public igl::opengl::glfw::imgui::ImGuiMenu {
 
@@ -17,10 +19,21 @@ class Gui: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     int m_selected_test = -1;
 
+    bool m_enable_depth_test = true;
+    bool m_show_auxiliary_shapes = true;
+    bool m_show_ground = true;
+    bool m_show_faces = true;
+    bool m_show_edges = true;
+    ImVec4 m_line_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    float m_line_width = 1.0f;
+
 public:
 
     void draw_viewer_window() override {
-        int width, height;
+        static int width, height;
+        static ImVec2 test_list_pos, test_list_size;
+        static float utility_height = 300.0f;
+
         glfwGetWindowSize(viewer->window, &width, &height);
         ///////////////////// The Main Menu Bar /////////////////////
         if (ImGui::BeginMainMenuBar()) {
@@ -42,16 +55,18 @@ public:
         }
 
         ///////////////////////// The Test Menu /////////////////////////
-        ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetFrameHeight()), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
+        ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetFrameHeight()));
+        ImGui::SetNextWindowSize(ImVec2(300.0f, height - ImGui::GetFrameHeight() - utility_height), ImGuiCond_Once);
+        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0),
+                                            ImVec2(350.0f, FLT_MAX));
         bool _viewer_menu_visible = true;
         ImGui::Begin(
                 "Tests", &_viewer_menu_visible,
-                 ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
+                 ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse
         );
-        ImVec2 test_list_pos = ImGui::GetWindowPos();
-        ImVec2 test_list_size = ImGui::GetWindowSize();
+        test_list_pos = ImGui::GetWindowPos();
+        test_list_size = ImGui::GetWindowSize();
+        utility_height = height - test_list_size.y - ImGui::GetFrameHeight();
         ImGuiTreeNodeFlags leaf_node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         leaf_node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -91,16 +106,22 @@ public:
         ImGui::End();
 
         ///////////////////////// Some Useful Tools /////////////////////////
-//        ImGui::SetNextWindowPos(ImVec2(0.0f, test_list_pos.y + test_list_size.y), ImGuiCond_FirstUseEver);
-//        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
-//        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
-//        ImGui::Begin(
-//                "Tests", &_viewer_menu_visible,
-//                ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
-//        );
-//
-//        ImGui::End();
-
+        ImGui::SetNextWindowPos(ImVec2(0.0f, test_list_pos.y + test_list_size.y));
+        ImGui::SetNextWindowSize(ImVec2(test_list_size.x, utility_height));
+        ImGui::Begin(
+                "Utilities", &_viewer_menu_visible,
+                ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse
+        );
+        ImGui::Checkbox("Enable Depth Test", &m_enable_depth_test);
+        ImGui::Checkbox("Show Ground", &m_show_ground);
+        ImGui::Checkbox("Show Auxiliary Shapes", &m_show_auxiliary_shapes);
+        ImGui::Checkbox("Show Mesh Faces", &m_show_faces);
+        ImGui::Checkbox("Show Mesh Edges", &m_show_edges);
+        ImGui::ColorEdit3WithPalette("Edge Color", (float*)&m_line_color);
+        ImGui::PushItemWidth(100);
+        ImGui::SliderFloat("Line Width", &m_line_width, 0.5f, 3.0f);
+        ImGui::PopItemWidth();
+        ImGui::End();
     }
 
 };

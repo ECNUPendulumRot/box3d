@@ -9,19 +9,16 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "gui.hpp"
-#include "mesh_list_view.hpp"
+#include "gui/gui.hpp"
+#include "gui/mesh_list_view.hpp"
 #include "box3d.hpp"
-
-
-#include "scene_test.hpp"
-#include "unit_test.hpp"
 
 
 class b3GUIViewer {
 
     using Viewer = igl::opengl::glfw::Viewer;
     using ImGuiPlugin = igl::opengl::glfw::imgui::ImGuiPlugin;
+    using ViewerData = igl::opengl::ViewerData;
 
     Viewer m_viewer;
 
@@ -41,7 +38,6 @@ class b3GUIViewer {
     int m_viewer_used_count = 0;
 
     std::vector<b3Shape*> m_shapes;
-    std::vector<b3AuxiliaryShape*> m_auxiliary_shapes;
 
     b3Timer m_timer;
 
@@ -72,6 +68,8 @@ private:
     bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
     int allocate_mesh(const int& index);
+
+    void draw_auxiliary_shapes();
 };
 
 

@@ -1,3 +1,7 @@
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
+
+include(spdlog)
+
 set(B3D_HEADER_FILES
         include/box3d.hpp
 
@@ -82,6 +86,8 @@ set(B3D_SOURCE_FILES
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
 add_library(box3d ${B3D_SOURCE_FILES} ${B3D_HEADER_FILES})
+
+target_link_libraries(box3d PUBLIC spdlog::spdlog)
 
 target_include_directories(box3d
     PUBLIC

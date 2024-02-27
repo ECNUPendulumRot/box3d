@@ -33,6 +33,20 @@ static b3Vector3d position[10] = {
         b3Vector3d(5, 1, 3)
 };
 
+
+static Eigen::RowVector3d colors[10] = {
+        Eigen::RowVector3d(0, 0, 0),
+        Eigen::RowVector3d(252.0 / 255, 230.0 / 255, 202.0 / 255),
+        Eigen::RowVector3d(1, 0, 0),
+        Eigen::RowVector3d(156.0 / 255, 102.0 / 255, 31.0 / 255),
+        Eigen::RowVector3d(0, 1, 0),
+        Eigen::RowVector3d(0, 1, 1),
+        Eigen::RowVector3d(0, 0, 1),
+        Eigen::RowVector3d(128.0 / 255, 42.0 / 255, 42.0 / 255),
+        Eigen::RowVector3d(160.0 / 255, 82.0 / 255, 45.0 / 255),
+        Eigen::RowVector3d(153.0 / 255, 51.0 / 255, 250.0 / 255)
+};
+
 class UnitTestDynamicTree : public UnitTestBase {
 
     const int shape_count = 20;
@@ -81,6 +95,25 @@ public:
 };
 
 int dynamic_tree_index = register_test("unit test", "dynamic tree", UnitTestDynamicTree::create);
+
+
+void init_auxiliary_shape(b3AABB* aabb, int height, b3AuxiliaryShape* auxiliary_shape) {
+    auxiliary_shape->set_color(colors[height]);
+    b3Vector3d min = aabb->min();
+    b3Vector3d max = aabb->max();
+    auxiliary_shape->add_line(min.x(), min.y(), min.z(), max.x(), min.y(), min.z());
+    auxiliary_shape->add_line(max.x(), min.y(), min.z(), max.x(), max.y(), min.z());
+    auxiliary_shape->add_line(max.x(), max.y(), min.z(), min.x(), max.y(), min.z());
+    auxiliary_shape->add_line(min.x(), max.y(), min.z(), min.x(), min.y(), min.z());
+    auxiliary_shape->add_line(min.x(), min.y(), max.z(), max.x(), min.y(), max.z());
+    auxiliary_shape->add_line(max.x(), min.y(), max.z(), max.x(), max.y(), max.z());
+    auxiliary_shape->add_line(max.x(), max.y(), max.z(), min.x(), max.y(), max.z());
+    auxiliary_shape->add_line(min.x(), max.y(), max.z(), min.x(), min.y(), max.z());
+    auxiliary_shape->add_line(min.x(), min.y(), min.z(), min.x(), min.y(), max.z());
+    auxiliary_shape->add_line(max.x(), min.y(), min.z(), max.x(), min.y(), max.z());
+    auxiliary_shape->add_line(max.x(), max.y(), min.z(), max.x(), max.y(), max.z());
+    auxiliary_shape->add_line(min.x(), max.y(), min.z(), min.x(), max.y(), max.z());
+}
 
 
 UnitTestDynamicTree::UnitTestDynamicTree() {
@@ -152,7 +185,8 @@ UnitTestDynamicTree::UnitTestDynamicTree() {
     for(int i = 0; i < n; ++i) {
         broad_phase.get_dynamic_tree()->get_node_info(i, height, aabb);
         if(height != b3_NULL_HEIGHT) {
-            auxiliary_shape_list[index++].init(&aabb, height);
+            init_auxiliary_shape(&aabb, height, auxiliary_shape_list + index);
+            index++;
         }
     }
 }

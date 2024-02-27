@@ -91,7 +91,6 @@ struct b3Manifold {
 
     //////
     double m_penetration;
-
 };
 
 
