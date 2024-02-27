@@ -50,8 +50,8 @@ public:
                 "Tests", &_viewer_menu_visible,
                  ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
         );
-        ImVec2 scene_window_pos = ImGui::GetWindowPos();
-        ImVec2 scene_window_size = ImGui::GetWindowSize();
+        ImVec2 test_list_pos = ImGui::GetWindowPos();
+        ImVec2 test_list_size = ImGui::GetWindowSize();
         ImGuiTreeNodeFlags leaf_node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         leaf_node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -89,6 +89,18 @@ public:
             }
         }
         ImGui::End();
+
+        ///////////////////////// Some Useful Tools /////////////////////////
+        ImGui::SetNextWindowPos(ImVec2(0.0f, test_list_pos.y + test_list_size.y), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(250.0f, height - ImGui::GetFrameHeight()));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, 0.0f), ImVec2(350.0f, FLT_MAX));
+        ImGui::Begin(
+                "Tests", &_viewer_menu_visible,
+                ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
+        );
+
+        ImGui::End();
+
     }
 
 };

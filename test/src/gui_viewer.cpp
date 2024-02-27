@@ -127,24 +127,23 @@ void b3GUIViewer::launch()
     m_viewer.core().lighting_factor = 0.4;
     m_viewer.core().light_position = Eigen::Vector3f(50, 50, 50);
 
+    m_viewer.core().depth_test = true;
+
     // add GUI plugin
     m_viewer.plugins.push_back(&m_gui_plugin);
     m_gui_plugin.widgets.push_back(&m_menu);
     m_gui_plugin.widgets.push_back(&m_mesh_list);
 
-    // set up the callback for pre_draw
+    //////////////////////////// Set up Callbacks ////////////////////////////
     m_viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer&) {
         return pre_draw_loop();
     };
     m_viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer& viewer, int button, int modifier) {
         return call_back_mouse_down(viewer, button, modifier);
     };
-
     m_viewer.callback_key_pressed = [&](igl::opengl::glfw::Viewer& viewer, unsigned int key, int modifiers) {
-        spdlog::log(spdlog::level::info, "key pressed");
         if (m_test != nullptr) {
-            spdlog::log(spdlog::level::info, "in test key pressed");
-            m_test->key_pressed(viewer, key, modifiers);
+            return m_test->key_pressed(viewer, key, modifiers);
         }
         return false;
     };
@@ -232,44 +231,35 @@ int b3GUIViewer::allocate_mesh(const int& index) {
 
 void b3GUIViewer::add_meshes() {
 
-    m_shape_count = m_test->get_shape_count();
-    m_shape_list = m_test->get_shape_list();
+    int shape_count = m_test->get_shape_count();
+    b3Shape* shape_list = m_test->get_shape_list();
 
-    b3_assert(m_shape_list != nullptr);
-    b3_assert(m_shape_count != -1);
+    b3_assert(shape_list != nullptr);
+    b3_assert(shape_count != -1);
 
-    b3Shape* shape = m_shape_list;
+    b3Shape* shape = shape_list;
 
-    for (int i = 0; i < m_shape_count; i++) {
+    for (int i = 0; i < shape_count; i++) {
         m_shapes.push_back(shape);
         allocate_mesh(i);
         m_mesh_list.add_object(i);
         shape = shape->next();
     }
 
-    m_auxiliary_shape_count = m_test->get_auxiliary_shape_count();
-    m_auxiliary_shape_list = m_test->get_auxiliary_shape_list();
+    int auxiliary_shape_count = m_test->get_auxiliary_shape_count();
+    b3AuxiliaryShape* auxiliary_shape_list = m_test->get_auxiliary_shape_list();
 
-    b3_assert(m_auxiliary_shape_count != -1);
+    b3_assert(auxiliary_shape_count != -1);
 
-    if(m_auxiliary_shape_count == 0) {
+    if(auxiliary_shape_count == 0) {
         return;
     }
 
-    b3_assert(m_auxiliary_shape_list != nullptr);
+    b3_assert(auxiliary_shape_list != nullptr);
 
-    b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
-    while(auxiliary_shape != nullptr) {
-
-        Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();
-        Eigen::MatrixXd edges_right = auxiliary_shape->get_edges_right();
-        Eigen::RowVector3d color = auxiliary_shape->get_color();
-
-        edges_left *= m_transform;
-        edges_right *= m_transform;
-
-        m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
-
+    b3AuxiliaryShape* auxiliary_shape = auxiliary_shape_list;
+    for (int i = 0; i < auxiliary_shape_count; i++) {
+        m_auxiliary_shapes.push_back(auxiliary_shape);
         auxiliary_shape = auxiliary_shape->next();
     }
 }
@@ -281,16 +271,17 @@ void b3GUIViewer::clear_meshes() {
     }
     m_mesh_list.clear();
     m_shapes.clear();
+    m_auxiliary_shapes.clear();
 }
 
 
 void b3GUIViewer::redraw_mesh() {
 
-    if(m_shape_list == nullptr) {
+    if(m_shapes.empty()) {
         return;
     }
 
-    for (int index = 0; index < m_shape_count; index++) {
+    for (int index = 0; index < m_shapes.size(); index++) {
         b3Shape* shape = m_shapes[index];
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
@@ -301,23 +292,16 @@ void b3GUIViewer::redraw_mesh() {
         m_viewer.data(index + 1).set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
     }
 
-    b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shape_list;
-
-    m_viewer.data(m_viewer_used_count).clear_edges();
-    while(auxiliary_shape != nullptr) {
-
+    m_viewer.data(m_viewer_used_count).clear();
+    for (int index = 0; index < m_auxiliary_shapes.size(); index++) {
+        b3AuxiliaryShape* auxiliary_shape = m_auxiliary_shapes[index];
         Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left();
         Eigen::MatrixXd edges_right = auxiliary_shape->get_edges_right();
         Eigen::RowVector3d color = auxiliary_shape->get_color();
-
         edges_left *= m_transform;
         edges_right *= m_transform;
-
         m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
-
-        auxiliary_shape = auxiliary_shape->next();
     }
-
 }
 
 

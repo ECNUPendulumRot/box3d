@@ -75,41 +75,53 @@ public :
 
     void selected_object(const int& index) override {
         if(index == 0) {
+            spdlog::log(spdlog::level::info, "select box A");
             selected_body = body_A;
         } else if(index == 1) {
+            spdlog::log(spdlog::level::info, "select box B");
             selected_body = body_B;
         }
     }
 
-    void key_pressed(Viewer& viewer, unsigned int key, int modifiers) override {
-        spdlog::log(spdlog::level::info, "child key pressed");
+    bool key_pressed(Viewer& viewer, unsigned int key, int modifiers) override {
         if(selected_body == nullptr) {
-            return;
+            return false;
         }
-        if(key == GLFW_KEY_UP) {
-            b3TransformD xf = selected_body->get_pose();
-            xf.set_linear(xf.linear() + b3Vector3d(-0.1, 0, 0));
-            spdlog::log(spdlog::level::info, "move forward");
-            selected_body->set_pose(xf);
-        } else if(key == GLFW_KEY_DOWN) {
-            b3TransformD xf = selected_body->get_pose();
-            xf.set_linear(xf.linear() + b3Vector3d(0.1, 0, 0));
-            spdlog::log(spdlog::level::info, "move backward");
-            selected_body->set_pose(xf);
-        } else if(key == GLFW_KEY_LEFT) {
-            b3TransformD xf = selected_body->get_pose();
-            xf.set_linear(xf.linear() + b3Vector3d(0, -0.1, 0));
-            spdlog::log(spdlog::level::info, "move left");
-            selected_body->set_pose(xf);
-        } else if(key == GLFW_KEY_RIGHT) {
-            b3TransformD xf = selected_body->get_pose();
-            xf.set_linear(xf.linear() + b3Vector3d(0, 0.1, 0));
-            spdlog::log(spdlog::level::info, "move right");
-            selected_body->set_pose(xf);
+        // Ensure the key is in upper case
+        if (key >=97 && key <= 122) key -= 32;
+
+        b3TransformD xf = selected_body->get_pose();
+        switch (key) {
+            case GLFW_KEY_W: {
+                xf.set_linear(xf.linear() + b3Vector3d(-0.1, 0, 0));
+                break;
+            }
+            case GLFW_KEY_S: {
+                xf.set_linear(xf.linear() + b3Vector3d(0.1, 0, 0));
+                break;
+            }
+            case GLFW_KEY_A: {
+                xf.set_linear(xf.linear() + b3Vector3d(0, -0.1, 0));
+                break;
+            }
+            case GLFW_KEY_D: {
+                xf.set_linear(xf.linear() + b3Vector3d(0, 0.1, 0));
+                break;
+            }
+            case GLFW_KEY_R: {
+                xf.set_linear(xf.linear() + b3Vector3d(0, 0, 0.1));
+                break;
+            }
+            case GLFW_KEY_F: {
+                xf.set_linear(xf.linear() + b3Vector3d(0, 0, -0.1));
+                break;
+            }
+            default:
+                return false;
         }
+        selected_body->set_pose(xf);
+        return true;
     }
-
-
 };
 
 int register_index = register_test("unit test", "box collide", UnitTestBoxCollide::create);

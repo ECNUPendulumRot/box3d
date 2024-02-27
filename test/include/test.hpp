@@ -59,8 +59,8 @@ public:
         ;
     }
 
-    virtual void key_pressed(Viewer& viewer, unsigned int key, int modifiers) {
-        spdlog::log(spdlog::level::info, "parent key pressed");
+    virtual bool key_pressed(Viewer& viewer, unsigned int key, int modifiers) {
+        return false;
     }
 
 };
