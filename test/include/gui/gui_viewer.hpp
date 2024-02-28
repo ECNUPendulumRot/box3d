@@ -9,16 +9,16 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "gui.hpp"
-#include "mesh_list_view.hpp"
+#include "gui/gui.hpp"
+#include "gui/mesh_list_view.hpp"
 #include "box3d.hpp"
 
 
 class b3GUIViewer {
 
     using Viewer = igl::opengl::glfw::Viewer;
-    using ImGuiMenu = igl::opengl::glfw::imgui::ImGuiMenu;
     using ImGuiPlugin = igl::opengl::glfw::imgui::ImGuiPlugin;
+    using ViewerData = igl::opengl::ViewerData;
 
     Viewer m_viewer;
 
@@ -33,17 +33,11 @@ class b3GUIViewer {
     Eigen::Matrix3d m_transform;
 
     int m_current_test = -1;
-    int m_shape_count = -1;
-
-    int m_auxiliary_shape_count = -1;
 
     // The space for mesh data in data_list of viewer
     int m_viewer_used_count = 0;
 
     std::vector<b3Shape*> m_shapes;
-
-    b3Shape* m_shape_list = nullptr;
-    b3AuxiliaryShape* m_auxiliary_shape_list = nullptr;
 
     b3Timer m_timer;
 
@@ -52,8 +46,6 @@ public:
     b3GUIViewer();
 
     void launch();
-
-    bool set_world(b3World* world);
 
     inline void set_max_fps(double fps) {
         m_viewer.core().animation_max_fps = fps;
@@ -76,6 +68,8 @@ private:
     bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
     int allocate_mesh(const int& index);
+
+    void draw_auxiliary_shapes();
 };
 
 

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "scene_test.hpp"
-#include "gui_viewer.hpp"
+#include "gui/gui_viewer.hpp"
 
 #define MAX_TEST 256
 

@@ -3,6 +3,7 @@
 
 #include "geometry/b3_cube_shape.hpp"
 
+#include <spdlog/spdlog.h>
 
 // project the box onto a separation axis called axis
 static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, const b3Vector3d& axis)
@@ -423,9 +424,11 @@ void b3_collide_cube(
     bool face_contact_B = separation_B > separation_edge;
 
     if (face_contact_A && face_contact_B) {
+        spdlog::log(spdlog::level::info, "face contact");
         create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);
     } else {
+        spdlog::log(spdlog::level::info, "edge contact");
         create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             edge_index_A, edge_index_B, separation_edge);
     }

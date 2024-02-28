@@ -12,12 +12,13 @@ include(spdlog)
 set(TEST_HEADER_FILES
         include/sim_app.hpp
         include/scene_test.hpp
-        include/gui_viewer.hpp
-        include/gui.hpp
+        include/gui/gui_viewer.hpp
+        include/gui/gui.hpp
         include/unit_test.hpp
         include/test.hpp
         include/auxiliary_shape.hpp
-        include/mesh_list_view.hpp
+        include/gui/mesh_list_view.hpp
+        include/gui/imgui_ext.hpp
 
 )
 
@@ -30,9 +31,9 @@ set(TEST_SOURCE_FILES
         src/unit_test_box_collide.cpp
         src/unit_test_dynamic_tree.cpp
         src/test.cpp
-        src/auxiliary_shape.cpp
         src/unit_test_sphere_view.cpp
         src/test_sphere_cube_collide.cpp
+        src/imgui_ext.cpp
 )
 
 add_executable(
