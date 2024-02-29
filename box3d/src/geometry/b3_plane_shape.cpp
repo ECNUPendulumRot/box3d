@@ -25,10 +25,10 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 ch
     b3Vector3d points[4];
     b3Vector3d center = xf.m_p;
 
-    points[0].set(center.x() - m_half_length, center.y() - m_half_width, center.z());
-    points[1].set(center.x() + m_half_length, center.y() - m_half_width, center.z());
-    points[2].set(center.x() + m_half_length, center.y() + m_half_width, center.z());
-    points[3].set(center.x() - m_half_length, center.y() + m_half_width, center.z());
+    points[0].set(-m_half_width,-m_half_length, 0);
+    points[1].set(-m_half_width, m_half_length, 0);
+    points[2].set(m_half_width,  m_half_length, 0);
+    points[3].set(m_half_width, -m_half_length, 0);
 
     b3Vector3d min;
     b3Vector3d max;
@@ -78,13 +78,12 @@ void b3PlaneShape::init_view_data() {
 
 
 void b3PlaneShape::setup_view_data(const b3TransformD &xf) {
-    b3Vector3d center = xf.m_p;
     b3Vector3d points[4];
 
-    points[0].set(center.x() - m_half_length, center.y() - m_half_width, center.z());
-    points[1].set(center.x() + m_half_length, center.y() - m_half_width, center.z());
-    points[2].set(center.x() + m_half_length, center.y() + m_half_width, center.z());
-    points[3].set(center.x() - m_half_length, center.y() + m_half_width, center.z());
+    points[0].set(-m_half_width,-m_half_length, 0);
+    points[1].set(-m_half_width, m_half_length, 0);
+    points[2].set(m_half_width,  m_half_length, 0);
+    points[3].set(m_half_width, -m_half_length, 0);
 
     for(int i = 0; i < 4; ++i) {
         points[i] = xf.transform(points[i]);

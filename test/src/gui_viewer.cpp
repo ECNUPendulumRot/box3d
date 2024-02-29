@@ -160,6 +160,24 @@ void b3GUIViewer::launch()
 
 
 void b3GUIViewer::add_ground() {
+
+//    b3TransformD pose, velocity;
+//    pose.set_linear(0, 0, -1);
+//
+//    b3BodyDef bode_def;
+//    bode_def.m_type = b3BodyType::b3_static_body;
+//    bode_def.set_initial_status(pose, velocity);
+//    b3Body* ground_body = m_test->get_world()->create_body(bode_def);
+//
+//    b3PlaneShape ground_shape;
+//    ground_shape.set_as_plane(10, 10);
+//
+//    b3FixtureDef fixture_def;
+//    fixture_def.m_shape = &ground_shape;
+//    fixture_def.m_density = 0;
+//
+//    ground_body->create_fixture(fixture_def);
+
     int g_s = 10;
 
     Eigen::RowVector3d c = Eigen::RowVector3d(0, 0, 0);
@@ -210,6 +228,8 @@ bool b3GUIViewer::pre_draw_loop()
 
     // make sure that two variables are initialized to -1
     if (check_test_index()) {
+        // TODO:
+        // add_ground();
         clear_meshes();
         add_meshes();
         m_mesh_list.set_test(m_test);

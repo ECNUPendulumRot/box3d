@@ -9,9 +9,7 @@ public:
         m_world->set_gravity(b3Vector3d(0, 0, 0));
 
         b3TransformD pose, velocity;
-        pose.set_linear(0, 0, 2);
-        pose.set_angular(0, 0, 0);
-        velocity.set_linear(0, 0,0);
+        pose.set_linear(0, 0, 1);
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_static_body;
