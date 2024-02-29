@@ -253,6 +253,11 @@ void b3GUIViewer::add_meshes() {
         m_mesh_list.add_object(i);
         shape = shape->next();
     }
+
+    // allocate the last mesh for the auxiliary shapes(maybe dot not exist)
+    // because the last shape may has edges to draw,
+    // if the auxiliary shapes use the last shape's mesh to draw, will clear all the edges of the last shape
+    allocate_mesh(shape_count);
 }
 
 
@@ -277,14 +282,23 @@ void b3GUIViewer::redraw_mesh() {
 
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
         vertices *= m_transform;
 
-        ImVec4& color = m_mesh_list.m_index_colors[index].color;
         data.line_color = Eigen::Vector4f(m_menu.m_line_color.x, m_menu.m_line_color.y, m_menu.m_line_color.z, 1.0);
+
+        ImVec4& color = m_mesh_list.m_index_colors[index].color;
+        if(view_data.m_edge_count > 0) {
+            MapMatrixX<int, Eigen::RowMajor> edges(view_data.m_E, view_data.m_edge_count, 2);
+            data.set_edges(vertices, edges, Eigen::RowVector3d(color.x, color.y, color.z));
+        }
+
+        if(view_data.m_face_count > 0) {
+            MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
+            data.set_mesh(vertices, faces);
+            data.set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
+        }
+
         data.line_width = m_menu.m_line_width;
-        data.set_mesh(vertices, faces);
-        data.set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
 
         data.show_faces = m_menu.m_show_faces;
         data.show_lines = m_menu.m_show_edges;
@@ -317,6 +331,7 @@ void b3GUIViewer::draw_auxiliary_shapes()
         edges_left *= m_transform;
         edges_right *= m_transform;
         m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
+
         auxiliary_shape = auxiliary_shape->next();
     }
 }

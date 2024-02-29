@@ -36,6 +36,7 @@ set(B3D_HEADER_FILES
         include/geometry/b3_shape.hpp
         include/geometry/b3_cube_shape.hpp
         include/geometry/b3_sphere_shape.hpp
+        include/geometry/b3_plane_shape.hpp
 
         include/utils/b3_timer.hpp
 
@@ -73,8 +74,10 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_island.cpp
 
         # src/geometry/b3_mesh.cpp
+        src/geometry/b3_shape.cpp
         src/geometry/b3_cube_shape.cpp
         src/geometry/b3_sphere_shape.cpp
+        src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
         src/solver/b3_si_solver.cpp

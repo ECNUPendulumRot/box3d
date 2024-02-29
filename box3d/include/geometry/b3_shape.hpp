@@ -26,7 +26,8 @@ enum b3ShapeType {
     e_mesh       = 0,
     e_cube       = 1,
     e_sphere     = 2,
-    e_type_count = 3
+    e_plane      = 3,
+    e_type_count = 4
 };
 
 
@@ -40,11 +41,18 @@ struct b3ViewData {
     int m_vertex_count = 0;
 
     /**
+     * @brief Edges of the mesh
+     * @details Each row is an edge with 2 indexes to vertex
+     */
+    int* m_E = nullptr;
+    int m_edge_count = 0;
+
+
+    /**
      * @brief Faces of the mesh
      * @details Each row is a face with 3 indexes to vertex
      */
     int* m_F = nullptr;
-
     int m_face_count = 0;
 
     typedef  struct {

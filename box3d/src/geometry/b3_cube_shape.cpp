@@ -2,7 +2,6 @@
 #include "geometry/b3_cube_shape.hpp"
 
 #include "common/b3_common.hpp"
-#include "common/b3_allocator.hpp"
 #include "common/b3_block_allocator.hpp"
 
 #include "dynamics/b3_mass_property.hpp"
