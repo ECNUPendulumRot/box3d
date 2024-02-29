@@ -16,25 +16,25 @@ b3PlaneShape::b3PlaneShape() {
 void b3PlaneShape::set_as_plane(double length, double width) {
     m_half_length = length / 2.0;
     m_half_width = width / 2.0;
+
 }
 
 
 void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const {
     b3_NOT_USED(child_index);
 
-    b3Vector3d points[4];
-    b3Vector3d center = xf.m_p;
-
-    points[0].set(-m_half_width,-m_half_length, 0);
-    points[1].set(-m_half_width, m_half_length, 0);
-    points[2].set(m_half_width,  m_half_length, 0);
-    points[3].set(m_half_width, -m_half_length, 0);
-
     b3Vector3d min;
     b3Vector3d max;
 
+    b3Vector3d vertices[4];
+
+    vertices[0].set(-m_half_width,-m_half_length, 0);
+    vertices[1].set(-m_half_width, m_half_length, 0);
+    vertices[2].set(m_half_width,  m_half_length, 0);
+    vertices[3].set(m_half_width, -m_half_length, 0);
+
     for (int32 i = 0; i < 4; i++) {
-        b3Vector3d v = xf.transform(points[i]);
+        b3Vector3d v = xf.transform(vertices[i]);
         min = b3_min_coeff(min, v);
         max = b3_max_coeff(max, v);
     }
@@ -78,37 +78,38 @@ void b3PlaneShape::init_view_data() {
 
 
 void b3PlaneShape::setup_view_data(const b3TransformD &xf) {
-    b3Vector3d points[4];
 
-    points[0].set(-m_half_width,-m_half_length, 0);
-    points[1].set(-m_half_width, m_half_length, 0);
-    points[2].set(m_half_width,  m_half_length, 0);
-    points[3].set(m_half_width, -m_half_length, 0);
+    b3Vector3d vertices[4];
+
+    vertices[0].set(-m_half_width,-m_half_length, 0);
+    vertices[1].set(-m_half_width, m_half_length, 0);
+    vertices[2].set(m_half_width,  m_half_length, 0);
+    vertices[3].set(m_half_width, -m_half_length, 0);
 
     for(int i = 0; i < 4; ++i) {
-        points[i] = xf.transform(points[i]);
+        vertices[i] = xf.transform(vertices[i]);
     }
 
-    b3Vector3d length_step = (points[1] - points[0]) / (double)segment_count;
-    b3Vector3d width_step = (points[3] - points[0]) / (double)segment_count;
+    b3Vector3d length_step = (vertices[1] - vertices[0]) / (double)segment_count;
+    b3Vector3d width_step = (vertices[3] - vertices[0]) / (double)segment_count;
 
     int index = 0;
     // horizontal edges
     for(int i = 0; i <= segment_count; ++i) {
-        m_view_data.m_V[index++] = points[0].x() + i * width_step.x();
-        m_view_data.m_V[index++] = points[0].y() + i * width_step.y();
-        m_view_data.m_V[index++] = points[0].z() + i * width_step.z();
-        m_view_data.m_V[index++] = points[1].x() + i * width_step.x();
-        m_view_data.m_V[index++] = points[1].y() + i * width_step.y();
-        m_view_data.m_V[index++] = points[1].z() + i * width_step.z();
+        m_view_data.m_V[index++] = vertices[0].x() + i * width_step.x();
+        m_view_data.m_V[index++] = vertices[0].y() + i * width_step.y();
+        m_view_data.m_V[index++] = vertices[0].z() + i * width_step.z();
+        m_view_data.m_V[index++] = vertices[1].x() + i * width_step.x();
+        m_view_data.m_V[index++] = vertices[1].y() + i * width_step.y();
+        m_view_data.m_V[index++] = vertices[1].z() + i * width_step.z();
     }
     // vertical edges
     for(int i = 0; i <= segment_count; ++i) {
-        m_view_data.m_V[index++] = points[0].x() + i * length_step.x();
-        m_view_data.m_V[index++] = points[0].y() + i * length_step.y();
-        m_view_data.m_V[index++] = points[0].z() + i * length_step.z();
-        m_view_data.m_V[index++] = points[3].x() + i * length_step.x();
-        m_view_data.m_V[index++] = points[3].y() + i * length_step.y();
-        m_view_data.m_V[index++] = points[3].z() + i * length_step.z();
+        m_view_data.m_V[index++] = vertices[0].x() + i * length_step.x();
+        m_view_data.m_V[index++] = vertices[0].y() + i * length_step.y();
+        m_view_data.m_V[index++] = vertices[0].z() + i * length_step.z();
+        m_view_data.m_V[index++] = vertices[3].x() + i * length_step.x();
+        m_view_data.m_V[index++] = vertices[3].y() + i * length_step.y();
+        m_view_data.m_V[index++] = vertices[3].z() + i * length_step.z();
     }
 }

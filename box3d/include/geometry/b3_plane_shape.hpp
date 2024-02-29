@@ -6,11 +6,11 @@
 
 class b3PlaneShape : public b3Shape {
 
-    double m_half_length, m_half_width;
-
     static int segment_count;
 
 public:
+
+    double m_half_length, m_half_width;
 
     b3PlaneShape();
 
