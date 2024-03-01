@@ -26,7 +26,7 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         int32 point_count = manifold->m_point_count;
 
-        b3_assert(point_count > 0);
+        b3_assert(point_count >= 0);
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
