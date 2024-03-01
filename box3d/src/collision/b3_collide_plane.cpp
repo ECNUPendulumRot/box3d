@@ -42,8 +42,10 @@ void b3_collide_plane_and_sphere(b3Manifold* manifold,
     manifold->m_local_normal = xf_a.transform(local_center - nearest_point);
     if(manifold->m_local_normal.is_zero()) {
         manifold->m_local_normal = b3Vector3d(0, 0, 1);
+    } else {
+        manifold->m_local_normal = manifold->m_local_normal.normalized();
     }
     manifold->m_penetration = (b3_sqrt(sq_distance) - radius) / 2.0;
-    manifold->m_points[0].m_local_point = xf_a.transform(nearest_point) +
-                                          manifold->m_local_normal * manifold->m_penetration;
+    manifold->m_points[0].m_local_point = xf_a.transform(nearest_point);
+            // + manifold->m_local_normal * manifold->m_penetration;
 }
