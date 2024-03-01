@@ -64,7 +64,7 @@ public :
         xf_A = body_A->get_pose();
         xf_B = body_B->get_pose();
         b3Manifold m;
-        b3_collide_cube(&manifold, cube_A, xf_A, cube_B, xf_B);
+        b3_collide_cube(&m, cube_A, xf_A, cube_B, xf_B);
         spdlog::log(spdlog::level::info, "manifold point count: {}", m.m_point_count);
 
         switch (m.m_type) {
@@ -99,10 +99,8 @@ public :
 
     void selected_object(const int& index) override {
         if(index == 0) {
-            spdlog::log(spdlog::level::info, "select box A");
             selected_body = body_A;
         } else if(index == 1) {
-            spdlog::log(spdlog::level::info, "select box B");
             selected_body = body_B;
         }
     }

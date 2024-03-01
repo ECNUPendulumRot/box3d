@@ -389,9 +389,9 @@ void create_edge_contact(
 
 
 void b3_collide_cube(
-        b3Manifold* manifold,
-        const b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const b3CubeShape* cube_B, const b3TransformD& xf_B)
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B)
 {
 
     manifold->m_point_count = 0;
