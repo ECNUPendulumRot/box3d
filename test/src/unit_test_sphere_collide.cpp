@@ -38,6 +38,13 @@ public:
 
         sphere1->create_fixture(fixture_def);
         sphere2->create_fixture(fixture_def);
+
+        ////////////////////////////////////////////////////////
+        pose.set_linear(0, 4, 0);
+        body_def.set_initial_status(pose, velocity);
+        b3Body* sphere3 = m_world->create_body(body_def);
+
+        sphere3->create_fixture(fixture_def);
     }
 
     static TestBase* create() {
