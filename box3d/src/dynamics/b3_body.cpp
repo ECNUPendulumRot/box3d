@@ -120,7 +120,7 @@ void b3Body::reset_mass_data()
     }
 
     // TODO: check whether m_sweep is needed
-    m_local_center = m_xf.transform(local_center);
+    // m_local_center = m_xf.transform(local_center);
 }
 
 

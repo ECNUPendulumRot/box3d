@@ -53,7 +53,8 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
             vcp->m_ra = manifold_point->m_local_point - center_a;
             vcp->m_rb = manifold_point->m_local_point - center_b;
-            vcp->m_rhs_penetration = manifold->m_penetration;
+            vcp->m_rhs_penetration = 0;
+            // vcp->m_rhs_penetration = manifold->m_penetration;
 
             // TODO: warm start
         }
@@ -88,7 +89,7 @@ void b3SISolver::init_velocity_constraints() {
 
             vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
 
-            // TODO：tangent fricition plane
+            // TODO：tangent friction plane
             
 
             // 1. Mv+ = Mv + Jlambda ==> Jv+ = Jv + JM_invJlambda
@@ -97,6 +98,9 @@ void b3SISolver::init_velocity_constraints() {
             double v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
             vcp->m_rhs_penetration = vcp->m_rhs_penetration * m_timestep->m_inv_dt;
+
+            vcp->m_normal_impulse = 0.0;
+            vcp->m_tangent_impulse = 0.0;
         }
 
         // TODO: if we have more than one contact point, then prepare the block solver.
