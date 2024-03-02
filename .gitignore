@@ -9,3 +9,4 @@ build/*
 build-debug/*
 
 out/*
+/.gitattributes
