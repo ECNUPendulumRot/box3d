@@ -307,15 +307,22 @@ void b3GUIViewer::redraw_mesh() {
         data.line_color = Eigen::Vector4f(m_menu.m_line_color.x, m_menu.m_line_color.y, m_menu.m_line_color.z, 1.0);
 
         ImVec4& color = m_mesh_list.m_index_colors[index].color;
+        Eigen::RowVector3d c;
+        b3Vector3d shape_color = shape->get_color();
+        if(shape_color.is_zero()) {
+            c << color.x, color.y, color.z;
+        } else {
+            c << shape_color.x(), shape_color.y(), shape_color.z();
+        }
         if(view_data.m_edge_count > 0) {
             MapMatrixX<int, Eigen::RowMajor> edges(view_data.m_E, view_data.m_edge_count, 2);
-            data.set_edges(vertices, edges, Eigen::RowVector3d(color.x, color.y, color.z));
+            data.set_edges(vertices, edges, c);
         }
 
         if(view_data.m_face_count > 0) {
             MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
             data.set_mesh(vertices, faces);
-            data.set_colors(Eigen::RowVector4d(color.x, color.y, color.z, color.w));
+            data.set_colors(Eigen::RowVector4d(c.x(), c.y(), c.z(), color.w));
         }
 
         data.line_width = m_menu.m_line_width;
