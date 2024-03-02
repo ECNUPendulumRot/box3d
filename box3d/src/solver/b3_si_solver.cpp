@@ -172,17 +172,17 @@ void b3SISolver::solve_velocity_constraints() {
         m_velocities[vc->m_index_b].set_angular(w_b);
 
         // TODO: Check this way is useful. And angle ?
-        if(vc->m_penetration < 0) {
-            b3Vector3d p_a = m_positions[vc->m_index_a].linear();
-            b3Vector3d p_b = m_positions[vc->m_index_b].linear();
-
-            p_a += vc->m_normal * vc->m_penetration;
-            p_b -= vc->m_normal * vc->m_penetration;
-
-            m_positions[vc->m_index_a].set_linear(p_a);
-            m_positions[vc->m_index_b].set_linear(p_b);
-
-            vc->m_penetration = 0;
-        }
+//        if(vc->m_penetration < 0) {
+//            b3Vector3d p_a = m_positions[vc->m_index_a].linear();
+//            b3Vector3d p_b = m_positions[vc->m_index_b].linear();
+//
+//            p_a += vc->m_normal * vc->m_penetration;
+//            p_b -= vc->m_normal * vc->m_penetration;
+//
+//            m_positions[vc->m_index_a].set_linear(p_a);
+//            m_positions[vc->m_index_b].set_linear(p_b);
+//
+//            vc->m_penetration = 0;
+//        }
     }
 }
