@@ -31,19 +31,21 @@ public:
 
         // create a fixture definition
         b3FixtureDef fixture_def;
+        sphere_shape.set_color(b3Vector3d(1, 0, 0));
         fixture_def.m_shape = &sphere_shape;
         fixture_def.m_friction = 0.3;
         fixture_def.m_restitution = 1.0;
         fixture_def.m_density = 1.0;
 
         sphere1->create_fixture(fixture_def);
+        sphere_shape.set_color(b3Vector3d(0, 1, 0));
         sphere2->create_fixture(fixture_def);
 
         ////////////////////////////////////////////////////////
         pose.set_linear(0, 4, 0);
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere3 = m_world->create_body(body_def);
-
+        sphere_shape.set_color(b3Vector3d(0, 0, 1));
         sphere3->create_fixture(fixture_def);
     }
 

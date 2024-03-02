@@ -109,6 +109,8 @@ protected:
 
     b3BlockAllocator* m_block_allocator = nullptr;
 
+    b3Vector3d m_color = b3Vector3d::zero();
+
 public:
 
     virtual ~b3Shape();
@@ -179,6 +181,13 @@ public:
         return m_body;
     }
 
+    void set_color(const b3Vector3d& color) {
+        m_color = color;
+    }
+
+    b3Vector3d get_color() const {
+        return m_color;
+    }
 };
 
 
