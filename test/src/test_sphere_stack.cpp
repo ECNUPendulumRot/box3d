@@ -8,17 +8,13 @@ public:
 
     TestSphereStack() {
 
-        m_world->set_gravity(b3Vector3d(0, 0, 0));
+        m_world->set_gravity(b3Vector3d(0, 0, -10));
         int num_of_spheres = 5;
         // create a dynamic body
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(0, -2, 0));
-        velocity.set_linear(b3Vector3d(0, 1, 0));
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
-        body_def.set_initial_status(pose, velocity);
-        b3Body* sphere1 = m_world->create_body(body_def);
 
         // create a sphere shape
         b3SphereShape sphere_shape;
@@ -31,31 +27,30 @@ public:
         fixture_def.m_restitution = 1.0;
         fixture_def.m_density = 1.0;
 
-        sphere1->create_fixture(fixture_def);
-
-       /* pose.set_linear(b3Vector3d(0, 2, 0));
-        velocity.set_linear(b3Vector3d(0, 0, 0));
-        body_def.set_initial_status(pose, velocity);
-        b3Body* sphere2 = m_world->create_body(body_def);
-
-        sphere2->create_fixture(fixture_def);
-
-        pose.set_linear(b3Vector3d(0, 3, 0));
-        velocity.set_linear(b3Vector3d(0, 0, 0));
-        body_def.set_initial_status(pose, velocity);
-        b3Body* sphere3 = m_world->create_body(body_def);
-
-        sphere3->create_fixture(fixture_def);*/
         //create a series of touching spheres 
-        b3Body** list = new b3Body* [num_of_spheres];
 
-        for (int i = 0; i < num_of_spheres; i++) {
-            pose.set_linear(b3Vector3d(0, 2.0 * i, 0));
-            velocity.set_linear(b3Vector3d(0, 0, 0));
-            body_def.set_initial_status(pose, velocity);
-            list[i] = m_world->create_body(body_def);
-            list[i]->create_fixture(fixture_def);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 1;j++) {
+                pose.set_linear(b3Vector3d(0, 1.0 * j, 1.0*i+2.0));
+                velocity.set_linear(b3Vector3d(0, 0, 0));
+                body_def.set_initial_status(pose, velocity);
+                m_world->create_body(body_def)->create_fixture(fixture_def);            
+            }
         }
+
+        // create a ground
+        pose.set_linear(0, 0, 0);
+        body_def.set_initial_status(pose, velocity);
+        body_def.m_type = b3BodyType::b3_static_body;
+        b3Body* ground_body = m_world->create_body(body_def);
+
+        b3PlaneShape ground_shape;
+        ground_shape.set_as_plane(50, 50);
+
+        fixture_def.m_shape = &ground_shape;
+        fixture_def.m_density = 0;
+
+        ground_body->create_fixture(fixture_def);
     }
 
     static TestBase* create() {
