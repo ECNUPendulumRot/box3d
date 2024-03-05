@@ -3,9 +3,10 @@
 
 # vscode configuration files
 .vscode/*
-
+.vs/*
 # build files
 build/*
 build-debug/*
 
 out/*
+/.gitattributes
