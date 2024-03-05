@@ -39,23 +39,21 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
 
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
-        b3TransformD velocity = b->get_velocity();
+        m_velocities[i] = b->get_velocity();
 
         // integrate velocity
         if(b->get_type() == b3BodyType::b3_dynamic_body) {
-            b3Vector3d v = velocity.linear();
-            b3Vector3d w = velocity.angular();
+            b3Vector3d v = m_velocities[i] .linear();
+            b3Vector3d w = m_velocities[i] .angular();
 
             v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
             w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
 
             // TODO: apply damping
 
-            velocity.set_linear(v);
-            velocity.set_angular(w);
+            m_velocities[i] .set_linear(v);
+            m_velocities[i] .set_angular(w);
         }
-
-        m_velocities[i] = velocity;
     }
 }
 

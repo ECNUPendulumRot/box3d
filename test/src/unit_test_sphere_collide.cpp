@@ -21,7 +21,7 @@ public:
 
         pose.set_linear(b3Vector3d(0, 0, 2));
         body_def.set_initial_status(pose, velocity);
-        b3Body* sphere2 = m_world->create_body(body_def);
+        // b3Body* sphere2 = m_world->create_body(body_def);
 
         // create a sphere shape
         b3SphereShape sphere_shape;
@@ -37,7 +37,7 @@ public:
 
         sphere1->create_fixture(fixture_def);
         sphere_shape.set_color(b3Vector3d(0, 1, 0));
-        sphere2->create_fixture(fixture_def);
+        // sphere2->create_fixture(fixture_def);
 
         b3PlaneShape ground_shape;
         ground_shape.set_as_plane(10, 10);

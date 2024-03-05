@@ -117,6 +117,8 @@ int b3SISolver::solve() {
         solve_velocity_constraints();
     }
 
+    correct_penetration();
+
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {
         m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
@@ -169,19 +171,35 @@ void b3SISolver::solve_velocity_constraints() {
         m_velocities[vc->m_index_a].set_angular(w_a);
         m_velocities[vc->m_index_b].set_linear(v_b);
         m_velocities[vc->m_index_b].set_angular(w_b);
+    }
+}
+
+
+void b3SISolver::correct_penetration() {
+    for(int32 i = 0; i < m_contact_count; ++i) {
+        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
         // TODO: Check this way is useful. And angle ?
-//        if(vc->m_penetration < 0) {
-//            b3Vector3d p_a = m_positions[vc->m_index_a].linear();
-//            b3Vector3d p_b = m_positions[vc->m_index_b].linear();
-//
-//            p_a += vc->m_normal * vc->m_penetration;
-//            p_b -= vc->m_normal * vc->m_penetration;
-//
-//            m_positions[vc->m_index_a].set_linear(p_a);
-//            m_positions[vc->m_index_b].set_linear(p_b);
-//
-//            vc->m_penetration = 0;
-//        }
+        if(vc->m_penetration < 0) {
+            b3Vector3d p_a = m_positions[vc->m_index_a].linear();
+            b3Vector3d p_b = m_positions[vc->m_index_b].linear();
+
+            b3Vector3d position_correction = vc->m_normal * vc->m_penetration;
+
+            if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
+               m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+                p_a += vc->m_normal * vc->m_penetration;
+                p_b -= vc->m_normal * vc->m_penetration;
+            } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
+                p_a += position_correction * 2.0;
+            } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+                p_b -= position_correction * 2.0;
+            }
+
+            m_positions[vc->m_index_a].set_linear(p_a);
+            m_positions[vc->m_index_b].set_linear(p_b);
+
+            vc->m_penetration = 0;
+        }
     }
 }

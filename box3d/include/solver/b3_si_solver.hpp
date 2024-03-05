@@ -22,6 +22,8 @@ public:
     int solve();
 
     void solve_velocity_constraints();
+
+    void correct_penetration();
 };
 
 
