@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 // project the box onto a separation axis called axis
+// the axis is in the world frame
 static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, const b3Vector3d& axis)
 {
     const b3Matrix3d& R = xf.m_r_t;
@@ -16,29 +17,32 @@ static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, 
 
 
 // check whether two box will overlap under selected axis
-static void overlap_on_axis(const b3CubeShape& cube_A, const b3TransformD& xf_A,
-                     const b3CubeShape& cube_B, const b3TransformD& xf_B,
-                     const b3Vector3d& axis, double& penetration)
+// separate cube_B from cube_A
+// so the axis is also from cube_A
+static void overlap_on_axis(
+    const b3CubeShape& cube_A, const b3TransformD& xf_A,
+    const b3CubeShape& cube_B, const b3TransformD& xf_B,
+    const b3Vector3d& axis, double& penetration)
 {
     // project two objects onto the axis.
     double project_A = transform_to_axis(cube_A, xf_A, axis);
     double project_B = transform_to_axis(cube_B, xf_B, axis);
 
 
-    b3Vector3d to_center = xf_A.linear() - xf_B.linear();
+    b3Vector3d to_center = xf_B.linear() - xf_A.linear();
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
     // the larger the value is, the smaller the penetration is.
-    penetration = b3_abs(to_center.dot(axis)) - (project_A + project_B);
+    penetration = to_center.dot(axis) - (project_A + project_B);
 }
 
 
-// test face seperation of cube_B from sphere_A
+// test face separation of cube_B from cube_A
 static double face_separation(
-        b3Manifold* manifold,
-        const b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
 {
 
     double max_penetration = -b3_max_double;
@@ -48,10 +52,11 @@ static double face_separation(
 
     for (int32 i = 0; i < 6; ++i) {
 
-        // get the separation normal of sphere_A in the world frame.
+        // get the separation normal of cube_A in the world frame.
         const b3Vector3d& n = R_a * cube_A->m_normals[i];
 
         double penetration = 0.0;
+        // calculate the penetration of cube_B from cube_A
         overlap_on_axis(*cube_A, xf_A, *cube_B, xf_B, n, penetration);
         if (penetration > max_penetration) {
             max_penetration = penetration;
@@ -111,9 +116,10 @@ static double edge_separation(
 }
 
 
-static bool b3_find_incident_face(b3ClipVertex c[4],
-                                  const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
-                                  const b3CubeShape* cube2, const b3TransformD& xf2)
+static bool b3_find_incident_face(
+    b3ClipVertex c[4],
+    const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
+    const b3CubeShape* cube2, const b3TransformD& xf2)
 {
     const b3Vector3d* normals1 = cube1->m_normals;
 
@@ -158,10 +164,11 @@ static bool b3_find_incident_face(b3ClipVertex c[4],
 
 
 // Sutherland-Hodgman clipping.
-static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
-                                      const b3ClipVertex* v_in, const int32& v_in_count,
-                                      const b3Vector3d& n, double offset,
-                                      int32 edge_index_clip, int32 incident_face_index)
+static int32 b3_clip_segment_to_face(
+    b3ClipVertex* v_out, int32& v_out_count,
+    const b3ClipVertex* v_in, const int32& v_in_count,
+    const b3Vector3d& n, double offset,
+    int32 edge_index_clip, int32 incident_face_index)
 {
     // calculate all the distances from the vertices to the plane
     // double distance[v_in_count];
@@ -169,6 +176,7 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
 
     for (int32 i = 0; i < v_in_count; i++) {
         double dist = n.dot(v_in[i].v) - offset;
+        distance[i] = dist;
     }
 
     int32 count = 0;
@@ -189,13 +197,12 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
         const b3Vector3d& v2 = v_in[next_i].v;
 
         // check whether the edge needs to be clipped
-        // if s_v1 xor s_v2 is 1, means to be clipped
+        // only if the sign of two points on the edge is different needs to be clipped
         uint8 x = (dist_v1 <= 0 && dist_v2 > 0) || (dist_v1 > 0 && dist_v2 <= 0);
 
         if (x == 0)
             continue;
 
-        uint8 type = v_in[i].id.cf.type << x;
         v_out[count].v = v1 + alpha * (v2 - v1);
 
         // old_index_1: the face index of the reference
@@ -207,19 +214,19 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
         if (v_in[i].id.cf.type == b3ContactFeature::e_e_e &&
             v_in[next_i].id.cf.type == b3ContactFeature::e_e_e) {
 
-            v_out[count].id.cf.type = type;
+            v_out[count].id.cf.type = b3ContactFeature::e_p_f;
             v_out[count].id.cf.index_2 = incident_face_index;
             v_out[count].id.cf.index_ext = old_index_1;
 
         } else {
             v_out[count].id = v_in[i].id;
-            v_out[count].id.cf.index_1 = edge_index_clip;
+            v_out[count].id.cf.type = b3ContactFeature::e_e_e;
         }
 
         ++count;
 
     }
-
+    v_out_count = count;
     // TODO
     return 0;
 }
@@ -389,24 +396,26 @@ void create_edge_contact(
 
 
 void b3_collide_cube(
-        b3Manifold* manifold,
-        const b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const b3CubeShape* cube_B, const b3TransformD& xf_B)
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B)
 {
 
     manifold->m_point_count = 0;
     double total_radius = cube_A->get_radius() + cube_B->get_radius();
 
-    // firstly separate cube_B from sphere_A
+    // firstly separate cube_B from cube_A
     int32 face_index_A;
     double separation_A = face_separation(manifold, cube_A, xf_A, cube_B, xf_B, face_index_A);
+    spdlog::log(spdlog::level::info, "separation_A: {}", separation_A);
     if (separation_A > total_radius) {
         return;
     }
 
-    // then separate sphere_A from cube_B
+    // then separate cube_A from cube_B
     int32 face_index_B;
     double separation_B = face_separation(manifold, cube_B, xf_B, cube_A, xf_A, face_index_B);
+    spdlog::log(spdlog::level::info, "separation_B: {}", separation_B);
     if (separation_B > total_radius) {
         return;
     }
@@ -414,7 +423,7 @@ void b3_collide_cube(
     // find edge separation
     int32 edge_index_A, edge_index_B;
     double separation_edge = edge_separation(manifold, cube_A, xf_A, cube_B, xf_B, edge_index_A, edge_index_B);
-
+    spdlog::log(spdlog::level::info, "separation_edge: {}", separation_edge);
     if (separation_edge > total_radius) {
         return;
     }
@@ -423,7 +432,7 @@ void b3_collide_cube(
     bool face_contact_A = separation_A > separation_edge;
     bool face_contact_B = separation_B > separation_edge;
 
-    if (face_contact_A && face_contact_B) {
+    if (face_contact_A || face_contact_B) {
         spdlog::log(spdlog::level::info, "face contact");
         create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);

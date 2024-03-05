@@ -31,8 +31,8 @@ class UnitTestBoxCollide: public UnitTestBase {
 public :
 
     UnitTestBoxCollide() {
-        xf_A.set_linear(0, 0, 0);
-        xf_A.set_angular(0, 0, 0);
+        xf_A.set_linear(0.4, 0.5, 0);
+        xf_A.set_angular(0, -0.9, -0.8);
         cube_A = new b3CubeShape();
         cube_A->set_as_box(hf_A.m_x, hf_A.m_y, hf_A.m_z);
         body_A = new b3Body();
@@ -61,10 +61,15 @@ public :
     }
 
     void step() override {
+        spdlog::log(spdlog::level::info, "step----------------------------------------");
         xf_A = body_A->get_pose();
         xf_B = body_B->get_pose();
+        spdlog::log(spdlog::level::info, "body A position: {}, {}, {}", xf_A.linear().x(), xf_A.linear().y(), xf_A.linear().z());
+        spdlog::log(spdlog::level::info, "body A rotation: {}, {}, {}", xf_A.angular().x(), xf_A.angular().y(), xf_A.angular().z());
         b3Manifold m;
-        b3_collide_cube(&manifold, cube_A, xf_A, cube_B, xf_B);
+        b3Timer timer;
+        b3_collide_cube(&m, cube_A, xf_A, cube_B, xf_B);
+        spdlog::log(spdlog::level::info, "time for checking collision: {}", timer.get_time_ms());
         spdlog::log(spdlog::level::info, "manifold point count: {}", m.m_point_count);
 
         switch (m.m_type) {
@@ -83,6 +88,8 @@ public :
         }
 
         manifold = m;
+
+        spdlog::log(spdlog::level::info, "step end------------------------------------");
     }
 
     int get_shape_count() const override {
@@ -99,10 +106,8 @@ public :
 
     void selected_object(const int& index) override {
         if(index == 0) {
-            spdlog::log(spdlog::level::info, "select box A");
             selected_body = body_A;
         } else if(index == 1) {
-            spdlog::log(spdlog::level::info, "select box B");
             selected_body = body_B;
         }
     }

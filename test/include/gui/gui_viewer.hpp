@@ -67,7 +67,7 @@ private:
 
     bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
-    int allocate_mesh(const int& index);
+    int allocate_mesh();
 
     void draw_auxiliary_shapes();
 };
