@@ -244,13 +244,15 @@ bool b3GUIViewer::pre_draw_loop()
 
 
 // Check whether the data list in igl is enough to keep new mesh
-int b3GUIViewer::allocate_mesh(const int& index) {
+int b3GUIViewer::allocate_mesh() {
+    // the first mesh is used to draw the ground
+    m_viewer_used_count++;
+    int viewer_allocated_mesh = m_viewer.data_list.size() - 1;
     int id;
-    if (index >= m_viewer_used_count) {
+    if (m_viewer_used_count > viewer_allocated_mesh) {
         id = m_viewer.append_mesh(true);
-        m_viewer_used_count++;
     } else {
-        id = index + 1;
+        id = m_viewer_used_count;
         m_viewer.data(id).clear();
     }
     return id;
@@ -269,7 +271,7 @@ void b3GUIViewer::add_meshes() {
 
     for (int i = 0; i < shape_count; i++) {
         m_shapes.push_back(shape);
-        allocate_mesh(i);
+        allocate_mesh();
         m_mesh_list.add_object(i);
         shape = shape->next();
     }
@@ -277,16 +279,18 @@ void b3GUIViewer::add_meshes() {
     // allocate the last mesh for the auxiliary shapes(maybe dot not exist)
     // because the last shape may has edges to draw,
     // if the auxiliary shapes use the last shape's mesh to draw, will clear all the edges of the last shape
-    allocate_mesh(shape_count);
+    allocate_mesh();
 }
 
 
 void b3GUIViewer::clear_meshes() {
+    m_viewer_used_count = 0;
     for (int i = 1; i < m_viewer.data_list.size(); i++) {
         m_viewer.data(i).clear();
     }
     m_mesh_list.clear();
     m_shapes.clear();
+
 }
 
 
