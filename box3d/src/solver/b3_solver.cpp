@@ -8,7 +8,6 @@
 #include "common/b3_time_step.hpp"
 #include "common/b3_block_allocator.hpp"
 
-
 b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
     m_timestep = step;
     m_block_allocator = block_allocator;
@@ -83,4 +82,3 @@ b3Solver::~b3Solver() {
 
     m_block_allocator = nullptr;
 }
-

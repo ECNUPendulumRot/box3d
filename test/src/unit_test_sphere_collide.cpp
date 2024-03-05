@@ -8,20 +8,18 @@ public:
 
     TestSphereCollide() {
 
-        m_world->set_gravity(b3Vector3d(0, 0, 0));
+        m_world->set_gravity(b3Vector3d(0, 0, -6));
 
         // create a dynamic body
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(0, -2, 0));
-        velocity.set_linear(b3Vector3d(0, 10, 0));
+        pose.set_linear(b3Vector3d(0, 0, 1));
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere1 = m_world->create_body(body_def);
 
-        pose.set_linear(b3Vector3d(0, 2, 0));
-        velocity.set_linear(b3Vector3d(0, 0, 0));
+        pose.set_linear(b3Vector3d(0, 0, 2));
         body_def.set_initial_status(pose, velocity);
         b3Body* sphere2 = m_world->create_body(body_def);
 
@@ -41,12 +39,14 @@ public:
         sphere_shape.set_color(b3Vector3d(0, 1, 0));
         sphere2->create_fixture(fixture_def);
 
-        ////////////////////////////////////////////////////////
-        pose.set_linear(0, 4, 0);
+        b3PlaneShape ground_shape;
+        ground_shape.set_as_plane(10, 10);
+        fixture_def.m_shape = &ground_shape;
+        fixture_def.m_density = 0;
+        pose.set_linear(0, 0, 0);
         body_def.set_initial_status(pose, velocity);
-        b3Body* sphere3 = m_world->create_body(body_def);
-        sphere_shape.set_color(b3Vector3d(0, 0, 1));
-        sphere3->create_fixture(fixture_def);
+        body_def.m_type = b3BodyType::b3_static_body;
+        m_world->create_body(body_def)->create_fixture(fixture_def);
     }
 
     static TestBase* create() {
