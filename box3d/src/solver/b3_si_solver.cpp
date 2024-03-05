@@ -10,6 +10,7 @@
 
 #include "common/b3_time_step.hpp"
 
+#include <iostream>
 
 b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) :
                             b3Solver(block_allocator, island, step) {
@@ -26,7 +27,7 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         int32 point_count = manifold->m_point_count;
 
-        b3_assert(point_count > 0);
+        b3_assert(point_count >= 0);
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
@@ -42,6 +43,8 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
         vc->m_index_b = body_b->get_island_index();
         vc->m_inv_mass_b = body_b->get_inv_mass();
         vc->m_inv_I_b = body_b->get_inv_inertia();
+
+        vc->m_penetration = manifold->m_penetration;
 
         // the center of body in the world frame
         b3Vector3d center_a = body_a->get_pose().transform(body_a->get_local_center());
@@ -88,7 +91,7 @@ void b3SISolver::init_velocity_constraints() {
 
             vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
 
-            // TODO：tangent fricition plane
+            // TODO：tangent friction plane
             
 
             // 1. Mv+ = Mv + Jlambda ==> Jv+ = Jv + JM_invJlambda
@@ -97,6 +100,9 @@ void b3SISolver::init_velocity_constraints() {
             double v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
             vcp->m_rhs_penetration = vcp->m_rhs_penetration * m_timestep->m_inv_dt;
+
+            vcp->m_normal_impulse = 0.0;
+            vcp->m_tangent_impulse = 0.0;
         }
 
         // TODO: if we have more than one contact point, then prepare the block solver.
@@ -105,7 +111,7 @@ void b3SISolver::init_velocity_constraints() {
 
 
 int b3SISolver::solve() {
-    
+
     init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
@@ -132,7 +138,7 @@ void b3SISolver::solve_velocity_constraints() {
         int32 point_count = vc->m_point_count;
 
         b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3d w_a = m_velocities[vc->m_index_a].linear();
+        b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
 
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
@@ -143,7 +149,8 @@ void b3SISolver::solve_velocity_constraints() {
 
                 b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
                 double rhs = -v_rel.dot(vc->m_normal);
-                double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
+                // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
+                double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
 
                 double new_impluse = b3_max(vcp->m_normal_impulse + lambda, 0.0);
                 lambda = new_impluse - vcp->m_normal_impulse;
@@ -163,5 +170,19 @@ void b3SISolver::solve_velocity_constraints() {
         m_velocities[vc->m_index_a].set_angular(w_a);
         m_velocities[vc->m_index_b].set_linear(v_b);
         m_velocities[vc->m_index_b].set_angular(w_b);
+
+        // TODO: Check this way is useful. And angle ?
+//        if(vc->m_penetration < 0) {
+//            b3Vector3d p_a = m_positions[vc->m_index_a].linear();
+//            b3Vector3d p_b = m_positions[vc->m_index_b].linear();
+//
+//            p_a += vc->m_normal * vc->m_penetration;
+//            p_b -= vc->m_normal * vc->m_penetration;
+//
+//            m_positions[vc->m_index_a].set_linear(p_a);
+//            m_positions[vc->m_index_b].set_linear(p_b);
+//
+//            vc->m_penetration = 0;
+//        }
     }
 }

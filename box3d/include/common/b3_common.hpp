@@ -13,6 +13,9 @@
 #define b3_double_epsilon DBL_EPSILON
 #define b3_float_epsilon FLT_EPSILON
 
+#define b3_double_max DBL_MAX
+#define b3_double_min DBL_MIN
+
 #define b3_pi 3.14159265359
 
 #define b3_close_to_zero 1e-5

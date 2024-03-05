@@ -6,8 +6,6 @@
 #include "box3d.hpp"
 #include "test.hpp"
 
-class b3World;
-
 class SceneTestBase: public TestBase {
 
 protected:
@@ -25,6 +23,10 @@ public:
         m_world->clear();
         delete m_world;
     };
+
+    b3World* get_world() override {
+        return m_world;
+    }
 
     void step() override {
         m_world->step(1.0 / 60, 8, 8);

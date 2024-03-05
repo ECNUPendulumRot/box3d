@@ -4,24 +4,21 @@
 
 #include "geometry/b3_shape.hpp"
 
-
-
 class b3PlaneShape : public b3Shape {
 
-    b3Vector3d m_point;
-
-    b3Vector3d m_normal;
+    static int segment_count;
 
 public:
+
+    double m_half_length, m_half_width;
 
     b3PlaneShape();
 
     /**
      * @param point: a point on this plane
      * @param normal: the normal of this plane
-     * @param d: the thickness of this plane， default is b3_polygon_radius = 0.01
     */
-    void set_as_plane(b3Vector3d& point, b3Vector3d& normal, double d = b3_polygon_radius);
+    void set_as_plane(double length, double width);
 
     virtual ~b3PlaneShape() = default;
 
@@ -34,6 +31,10 @@ public:
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
     b3Shape* clone() const override;
+
+    void init_view_data() override;
+
+    void setup_view_data(const b3TransformD& xf) override;
 };
 
 

@@ -5,8 +5,6 @@
 
 #include "math/b3_math.hpp"
 
-#include <cstdio>
-
 void b3_collide_spheres(b3Manifold* manifold,
 					    const b3SphereShape* sphere_a, 
                         const b3TransformD& xf_a,
@@ -20,7 +18,7 @@ void b3_collide_spheres(b3Manifold* manifold,
 
     b3Vector3d ab = cb - ca;
 
-    double sq_distance = ab.dot(ab);
+    double sq_distance = ab.length2();
     double radius = sphere_a->get_radius() + sphere_b->get_radius();
 
     if(sq_distance > radius * radius) {
@@ -244,9 +242,6 @@ void b3_collide_cube_and_sphere(b3Manifold* manifold,
 
     // shallow penetration
     double total_radius = sphere_b->get_radius() + cube_a->get_radius();
-
-    printf("feature count: %d\n", feature.m_count);
-    printf("feature axis: %f, %f, %f\n", feature.m_axis.x(), feature.m_axis.y(), feature.m_axis.z());
 
     // b3Vector3d point = cube_a->m_h_xyz.array_dot(feature.m_axis);
     if(feature.m_count == 1) {

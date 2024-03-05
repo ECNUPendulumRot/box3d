@@ -111,6 +111,7 @@ b3Transform<T>::b3Transform()
 {
     m_p.set_zero();
     m_r.set_zero();
+    m_r_t = b3Matrix3<T>::identity();
 }
 
 

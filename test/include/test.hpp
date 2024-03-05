@@ -11,6 +11,7 @@
 class TestBase;
 class b3Shape;
 class b3AuxiliaryShape;
+class b3World;
 
 using TestCreateFcn = TestBase*();
 
@@ -37,6 +38,10 @@ public:
 
     virtual void step() {
     };
+
+    virtual b3World* get_world() {
+        return nullptr;
+    }
 
 
     virtual int get_shape_count() const {

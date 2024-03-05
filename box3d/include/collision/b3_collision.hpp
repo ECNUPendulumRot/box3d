@@ -12,6 +12,8 @@ class b3CubeShape;
 
 class b3SphereShape;
 
+class b3PlaneShape;
+
 //////////////////////////////////////////
 
 
@@ -114,5 +116,13 @@ void b3_collide_cube(b3Manifold* manifold,
                      const b3TransformD& xf_A,
                      const b3CubeShape* cube_B,
                      const b3TransformD& xf_B);
+
+
+void b3_collide_plane_and_sphere(b3Manifold* manifold,
+                                 const b3PlaneShape* plane_a,
+                                 const b3TransformD& xf_a,
+                                 const b3SphereShape* sphere_b,
+                                 const b3TransformD& xf_b);
+
 
 #endif //BOX3D_B3_COLLISION_HPP

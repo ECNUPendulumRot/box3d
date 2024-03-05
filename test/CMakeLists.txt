@@ -27,13 +27,16 @@ set(TEST_SOURCE_FILES
         src/sim_app.cpp
         src/gui_viewer.cpp
         src/test_box_view.cpp
+        src/test_sphere_stack.cpp
         src/unit_test_sphere_collide.cpp
         src/unit_test_box_collide.cpp
         src/unit_test_dynamic_tree.cpp
         src/test.cpp
         src/unit_test_sphere_view.cpp
+        src/test_sphere_cube_collide.cpp
         src/imgui_ext.cpp
-
+        src/unit_test_ground_view.cpp
+        src/unit_test_plane_sphere_collide.cpp
 )
 
 add_executable(

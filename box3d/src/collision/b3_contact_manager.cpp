@@ -64,6 +64,12 @@ void b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy*
         return;
     }
 
+    // Contact creation may swap fixtures
+    fixture_a = contact->get_fixture_a();
+    fixture_b = contact->get_fixture_b();
+    body_a = fixture_a->get_body();
+    body_b = fixture_b->get_body();
+
     contact->set_prev(nullptr);
     contact->set_next(m_contact_list);
     if(m_contact_list != nullptr) {
@@ -115,7 +121,7 @@ void b3ContactManager::destory(b3Contact* contact)
     }
 
     // remove form body a
-    // not use firend class.
+    // not use friend class.
     if(contact->get_node_a()->m_prev) {
         contact->get_node_a()->m_prev->m_next = contact->get_node_a()->m_next;
     }

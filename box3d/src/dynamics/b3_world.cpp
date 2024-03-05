@@ -213,6 +213,7 @@ void b3World::solve(b3TimeStep &step) {
 
         b3SISolver solver(&m_block_allocator, island, &step);
         solver.solve();
+        island->clear();
 
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {

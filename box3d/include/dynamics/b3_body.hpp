@@ -114,7 +114,7 @@ public:
     }
 
     inline b3Vector3d get_gravity() const {
-        return m_gravity;
+        return m_gravity * m_mass;
     }
 
     inline b3Vector3d get_torque() const {
@@ -126,7 +126,7 @@ public:
     }
 
     void apply_gravity(b3Vector3d& gravity) {
-        m_gravity = gravity * m_mass;
+        m_gravity = gravity;
     }
 
     void apply_torque(b3Vector3d& torque) {

@@ -33,6 +33,8 @@ struct b3ContactVelocityConstraint {
 
     double m_restitution;
 
+    double m_penetration;
+
     // b3Vector3d m_world_center_a;
     // b3Vector3d m_world_center_b;
 

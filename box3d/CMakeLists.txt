@@ -22,6 +22,7 @@ set(B3D_HEADER_FILES
         include/collision/b3_cube_contact.hpp
         include/collision/b3_sphere_contact.hpp
         include/collision/b3_cube_sphere_contact.hpp
+        include/collision/b3_plane_sphere_contact.hpp
 
 
         include/dynamics/b3_transform.hpp
@@ -36,6 +37,7 @@ set(B3D_HEADER_FILES
         include/geometry/b3_shape.hpp
         include/geometry/b3_cube_shape.hpp
         include/geometry/b3_sphere_shape.hpp
+        include/geometry/b3_plane_shape.hpp
 
         include/utils/b3_timer.hpp
 
@@ -64,7 +66,9 @@ set(B3D_SOURCE_FILES
         src/collision/b3_cube_contact.cpp
         src/collision/b3_collide_sphere.cpp
         src/collision/b3_collide_cube.cpp
+        src/collision/b3_collide_plane.cpp
         src/collision/b3_cube_sphere_contact.cpp
+        src/collision/b3_plane_sphere_contact.cpp
 
         src/common/b3_block_allocator.cpp
 
@@ -73,8 +77,10 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_island.cpp
 
         # src/geometry/b3_mesh.cpp
+        src/geometry/b3_shape.cpp
         src/geometry/b3_cube_shape.cpp
         src/geometry/b3_sphere_shape.cpp
+        src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
         src/solver/b3_si_solver.cpp
