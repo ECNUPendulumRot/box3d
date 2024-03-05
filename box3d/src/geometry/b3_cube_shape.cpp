@@ -2,7 +2,6 @@
 #include "geometry/b3_cube_shape.hpp"
 
 #include "common/b3_common.hpp"
-#include "common/b3_allocator.hpp"
 #include "common/b3_block_allocator.hpp"
 
 #include "dynamics/b3_mass_property.hpp"
@@ -44,10 +43,10 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz)
     m_normals[4].set(1.0f, 0.0f, 0.0f);
     m_normals[5].set(-1.0f, 0.0f, 0.0f);
 
-    m_faces[0] = {0, 1, 2, 3};
+    m_faces[0] = {0, 3, 2, 1};
     m_faces[1] = {1, 2, 6, 5};
     m_faces[2] = {4, 5, 6, 7};
-    m_faces[3] = {0, 3, 7, 4};
+    m_faces[3] = {0, 4, 7, 3};
     m_faces[4] = {0, 1, 5, 4};
     m_faces[5] = {2, 3, 7, 6};
 

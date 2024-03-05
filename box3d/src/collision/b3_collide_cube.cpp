@@ -40,9 +40,9 @@ static void overlap_on_axis(
 
 // test face separation of cube_B from cube_A
 static double face_separation(
-        b3Manifold* manifold,
-        const b3CubeShape* cube_A, const b3TransformD& xf_A,
-        const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
 {
 
     double max_penetration = -b3_max_double;
@@ -116,9 +116,10 @@ static double edge_separation(
 }
 
 
-static bool b3_find_incident_face(b3ClipVertex c[4],
-                                  const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
-                                  const b3CubeShape* cube2, const b3TransformD& xf2)
+static bool b3_find_incident_face(
+    b3ClipVertex c[4],
+    const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
+    const b3CubeShape* cube2, const b3TransformD& xf2)
 {
     const b3Vector3d* normals1 = cube1->m_normals;
 
@@ -163,10 +164,11 @@ static bool b3_find_incident_face(b3ClipVertex c[4],
 
 
 // Sutherland-Hodgman clipping.
-static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
-                                      const b3ClipVertex* v_in, const int32& v_in_count,
-                                      const b3Vector3d& n, double offset,
-                                      int32 edge_index_clip, int32 incident_face_index)
+static int32 b3_clip_segment_to_face(
+    b3ClipVertex* v_out, int32& v_out_count,
+    const b3ClipVertex* v_in, const int32& v_in_count,
+    const b3Vector3d& n, double offset,
+    int32 edge_index_clip, int32 incident_face_index)
 {
     // calculate all the distances from the vertices to the plane
     // double distance[v_in_count];
@@ -174,6 +176,7 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
 
     for (int32 i = 0; i < v_in_count; i++) {
         double dist = n.dot(v_in[i].v) - offset;
+        distance[i] = dist;
     }
 
     int32 count = 0;
@@ -194,13 +197,12 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
         const b3Vector3d& v2 = v_in[next_i].v;
 
         // check whether the edge needs to be clipped
-        // if s_v1 xor s_v2 is 1, means to be clipped
+        // only if the sign of two points on the edge is different needs to be clipped
         uint8 x = (dist_v1 <= 0 && dist_v2 > 0) || (dist_v1 > 0 && dist_v2 <= 0);
 
         if (x == 0)
             continue;
 
-        uint8 type = v_in[i].id.cf.type << x;
         v_out[count].v = v1 + alpha * (v2 - v1);
 
         // old_index_1: the face index of the reference
@@ -212,19 +214,19 @@ static int32 b3_clip_segment_to_face(b3ClipVertex* v_out, int32& v_out_count,
         if (v_in[i].id.cf.type == b3ContactFeature::e_e_e &&
             v_in[next_i].id.cf.type == b3ContactFeature::e_e_e) {
 
-            v_out[count].id.cf.type = type;
+            v_out[count].id.cf.type = b3ContactFeature::e_p_f;
             v_out[count].id.cf.index_2 = incident_face_index;
             v_out[count].id.cf.index_ext = old_index_1;
 
         } else {
             v_out[count].id = v_in[i].id;
-            v_out[count].id.cf.index_1 = edge_index_clip;
+            v_out[count].id.cf.type = b3ContactFeature::e_e_e;
         }
 
         ++count;
 
     }
-
+    v_out_count = count;
     // TODO
     return 0;
 }
