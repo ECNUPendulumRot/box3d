@@ -62,7 +62,7 @@ private:
 
     void add_meshes();
 
-    void clear_meshes();
+    void clear_viewer_data();
 
     bool check_test_index();
 
