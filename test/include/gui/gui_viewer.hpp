@@ -74,7 +74,6 @@ private:
 
     void draw_auxiliary_shapes();
 
-    void draw_user_added_shape();
 };
 
 
