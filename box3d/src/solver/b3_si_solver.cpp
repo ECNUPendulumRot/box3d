@@ -116,8 +116,7 @@ int b3SISolver::solve() {
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         solve_velocity_constraints();
     }
-
-    correct_penetration();
+    // correct_penetration();
 
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -179,7 +178,7 @@ void b3SISolver::correct_penetration() {
     for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-        // TODO: Check this way is useful. And angle ?
+        // TODO: Check this way is useful. And angle?
         if(vc->m_penetration < 0) {
             b3Vector3d p_a = m_positions[vc->m_index_a].linear();
             b3Vector3d p_b = m_positions[vc->m_index_b].linear();

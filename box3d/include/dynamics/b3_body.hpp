@@ -57,9 +57,14 @@ class b3Body {
 
     b3Matrix3d m_inv_inertia = b3Matrix3d::zero();
 
-    b3Vector3d m_force;
+    b3Vector3d m_force = b3Vector3d::zero();
 
-    b3Vector3d m_gravity;
+    // the sum of m_force and m_gravity
+    // but when the body is contact with static object,
+    // we need modify the total force.
+    b3Vector3d m_total_force;
+
+    b3Vector3d m_gravity = b3Vector3d::zero();
 
     b3Vector3d m_torque;
 
@@ -84,11 +89,13 @@ class b3Body {
 
     uint32 m_flags = 0;
 
-    enum {
-        e_island_flag = 1
+public:
+
+    enum Flag {
+        e_island_flag = 1,
+        e_contact_force_flag = 1 << 1
     };
 
-public:
 
     /**
      * @brief Construct a new b3Body object
@@ -111,6 +118,18 @@ public:
 
     inline b3Vector3d get_force() const {
         return m_force;
+    }
+
+    inline void compute_total_force() {
+        m_total_force = m_force + m_gravity * m_mass;
+    }
+
+    inline b3Vector3d get_total_force() const {
+        return m_total_force;
+    }
+
+    inline void set_total_force(const b3Vector3d& force) {
+        m_total_force = force;
     }
 
     inline b3Vector3d get_gravity() const {
@@ -179,6 +198,18 @@ public:
 
     inline void set_type(b3BodyType type) {
         m_type = type;
+    }
+
+    inline void set_flag(Flag flag) {
+        m_flags |= flag;
+    }
+
+    inline bool test_flag(Flag flag) {
+        return m_flags & flag;
+    }
+
+    inline void unset_flag(Flag flag) {
+        m_flags &= ~flag;
     }
 
     inline void set_world(b3World* world) {

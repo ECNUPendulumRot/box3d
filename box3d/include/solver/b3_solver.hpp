@@ -46,13 +46,15 @@ protected:
 
     void write_states_back();
 
+    void correct_force();
+
 public:
 
     b3Solver() = delete;
 
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    virtual void initialize(b3World* world) = 0;
+    // virtual void initialize(b3World* world) = 0;
 
     virtual int solve() = 0;
 
