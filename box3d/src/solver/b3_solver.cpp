@@ -36,63 +36,64 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_velocities = new (memory) b3TransformD;
 
-    for(int32 i = 0; i < m_body_count; ++i) {
-        m_bodies[i]->compute_total_force();
-    }
 
+    /*
     // correct the body total force
     // m_contact link all bodies
     memory = m_block_allocator->allocate(sizeof(b3Body*) * m_body_count);
     b3Body** stack = new (memory) b3Body*;
     int index = 0;
-    for(int32 i = 0; i < m_body_count; ++i) {
 //        if(m_bodies[i]->get_type() != b3BodyType::b3_static_body) {
 //            continue;
 //        }
-        stack[index++] = m_bodies[i];
-
-        while(index > 0) {
-            b3Body* b = stack[--index];
-            b->set_flag(b3Body::e_contact_force_flag);
-            // all direct or indirect contacts with static bodies all need modify the total force
-            auto contacts = b->get_contact_list();
-            while(contacts) {
-                b3Body* other = contacts->m_other;
-                if(other->test_flag(b3Body::e_contact_force_flag)) {
-                    contacts = contacts->m_next;
-                    continue;
-                }
-                stack[index++] = other;
-                other->set_flag(b3Body::e_contact_force_flag);
-                // the contact normal is a point to b
-                // this body is a or b?
-                // so the normal is static body to this body
-                b3Vector3d normal = contacts->m_contact->get_manifold()->m_local_normal;
-                if(contacts->m_contact->get_fixture_a()->get_body() == other) {
-                    normal = -normal;
-                }
-                b3Vector3d other_force = other->get_total_force();
-                double force_normal = other_force.dot(normal);
-                if(force_normal < 0) {
-                    other_force -= force_normal * normal;
-                }
-                other->set_total_force(other_force);
-                b3Vector3d b_force = b->get_total_force();
-                force_normal = b_force.dot(normal);
-                if(force_normal > 0) {
-                    b_force -= force_normal * normal;
-                }
-                b->set_total_force(b_force);
-
+    stack[index++] = m_bodies[0];
+    m_bodies[0]->compute_total_force();
+    // all bodies are in the island
+    while(index > 0) {
+        b3Body *b = stack[--index];
+        b->set_flag(b3Body::e_contact_force_flag);
+        // all direct or indirect contacts with static bodies all need modify the total force
+        auto contacts = b->get_contact_list();
+        while (contacts) {
+            b3Body *other = contacts->m_other;
+            if (other->test_flag(b3Body::e_contact_force_flag)) {
                 contacts = contacts->m_next;
+                continue;
             }
-        }
+            stack[index++] = other;
+            other->set_flag(b3Body::e_contact_force_flag);
+            other->compute_total_force();
+            // the contact normal is a point to b
+            // this body is a or b?
+            // so the normal is static body to this body
+            b3Vector3d normal = contacts->m_contact->get_manifold()->m_local_normal;
+            if (contacts->m_contact->get_fixture_a()->get_body() == other) {
+                normal = -normal;
+            }
+            b3Vector3d other_force = other->get_total_force();
+            double force_normal = other_force.dot(normal);
+            if (force_normal < 0) {
+                other_force -= force_normal * normal;
+            }
+            other->set_total_force(other_force);
+            b3Vector3d b_force = b->get_total_force();
+            force_normal = b_force.dot(normal);
+            if (force_normal > 0) {
+                b_force -= force_normal * normal;
+            }
+            b->set_total_force(b_force);
 
-        // clear all flags
-        for(int32 j = 0; j < m_body_count; ++j) {
-            m_bodies[j]->unset_flag(b3Body::e_contact_force_flag);
+            contacts = contacts->m_next;
         }
     }
+
+    // clear all flags
+    for(int32 j = 0; j < m_body_count; ++j) {
+        m_bodies[j]->unset_flag(b3Body::e_contact_force_flag);
+    }
+
+    m_block_allocator->free(stack, sizeof(b3Body*) * m_body_count);
+*/
 
     for(int32 i = 0; i < m_body_count; ++i) {
 
@@ -102,12 +103,14 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
 
         // integrate velocity
         if(b->get_type() == b3BodyType::b3_dynamic_body) {
+            b->compute_total_force();
             b3Vector3d v = m_velocities[i] .linear();
             b3Vector3d w = m_velocities[i] .angular();
 
-
-            v += m_timestep->m_dt * b->get_inv_mass() * b->get_total_force();
-            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+            if(m_body_count == 1) {
+                v += m_timestep->m_dt * b->get_inv_mass() * b->get_total_force();
+                w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+            }
 
             // TODO: apply damping
 

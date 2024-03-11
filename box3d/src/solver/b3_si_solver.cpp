@@ -116,7 +116,21 @@ int b3SISolver::solve() {
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         solve_velocity_constraints();
     }
-    // correct_penetration();
+    correct_penetration();
+
+    if(m_body_count != 1) {
+        for(int32 i = 0; i < m_body_count; ++i) {
+            b3Body* b = m_bodies[i];
+            b->compute_total_force();
+            b3Vector3d v = m_velocities[i] .linear();
+            b3Vector3d w = m_velocities[i] .angular();
+
+            v += m_timestep->m_dt * b->get_inv_mass() * b->get_total_force();
+            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+            m_velocities[i] .set_linear(v);
+            m_velocities[i] .set_angular(w);
+        }
+    }
 
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {

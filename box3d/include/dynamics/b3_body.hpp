@@ -59,9 +59,8 @@ class b3Body {
 
     b3Vector3d m_force = b3Vector3d::zero();
 
-    // the sum of m_force and m_gravity
-    // but when the body is contact with static object,
-    // we need modify the total force.
+    b3Vector3d m_gravity_force;
+
     b3Vector3d m_total_force;
 
     b3Vector3d m_gravity = b3Vector3d::zero();
@@ -120,18 +119,6 @@ public:
         return m_force;
     }
 
-    inline void compute_total_force() {
-        m_total_force = m_force + m_gravity * m_mass;
-    }
-
-    inline b3Vector3d get_total_force() const {
-        return m_total_force;
-    }
-
-    inline void set_total_force(const b3Vector3d& force) {
-        m_total_force = force;
-    }
-
     inline b3Vector3d get_gravity() const {
         return m_gravity * m_mass;
     }
@@ -142,6 +129,18 @@ public:
 
     void apply_force(b3Vector3d& force) {
         m_force = force;
+    }
+
+    void compute_total_force() {
+        m_total_force = m_force + m_gravity_force;
+    }
+
+    b3Vector3d get_total_force() {
+        return m_total_force;
+    }
+
+    void set_total_force(b3Vector3d& force) {
+        m_total_force = force;
     }
 
     void apply_gravity(b3Vector3d& gravity) {
