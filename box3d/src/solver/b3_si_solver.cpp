@@ -71,10 +71,14 @@ void b3SISolver::init_velocity_constraints() {
         int32 index_b = vc->m_index_b;
 
         b3Vector3d v_a = m_velocities[index_a].linear();
+        b3Vector3d v_a_last_time_step = m_velocities_last_time_step[index_a].linear();
         b3Vector3d w_a = m_velocities[index_a].angular();
+        b3Vector3d w_a_last_time_step = m_velocities_last_time_step[index_a].angular();
 
         b3Vector3d v_b = m_velocities[index_b].linear();
+        b3Vector3d v_b_last_time_step = m_velocities_last_time_step[index_b].linear();
         b3Vector3d w_b = m_velocities[index_b].angular();
+        b3Vector3d w_b_last_time_step = m_velocities_last_time_step[index_b].angular();
 
         for(int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -119,12 +123,24 @@ int b3SISolver::solve() {
 
     correct_penetration();
 
-    // integrate position
+    // integrate position 
+    //how to write angular in verlet
     for(int32 i = 0; i < m_body_count; ++i) {
-        m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
-        m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
+        //m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
+        m_positions[i].set_linear(m_positions[i].linear() + 
+            (m_velocities[i].linear() + m_velocities_last_time_step[i].linear()) * m_timestep->m_dt * 0.5);
+        //m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
+        m_positions[i].set_angular(m_positions[i].angular() + 
+            (m_velocities[i].angular() + m_velocities_last_time_step[i].angular()) * m_timestep->m_dt * 0.5);
     }
 
+    for (int32 i = 0; i < m_contact_count; ++i) {
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+
+        m_velocities[i].set_linear(m_velocities_last_time_step[i].linear());
+        m_velocities[i].set_angular(m_velocities_last_time_step[i].angular());
+    }
+    
     // copy state buffers back to the bodies.
     write_states_back();
 

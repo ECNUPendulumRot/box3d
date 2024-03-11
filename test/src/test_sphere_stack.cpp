@@ -29,9 +29,9 @@ public:
 
         //create a series of touching spheres 
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             for (int j = 0; j < 1;j++) {
-                pose.set_linear(b3Vector3d(0, 1.0 * j, 1.0*i+2.0));
+                pose.set_linear(b3Vector3d(0, 1.0 * j, 1.0*i+0.5));
                 velocity.set_linear(b3Vector3d(0, 0, 0));
                 body_def.set_initial_status(pose, velocity);
                 m_world->create_body(body_def)->create_fixture(fixture_def);            

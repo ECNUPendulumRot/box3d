@@ -35,16 +35,22 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_velocities = new (memory) b3TransformD;
 
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
+    m_velocities_last_time_step = new (memory) b3TransformD;
+
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
         m_velocities[i] = b->get_velocity();
+        m_velocities_last_time_step[i] = b->get_velocity();
 
-        // integrate velocity
+        // integrate velocity 
+        // To do:change it to verlet integrate
         if(b->get_type() == b3BodyType::b3_dynamic_body) {
             b3Vector3d v = m_velocities[i] .linear();
             b3Vector3d w = m_velocities[i] .angular();
+            
 
             v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
             w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();

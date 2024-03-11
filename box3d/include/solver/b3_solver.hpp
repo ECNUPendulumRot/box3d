@@ -35,6 +35,7 @@ protected:
     int32 m_body_count;
     b3TransformD* m_positions = nullptr;
     b3TransformD* m_velocities = nullptr;
+    b3TransformD* m_velocities_last_time_step = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
