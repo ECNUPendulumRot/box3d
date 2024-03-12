@@ -34,7 +34,7 @@ void b3_collide_plane_and_sphere(b3Manifold* manifold,
         nearest_point[1] = local_center.y();
     }
     double sq_distance = (local_center - nearest_point).length2();
-    double radius = sphere_b->get_radius() + plane_a->get_radius();
+    double radius = sphere_b->get_radius(); //+ plane_a->get_radius();
     if(sq_distance > radius * radius) {
         return;
     }
