@@ -30,11 +30,12 @@ class b3Solver {
 protected:
 
     b3Contact** m_contacts = nullptr;
-    int32 m_contact_count;
+	int32 m_contact_count;
 
     int32 m_body_count;
     b3TransformD* m_positions = nullptr;
     b3TransformD* m_velocities = nullptr;
+    b3TransformD* m_velocities_last_time_step = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
@@ -46,20 +47,18 @@ protected:
 
     void write_states_back();
 
-    void correct_force();
-
 public:
 
     b3Solver() = delete;
 
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    // virtual void initialize(b3World* world) = 0;
+    virtual void initialize(b3World* world) = 0;
 
     virtual int solve() = 0;
 
     ~b3Solver();
-
+    
 };
 
 

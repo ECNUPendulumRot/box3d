@@ -7,7 +7,6 @@
 #include "collision/b3_contact.hpp"
 #include "common/b3_time_step.hpp"
 #include "common/b3_block_allocator.hpp"
-#include "collision/b3_fixture.hpp"
 
 b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
     m_timestep = step;
@@ -19,11 +18,10 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     b3_assert(m_contact_count >= 0);
 
     void* memory;
-    if (m_contact_count > 0) {
+    if(m_contact_count > 0) {
         memory = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
         m_velocity_constraints = new (memory) b3ContactVelocityConstraint;
-    }
-    else {
+    } else {
         m_velocity_constraints = nullptr;
     }
 
@@ -37,18 +35,37 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_velocities = new (memory) b3TransformD;
 
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
+    m_velocities_last_time_step = new (memory) b3TransformD;
 
-    for (int32 i = 0; i < m_body_count; ++i) {
+    for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
         m_velocities[i] = b->get_velocity();
+        m_velocities_last_time_step[i] = b->get_velocity();
+
+        // integrate velocity 
+        // To do:change it to verlet integrate
+        if(b->get_type() == b3BodyType::b3_dynamic_body) {
+            b3Vector3d v = m_velocities[i] .linear();
+            b3Vector3d w = m_velocities[i] .angular();
+            
+
+            v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
+            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+
+            // TODO: apply damping
+
+            m_velocities[i] .set_linear(v);
+            m_velocities[i] .set_angular(w);
+        }
     }
 }
 
 
 void b3Solver::write_states_back() {
-    for (int32 i = 0; i < m_body_count; ++i) {
+    for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* body = m_bodies[i];
 
         body->set_pose(m_positions[i]);
