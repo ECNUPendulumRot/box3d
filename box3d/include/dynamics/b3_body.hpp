@@ -59,10 +59,6 @@ class b3Body {
 
     b3Vector3d m_force = b3Vector3d::zero();
 
-    b3Vector3d m_gravity_force;
-
-    b3Vector3d m_total_force;
-
     b3Vector3d m_gravity = b3Vector3d::zero();
 
     b3Vector3d m_torque;
@@ -91,8 +87,7 @@ class b3Body {
 public:
 
     enum Flag {
-        e_island_flag = 1,
-        e_contact_force_flag = 1 << 1
+        e_island_flag = 1
     };
 
 
@@ -131,17 +126,6 @@ public:
         m_force = force;
     }
 
-    void compute_total_force() {
-        m_total_force = m_force + m_gravity_force;
-    }
-
-    b3Vector3d get_total_force() {
-        return m_total_force;
-    }
-
-    void set_total_force(b3Vector3d& force) {
-        m_total_force = force;
-    }
 
     void apply_gravity(b3Vector3d& gravity) {
         m_gravity = gravity;

@@ -19,7 +19,7 @@ public:
 
     int solve();
 
-    void solve_velocity_constraints();
+    void solve_velocity_constraints(bool is_collision);
 
     void correct_penetration();
 };

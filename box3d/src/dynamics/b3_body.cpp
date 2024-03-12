@@ -92,7 +92,6 @@ void b3Body::reset_mass_data()
         m_inv_mass = 1.0 / m_mass;
         local_center *= m_inv_mass;
     }
-    m_gravity_force = m_gravity * m_mass;
 
     if (m_inertia.determinant() > 0) {
 

@@ -100,7 +100,8 @@ void b3SISolver::init_velocity_constraints() {
             vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
             vcp->m_rhs_penetration = vcp->m_rhs_penetration * m_timestep->m_inv_dt;
 
-            vcp->m_normal_impulse = 0.0;
+            vcp->m_normal_collision_impulse = 0.0;
+            vcp->m_normal_contact_impulse = 0.0;
             vcp->m_tangent_impulse = 0.0;
         }
 
@@ -113,23 +114,27 @@ int b3SISolver::solve() {
 
     init_velocity_constraints();
 
+    // collision
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints();
+        solve_velocity_constraints(true);
     }
-    correct_penetration();
+    // correct_penetration();
+    // velocity update
+    for(int32 i = 0; i < m_body_count; ++i) {
+        b3Body *b = m_bodies[i];
+        b3Vector3d v = m_velocities[i].linear();
+        b3Vector3d w = m_velocities[i].angular();
 
-    if(m_body_count != 1) {
-        for(int32 i = 0; i < m_body_count; ++i) {
-            b3Body* b = m_bodies[i];
-            b->compute_total_force();
-            b3Vector3d v = m_velocities[i] .linear();
-            b3Vector3d w = m_velocities[i] .angular();
+        v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
+        w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
 
-            v += m_timestep->m_dt * b->get_inv_mass() * b->get_total_force();
-            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
-            m_velocities[i] .set_linear(v);
-            m_velocities[i] .set_angular(w);
-        }
+        m_velocities[i].set_linear(v);
+        m_velocities[i].set_angular(w);
+    }
+
+    // contact
+    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+        solve_velocity_constraints(false);
     }
 
     // integrate position
@@ -145,7 +150,7 @@ int b3SISolver::solve() {
 }
 
 
-void b3SISolver::solve_velocity_constraints() {
+void b3SISolver::solve_velocity_constraints(bool is_collision) {
     for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
@@ -164,11 +169,19 @@ void b3SISolver::solve_velocity_constraints() {
                 b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
                 double rhs = -v_rel.dot(vc->m_normal);
                 // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
-                double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
 
-                double new_impluse = b3_max(vcp->m_normal_impulse + lambda, 0.0);
-                lambda = new_impluse - vcp->m_normal_impulse;
-                vcp->m_normal_impulse = new_impluse;
+                double lambda = 0;
+                if(is_collision) {
+                    lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+                    double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
+                    lambda = new_impulse - vcp->m_normal_collision_impulse;
+                    vcp->m_normal_collision_impulse = new_impulse;
+                } else {
+                    lambda = vcp->m_normal_mass * rhs;
+                    double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
+                    lambda = new_impluse - vcp->m_normal_contact_impulse;
+                    vcp->m_normal_contact_impulse = new_impluse;
+                }
 
                 // apply normal Impluse
                 b3Vector3d impluse = lambda * vc->m_normal;
