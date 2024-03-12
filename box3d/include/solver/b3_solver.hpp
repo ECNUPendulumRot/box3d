@@ -35,6 +35,7 @@ protected:
     int32 m_body_count;
     b3TransformD* m_positions = nullptr;
     b3TransformD* m_velocities = nullptr;
+    b3TransformD* m_velocities_w_f = nullptr;//used in verlet integration, store the velocity with out force applied
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
@@ -56,7 +57,9 @@ public:
 
     // virtual void initialize(b3World* world) = 0;
 
-    virtual int solve() = 0;
+    //virtual int solve() = 0;
+
+    virtual int solve(int type) = 0;
 
     ~b3Solver();
 

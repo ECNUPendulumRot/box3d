@@ -110,7 +110,7 @@ void b3SISolver::init_velocity_constraints() {
 }
 
 
-int b3SISolver::solve() {
+int b3SISolver::solve(int type) {
 
     init_velocity_constraints();
 
@@ -118,12 +118,15 @@ int b3SISolver::solve() {
     for (int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         solve_velocity_constraints(true);
     }
-    // correct_penetration();
+    //correct_penetration();
     // velocity update
     for (int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
         b3Vector3d v = m_velocities[i].linear();
         b3Vector3d w = m_velocities[i].angular();
+        //store the velocity before apply force 
+        m_velocities_w_f[i].set_linear(v);
+        m_velocities_w_f[i].set_angular(w);
 
         v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
         w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
@@ -138,11 +141,21 @@ int b3SISolver::solve() {
     }
 
     // integrate position
-    for (int32 i = 0; i < m_body_count; ++i) {
-        m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
-        m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
-    }
-
+    // type 0 = semi-implict Euler integration
+    // type 1 = verlet integration
+    
+    if(type == 0)
+        for (int32 i = 0; i < m_body_count; ++i) {
+            m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
+            m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
+        }
+    else if(type == 1)
+        for (int32 i = 0; i < m_body_count; ++i) {
+        m_positions[i].set_linear(m_positions[i].linear() + 
+            (m_velocities[i].linear() + m_velocities_w_f[i].linear()) * m_timestep->m_dt * 0.5);
+        m_positions[i].set_angular(m_positions[i].angular() + 
+            (m_velocities[i].angular() + m_velocities_w_f[i].angular()) * m_timestep->m_dt * 0.5);
+        }
     // copy state buffers back to the bodies.
     write_states_back();
 

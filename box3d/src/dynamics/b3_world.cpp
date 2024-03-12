@@ -230,7 +230,7 @@ void b3World::solve(b3TimeStep &step) {
         }
 
         b3SISolver solver(&m_block_allocator, island, &step);
-        solver.solve();
+        solver.solve(1);
         island->clear();
 
         // Post solve cleanup.
