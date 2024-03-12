@@ -73,46 +73,36 @@ static double edge_separation(
     b3Manifold* manifold,
     const b3CubeShape* cube_A, const b3TransformD& xf_A,
     const b3CubeShape* cube_B, const b3TransformD& xf_B,
-    int32& edge_index_a, int32& edge_index_b)
+    int32& axis_index_a, int32& axis_index_b)
 {
     double max_penetration = -b3_max_double;
 
-    int32 best_edge_index_a;
-    int32 best_edge_index_b;
+    int32 best_axis_index_a;
+    int32 best_axis_index_b;
 
     b3Matrix3d R_a = xf_A.rotation_matrix_b3();
     b3Matrix3d R_b = xf_B.rotation_matrix_b3();
 
-    // to find edge-edge contact, we should test all edges pairs of two cubes.
-    for (int32 i = 0; i < 12; i++) {
+    for (int32 i = 0; i < 3; i++) {
 
-        // get the normal of edge on sphere_A in the world frame.
-        const b3Vector3d& v1_a = R_a * cube_A->m_vertices[cube_A->m_edges[i].v1];
-        const b3Vector3d& v2_a = R_a * cube_A->m_vertices[cube_A->m_edges[i].v2];
-        const b3Vector3d& e_n_a = (v2_a - v1_a).normalized();
-
-        for (int32 j = 0; j < 12; j++) {
-
-            // get the normal of edge on cube_B in the world frame.
-            const b3Vector3d& v1_b = R_b * cube_B->m_vertices[cube_B->m_edges[j].v1];
-            const b3Vector3d& v2_b = R_b * cube_B->m_vertices[cube_B->m_edges[j].v2];
-            const b3Vector3d& e_n_b = (v2_b - v1_b).normalized();
-
-            double penetration = 0.0;
-
-            const b3Vector3d separation_axis = e_n_a.cross(e_n_b).normalized();
+        b3Vector3d axis_A = R_a.col(i);
+        for (int32 j = 0; j < 3; j++){
+            b3Vector3d axis_B = R_b.col(j);
+            const b3Vector3d separation_axis = axis_A.cross(axis_B).normalized();
+            double penetration;
             overlap_on_axis(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
 
             if (penetration > max_penetration) {
                 max_penetration = penetration;
-                best_edge_index_a = i;
-                best_edge_index_b = j;
+                best_axis_index_a = i;
+                best_axis_index_b = j;
             }
         }
     }
 
-    edge_index_a = best_edge_index_a;
-    edge_index_b = best_edge_index_b;
+    axis_index_a = best_axis_index_a;
+    axis_index_b = best_axis_index_b;
+
     return max_penetration;
 }
 
@@ -347,51 +337,98 @@ static void create_face_contact(
 }
 
 
-void create_edge_contact(
-    b3Manifold* manifold,
-    const b3CubeShape* cube_A, const b3TransformD& xf_A,
-    const b3CubeShape* cube_B, const b3TransformD& xf_B,
-    const int32& edge_index_A,  const int32& edge_index_B,
-    const double& separation_edge)
+double line_segement_separation(
+    const b3Vector3d& v1_a, const b3Vector3d& v2_a,
+    const b3Vector3d& v1_b, const b3Vector3d& v2_b,
+    b3Vector3d& normal, b3Vector3d& point, b3Vector3d& local_point)
 {
-    const b3Vector3d& v1_A = xf_A.transform(cube_A->m_vertices[cube_A->m_edges[edge_index_A].v1]);
-    const b3Vector3d& v2_A = xf_A.transform(cube_A->m_vertices[cube_A->m_edges[edge_index_A].v2]);
-    const b3Vector3d& v1_B = xf_B.transform(cube_B->m_vertices[cube_B->m_edges[edge_index_B].v1]);
-    const b3Vector3d& v2_B = xf_B.transform(cube_B->m_vertices[cube_B->m_edges[edge_index_B].v2]);
-
-    const b3Vector3d& d_A = v2_A - v1_A;
-    const b3Vector3d& d_B = v2_B - v1_B;
+    const b3Vector3d& d_A = v2_a - v1_a;
+    const b3Vector3d& d_B = v2_b - v1_b;
 
     double a = d_A.dot(d_A);
     double b = d_A.dot(d_B);
     double c = d_B.dot(d_B);
 
-    const b3Vector3d& r = v1_B - v1_A;
+    const b3Vector3d& r = v1_b - v1_a;
     double e = r.dot(d_A);
     double f = r.dot(d_B);
 
     double m = a * c - b * b;
-    double t_n = a * f - e * b;
-    double s_n = b * f - e * c;
-    double t = t_n / m;
-    double s = s_n / m;
+    double t_n = e * c - b * f;
+    double s_n = e * b - a * f;
+    double t = b3_clamp(t_n / m, 0.0, 1.0);
+    double s = b3_clamp(s_n / m, 0.0, 1.0);
 
     // because collision is already happened, t and s must be in [0, 1]
-    b3Vector3d c_A = v1_A + t * d_A;
-    b3Vector3d c_B = v1_B + s * d_B;
+    b3Vector3d c_A = v1_a + t * d_A;
+    b3Vector3d c_B = v1_b + s * d_B;
 
+    normal = (c_B - c_A).normalized();
+    point = c_B;
+    local_point = c_A;
+    return -(c_B - c_A).length();
+}
+
+
+void create_edge_contact(
+    b3Manifold* manifold,
+    const b3CubeShape* cube_A, const b3TransformD& xf_A,
+    const b3CubeShape* cube_B, const b3TransformD& xf_B,
+    const int32& axis_index_A,  const int32& axis_index_B)
+{
+
+    double max_penetration = -b3_max_double;
+    int32 best_edge_index_a, best_edge_index_b;
+
+    // to find edge-edge contact, we should test all edges pairs of two cubes.
+    for (int32 i = 0; i < 12; i++) {
+
+        // get the normal of edge on sphere_A in the world frame.
+        const b3Vector3d& v1_a = cube_A->m_vertices[cube_A->m_edges[i].v1];
+        const b3Vector3d& v2_a = cube_A->m_vertices[cube_A->m_edges[i].v2];
+        const b3Vector3d& e_n_a = (v2_a - v1_a);
+
+        for (int32 j = 0; j < 12; j++) {
+
+            // get the normal of edge on cube_B in the world frame.
+            const b3Vector3d& v1_b = cube_B->m_vertices[cube_B->m_edges[j].v1];
+            const b3Vector3d& v2_b = cube_B->m_vertices[cube_B->m_edges[j].v2];
+            const b3Vector3d& e_n_b = (v2_b - v1_b);
+
+            double edge_A_dot = e_n_a.dot(cube_A->m_normals[axis_index_A]);
+            double edge_B_dot = e_n_b.dot(cube_B->m_normals[axis_index_B]);
+            if (edge_A_dot == 0 || edge_B_dot == 0) {
+                continue;
+            }
+
+            const b3Vector3d& v1_a_t = xf_A.transform(v1_a);
+            const b3Vector3d& v2_a_t = xf_A.transform(v2_a);
+            const b3Vector3d& v1_b_t = xf_B.transform(v1_b);
+            const b3Vector3d& v2_b_t = xf_B.transform(v2_b);
+
+            b3Vector3d normal, point, local_point;
+            double penetration = line_segement_separation(v1_a_t, v2_a_t, v1_b_t, v2_b_t, normal, point, local_point);
+
+
+            if (penetration > max_penetration) {
+                max_penetration = penetration;
+                best_edge_index_a = i;
+                best_edge_index_b = j;
+                manifold->m_local_normal = normal;
+                manifold->m_local_point = local_point;
+                manifold->m_points[0].m_local_point = point;
+            }
+        }
+    }
 
     b3ContactID id;
     id.cf.type = b3ContactFeature::e_e_e;
-    id.cf.index_1 = (uint8)edge_index_A;
-    id.cf.index_2 = (uint8)edge_index_B;
-    id.cf.index_ext = (uint8)edge_index_A;
+    id.cf.index_1 = (uint8)best_edge_index_a;
+    id.cf.index_2 = (uint8)best_edge_index_b;
+    id.cf.index_ext = (uint8)best_edge_index_a;
 
     manifold->m_type = b3Manifold::e_edges;
     manifold->m_point_count = 1;
-    manifold->m_local_normal = (c_B - c_A).normalized();
-    manifold->m_local_point = c_A;
-    manifold->m_points[0].m_local_point = c_B;
     manifold->m_points[0].id = id;
 }
 
@@ -422,8 +459,8 @@ void b3_collide_cube(
     }
 
     // find edge separation
-    int32 edge_index_A, edge_index_B;
-    double separation_edge = edge_separation(manifold, cube_A, xf_A, cube_B, xf_B, edge_index_A, edge_index_B);
+    int32 axis_index_A, axis_index_B;
+    double separation_edge = edge_separation(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B);
     spdlog::log(spdlog::level::info, "separation_edge: {}", separation_edge);
     if (separation_edge > total_radius) {
         return;
@@ -442,8 +479,7 @@ void b3_collide_cube(
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);
     } else {
         spdlog::log(spdlog::level::info, "edge contact");
-        create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B,
-                            edge_index_A, edge_index_B, separation_edge);
+        create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B);
     }
 }
 
