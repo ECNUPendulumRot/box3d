@@ -30,6 +30,7 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
+        vc->m_friction = contact->get_friction();
         vc->m_contact_index = i;
         vc->m_point_count = point_count;
 
@@ -146,7 +147,7 @@ int b3SISolver::solve() {
     }
 
     // solve friction constraints
-
+    solve_friction_constraints();
 
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -184,7 +185,7 @@ void b3SISolver::solve_velocity_constraints(bool is_collision) {
                 lambda = vcp->m_normal_mass * rhs;
             }
         }
-        // apply normal Impluse
+        // apply normal Impulse
         if(is_collision) {
             double new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, 0.0);
             lambda = new_impulse - vc->m_normal_collision_impulse;
@@ -278,47 +279,53 @@ void b3SISolver::solve_friction_constraints() {
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-        double lambda = 0;
-        for(int32 j = 0; j < vc->m_point_count; ++j) {
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
-            b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-            b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
-
-            if(v_rel_t.is_zero()) {
-                continue;
-            }
-
-            double jv_t = v_rel_t.length();
-
-            b3Vector3d tangent = v_rel_t / jv_t;
-            b3Vector3d ra_t = vcp->m_ra.cross(tangent);
-            b3Vector3d rb_t = vcp->m_rb.cross(tangent);
-
-            // lambda = -J*v / (JM_invJ^T)
-            double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
-                        (ra_t * vc->m_inv_I_a).dot(ra_t) +
-                        (rb_t * vc->m_inv_I_b).dot(rb_t);
-
-            lambda += -jv_t / jmj;
-        }
         // lambda is in the friction cone ?
         // |f| <= \mu * P_n
         double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
-        lambda = b3_clamp(lambda, -max_friction, max_friction);
 
-        b3Vector3d v_rel = (v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra));
-        b3Vector3d tangent = (v_rel - vc->m_normal * v_rel.dot(vc->m_normal)).normalized();
+        // 即在物体a的视角下，物体a不动，物体b的速度为v_rel
+        b3Vector3d v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
+        b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
 
-        b3Vector3d tangent_impulse = tangent * lambda;
+        if(v_rel_t.is_zero()) {
+            continue;
+        }
+        double v_rel_t_ = v_rel_t.length();
+        b3Vector3d tangent = v_rel_t / v_rel_t_;
 
-        v_a = v_a - vc->m_inv_mass_a * tangent_impulse;
-        w_a = w_a - vc->m_inv_I_a * (vc->m_ra.cross(tangent_impulse));
-        v_b = v_b + vc->m_inv_mass_b * tangent_impulse;
-        w_b = w_b + vc->m_inv_I_b * (vc->m_rb.cross(tangent_impulse));
+        b3Vector3d friction_acc;
+
+        double friction_v = 0;
+        if(vc->m_inv_mass_b != 0) {
+            friction_v = max_friction * vc->m_inv_mass_b;
+        } else {
+            friction_v = max_friction * vc->m_inv_mass_a;
+            tangent = -tangent;
+        }
+        if(friction_v >= v_rel_t_) {
+            friction_acc = v_rel_t_ * tangent;
+        } else {
+            friction_acc = friction_v * tangent;
+        }
+
+        // TODO: maybe friction is act at the center of object.
+        // v_a = v_a - vc->m_inv_mass_a * tangent_impulse;
+        // w_a = w_a - vc->m_inv_I_a * (vc->m_ra.cross(tangent_impulse));
+        // v_b = v_b + vc->m_inv_mass_b * tangent_impulse;
+        // w_b = w_b + vc->m_inv_I_b * (vc->m_rb.cross(tangent_impulse));
+
+        if(vc->m_inv_mass_b != 0) {
+            if(vc->m_inv_mass_a != 0) {
+                v_a = v_a + friction_acc;
+            }
+            v_b = v_b - friction_acc;
+        } else {
+            v_a = v_a - friction_acc;
+        }
 
         m_velocities[vc->m_index_a].set_linear(v_a);
-        m_velocities[vc->m_index_a].set_angular(w_a);
+        // m_velocities[vc->m_index_a].set_angular(w_a);
         m_velocities[vc->m_index_b].set_linear(v_b);
-        m_velocities[vc->m_index_b].set_angular(w_b);
+        // m_velocities[vc->m_index_b].set_angular(w_b);
     }
 }

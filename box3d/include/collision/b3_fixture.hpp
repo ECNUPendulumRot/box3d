@@ -127,6 +127,14 @@ public:
         return (m_proxies + index);
     }
 
+    double get_friction() const {
+        return m_friction;
+    }
+
+    double get_restitution() const {
+        return m_restitution;
+    }
+
 private:
 
     void synchronize(b3BroadPhase* broad_phase, const b3TransformD& transform1, const b3TransformD& transform2);

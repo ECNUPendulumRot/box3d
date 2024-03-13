@@ -29,6 +29,14 @@ struct b3ContactEdge {
 
 };
 
+inline double b3_mix_friction(double friction1, double friction2) {
+    return b3_sqrt(friction1 * friction2);
+}
+
+inline double b3_mix_restitution(double restitution1, double restitution2) {
+    return restitution1 > restitution2 ? restitution1 : restitution2;
+}
+
 
 typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
                                       b3Fixture* fixture_B, int32 index_B,
@@ -72,7 +80,8 @@ protected:
 
     ////////// Coefficients related to the material of the object ///////////
     // TODO： 
-    double m_restitution = 1.0;
+    double m_restitution;
+    double m_friction;
 
     uint32 m_flags = 0;
 
@@ -154,6 +163,10 @@ public:
 
     double get_restitution() const {
         return m_restitution;
+    }
+
+    double get_friction() const {
+        return m_friction;
     }
 
     virtual void evaluate(b3Manifold* manifold, const b3TransformD& xfA, const b3TransformD& xfB) = 0;

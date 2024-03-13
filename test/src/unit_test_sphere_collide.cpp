@@ -12,7 +12,8 @@ public:
 
         // create a dynamic body
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(0, 0, 0.5));
+        pose.set_linear(b3Vector3d(0, -2, 0.5));
+        velocity.set_linear(0, 5, 0);
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
@@ -31,8 +32,8 @@ public:
         b3FixtureDef fixture_def;
         sphere_shape.set_color(b3Vector3d(1, 0, 0));
         fixture_def.m_shape = &sphere_shape;
-        fixture_def.m_friction = 0.3;
-        fixture_def.m_restitution = 1.0;
+        fixture_def.m_friction = 0.4;
+        fixture_def.m_restitution = 0.9;
         fixture_def.m_density = 1.0;
 
         sphere1->create_fixture(fixture_def);
@@ -44,6 +45,7 @@ public:
         fixture_def.m_shape = &ground_shape;
         fixture_def.m_density = 0;
         pose.set_linear(0, 0, 0);
+        velocity.set_linear(0, 0, 0);
         body_def.set_initial_status(pose, velocity);
         body_def.m_type = b3BodyType::b3_static_body;
         m_world->create_body(body_def)->create_fixture(fixture_def);
