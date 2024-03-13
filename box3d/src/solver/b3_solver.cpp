@@ -9,6 +9,27 @@
 #include "common/b3_block_allocator.hpp"
 #include "collision/b3_fixture.hpp"
 
+//////////////////////////////////////////
+// In the tangent plane, t1 and t2 are counterclockwise
+/*
+ *   ^ t2
+ *   |
+ *   |
+ *   n----> t1
+ *
+ */
+void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector3d& t2) {
+    if(b3_abs(normal.x()) < b3_double_min && b3_abs(normal.y()) < b3_double_min) {
+        t1 = b3Vector3d(1, 0, 0);
+        t2 = b3Vector3d(0 , 1, 0);
+        return;
+    }
+    t1 = b3Vector3d(-normal.y(), normal.x(), 0);
+    t2 = normal.cross(t1).normalized();
+    t1 = t2.cross(normal).normalized();
+}
+/////////////////////////////////////////
+
 b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
     m_timestep = step;
     m_block_allocator = block_allocator;
