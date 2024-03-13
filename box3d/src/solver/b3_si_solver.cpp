@@ -118,7 +118,7 @@ int b3SISolver::solve() {
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         solve_velocity_constraints(true);
     }
-    // correct_penetration();
+    correct_penetration();
     // velocity update
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body *b = m_bodies[i];
