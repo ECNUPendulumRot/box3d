@@ -162,35 +162,33 @@ void b3SISolver::solve_velocity_constraints(bool is_collision) {
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-        if (point_count == 1) {
-            for (int32 j = 0; j < vc->m_point_count; ++j) {
-                b3VelocityConstraintPoint* vcp = vc->m_points + j;
+        for (int32 j = 0; j < vc->m_point_count; ++j) {
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-                b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-                double rhs = -v_rel.dot(vc->m_normal);
-                // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
+            b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+            double rhs = -v_rel.dot(vc->m_normal);
+            // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
 
-                double lambda = 0;
-                if(is_collision) {
-                    lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-                    double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
-                    lambda = new_impulse - vcp->m_normal_collision_impulse;
-                    vcp->m_normal_collision_impulse = new_impulse;
-                } else {
-                    lambda = vcp->m_normal_mass * rhs;
-                    double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
-                    lambda = new_impluse - vcp->m_normal_contact_impulse;
-                    vcp->m_normal_contact_impulse = new_impluse;
-                }
-
-                // apply normal Impluse
-                b3Vector3d impluse = lambda * vc->m_normal;
-
-                v_a = v_a - vc->m_inv_mass_a * impluse;
-                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
-                v_b = v_b + vc->m_inv_mass_b * impluse;
-                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
+            double lambda = 0;
+            if(is_collision) {
+                lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+                double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
+                lambda = new_impulse - vcp->m_normal_collision_impulse;
+                vcp->m_normal_collision_impulse = new_impulse;
+            } else {
+                lambda = vcp->m_normal_mass * rhs;
+                double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
+                lambda = new_impluse - vcp->m_normal_contact_impulse;
+                vcp->m_normal_contact_impulse = new_impluse;
             }
+
+            // apply normal Impluse
+            b3Vector3d impluse = lambda * vc->m_normal;
+
+            v_a = v_a - vc->m_inv_mass_a * impluse;
+            w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
+            v_b = v_b + vc->m_inv_mass_b * impluse;
+            w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
         }
 
         m_velocities[vc->m_index_a].set_linear(v_a);

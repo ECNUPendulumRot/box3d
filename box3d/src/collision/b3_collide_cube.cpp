@@ -472,7 +472,6 @@ void b3_collide_cube(
     // firstly separate cube_B from cube_A
     int32 face_index_A;
     double separation_A = face_separation(manifold, cube_A, xf_A, cube_B, xf_B, face_index_A);
-    spdlog::log(spdlog::level::info, "separation_A: {}", separation_A);
     if (separation_A > total_radius) {
         return;
     }
@@ -480,7 +479,6 @@ void b3_collide_cube(
     // then separate cube_A from cube_B
     int32 face_index_B;
     double separation_B = face_separation(manifold, cube_B, xf_B, cube_A, xf_A, face_index_B);
-    spdlog::log(spdlog::level::info, "separation_B: {}", separation_B);
     if (separation_B > total_radius) {
         return;
     }
@@ -488,7 +486,6 @@ void b3_collide_cube(
     // find edge separation
     int32 axis_index_A, axis_index_B;
     double separation_edge = edge_separation(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B);
-    spdlog::log(spdlog::level::info, "separation_edge: {}", separation_edge);
     if (separation_edge > total_radius) {
         return;
     }
@@ -501,11 +498,9 @@ void b3_collide_cube(
     bool face_contact_B = separation_B * tol >= separation_edge;
 
     if (face_contact_A || face_contact_B) {
-        spdlog::log(spdlog::level::info, "face contact");
         create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);
     } else {
-        spdlog::log(spdlog::level::info, "edge contact");
         create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B);
     }
 }
