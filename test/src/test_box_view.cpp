@@ -15,7 +15,8 @@ public:
         b3Body* cube1 = m_world->create_body(body_def);
 
         b3TransformD pose, velocity;
-        pose.set_linear(b3Vector3d(0, -5, 0));
+        pose.set_linear({0, -5, 0});
+        pose.set_angular({0, 1.2, -0.8});
         velocity.set_linear(b3Vector3d(0, 5, 0));
         body_def.set_initial_status(pose, velocity);
         b3Body* cube2 = m_world->create_body(body_def);
