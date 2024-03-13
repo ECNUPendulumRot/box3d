@@ -34,8 +34,30 @@ static void overlap_on_axis(
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
     // the larger the value is, the smaller the penetration is.
-    penetration = to_center.dot(axis) - (project_A + project_B);
+    double r = to_center.dot(axis);
+    penetration = r - (project_A + project_B);
 }
+
+
+static void overlap_on_axis_absolute(
+        const b3CubeShape& cube_A, const b3TransformD& xf_A,
+        const b3CubeShape& cube_B, const b3TransformD& xf_B,
+        const b3Vector3d& axis, double& penetration)
+{
+    // project two objects onto the axis.
+    double project_A = transform_to_axis(cube_A, xf_A, axis);
+    double project_B = transform_to_axis(cube_B, xf_B, axis);
+
+
+    b3Vector3d to_center = xf_B.linear() - xf_A.linear();
+
+    // set the penetration of current axis and return whether overlapped.
+    // penetration is a value that is smaller than zero
+    // the larger the value is, the smaller the penetration is.
+    double r = b3_abs(to_center.dot(axis));
+    penetration = r - (project_A + project_B);
+}
+
 
 
 // test face separation of cube_B from cube_A
@@ -85,12 +107,13 @@ static double edge_separation(
 
     for (int32 i = 0; i < 3; i++) {
 
-        b3Vector3d axis_A = R_a.col(i);
+        const b3Vector3d& axis_A = R_a.col(i);
+
         for (int32 j = 0; j < 3; j++){
-            b3Vector3d axis_B = R_b.col(j);
-            const b3Vector3d separation_axis = axis_A.cross(axis_B).normalized();
+            const b3Vector3d& axis_B = R_b.col(j);
+            const b3Vector3d& separation_axis = axis_B.cross(axis_A).normalized();
             double penetration;
-            overlap_on_axis(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
+            overlap_on_axis_absolute(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
 
             if (penetration > max_penetration) {
                 max_penetration = penetration;
@@ -397,6 +420,8 @@ void create_edge_contact(
 
             double edge_A_dot = e_n_a.dot(cube_A->m_normals[axis_index_A]);
             double edge_B_dot = e_n_b.dot(cube_B->m_normals[axis_index_B]);
+
+            // if the edge is not parallel with the axis, just continue
             if (edge_A_dot == 0 || edge_B_dot == 0) {
                 continue;
             }
@@ -408,7 +433,6 @@ void create_edge_contact(
 
             b3Vector3d normal, point, local_point;
             double penetration = line_segement_separation(v1_a_t, v2_a_t, v1_b_t, v2_b_t, normal, point, local_point);
-
 
             if (penetration > max_penetration) {
                 max_penetration = penetration;
