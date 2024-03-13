@@ -235,7 +235,6 @@ void b3World::solve(b3TimeStep &step) {
 
         b3SISolver solver(&m_block_allocator, island, &step);
         solver.solve();
-        island->clear();
 
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {
@@ -245,9 +244,11 @@ void b3World::solve(b3TimeStep &step) {
                 body->m_flags &= ~b3Body::e_island_flag;
             }
         }
+        island->clear();
     }
 
     m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
+    m_block_allocator.free(island, sizeof(b3Island));
 
     // TODO: synchronize ?
     for(b3Body* b = m_body_list; b; b = b->m_next) {
