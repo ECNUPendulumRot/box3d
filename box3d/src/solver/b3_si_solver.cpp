@@ -26,7 +26,7 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         int32 point_count = manifold->m_point_count;
 
-        b3_assert(point_count >= 0);
+        b3_assert(point_count > 0);
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
@@ -45,6 +45,8 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         vc->m_penetration = manifold->m_penetration;
 
+        vc->m_ra = b3Vector3d::zero();
+        vc->m_rb = b3Vector3d::zero();
         // the center of body in the world frame
         b3Vector3d center_a = body_a->get_pose().transform(body_a->get_local_center());
         b3Vector3d center_b = body_b->get_pose().transform(body_b->get_local_center());
@@ -56,7 +58,6 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
             vcp->m_ra = manifold_point->m_local_point - center_a;
             vcp->m_rb = manifold_point->m_local_point - center_b;
             // vcp->m_rhs_penetration = manifold->m_penetration;
-
             // TODO: warm start
         }
     }
@@ -78,6 +79,9 @@ void b3SISolver::init_velocity_constraints() {
 
         for(int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
+
+            vc->m_ra += vcp->m_ra;
+            vc->m_rb += vcp->m_rb;
 
             b3Vector3d ra_n = vcp->m_ra.cross(vc->m_normal);
             b3Vector3d rb_n = vcp->m_rb.cross(vc->m_normal);
@@ -106,6 +110,8 @@ void b3SISolver::init_velocity_constraints() {
         }
         vc->m_normal_contact_impulse = 0.0;
         vc->m_normal_collision_impulse = 0.0;
+        vc->m_ra /= vc->m_point_count;
+        vc->m_rb /= vc->m_point_count;
 
         // TODO: if we have more than one contact point, then prepare the block solver.
     }
@@ -139,6 +145,9 @@ int b3SISolver::solve() {
         solve_velocity_constraints(false);
     }
 
+    // solve friction constraints
+
+
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {
         m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
@@ -156,8 +165,6 @@ void b3SISolver::solve_velocity_constraints(bool is_collision) {
     for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
-        int32 point_count = vc->m_point_count;
-
         b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
         b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
 
@@ -165,27 +172,16 @@ void b3SISolver::solve_velocity_constraints(bool is_collision) {
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
         double lambda = 0;
-        b3Vector3d ra;
-        b3Vector3d rb;
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
-
-            ra += vcp->m_ra;
-            rb += vcp->m_rb;
 
             b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
             double rhs = -v_rel.dot(vc->m_normal);
 
             if(is_collision) {
                 lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-//                   double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
-//                lambda = new_impulse - vcp->m_normal_collision_impulse;
-//                vcp->m_normal_collision_impulse = new_impulse;
             } else {
                 lambda = vcp->m_normal_mass * rhs;
-//                double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
-//                lambda = new_impluse - vcp->m_normal_contact_impulse;
-//                vcp->m_normal_contact_impulse = new_impluse;
             }
         }
         // apply normal Impluse
@@ -200,13 +196,10 @@ void b3SISolver::solve_velocity_constraints(bool is_collision) {
         }
         b3Vector3d impluse = lambda * vc->m_normal;
 
-        ra /= vc->m_point_count;
-        rb /= vc->m_point_count;
-
         v_a = v_a - vc->m_inv_mass_a * impluse;
-        w_a = w_a - vc->m_inv_I_a * ra.cross(impluse);
+        w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
         v_b = v_b + vc->m_inv_mass_b * impluse;
-        w_b = w_b + vc->m_inv_I_b * rb.cross(impluse);
+        w_b = w_b + vc->m_inv_I_b * vc->m_rb.cross(impluse);
 /*/////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -271,5 +264,61 @@ void b3SISolver::correct_penetration() {
 
             vc->m_penetration = 0;
         }
+    }
+}
+
+
+void b3SISolver::solve_friction_constraints() {
+    for(int32 i = 0; i < m_contact_count; ++i) {
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+
+        b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
+        b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
+
+        b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
+        b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
+
+        double lambda = 0;
+        for(int32 j = 0; j < vc->m_point_count; ++j) {
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
+            b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+            b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
+
+            if(v_rel_t.is_zero()) {
+                continue;
+            }
+
+            double jv_t = v_rel_t.length();
+
+            b3Vector3d tangent = v_rel_t / jv_t;
+            b3Vector3d ra_t = vcp->m_ra.cross(tangent);
+            b3Vector3d rb_t = vcp->m_rb.cross(tangent);
+
+            // lambda = -J*v / (JM_invJ^T)
+            double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
+                        (ra_t * vc->m_inv_I_a).dot(ra_t) +
+                        (rb_t * vc->m_inv_I_b).dot(rb_t);
+
+            lambda += -jv_t / jmj;
+        }
+        // lambda is in the friction cone ?
+        // |f| <= \mu * P_n
+        double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
+        lambda = b3_clamp(lambda, -max_friction, max_friction);
+
+        b3Vector3d v_rel = (v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra));
+        b3Vector3d tangent = (v_rel - vc->m_normal * v_rel.dot(vc->m_normal)).normalized();
+
+        b3Vector3d tangent_impulse = tangent * lambda;
+
+        v_a = v_a - vc->m_inv_mass_a * tangent_impulse;
+        w_a = w_a - vc->m_inv_I_a * (vc->m_ra.cross(tangent_impulse));
+        v_b = v_b + vc->m_inv_mass_b * tangent_impulse;
+        w_b = w_b + vc->m_inv_I_b * (vc->m_rb.cross(tangent_impulse));
+
+        m_velocities[vc->m_index_a].set_linear(v_a);
+        m_velocities[vc->m_index_a].set_angular(w_a);
+        m_velocities[vc->m_index_b].set_linear(v_b);
+        m_velocities[vc->m_index_b].set_angular(w_b);
     }
 }
