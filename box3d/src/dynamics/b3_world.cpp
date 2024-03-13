@@ -7,6 +7,8 @@
 #include "collision/b3_contact.hpp"
 #include "solver/b3_si_solver.hpp"
 
+#include <iostream>
+
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
@@ -153,6 +155,22 @@ void b3World::step(double dt, int32 velocity_iterations, int32 position_iteratio
 
     solve(step);
 
+    b3Body* body = m_body_list;
+    int i = 0;
+    double energy = 0.0;
+    while (body != nullptr) {
+        energy += 0.5 * body->get_velocity().linear().z() * body->get_velocity().linear().z();
+        energy += -m_gravity.z() * body->get_pose().linear().z();
+        std::cout << "body " << i << " " << body->get_pose().linear().x()
+                                  << " " << body->get_pose().linear().y()
+                                  << " " << body->get_pose().linear().z()
+                                  << " " << body->get_velocity().linear().x()
+                                  << " " << body->get_velocity().linear().y()
+                                  << " " << body->get_velocity().linear().z() << std::endl;
+        i++;
+        body = body->next();
+    }
+    std::cout << "energy: " << energy << std::endl;
 }
 
 

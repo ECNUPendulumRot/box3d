@@ -8,7 +8,8 @@
 struct b3VelocityConstraintPoint {
     b3Vector3d m_ra;
     b3Vector3d m_rb;
-    double m_normal_impulse = 0;
+    double m_normal_collision_impulse = 0;
+    double m_normal_contact_impulse = 0;
     double m_tangent_impulse = 0;
     double m_normal_mass = 0;
     double m_tanget_mass = 0;

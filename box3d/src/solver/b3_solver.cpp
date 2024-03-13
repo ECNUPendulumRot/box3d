@@ -7,7 +7,7 @@
 #include "collision/b3_contact.hpp"
 #include "common/b3_time_step.hpp"
 #include "common/b3_block_allocator.hpp"
-
+#include "collision/b3_fixture.hpp"
 
 b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
     m_timestep = step;
@@ -36,27 +36,12 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_velocities = new (memory) b3TransformD;
 
+
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
-        b3TransformD velocity = b->get_velocity();
-
-        // integrate velocity
-        if(b->get_type() == b3BodyType::b3_dynamic_body) {
-            b3Vector3d v = velocity.linear();
-            b3Vector3d w = velocity.angular();
-
-            v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
-            w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
-
-            // TODO: apply damping
-
-            velocity.set_linear(v);
-            velocity.set_angular(w);
-        }
-
-        m_velocities[i] = velocity;
+        m_velocities[i] = b->get_velocity();
     }
 }
 
@@ -83,4 +68,3 @@ b3Solver::~b3Solver() {
 
     m_block_allocator = nullptr;
 }
-

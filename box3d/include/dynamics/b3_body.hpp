@@ -57,9 +57,9 @@ class b3Body {
 
     b3Matrix3d m_inv_inertia = b3Matrix3d::zero();
 
-    b3Vector3d m_force;
+    b3Vector3d m_force = b3Vector3d::zero();
 
-    b3Vector3d m_gravity;
+    b3Vector3d m_gravity = b3Vector3d::zero();
 
     b3Vector3d m_torque;
 
@@ -84,11 +84,12 @@ class b3Body {
 
     uint32 m_flags = 0;
 
-    enum {
+public:
+
+    enum Flag {
         e_island_flag = 1
     };
 
-public:
 
     /**
      * @brief Construct a new b3Body object
@@ -124,6 +125,7 @@ public:
     void apply_force(b3Vector3d& force) {
         m_force = force;
     }
+
 
     void apply_gravity(b3Vector3d& gravity) {
         m_gravity = gravity;
@@ -179,6 +181,18 @@ public:
 
     inline void set_type(b3BodyType type) {
         m_type = type;
+    }
+
+    inline void set_flag(Flag flag) {
+        m_flags |= flag;
+    }
+
+    inline bool test_flag(Flag flag) {
+        return m_flags & flag;
+    }
+
+    inline void unset_flag(Flag flag) {
+        m_flags &= ~flag;
     }
 
     inline void set_world(b3World* world) {
