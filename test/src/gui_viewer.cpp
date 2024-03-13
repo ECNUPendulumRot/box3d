@@ -368,8 +368,8 @@ void b3GUIViewer::draw_auxiliary_shapes()
         auxiliary_shape = auxiliary_shape->next();
     }
 
-    Eigen::MatrixXd manifold_points;
-    manifold_points.resize(2, 3);
+//    Eigen::MatrixXd manifold_points;
+//    manifold_points.resize(4, 3);
 //    manifold_points << 1, 2, 1,
 //                       1, 2.39,1,
 //                       0.66,2.89,1,
@@ -381,11 +381,13 @@ void b3GUIViewer::draw_auxiliary_shapes()
 //    manifold_points << 1, 2, 1,
 //                       1, 3.12,1,
 //                       -0.64,2,1;
-    manifold_points << -1, 4, 0.22,
-                       -0.86, 3.84, 0.22;
-    manifold_points *= m_transform;
-    m_viewer.data(auxiliary_index).add_points(manifold_points, Eigen::RowVector3d(1, 0, 0));
-    m_viewer.data(auxiliary_index).point_size = 8;
+//    manifold_points << 1, 2.8, 1,
+//                       1, 4, 1,
+//                       -1,4,1,
+//                       -1,2.8,1;
+//    manifold_points *= m_transform;
+//    m_viewer.data(auxiliary_index).add_points(manifold_points, Eigen::RowVector3d(1, 0, 0));
+//    m_viewer.data(auxiliary_index).point_size = 8;
 
 
 }

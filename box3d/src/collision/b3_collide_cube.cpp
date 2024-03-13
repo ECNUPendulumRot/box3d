@@ -270,6 +270,7 @@ static void create_face_contact(
         xf2 = xf_A;
         face1 = face_index_B;
         manifold->m_type = b3Manifold::e_face_B;
+        manifold->m_penetration = separation_B;
     } else {
         // we will separate B from A
         cube1 = cube_A;
@@ -278,6 +279,7 @@ static void create_face_contact(
         xf2 = xf_B;
         face1 = face_index_A;
         manifold->m_type = b3Manifold::e_face_A;
+        manifold->m_penetration = separation_A;
     }
 
     // separate cube2 from cube1, the separation face on cube1 is face1
@@ -454,6 +456,7 @@ void create_edge_contact(
     manifold->m_type = b3Manifold::e_edges;
     manifold->m_point_count = 1;
     manifold->m_points[0].id = id;
+    manifold->m_penetration = max_penetration;
 }
 
 

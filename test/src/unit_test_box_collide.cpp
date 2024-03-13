@@ -28,11 +28,13 @@ class UnitTestBoxCollide: public UnitTestBase {
     int selected_box = -1;
     b3Body* selected_body = nullptr;
 
+    b3Timer timer;
+
 public :
 
     UnitTestBoxCollide() {
-        xf_A.set_linear(-2.2, 4.5, 0);
-        xf_A.set_angular(0, 0.6, -0.9);
+        xf_A.set_linear(0, 3.8, 2);
+        xf_A.set_angular(0, 0, 0);
         cube_A = new b3CubeShape();
         cube_A->set_as_box(hf_A.m_x, hf_A.m_y, hf_A.m_z);
         body_A = new b3Body();
@@ -61,11 +63,18 @@ public :
     }
 
     void step() override {
+        spdlog::set_level(spdlog::level::off);
+        if (timer.get_time_ms() > 2000) {
+            timer.reset();
+            spdlog::set_level(spdlog::level::info);
+        }
         spdlog::log(spdlog::level::info, "step----------------------------------------");
         xf_A = body_A->get_pose();
         xf_B = body_B->get_pose();
         spdlog::log(spdlog::level::info, "body A position: {}, {}, {}", xf_A.linear().x(), xf_A.linear().y(), xf_A.linear().z());
         spdlog::log(spdlog::level::info, "body A rotation: {}, {}, {}", xf_A.angular().x(), xf_A.angular().y(), xf_A.angular().z());
+        spdlog::log(spdlog::level::info, "body B position: {}, {}, {}", xf_B.linear().x(), xf_B.linear().y(), xf_B.linear().z());
+        spdlog::log(spdlog::level::info, "body B rotation: {}, {}, {}", xf_B.angular().x(), xf_B.angular().y(), xf_B.angular().z());
         b3Manifold m;
         b3Timer timer;
         b3_collide_cube(&m, cube_A, xf_A, cube_B, xf_B);
