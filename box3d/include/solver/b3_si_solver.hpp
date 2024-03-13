@@ -17,11 +17,15 @@ public:
 
     void init_velocity_constraints();
 
-    int solve();
+    int solve() override;
 
     void solve_velocity_constraints(bool is_collision);
 
+    void solve_friction_constraints();
+
     void correct_penetration();
+
+    ~b3SISolver() = default;
 };
 
 

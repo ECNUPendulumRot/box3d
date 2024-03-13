@@ -39,6 +39,11 @@ struct b3ContactVelocityConstraint {
     double m_normal_collision_impulse = 0;
     double m_normal_contact_impulse = 0;
 
+    b3Vector3d m_ra;
+    b3Vector3d m_rb;
+
+    double m_friction;
+
     // b3Vector3d m_world_center_a;
     // b3Vector3d m_world_center_b;
 

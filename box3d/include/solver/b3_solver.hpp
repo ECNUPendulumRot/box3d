@@ -60,7 +60,7 @@ public:
 
     virtual int solve() = 0;
 
-    ~b3Solver();
+    virtual ~b3Solver();
     
 };
 

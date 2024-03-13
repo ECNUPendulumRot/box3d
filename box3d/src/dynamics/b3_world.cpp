@@ -214,6 +214,10 @@ void b3World::solve(b3TimeStep &step) {
                     continue;
                 }
 
+                if(!contact->test_flag(b3Contact::e_touching_flag)) {
+                    continue;
+                }
+
                 island->add_contact(contact);
                 contact->set_flag(b3Contact::e_island_flag);
 
