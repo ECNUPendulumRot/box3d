@@ -81,7 +81,7 @@ struct b3Manifold {
         e_edges
     };
 
-    b3ManifoldPoint m_points[4];	///< the points of contact
+    b3ManifoldPoint m_points[8];	///< the points of contact
 
     b3Vector3d m_local_normal;								///< not use for Type::e_points
 

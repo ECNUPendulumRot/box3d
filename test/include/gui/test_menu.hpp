@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_GUI_HPP
-#define BOX3D_GUI_HPP
+#ifndef BOX3D_TEST_MENU_HPP
+#define BOX3D_TEST_MENU_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -13,7 +13,7 @@
 #include "imgui_ext.hpp"
 
 
-class Gui: public igl::opengl::glfw::imgui::ImGuiMenu {
+class TestMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -126,4 +126,4 @@ public:
 
 };
 
-#endif //BOX3D_GUI_HPP
+#endif //BOX3D_TEST_MENU_HPP

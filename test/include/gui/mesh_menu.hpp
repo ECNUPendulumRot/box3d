@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_MESH_LIST_VIEW_HPP
-#define BOX3D_MESH_LIST_VIEW_HPP
+#ifndef BOX3D_MESH_MENU_HPP
+#define BOX3D_MESH_MENU_HPP
 
 
 #include "igl/opengl/glfw/Viewer.h"
@@ -12,16 +12,19 @@
 #include "spdlog/spdlog.h"
 
 #include "test.hpp"
+#include "imgui_ext.hpp"
 
 
 struct MeshViewObject {
+
     int shape_id;
     ImVec4 color;
 
     MeshViewObject(int shape_id, ImVec4 color) : shape_id(shape_id), color(color) {}
 };
 
-class MeshListView: public igl::opengl::glfw::imgui::ImGuiMenu {
+
+class MeshMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -38,23 +41,17 @@ public:
     void draw_viewer_window() override {
         int width, height;
 
-        static bool first_time = true;
-
         glfwGetWindowSize(viewer->window, &width, &height);
 
-        ///////////////////////// The Test Menu /////////////////////////
+        ///////////////////////// The Mesh List View /////////////////////////
         ImGui::SetNextWindowPos(ImVec2(width - list_width, ImGui::GetFrameHeight()));
         float list_height = float(height) - ImGui::GetFrameHeight();
-        ImGui::SetNextWindowSizeConstraints(ImVec2(250.0f, list_height), ImVec2(350.0f, list_height));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, list_height), ImVec2(350.0f, list_height));
         bool _viewer_menu_visible = true;
         ImGui::Begin(
                 "Mesh List", &_viewer_menu_visible,
                 ImGuiWindowFlags_NoMove
         );
-        if (first_time) {
-            ImGui::SetWindowCollapsed(true);
-            first_time = false;
-        }
         for (int i = 0; i < m_index_colors.size(); i++) {
             if (ImGui::Selectable(std::to_string(i).c_str(), m_selected_test == i, ImGuiSelectableFlags_SpanAllColumns)) {
                 m_selected_test = i;
@@ -73,8 +70,6 @@ public:
     }
 
     void add_object(const int& shape_id) {
-        spdlog::info("Adding object to list");
-
         m_index_colors.emplace_back(shape_id, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
     }
 
@@ -85,7 +80,9 @@ public:
     void set_test(TestBase* test) {
         m_test = test;
     }
+
+
 };
 
 
-#endif //BOX3D_MESH_LIST_VIEW_HPP
+#endif //BOX3D_MESH_MENU_HPP

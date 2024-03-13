@@ -9,8 +9,10 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "gui/gui.hpp"
-#include "gui/mesh_list_view.hpp"
+#include "gui/test_menu.hpp"
+#include "gui/mesh_menu.hpp"
+#include "gui/title_bar.hpp"
+
 #include "box3d.hpp"
 
 
@@ -24,12 +26,13 @@ class b3GUIViewer {
 
     ImGuiPlugin m_gui_plugin;
 
-    Gui m_menu;
-    MeshListView m_mesh_list;
+    TestMenu m_test_list;
+    MeshMenu m_mesh_list;
+    TitleBar m_title_bar;
 
     TestBase* m_test = nullptr;
 
-    // The transform matrix for
+    // The transform matrix
     Eigen::Matrix3d m_transform;
 
     int m_current_test = -1;
@@ -55,11 +58,11 @@ private:
 
     bool pre_draw_loop();
 
-    void redraw_mesh();
+    void draw_mesh();
 
     void add_meshes();
 
-    void clear_meshes();
+    void clear_viewer_data();
 
     bool check_test_index();
 
@@ -70,6 +73,7 @@ private:
     int allocate_mesh();
 
     void draw_auxiliary_shapes();
+
 };
 
 
