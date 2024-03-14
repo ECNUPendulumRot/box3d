@@ -73,20 +73,20 @@ void b3BroadPhase::move_proxy(int32 proxy_id, const b3AABB &aabb)
 void b3BroadPhase::query_callback(int32 proxy_id)
 {
     // self intersection
-    if(proxy_id == m_query_proxy_id) {
+    if (proxy_id == m_query_proxy_id) {
         return;
     } 
 
     // box2d check two bodies are moving? 
     // if all of them are moving, then cancel add this pair
     const bool moved = m_tree.was_moved(proxy_id);
-    if(moved && proxy_id > m_query_proxy_id) {
+    if (moved && proxy_id > m_query_proxy_id) {
         // avoid duplicate pairs
         return;
     }
 
     // extend the pair buffer as needed
-    if(m_pair_count == m_pair_capacity) {
+    if (m_pair_count == m_pair_capacity) {
 
         b3Pair* old_buffer = m_pair_buffer;
         m_pair_capacity *= 2;

@@ -31,7 +31,8 @@ b3DynamicTree::b3DynamicTree()
 }
 
 
-void b3DynamicTree::set_block_allocator(b3BlockAllocator* block_allocator) {
+void b3DynamicTree::set_block_allocator(b3BlockAllocator* block_allocator)
+{
     m_block_allocator = block_allocator;
 
     m_nodes = (b3Node*) m_block_allocator->allocate(m_node_capacity * sizeof(b3Node));
@@ -80,8 +81,6 @@ void b3DynamicTree::destroy_bvh_proxy(int32 proxy_id)
 {
     b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
     b3_assert(m_nodes[proxy_id].is_leaf());
-
-
 }
 
 
@@ -239,7 +238,6 @@ void b3DynamicTree::insert_to_leaf(int32 leaf)
         m_nodes[sibling].m_parent = new_parent;
         m_nodes[leaf].m_parent = new_parent;
         m_root = new_parent;
-
     }
 
     // After insertion, adjust all parents through the pass

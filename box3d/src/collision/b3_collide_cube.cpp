@@ -44,7 +44,6 @@ static double face_separation(
     const b3CubeShape* cube_A, const b3TransformD& xf_A,
     const b3CubeShape* cube_B, const b3TransformD& xf_B, int32& face_index)
 {
-
     double max_penetration = -b3_max_double;
     int32 best_index;
 
@@ -400,7 +399,6 @@ void b3_collide_cube(
     const b3CubeShape* cube_A, const b3TransformD& xf_A,
     const b3CubeShape* cube_B, const b3TransformD& xf_B)
 {
-
     manifold->m_point_count = 0;
     double total_radius = cube_A->get_radius() + cube_B->get_radius();
 
