@@ -18,9 +18,13 @@ class b3Fixture;
 
 
 struct b3ContactEdge {
-
+    /**
+     * the shape is contact with m_other.
+     */
     b3Body* m_other = nullptr;
-
+    /**
+     * this contact
+     */
     b3Contact* m_contact = nullptr;
 
     b3ContactEdge* m_prev = nullptr;
@@ -29,10 +33,11 @@ struct b3ContactEdge {
 
 };
 
+// Friction mixing law. The idea is to allow either fixture to drive the friction to zero.
 inline double b3_mix_friction(double friction1, double friction2) {
     return b3_sqrt(friction1 * friction2);
 }
-
+// Restitution mixing law. The idea is to allow for anythings to bounce off an inelastic surface.
 inline double b3_mix_restitution(double restitution1, double restitution2) {
     return restitution1 > restitution2 ? restitution1 : restitution2;
 }
@@ -79,7 +84,6 @@ protected:
 
 
     ////////// Coefficients related to the material of the object ///////////
-    // TODO： 
     double m_restitution;
     double m_friction;
 
@@ -90,7 +94,10 @@ public:
     b3Contact(b3Fixture* f_A, int32 index_A, b3Fixture* f_B, int32 index_B);
 
     enum {
+        // this is used to generate island.
         e_island_flag = 1,
+        // when aabb overlap, but two shapes maybe not intersecting.
+        // so this flag is set when two shapes are intersecting or touching.
         e_touching_flag = 1 << 1
     };
 
@@ -102,6 +109,7 @@ public:
         m_flags &= ~flag;
     }
 
+    // test of a flag is set
     bool test_flag(uint32 flag) {
         if(m_flags & flag) {
             return true;
@@ -169,6 +177,7 @@ public:
         return m_friction;
     }
 
+    // generate manifold between two shapes
     virtual void evaluate(b3Manifold* manifold, const b3TransformD& xfA, const b3TransformD& xfB) = 0;
 
 protected:

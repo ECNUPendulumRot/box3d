@@ -33,8 +33,16 @@ class b3SphereShape : public b3Shape {
     // control generate sphere view data
     static const b3SphereConfig m_config;
 
+    /**
+     * when the first get view data, we need generate all vertices of sphere.
+     * after first, we only need to move the vertices of sphere.
+     * because the rotation is not effect to the sphere.
+     */
     bool m_first_setup_view;
 
+    /**
+     * This is used to move vertices of sphere.
+     */
     b3Vector3d m_old_center;
 
     // transform the center of sphere
@@ -45,10 +53,6 @@ class b3SphereShape : public b3Shape {
 
 public:
 
-    bool is_first_setup_view() const {
-        return m_first_setup_view;
-    }
-    
     b3SphereShape();
 
     int32 get_child_count() const override {
@@ -59,6 +63,10 @@ public:
         return m_centroid;
     }
 
+    /**
+     * when create a sphere, we need call this function at first.
+     * @param radius
+     */
     void set_as_sphere(double radius);
 
     b3Shape* clone() const override;

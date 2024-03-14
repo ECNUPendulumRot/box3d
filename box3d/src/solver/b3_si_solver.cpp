@@ -294,8 +294,8 @@ void b3SISolver::solve_friction_constraints()
         b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-        // lambda is in the friction cone ?
-        // |f| <= \mu * P_n
+        // vc->m_friction is the friction coefficient.
+        // vc->m_normal_contact_impulse is the normal impulse = ft.
         double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
 
         // In the view of body a, body a is static, the velocity of body b is v_rel
@@ -311,19 +311,25 @@ void b3SISolver::solve_friction_constraints()
         double v_rel_t_ = v_rel_t.length();
         b3Vector3d tangent = v_rel_t / v_rel_t_;
 
-        b3Vector3d friction_acc;
+        b3Vector3d friction_v;
 
-        double friction_v = 0;
+        // a and b at least have one dynamic body.
+        // if b is static, we need go to body b view, so the tangent velocity direction is -tangent.
+        // and then we get the max_friction.( (friction coefficient) * ft / m )
         if(vc->m_inv_mass_b != 0) {
-            friction_v = max_friction * vc->m_inv_mass_b;
+            max_friction = max_friction * vc->m_inv_mass_b;
         } else {
-            friction_v = max_friction * vc->m_inv_mass_a;
+            max_friction = max_friction * vc->m_inv_mass_a;
             tangent = -tangent;
         }
-        if(friction_v >= v_rel_t_) {
-            friction_acc = v_rel_t_ * tangent;
+        // we don't consider the friction when we update the velocity of bodies.
+        // So now we consider the friction to try to correct this error.
+        // if max_friction is greater than v_rel_t_, mean that the velocity will be zero by friction.
+        // else we use the max_friction to correct the velocity.
+        if(max_friction >= v_rel_t_) {
+            friction_v = v_rel_t_ * tangent;
         } else {
-            friction_acc = friction_v * tangent;
+            friction_v = max_friction * tangent;
         }
 
         // TODO: maybe friction is act at the center of object.
@@ -333,16 +339,16 @@ void b3SISolver::solve_friction_constraints()
         // w_b = w_b + vc->m_inv_I_b * (vc->m_rb.cross(tangent_impulse));
 
         if(vc->m_inv_mass_b != 0) {
-            friction_acc /= vc->m_inv_mass_b;
+            friction_v /= vc->m_inv_mass_b;
             if(vc->m_inv_mass_a != 0) {
-                v_a = v_a + vc->m_inv_mass_a * friction_acc;
+                v_a = v_a + vc->m_inv_mass_a * friction_v;
                 // w_a = w_a + vc->m_inv_I_a * vc->m_ra.cross(friction_acc);
             }
-            v_b = v_b - vc->m_inv_mass_b * friction_acc;
+            v_b = v_b - vc->m_inv_mass_b * friction_v;
             // w_b = w_b - vc->m_inv_I_b * vc->m_rb.cross(friction_acc);
         } else {
-            friction_acc /= vc->m_inv_mass_a;
-            v_a = v_a - vc->m_inv_mass_a * friction_acc;
+            friction_v /= vc->m_inv_mass_a;
+            v_a = v_a - vc->m_inv_mass_a * friction_v;
             // w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(friction_acc);
         }
 

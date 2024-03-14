@@ -55,7 +55,7 @@ struct b3ClipVertex {
 
 };
 
-
+// TODO: check to delete this struct.
 struct b3ManifoldPoint {
 
     b3Vector3d m_local_point;		///< usage depends on manifold type
@@ -87,11 +87,12 @@ struct b3Manifold {
 
     b3Vector3d m_local_point;								///< usage depends on manifold type
 
+    // TODO: this maybe not useful, check to delete it.
     Type m_type;
 
     int32 m_point_count;								///< the number of manifold points
 
-    //////
+    ////// the penetration of two bodies. divide it equally between the two shapes.
     double m_penetration;
 };
 
@@ -110,20 +111,21 @@ void b3_collide_cube_and_sphere(b3Manifold* manifold,
                                 const b3SphereShape* sphere_b,
                                 const b3TransformD& xf_b);
 
-
+/// Compute the collision manifold between two cubes
 void b3_collide_cube(b3Manifold* manifold,
                      const b3CubeShape* cube_A,
                      const b3TransformD& xf_A,
                      const b3CubeShape* cube_B,
                      const b3TransformD& xf_B);
 
-
+/// Compute the collision manifold between a plane and a sphere.
 void b3_collide_plane_and_sphere(b3Manifold* manifold,
                                  const b3PlaneShape* plane_a,
                                  const b3TransformD& xf_a,
                                  const b3SphereShape* sphere_b,
                                  const b3TransformD& xf_b);
 
+/// Compute the collision manifold between a plane and a cube.
 void b3_collide_plane_and_cube(b3Manifold* manifold,
                                const b3PlaneShape* plane_a,
                                const b3TransformD& xf_a,

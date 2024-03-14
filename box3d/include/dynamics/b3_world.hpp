@@ -21,8 +21,16 @@ struct b3TimeStep;
 
 class b3World {
 
+    /**
+     * This is the all bodies in the world.
+     * doubly linked list
+     */
     b3Body* m_body_list;
 
+    /**
+     * This is the all shapes in the world.
+     * doubly linked list
+     */
     b3Shape* m_shape_list;
 
     int32 m_shape_count;
@@ -45,15 +53,23 @@ public:
 
     ~b3World();
 
-    // TODO: implement this
     b3Body* create_body(const b3BodyDef& def);
 
     inline bool empty() const {
         return m_body_count == 0;
     }
 
+    /**
+     * This is simulation world time forward.
+     * @param dt
+     * @param velocity_iterations the numbers of iterations when solving velocity constraints.
+     * @param position_iterations the numbers of iterations when solving position constraints. (but we have not use it)
+     */
     void step(double dt, int32 velocity_iterations, int32 position_iterations);
 
+    /**
+     * This is not use now.
+     */
     b3Shape* create_shape(const std::filesystem::path& file_path);
 
     inline int get_shape_count() const {
@@ -63,14 +79,6 @@ public:
     b3Shape* get_shape_list() const {
         return m_shape_list;
     }
-
-    // b3Shape* get_shape(int id) const {
-
-    //     if (id >= m_shape_count)
-    //         return nullptr;
-
-    //     return m_shape_list[id];
-    // }
 
     void add_shape(b3Shape* shape);
 

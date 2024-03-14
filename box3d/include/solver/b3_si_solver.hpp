@@ -13,8 +13,6 @@ public:
 
     b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-//    void initialize(b3World* world) { }
-
     void init_velocity_constraints();
 
     int solve() override;

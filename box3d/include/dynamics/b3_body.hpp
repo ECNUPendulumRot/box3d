@@ -38,9 +38,13 @@ class b3Body {
 
     // CoM
     b3Vector3d m_local_center = b3Vector3d::zero();
-    // position and orientation
+    /**
+     *  position and orientation of the center of body.
+     */
     b3TransformD m_xf;
-
+    /**
+     * linear velocity and angular velocity of the center of body.
+     */
     b3TransformD m_velocity;
 
     ////////////////// Dynamic Properties //////////////////
@@ -87,6 +91,7 @@ class b3Body {
 public:
 
     enum Flag {
+        // This is used to generate islands.
         e_island_flag = 1
     };
 
@@ -206,13 +211,24 @@ public:
         m_island_index = index;
     }
 
+    /**
+     * @brief destroy all fixtures of this body.
+     * When the body is destroyed, will call this function to free memory.
+     */
     void destroy_fixtures();
 
 private:
-
+    /**
+     * recalculate mass, inertia, and center of mass of the body.
+     */
     void reset_mass_data();
 
-    // when the solver is done, write the position and velocity back to the body
+    /**
+     *
+     * get velocity and position of bodies in the world at the time step begin.
+     * solve velocity constraints(if exist), integrate positions.
+     * and then, write the position and velocity back to the body
+     */
     void synchronize_fixtures();
 
 };

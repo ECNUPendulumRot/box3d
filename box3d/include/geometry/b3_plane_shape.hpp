@@ -6,6 +6,9 @@
 
 class b3PlaneShape : public b3Shape {
 
+    /**
+     * This is used to generate the edges of the shape.
+     */
     static int segment_count;
 
 public:

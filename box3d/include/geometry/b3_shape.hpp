@@ -109,6 +109,9 @@ protected:
 
     b3BlockAllocator* m_block_allocator = nullptr;
 
+    /**
+     * @brief This is used for gui
+     */
     b3Vector3d m_color = b3Vector3d::zero();
 
 public:
@@ -132,10 +135,11 @@ public:
 
     b3ViewData get_view_data(const b3TransformD& xf) {
         if(m_view_data.is_empty()) {
+            // allocate memory ti store vertices, edges and faces
             init_view_data();
         }
 
-        // object maybe has velocity
+        // object maybe has velocity, we need recalculate vertices positions.
         setup_view_data(xf);
 
         return m_view_data;

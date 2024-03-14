@@ -32,12 +32,19 @@ public:
 
     void find_new_contact();
 
-    // Broad-phase callback
+    // Broad-phase callback, add a contact
     void add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b);
 
+    /**
+     * destroy a contact and remove it from the contact list
+     */
     void destroy(b3Contact* contact);
 
-    // TODO
+    /*
+     * @brief determine if the aabbs of two fixtures are overlapping,
+     * if overlapping, will generate manifold.
+     * if not overlapping, will destroy the contact.
+     */
     void collide();
 
     b3BroadPhase* get_broad_phase() {
