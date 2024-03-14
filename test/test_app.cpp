@@ -1,11 +1,11 @@
 #include "sim_app.hpp"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-    b3SimApp app;
+  b3SimApp app;
 
-    app.launch();
+  app.launch();
 
-    return 0;
+  return 0;
 }
 

@@ -5,8 +5,8 @@
 
 int b3SimApp::launch() {
 
-    m_viewer.launch();
+  m_viewer.launch();
 
-    return 0;
+  return 0;
 }
 
