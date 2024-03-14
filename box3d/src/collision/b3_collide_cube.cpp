@@ -83,7 +83,7 @@ static double edge_separation(
     b3Matrix3d R_b = xf_B.rotation_matrix_b3();
 
     // to find edge-edge contact, we should test all edges pairs of two cubes.
-    for (int32 i = 0; i < 12; ++i) {
+    for (int32 i = 0; i < 12; i++) {
 
         // get the normal of edge on sphere_A in the world frame.
         const b3Vector3d& v1_a = R_a * cube_A->m_vertices[cube_A->m_edges[i].v1];
@@ -93,13 +93,14 @@ static double edge_separation(
         for (int32 j = 0; j < 12; j++) {
 
             // get the normal of edge on cube_B in the world frame.
-            const b3Vector3d& v1_b = R_b * cube_B->m_vertices[cube_B->m_edges[i].v1];
-            const b3Vector3d& v2_b = R_b * cube_B->m_vertices[cube_B->m_edges[i].v2];
+            const b3Vector3d& v1_b = R_b * cube_B->m_vertices[cube_B->m_edges[j].v1];
+            const b3Vector3d& v2_b = R_b * cube_B->m_vertices[cube_B->m_edges[j].v2];
             const b3Vector3d& e_n_b = (v2_b - v1_b).normalized();
 
             double penetration = 0.0;
 
-            overlap_on_axis(*cube_A, xf_A, *cube_B, xf_B, e_n_a.cross(e_n_b), penetration);
+            const b3Vector3d separation_axis = e_n_a.cross(e_n_b).normalized();
+            overlap_on_axis(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
 
             if (penetration > max_penetration) {
                 max_penetration = penetration;
@@ -115,7 +116,7 @@ static double edge_separation(
 }
 
 
-static bool b3_find_incident_face(
+static int32 b3_find_incident_face(
     b3ClipVertex c[4],
     const b3CubeShape* cube1, const b3TransformD& xf1, int32 face1,
     const b3CubeShape* cube2, const b3TransformD& xf2)
@@ -369,8 +370,8 @@ void create_edge_contact(
     double f = r.dot(d_B);
 
     double m = a * c - b * b;
-    double t_n = c * e - b * f;
-    double s_n = b * e - a * f;
+    double t_n = a * f - e * b;
+    double s_n = b * f - e * c;
     double t = t_n / m;
     double s = s_n / m;
 
@@ -427,8 +428,11 @@ void b3_collide_cube(
     }
 
     // find the best separation axis
-    bool face_contact_A = separation_A > separation_edge;
-    bool face_contact_B = separation_B > separation_edge;
+    // to avoid parallel situation, we assume that
+    // the face separation has more weight than edge separation
+    double tol = 0.95;
+    bool face_contact_A = separation_A * tol >= separation_edge;
+    bool face_contact_B = separation_B * tol >= separation_edge;
 
     if (face_contact_A || face_contact_B) {
         spdlog::log(spdlog::level::info, "face contact");

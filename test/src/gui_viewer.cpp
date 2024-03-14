@@ -127,11 +127,12 @@ void b3GUIViewer::launch()
     m_viewer.core().lighting_factor = 0.4;
     m_viewer.core().light_position = Eigen::Vector3f(50, 50, 50);
 
-    m_viewer.core().depth_test = m_menu.m_enable_depth_test;
+    m_viewer.core().depth_test = m_test_list.m_enable_depth_test;
 
     // add GUI plugin
     m_viewer.plugins.push_back(&m_gui_plugin);
-    m_gui_plugin.widgets.push_back(&m_menu);
+    m_gui_plugin.widgets.push_back(&m_title_bar);
+    m_gui_plugin.widgets.push_back(&m_test_list);
     m_gui_plugin.widgets.push_back(&m_mesh_list);
 
     //////////////////////////// Set up Callbacks ////////////////////////////
@@ -201,26 +202,26 @@ void b3GUIViewer::add_ground() {
 
 
 bool b3GUIViewer::check_test_index() {
-    if (m_menu.m_selected_test == -1)
+    if (m_test_list.m_selected_test == -1)
         return false;
 
-    if (m_menu.m_selected_test != -1 && m_menu.m_selected_test == m_current_test)
+    if (m_test_list.m_selected_test != -1 && m_test_list.m_selected_test == m_current_test)
         return false;
 
-    m_current_test = m_menu.m_selected_test;
+    m_current_test = m_test_list.m_selected_test;
     if (m_test != nullptr) {
         delete m_test;
     }
-    m_test = g_test_entries[m_menu.m_selected_test].create_fcn();
+    m_test = g_test_entries[m_test_list.m_selected_test].create_fcn();
     return true;
 }
 
 
 bool b3GUIViewer::pre_draw_loop()
 {
-    m_viewer.core().depth_test = m_menu.m_enable_depth_test;
+    m_viewer.core().depth_test = m_test_list.m_enable_depth_test;
 
-    if (m_menu.m_show_ground) {
+    if (m_test_list.m_show_ground) {
         m_viewer.data(0).is_visible = true;
     } else {
         m_viewer.data(0).is_visible = false;
@@ -230,14 +231,19 @@ bool b3GUIViewer::pre_draw_loop()
     if (check_test_index()) {
         // TODO:
         // add_ground();
-        clear_meshes();
+        clear_viewer_data();
         add_meshes();
         m_mesh_list.set_test(m_test);
     }
     if (m_test != nullptr)
         m_test->step();
 
-    redraw_mesh();
+    // reallocate the mesh index
+    m_viewer_used_count = 0;
+
+    draw_mesh();
+
+    draw_auxiliary_shapes();
 
     return false;
 }
@@ -247,15 +253,11 @@ bool b3GUIViewer::pre_draw_loop()
 int b3GUIViewer::allocate_mesh() {
     // the first mesh is used to draw the ground
     m_viewer_used_count++;
+    int i = m_viewer.data_list.size();
     int viewer_allocated_mesh = m_viewer.data_list.size() - 1;
-    int id;
-    if (m_viewer_used_count > viewer_allocated_mesh) {
-        id = m_viewer.append_mesh(true);
-    } else {
-        id = m_viewer_used_count;
-        m_viewer.data(id).clear();
-    }
-    return id;
+    if (m_viewer_used_count > viewer_allocated_mesh)
+        m_viewer.append_mesh(true);
+    return m_viewer_used_count;
 }
 
 
@@ -271,44 +273,36 @@ void b3GUIViewer::add_meshes() {
 
     for (int i = 0; i < shape_count; i++) {
         m_shapes.push_back(shape);
-        allocate_mesh();
         m_mesh_list.add_object(i);
         shape = shape->next();
     }
-
-    // allocate the last mesh for the auxiliary shapes(maybe dot not exist)
-    // because the last shape may has edges to draw,
-    // if the auxiliary shapes use the last shape's mesh to draw, will clear all the edges of the last shape
-    allocate_mesh();
 }
 
 
-void b3GUIViewer::clear_meshes() {
+void b3GUIViewer::clear_viewer_data() {
     m_viewer_used_count = 0;
     for (int i = 1; i < m_viewer.data_list.size(); i++) {
         m_viewer.data(i).clear();
     }
     m_mesh_list.clear();
     m_shapes.clear();
-
 }
 
 
-void b3GUIViewer::redraw_mesh() {
-
-    if(m_shapes.empty()) {
-        return;
-    }
+void b3GUIViewer::draw_mesh() {
 
     for (int index = 0; index < m_shapes.size(); index++) {
-        ViewerData& data = m_viewer.data(index + 1);
+
+        int shape_index = allocate_mesh();
+
+        ViewerData& data = m_viewer.data(shape_index);
         b3Shape* shape = m_shapes[index];
 
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
         vertices *= m_transform;
 
-        data.line_color = Eigen::Vector4f(m_menu.m_line_color.x, m_menu.m_line_color.y, m_menu.m_line_color.z, 1.0);
+        data.line_color = Eigen::Vector4f(m_test_list.m_line_color.x, m_test_list.m_line_color.y, m_test_list.m_line_color.z, 1.0);
 
         ImVec4& color = m_mesh_list.m_index_colors[index].color;
         Eigen::RowVector3d c;
@@ -324,26 +318,34 @@ void b3GUIViewer::redraw_mesh() {
         }
 
         if(view_data.m_face_count > 0) {
+
             MapMatrixX<int, Eigen::RowMajor> faces(view_data.m_F, view_data.m_face_count, 3);
             data.set_mesh(vertices, faces);
             data.set_colors(Eigen::RowVector4d(c.x(), c.y(), c.z(), color.w));
+
         }
 
-        data.line_width = m_menu.m_line_width;
+        data.line_width = m_test_list.m_line_width;
 
-        data.show_faces = m_menu.m_show_faces;
-        data.show_lines = m_menu.m_show_edges;
+        data.show_faces = m_test_list.m_show_faces;
+        data.show_lines = m_test_list.m_show_edges;
     }
-
-    draw_auxiliary_shapes();
 }
 
 void b3GUIViewer::draw_auxiliary_shapes()
 {
-    m_viewer.data(m_viewer_used_count).clear_edges();
-    if (!m_menu.m_show_auxiliary_shapes){
+    int auxiliary_index = allocate_mesh();
+
+    m_viewer.data(auxiliary_index).clear_edges();
+    m_viewer.data(auxiliary_index).clear_points();
+
+    if (!m_test_list.m_show_auxiliary_shapes){
         return;
     }
+
+    if (m_test == nullptr)
+        return;
+
     int auxiliary_shape_count = m_test->get_auxiliary_shape_count();
     b3AuxiliaryShape* auxiliary_shape_list = m_test->get_auxiliary_shape_list();
 
@@ -361,10 +363,30 @@ void b3GUIViewer::draw_auxiliary_shapes()
         Eigen::RowVector3d color = auxiliary_shape->get_color();
         edges_left *= m_transform;
         edges_right *= m_transform;
-        m_viewer.data(m_viewer_used_count).add_edges(edges_left, edges_right, color);
+        m_viewer.data(auxiliary_index).add_edges(edges_left, edges_right, color);
 
         auxiliary_shape = auxiliary_shape->next();
     }
+
+    Eigen::MatrixXd manifold_points;
+    manifold_points.resize(1, 3);
+//    manifold_points << 1, 2, 1,
+//                       1, 2.39,1,
+//                       0.66,2.89,1,
+//                       -0.64,2,1;
+//    manifold_points << 1, 2, 1,
+//            1, 4,1,
+//            -1,4,1,
+//            -1,2,1;
+//    manifold_points << 1, 2, 1,
+//                       1, 3.12,1,
+//                       -0.64,2,1;
+    manifold_points << 1, 2, 0.3;
+    manifold_points *= m_transform;
+    m_viewer.data(auxiliary_index).add_points(manifold_points, Eigen::RowVector3d(1, 0, 0));
+    m_viewer.data(auxiliary_index).point_size = 8;
+
+
 }
 
 
@@ -377,6 +399,7 @@ bool b3GUIViewer::call_back_mouse_down(b3GUIViewer::Viewer &viewer, int button, 
 
     return false;
 }
+
 
 
 
