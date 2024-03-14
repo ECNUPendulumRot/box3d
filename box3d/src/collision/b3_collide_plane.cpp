@@ -154,7 +154,7 @@ void b3_collide_plane_and_cube(
 
         double separation = axis.dot(incident_vertices[i].v) - front_offset;
 
-        if (separation <= total_radius) {
+        if (separation < 0) {
             b3ManifoldPoint* cp = manifold->m_points + point_count;
             cp->m_local_point = incident_vertices[i].v;
             cp->id = incident_vertices[i].id;

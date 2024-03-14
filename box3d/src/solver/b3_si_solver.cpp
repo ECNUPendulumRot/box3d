@@ -147,7 +147,7 @@ int b3SISolver::solve() {
     }
 
     // solve friction constraints
-    solve_friction_constraints();
+    //solve_friction_constraints();
 
     // integrate position
     for(int32 i = 0; i < m_body_count; ++i) {

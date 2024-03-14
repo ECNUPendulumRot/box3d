@@ -9,7 +9,7 @@ public:
 
         // create a sphere body
         b3TransformD pose, velocity;
-        pose.set_linear(0, 0, 5);
+        pose.set_linear(0, 3, 5);
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
         body_def.set_initial_status(pose, velocity);
