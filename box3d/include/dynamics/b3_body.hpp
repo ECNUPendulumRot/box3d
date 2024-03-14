@@ -38,7 +38,7 @@ class b3Body {
 
     // CoM
     b3Vector3d m_local_center = b3Vector3d::zero();
-
+    // position and orientation
     b3TransformD m_xf;
 
     b3TransformD m_velocity;
@@ -126,7 +126,6 @@ public:
         m_force = force;
     }
 
-
     void apply_gravity(b3Vector3d& gravity) {
         m_gravity = gravity;
     }
@@ -207,12 +206,13 @@ public:
         m_island_index = index;
     }
 
-    void destory_fixtures();
+    void destroy_fixtures();
 
 private:
 
     void reset_mass_data();
 
+    // when the solver is done, write the position and velocity back to the body
     void synchronize_fixtures();
 
 };

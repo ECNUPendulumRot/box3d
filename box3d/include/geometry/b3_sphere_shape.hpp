@@ -33,7 +33,21 @@ class b3SphereShape : public b3Shape {
     // control generate sphere view data
     static const b3SphereConfig m_config;
 
+    bool m_first_setup_view;
+
+    b3Vector3d m_old_center;
+
+    // transform the center of sphere
+    // because we want not calculate all vertices position every frame.
+    // so we transform all vertices of sphere to display coordinate.
+    // sphere allow we work this.
+    void transform(b3Vector3d& v);
+
 public:
+
+    bool is_first_setup_view() const {
+        return m_first_setup_view;
+    }
     
     b3SphereShape();
 

@@ -5,14 +5,16 @@
 
 #include "math/b3_math.hpp"
 
-void b3_collide_spheres(b3Manifold* manifold,
-					    const b3SphereShape* sphere_a, 
-                        const b3TransformD& xf_a,
-					    const b3SphereShape* sphere_b, 
-                        const b3TransformD& xf_b) {
+void b3_collide_spheres(
+    b3Manifold* manifold,
+    const b3SphereShape* sphere_a,
+    const b3TransformD& xf_a,
+    const b3SphereShape* sphere_b,
+    const b3TransformD& xf_b)
+{
     
     manifold->m_point_count = 0;
-
+    // the center of sphere A and sphere B in world frame.
     b3Vector3d ca = xf_a.transform(sphere_a->get_centroid());
     b3Vector3d cb = xf_b.transform(sphere_b->get_centroid());
 
@@ -26,9 +28,11 @@ void b3_collide_spheres(b3Manifold* manifold,
         return;
     }
 
-    manifold->m_type = b3Manifold::e_circles;
+    // TODO: delete this.
+    // manifold->m_type = b3Manifold::e_circles;
     manifold->m_point_count = 1;
 
+    // if the vector ab is nearly zero, we select the x-axis as the normal
     if(ab.is_zero()) {
         manifold->m_local_normal = b3Vector3d(1.0, 0, 0);
     } else {
@@ -36,12 +40,9 @@ void b3_collide_spheres(b3Manifold* manifold,
     }
 
     double penetration = (b3_sqrt(sq_distance) - radius) / 2.0;
-    
     double length = sphere_a->get_radius() + penetration;
 
-    // the collide point on the world frame
     manifold->m_points[0].m_local_point = ca + manifold->m_local_normal * length;
-    manifold->m_points[0].id.key = 0;
     manifold->m_penetration = penetration;
 }
 
@@ -53,6 +54,7 @@ struct b3SphereCubeFeature {
 
 
 static void init_feature(const double& value, const double& x, b3SphereCubeFeature& feature, int32 index) {
+    // check 3-axis the value is in the range of [-x, x]
     if(value < -x) {
         feature.m_axis[index] = -1.0;
         feature.m_count++;
@@ -72,14 +74,18 @@ static void find_feature(const b3Vector3d& point, const b3CubeShape* cube, b3Sph
 }
 
 
-static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* manifold,
-                                  const b3Vector3d& cube_h_xyz, const b3TransformD& cube_xf) {
+static void find_deep_penetration(
+    const b3Vector3d& sphere_center,
+    b3Manifold* manifold,
+    const b3Vector3d& cube_h_xyz,
+    const b3TransformD& cube_xf)
+{
 
     manifold->m_point_count = 1;
     // TODO: Check this type is useful ?
-    // because the points are in the world frame when we construct manifold.
-    manifold->m_type = b3Manifold::e_circles;
+    // manifold->m_type = b3Manifold::e_circles;
 
+    // because the points are in the world frame when we construct manifold.
     b3Vector3d penetration = sphere_center.abs() - cube_h_xyz;
     // penetration < 0
     if(penetration.x() > penetration.y()) {
@@ -134,15 +140,15 @@ static void find_deep_penetration(const b3Vector3d& sphere_center, b3Manifold* m
 }
 
 
-static void face_separation(b3Manifold* manifold, const b3Vector3d& axis, const b3Vector3d& sphere_center_local,
-                            double total_radius, const b3CubeShape* cube, const b3TransformD& cube_xf) {
-    // axis maybe
-    // (1, 0, 0)
-    // (-1, 0, 0)
-    // (0, 1, 0)
-    // (0, -1, 0)
-    // (0, 0, 1)
-    // (0, 0, -1)
+static void face_separation(
+    b3Manifold* manifold,
+    const b3Vector3d& axis,
+    const b3Vector3d& sphere_center_local,
+    double total_radius,
+    const b3CubeShape* cube,
+    const b3TransformD& cube_xf)
+{
+    // only one value of axis is 1 or -1, and other is 0.
     double separation = b3_abs(sphere_center_local.dot(axis));
     total_radius += b3_abs(cube->m_h_xyz.dot(axis));
     if(separation < total_radius) {
@@ -161,9 +167,15 @@ static void face_separation(b3Manifold* manifold, const b3Vector3d& axis, const 
 }
 
 
-static void edge_separation(b3Manifold* manifold, const b3Vector3d& axis, const b3Vector3d& sphere_center_local,
-                            double total_radius, const b3CubeShape* cube, const b3TransformD& cube_xf) {
-
+static void edge_separation(
+    b3Manifold* manifold,
+    const b3Vector3d& axis,
+    const b3Vector3d& sphere_center_local,
+    double total_radius,
+    const b3CubeShape* cube,
+    const b3TransformD& cube_xf)
+{
+    // two value of axis are 1 or -1, and other is 0.
     b3Vector3d mid_point = cube->m_h_xyz.array_dot(axis);
     int zero_axis = -1;
     for (int i = 0; i < 3; ++i) {
@@ -173,6 +185,7 @@ static void edge_separation(b3Manifold* manifold, const b3Vector3d& axis, const 
     }
     b3_assert(zero_axis >= 0 && zero_axis <= 2);
 
+    // the two points of the nearest edge.
     b3Vector3d point_a = mid_point;
     b3Vector3d point_b = mid_point;
     point_a[zero_axis] -= cube->m_h_xyz[zero_axis];
@@ -184,13 +197,14 @@ static void edge_separation(b3Manifold* manifold, const b3Vector3d& axis, const 
 
     if (separation < total_radius) {
         manifold->m_point_count = 1;
-        manifold->m_type = b3Manifold::e_circles;
+        // TODO: there also can be deleted.
+        // manifold->m_type = b3Manifold::e_circles;
         manifold->m_penetration = (separation - total_radius) / 2.0;
 
         b3Vector3d local_normal = (sphere_center_local - project_point).normalized();
         manifold->m_local_normal = cube_xf.rotation_matrix_b3() * local_normal;
 
-        manifold->m_points[0].id.key = 0;
+        // manifold->m_points[0].id.key = 0;
 
         b3Vector3d local_point = project_point + manifold->m_penetration * local_normal;
         manifold->m_points[0].m_local_point = cube_xf.transform(local_point);
@@ -198,18 +212,26 @@ static void edge_separation(b3Manifold* manifold, const b3Vector3d& axis, const 
 }
 
 
-static void vertex_separation(b3Manifold* manifold, const b3Vector3d& axis, const b3Vector3d& sphere_center_local,
-                              double total_radius, const b3CubeShape* cube, const b3TransformD& cube_xf) {
-
+static void vertex_separation(
+    b3Manifold* manifold,
+    const b3Vector3d& axis,
+    const b3Vector3d& sphere_center_local,
+    double total_radius,
+    const b3CubeShape* cube,
+    const b3TransformD& cube_xf)
+{
+    // three value of axis are 1 or -1.
+    // point is the vertex of cube, is nearest to sphere center.
     b3Vector3d  point = cube->m_h_xyz.array_dot(axis);
     double separation = (sphere_center_local - point).length();
 
     if(separation < total_radius) {
         manifold->m_point_count = 1;
         manifold->m_local_normal = cube_xf.rotation_matrix_b3() * point.normalized();
-        manifold->m_type = b3Manifold::e_circles;
+        // this maybe not useful.
+        // TODO: delete this.
+        // manifold->m_type = b3Manifold::e_circles;
         manifold->m_penetration = (separation - total_radius) / 2.0;
-        manifold->m_points[0].id.key = 0;
 
         b3Vector3d local_point = point + manifold->m_penetration * point.normalized();
         manifold->m_points[0].m_local_point = cube_xf.transform(local_point);
@@ -217,18 +239,21 @@ static void vertex_separation(b3Manifold* manifold, const b3Vector3d& axis, cons
 }
 
 
-void b3_collide_cube_and_sphere(b3Manifold* manifold,
-                                const b3CubeShape* cube_a,
-                                const b3TransformD& xf_a,
-                                const b3SphereShape* sphere_b,
-                                const b3TransformD& xf_b) {
+void b3_collide_cube_and_sphere(
+    b3Manifold* manifold,
+    const b3CubeShape* cube_a,
+    const b3TransformD& xf_a,
+    const b3SphereShape* sphere_b,
+    const b3TransformD& xf_b)
+{
     
     manifold->m_point_count = 0;
 
-    /// Compute the center of sphere position on cube frame
+    // Compute the center of sphere position on cube frame
     b3Vector3d sphere_c_local = xf_b.transform(sphere_b->get_centroid());
     sphere_c_local = xf_a.transform_local(sphere_c_local);
 
+    // init three-axis feature, judge the center of sphere is falls inside the cube on an axis.
     b3SphereCubeFeature feature;
     find_feature(sphere_c_local, cube_a, feature);
 
@@ -243,7 +268,6 @@ void b3_collide_cube_and_sphere(b3Manifold* manifold,
     // shallow penetration
     double total_radius = sphere_b->get_radius() + cube_a->get_radius();
 
-    // b3Vector3d point = cube_a->m_h_xyz.array_dot(feature.m_axis);
     if(feature.m_count == 1) {
         // the closest feature is a face of this cube
         face_separation(manifold, feature.m_axis, sphere_c_local, total_radius, cube_a, xf_a);

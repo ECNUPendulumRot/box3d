@@ -52,8 +52,6 @@ public:
         return m_body_count == 0;
     }
 
-    void test_step();
-
     void step(double dt, int32 velocity_iterations, int32 position_iterations);
 
     b3Shape* create_shape(const std::filesystem::path& file_path);
@@ -103,7 +101,7 @@ public:
 
 protected:
 
-    void solve(double delta_t);
+    // void solve(double delta_t);
 
     void solve(b3TimeStep& step);
 

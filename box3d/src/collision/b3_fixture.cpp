@@ -49,11 +49,13 @@ void b3Fixture::create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf)
 }
 
 
-void b3Fixture::synchronize(b3BroadPhase *broad_phase, const b3TransformD &transform1, const b3TransformD &transform2) {
+void b3Fixture::synchronize(b3BroadPhase *broad_phase, const b3TransformD &transform1, const b3TransformD &transform2)
+{
     if(m_proxy_count == 0) {
         return;
     }
 
+    // the body position is updated, so we need to update the proxy's AABBs
     for(int32 i = 0; i <  m_proxy_count; ++i) {
         b3FixtureProxy* proxy = m_proxies + i;
 

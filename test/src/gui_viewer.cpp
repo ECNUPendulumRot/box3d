@@ -300,7 +300,10 @@ void b3GUIViewer::draw_mesh() {
 
         b3ViewData view_data = shape->get_view_data(shape->get_body()->get_pose());
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
-        vertices *= m_transform;
+
+        if(shape->get_type() != b3ShapeType::e_sphere) {
+            vertices *= m_transform;
+        }
 
         data.line_color = Eigen::Vector4f(m_test_list.m_line_color.x, m_test_list.m_line_color.y, m_test_list.m_line_color.z, 1.0);
 

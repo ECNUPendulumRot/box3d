@@ -18,7 +18,8 @@
  *   n----> t1
  *
  */
-void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector3d& t2) {
+void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector3d& t2)
+{
     if(b3_abs(normal.x()) < b3_double_min && b3_abs(normal.y()) < b3_double_min) {
         t1 = b3Vector3d(1, 0, 0);
         t2 = b3Vector3d(0 , 1, 0);
@@ -30,7 +31,8 @@ void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector
 }
 /////////////////////////////////////////
 
-b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) {
+b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step)
+{
     m_timestep = step;
     m_block_allocator = block_allocator;
 
@@ -39,6 +41,9 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
 
     b3_assert(m_contact_count >= 0);
 
+    // allocate memory for all bodies and contacts of every island.
+    // and we need extra arrays to store the velocity and position of every body.
+    // after solver all contacts and friction constraints, we copy the results back to bodies.
     void* memory;
     if(m_contact_count > 0) {
         memory = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
@@ -57,9 +62,7 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
     m_velocities = new (memory) b3TransformD;
 
-
     for(int32 i = 0; i < m_body_count; ++i) {
-
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
         m_velocities[i] = b->get_velocity();
@@ -67,25 +70,22 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
 }
 
 
-void b3Solver::write_states_back() {
+void b3Solver::write_states_back()
+{
     for(int32 i = 0; i < m_body_count; ++i) {
-        b3Body* body = m_bodies[i];
-
-        body->set_pose(m_positions[i]);
-        body->set_velocity(m_velocities[i]);
-
+        m_bodies[i]->set_pose(m_positions[i]);
+        m_bodies[i]->set_velocity(m_velocities[i]);
         // TODO: if we need SynchronizeTransform() ?
     }
 }
 
 
-b3Solver::~b3Solver() {
+b3Solver::~b3Solver()
+{
     m_timestep = nullptr;
-
     m_block_allocator->free(m_contacts, m_contact_count * sizeof(b3Contact*));
     m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
     m_block_allocator->free(m_positions, m_body_count * sizeof(b3TransformD));
     m_block_allocator->free(m_velocities, m_body_count * sizeof(b3TransformD));
-
     m_block_allocator = nullptr;
 }

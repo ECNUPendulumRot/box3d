@@ -46,9 +46,10 @@ protected:
 
     b3Body** m_bodies;
 
+    /**
+     * @brief write the velocity and position back to bodies.
+     */
     void write_states_back();
-
-    void correct_force();
 
 public:
 
@@ -56,8 +57,9 @@ public:
 
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    // virtual void initialize(b3World* world) = 0;
-
+    /**
+     * @breif solver all constraints in the island.
+     */
     virtual int solve() = 0;
 
     virtual ~b3Solver();

@@ -28,6 +28,8 @@ class b3Island {
     b3Body** m_bodies;
     b3Contact** m_contacts;
 
+    b3BlockAllocator* m_block_allocator;
+
 public:
 
     b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity);
@@ -43,17 +45,15 @@ public:
         m_contact_count = 0;
     }
 
-    void solve(const double dt);
-
     b3Contact** get_contacts() const {
         return m_contacts;
     }
 
-    int32 get_contacts_count() const {
+    int get_contacts_count() const {
         return m_contact_count;
     }
 
-    int32 get_body_count() const {
+    int get_body_count() const {
         return m_body_count;
     }
 

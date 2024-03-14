@@ -10,6 +10,7 @@
 ///////////  free the shape memory space belong to fixture //////////////
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
+#include "geometry/b3_plane_shape.hpp"
 
 
 b3Body::b3Body(const b3BodyDef &body_def):
@@ -27,7 +28,8 @@ b3Body::b3Body(const b3BodyDef &body_def):
 }
 
 
-b3Fixture* b3Body::create_fixture(const b3FixtureDef &def) {
+b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
+{
 
     b3_assert(m_world != nullptr);
 
@@ -94,8 +96,6 @@ void b3Body::reset_mass_data()
     }
 
     if (m_inertia.determinant() > 0) {
-
-
         double bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
         double byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
         double bzz = local_center.x() * local_center.x() + local_center.y() * local_center.y();
@@ -128,23 +128,20 @@ void b3Body::synchronize_fixtures() {
     b3BroadPhase* broad_phase = m_world->get_broad_phase();
 
     // if this body is awake ?
-//    {
-//        b3TransformD xf1;
-//        // TODO: get the position at the begin of the frame
-//        for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
-//            f->synchronize(broad_phase, xf1, m_xf);
-//        }
-//    }
-    // else
-    {
-        for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
-            f->synchronize(broad_phase, m_xf, m_xf);
-        }
+
+    // in box2d, we will get two xf: xf1 and xf2
+    // xf1 is the position at the begin of the frame
+    // xf2 is the position at the end of the frame
+    // TODO: check if we need to do this.
+
+    for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
+        f->synchronize(broad_phase, m_xf, m_xf);
     }
 }
 
 
-void b3Body::destory_fixtures() {
+void b3Body::destroy_fixtures()
+{
 
     b3_assert(m_world != nullptr);
 
@@ -159,7 +156,8 @@ void b3Body::destory_fixtures() {
             m_world->get_block_allocator()->free(destroy_shape, sizeof(b3SphereShape));
         } else if(destroy_shape->get_type() == b3ShapeType::e_cube) {
             m_world->get_block_allocator()->free(destroy_shape, sizeof(b3CubeShape));
-        } else {
+        } else if(destroy_shape->get_type() == b3ShapeType::e_plane) {
+            m_world->get_block_allocator()->free(destroy_shape, sizeof(b3PlaneShape));
             // TODO: deal with other situation
         }
         m_world->get_block_allocator()->free(destroy_fixture, sizeof(b3Fixture));

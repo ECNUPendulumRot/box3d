@@ -22,36 +22,26 @@ b3World::~b3World()
     // TODO: think about how to destruct
 }
 
-
-void b3World::test_step()
-{
-    b3Body* body = m_body_list;
-
-    double delta_t  = 1.0 / m_hz;
-
-    solve(delta_t);
-}
-
-
-void b3World::solve(double delta_t)
-{
-    b3Body* body = m_body_list;
-
-    while (body != nullptr) {
-
-        auto rigid_pose = body->m_xf;
-        auto rigid_velocity = body->m_velocity;
-
-        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * delta_t);
-
-        rigid_pose.set_linear(rigid_pose.linear() + rigid_velocity.linear() * delta_t);
-
-        body->m_xf = rigid_pose;
-        body->m_velocity = rigid_velocity;
-
-        body = body->next();
-    }
-}
+// TODO: delete this function
+//void b3World::solve(double delta_t)
+//{
+//    b3Body* body = m_body_list;
+//
+//    while (body != nullptr) {
+//
+//        auto rigid_pose = body->m_xf;
+//        auto rigid_velocity = body->m_velocity;
+//
+//        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * delta_t);
+//
+//        rigid_pose.set_linear(rigid_pose.linear() + rigid_velocity.linear() * delta_t);
+//
+//        body->m_xf = rigid_pose;
+//        body->m_velocity = rigid_velocity;
+//
+//        body = body->next();
+//    }
+//}
 
 
 b3Body *b3World::create_body(const b3BodyDef &def)
@@ -63,7 +53,6 @@ b3Body *b3World::create_body(const b3BodyDef &def)
     auto* body = new (mem) b3Body(def);
 
     body->set_world(this);
-    // TODO: add all external forces
     body->apply_gravity(m_gravity);
 
     // add to the double linked list
@@ -80,7 +69,8 @@ b3Body *b3World::create_body(const b3BodyDef &def)
 }
 
 
-void b3World::add_shape(b3Shape* shape) {
+void b3World::add_shape(b3Shape* shape)
+{
     shape->set_next(m_shape_list);
     m_shape_list = shape;
     m_shape_count++;
@@ -112,7 +102,7 @@ void b3World::clear()
     while (body != nullptr) {
         auto* next = body->next();
         // b3_free(body);
-        body->destory_fixtures();
+        body->destroy_fixtures();
         // TODO: free contact and contact edge etc related to body (destroy a body)
         m_block_allocator.free(body, sizeof(b3Body));
         body = next;
@@ -122,7 +112,7 @@ void b3World::clear()
 
 void b3World::step(double dt, int32 velocity_iterations, int32 position_iterations)
 {
-    // ff new fixtures were added, we need to find the new contacts.
+    // when new fixtures were added, we need to find the new contacts.
     if (m_new_contacts) {
         m_contact_manager.find_new_contact();
         m_new_contacts = false;
@@ -135,42 +125,12 @@ void b3World::step(double dt, int32 velocity_iterations, int32 position_iteratio
 
     step.m_inv_dt = dt > 0.0 ? 1.0 / dt: 0.0;
 
-    // update contacts
+    // update contacts, aabb updates, when aabb not overlapping, delete the contact,
+    // otherwise, update the contact manifold.
     m_contact_manager.collide();
 
-    // integrate velocity should not in the world,
-    // it should in the island solver
-    //    b3Body* body = m_body_list;
-    //
-    //    while (body != nullptr) {
-    //
-    //        auto rigid_velocity = body->m_velocity;
-    //        // TODO: ad extern force
-    //        rigid_velocity.set_linear(rigid_velocity.linear() + m_gravity * body->m_inv_mass * dt);
-    //
-    //        body->m_velocity = rigid_velocity;
-    //
-    //        body = body->next();
-    //    }
-
+    // generate islands, and solve them.
     solve(step);
-
-    b3Body* body = m_body_list;
-    int i = 0;
-    double energy = 0.0;
-    while (body != nullptr) {
-        energy += 0.5 * body->get_velocity().linear().z() * body->get_velocity().linear().z();
-        energy += -m_gravity.z() * body->get_pose().linear().z();
-        std::cout << "body " << i << " " << body->get_pose().linear().x()
-                                  << " " << body->get_pose().linear().y()
-                                  << " " << body->get_pose().linear().z()
-                                  << " " << body->get_velocity().linear().x()
-                                  << " " << body->get_velocity().linear().y()
-                                  << " " << body->get_velocity().linear().z() << std::endl;
-        i++;
-        body = body->next();
-    }
-    std::cout << "energy: " << energy << std::endl;
 }
 
 
@@ -233,6 +193,7 @@ void b3World::solve(b3TimeStep &step) {
             }
         }
 
+        // init the island and solve it.
         b3SISolver solver(&m_block_allocator, island, &step);
         solver.solve();
 
@@ -244,13 +205,14 @@ void b3World::solve(b3TimeStep &step) {
                 body->m_flags &= ~b3Body::e_island_flag;
             }
         }
+        // clear all bodies and contacts count, so we can reuse the island for the next island.
         island->clear();
     }
 
+    // Free the stack and island memory.
     m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
     m_block_allocator.free(island, sizeof(b3Island));
 
-    // TODO: synchronize ?
     for(b3Body* b = m_body_list; b; b = b->m_next) {
         // If a body was not in an island then it did not move.
         if((b->m_flags & b3Body::e_island_flag) == 0) {
@@ -260,15 +222,11 @@ void b3World::solve(b3TimeStep &step) {
         if(b->m_type== b3BodyType::b3_static_body) {
             continue;
         }
-
         // Update fixtures(for broad-phase).
         b->synchronize_fixtures();
     }
 
     // Look for new contacts
     m_contact_manager.find_new_contact();
-
 }
-
-
 

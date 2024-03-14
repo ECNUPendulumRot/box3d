@@ -11,6 +11,7 @@
 
 void b3ContactManager::find_new_contact()
 {
+    // when new fixtures are added, we need to find new contacts
     m_broad_phase.update_pairs(this);
 }
 
@@ -105,7 +106,7 @@ void b3ContactManager::add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy*
 }
 
 
-void b3ContactManager::destory(b3Contact* contact)
+void b3ContactManager::destroy(b3Contact* contact)
 {
     
     if(contact->prev()) {
@@ -161,7 +162,7 @@ void b3ContactManager::collide()
         b3Body* body_b = contact->get_fixture_b()->get_body();
         
         // is this pair shouldn't collide,
-        // destory this contact
+        // destroy this contact
 
         bool active_a = body_a->get_type() != b3BodyType::b3_static_body;
         bool active_b = body_b->get_type() != b3BodyType::b3_static_body;
@@ -181,7 +182,7 @@ void b3ContactManager::collide()
         if(!overlap) {
             b3Contact* destory_c = contact;
             contact = contact->next();
-            destory(destory_c);
+            destroy(destory_c);
             continue;
         }
 

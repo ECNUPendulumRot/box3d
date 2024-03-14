@@ -69,6 +69,9 @@ public:
         m_max = b3_max_coeff(A.m_max, B.m_max);
     }
 
+    /**
+     * @brief Check this AABB contains another AABB.
+     */
     inline bool contains(const b3AABB& other) const {
 
         bool result = true;

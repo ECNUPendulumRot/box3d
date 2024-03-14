@@ -46,8 +46,11 @@ b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_
 }
 
 
-void b3Contact::add_type(b3ContactCreateFcn* create_fcn, b3ContactDestroyFcn* destroy_fcn,
-                                b3ShapeType type_A, b3ShapeType type_B)
+void b3Contact::add_type(
+    b3ContactCreateFcn* create_fcn,
+    b3ContactDestroyFcn* destroy_fcn,
+    b3ShapeType type_A,
+    b3ShapeType type_B)
 {
     b3_assert(0 <= type_A && type_A < b3ShapeType::e_type_count);
     b3_assert(0 <= type_B && type_B < b3ShapeType::e_type_count);
@@ -119,7 +122,7 @@ void b3Contact::destroy(b3Contact *contact, b3BlockAllocator* block_allocator)
 // Update the contact manifold and touching status.
 void b3Contact::update() {
     
-    // TODO: add warm start, reuse normal and tangent impluse
+    // TODO: add warm start, reuse normal and tangent impulse
     // b3Manifold old_manifold = m_manifold
 
     b3Body* body_a = m_fixture_a->get_body();
@@ -130,6 +133,7 @@ void b3Contact::update() {
 
     // TODO: add sensor ?
 
+    // generate the manifold between the two shapes
     evaluate(&m_manifold, xf_a, xf_b);
 
     if(m_manifold.m_point_count > 0) {

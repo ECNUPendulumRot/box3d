@@ -11,11 +11,13 @@
 
 #include "collision/b3_aabb.hpp"
 
-#define K_SEGMENTS 16
+// This is a parameter to control the number of vertices and faces of the sphere.
+#define K_SEGMENTS 8
 
 const b3SphereConfig b3SphereShape::m_config;
 
-
+// This is some configuration data for the sphere shape.
+// It is same for all sphere shapes.
 b3SphereConfig::b3SphereConfig() {
 
     m_segments = K_SEGMENTS;
@@ -46,20 +48,23 @@ b3SphereConfig::b3SphereConfig() {
 }
 
 
-b3SphereShape::b3SphereShape() {
+b3SphereShape::b3SphereShape()
+{
     m_radius = 0;
     m_type = e_sphere;
 }
 
 
-void b3SphereShape::set_as_sphere(double radius) {
+void b3SphereShape::set_as_sphere(double radius)
+{
     m_radius = radius;
     m_centroid.set_zero();
+    m_first_setup_view = true;
 }
 
 
-void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3TransformD& xf, int32 child_index) const {
-    
+void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3TransformD& xf, int32 child_index) const
+{
     b3_NOT_USED(child_index);
 
     b3Vector3d centroid = xf.transform(m_centroid);
@@ -71,8 +76,8 @@ void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3TransformD& xf, int32 c
 }
 
 
-void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double density) const {
-
+void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double density) const
+{
     mass_data.m_center = m_centroid;
 
     mass_data.m_volume = 4 * b3_pi * m_radius * m_radius * m_radius / 3;
@@ -88,8 +93,8 @@ void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double de
 }
 
 
-b3Shape* b3SphereShape::clone() const {
-    
+b3Shape* b3SphereShape::clone() const
+{
     void* memery = m_block_allocator->allocate(sizeof(b3SphereShape));
     auto* clone = new (memery) b3SphereShape;
     *clone = *this;
@@ -98,8 +103,8 @@ b3Shape* b3SphereShape::clone() const {
 
 
 
-void b3SphereShape::init_view_data() {
-
+void b3SphereShape::init_view_data()
+{
     m_view_data.m_vertex_count = m_config.m_vertices_count;
 
     void* mem = m_block_allocator->allocate(m_config.m_vertices_size * sizeof(double));
@@ -109,7 +114,7 @@ void b3SphereShape::init_view_data() {
     mem = m_block_allocator->allocate(m_config.m_faces_size * sizeof(int));
     m_view_data.m_F = new (mem) int;
 
-    // warning： all vertices of a face need Counterclockwise order
+    // all vertices of a face need Counterclockwise order
 
     // the number of rings is k_segments - 1,
     // every adjacent ring need construct the triangle face.
@@ -154,11 +159,9 @@ void b3SphereShape::init_view_data() {
     }
 
     int first_ring_index = -1;
-    int second_ring_index = 0;
+    int second_ring_index;
     for(int i = 0; i < m_config.m_segments - 2; ++i) {
-
         // construct face between adjacent ring.
-
         first_ring_index++;
         second_ring_index = first_ring_index + m_config.m_ring_points_count;
         // first construct two face index overflow
@@ -195,7 +198,8 @@ void b3SphereShape::init_view_data() {
 }
 
 
-void b3SphereShape::setup_view_data(const b3TransformD& xf) {
+void b3SphereShape::setup_view_data(const b3TransformD& xf)
+{
     const b3Matrix3d& rot_y = m_config.m_rot_y;
     const b3Matrix3d& rot_z = m_config.m_rot_z;
 
@@ -203,45 +207,79 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf) {
     b3Vector3d v2;
     int index = 0;
 
+    // TODO: optimize this loop
+    // don't need to calculate every time
+    // first we need calculate all vertices of sphere
+    // then we only need to traverse all vertices and calculate displacement.
+
     // transform the center of sphere to world frame
     b3Vector3d world_center = xf.transform(m_centroid);
+    // transform to display coordinate
+    transform(world_center);
 
-    for(int i = 1; i < m_config.m_segments; ++i) {
+    if(m_first_setup_view) {
+        for(int i = 1; i < m_config.m_segments; ++i) {
+            v1 = rot_y * v1;
+            v2 = v1;
+
+            for(int j = 0; j < m_config.m_segments; ++j) {
+                v2 = rot_z * v2;
+
+                b3Vector3d v = world_center + m_radius * v2;
+                m_view_data.m_V[index++] = v.x();
+                m_view_data.m_V[index++] = v.y();
+                m_view_data.m_V[index++] = v.z();
+            }
+
+            v2 = v1;
+            v2.m_x = -v2.m_x;
+            for(int j = 0; j < m_config.m_segments; ++j) {
+                v2 = rot_z * v2;
+
+                b3Vector3d v = world_center + m_radius * v2;
+                m_view_data.m_V[index++] = v.x();
+                m_view_data.m_V[index++] = v.y();
+                m_view_data.m_V[index++] = v.z();
+            }
+        }
+
         v1 = rot_y * v1;
-        v2 = v1;
+        v2 = rot_z * v1;
 
-        for(int j = 0; j < m_config.m_segments; ++j) {
-            v2 = rot_z * v2;
+        // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
+        b3Vector3d v = world_center + m_radius * v2;
+        m_view_data.m_V[index++] = v.x();
+        m_view_data.m_V[index++] = v.y();
+        m_view_data.m_V[index++] = v.z();
 
-            b3Vector3d v = world_center + m_radius * v2;
-            m_view_data.m_V[index++] = v.x();
-            m_view_data.m_V[index++] = v.y();
-            m_view_data.m_V[index++] = v.z();
+        v = world_center - m_radius * v2;
+        m_view_data.m_V[index++] = v.x();
+        m_view_data.m_V[index++] = v.y();
+        m_view_data.m_V[index++] = v.z();
+
+        m_first_setup_view = false;
+        m_old_center = world_center;
+    } else {
+        // the center of sphere displacement, if displacement is zero, we don't need do anything.
+        b3Vector3d displacement = world_center - m_old_center;
+        if(displacement.is_zero()) {
+            return;
         }
 
-        v2 = v1;
-        v2.m_x = -v2.m_x;
-        for(int j = 0; j < m_config.m_segments; ++j) {
-            v2 = rot_z * v2;
-
-            b3Vector3d v = world_center + m_radius * v2;
-            m_view_data.m_V[index++] = v.x();
-            m_view_data.m_V[index++] = v.y();
-            m_view_data.m_V[index++] = v.z();
+        int index = 0;
+        for(int i = 0; i < m_config.m_vertices_count; ++i) {
+            m_view_data.m_V[index++] += displacement.x();
+            m_view_data.m_V[index++] += displacement.y();
+            m_view_data.m_V[index++] += displacement.z();
         }
+        // Record the old center of sphere
+        m_old_center = world_center;
     }
+}
 
-    v1 = rot_y * v1;
-    v2 = rot_z * v1;
-
-    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
-    b3Vector3d v = world_center + m_radius * v2;
-    m_view_data.m_V[index++] = v.x();
-    m_view_data.m_V[index++] = v.y();
-    m_view_data.m_V[index++] = v.z();
-
-    v = world_center - m_radius * v2;
-    m_view_data.m_V[index++] = v.x();
-    m_view_data.m_V[index++] = v.y();
-    m_view_data.m_V[index++] = v.z();
+void b3SphereShape::transform(b3Vector3d &v) {
+    double z = v[0];
+    v[0] = v[1];
+    v[1] = v[2];
+    v[2] = z;
 }

@@ -9,7 +9,7 @@ public:
 
         // create a sphere body
         b3TransformD pose, velocity;
-        pose.set_linear(0, 0, 5);
+        pose.set_linear(0, 2, 2);
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
         body_def.set_initial_status(pose, velocity);
@@ -17,9 +17,12 @@ public:
 
         b3SphereShape sphere_shape;
         sphere_shape.set_as_sphere(0.5);
+        b3CubeShape cube_shape;
+        cube_shape.set_as_box(1, 1, 1);
 
         b3FixtureDef fixture_def;
-        fixture_def.m_shape = &sphere_shape;
+        // fixture_def.m_shape = &sphere_shape;
+        fixture_def.m_shape = &cube_shape;
         fixture_def.m_density = 1.0;
         fixture_def.m_restitution = 1.0;
         fixture_def.m_friction = 0;

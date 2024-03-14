@@ -35,7 +35,7 @@ public:
     // Broad-phase callback
     void add_pair(b3FixtureProxy* fixture_proxy_a, b3FixtureProxy* fixture_proxy_b);
 
-    void destory(b3Contact* contact);
+    void destroy(b3Contact* contact);
 
     // TODO
     void collide();

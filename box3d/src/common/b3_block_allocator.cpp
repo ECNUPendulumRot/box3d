@@ -14,8 +14,8 @@ static const int32 b3_max_block_size = 640;
 
 static const int32 b3_chunk_array_increment = 128;
 
-
-static const int32 b3_block_sizes[b3_block_size_count] = {
+static const int32 b3_block_sizes[b3_block_size_count] =
+{
     16,     // 0
     32,     // 1
     64,     // 2
@@ -65,7 +65,8 @@ struct b3Block {
 };
 
 
-b3BlockAllocator::b3BlockAllocator() {
+b3BlockAllocator::b3BlockAllocator()
+{
 
     b3_assert(b3_block_size_count < UCHAR_MAX);
 
@@ -78,7 +79,8 @@ b3BlockAllocator::b3BlockAllocator() {
 }
 
 
-b3BlockAllocator::~b3BlockAllocator() {
+b3BlockAllocator::~b3BlockAllocator()
+{
     for(int32 i = 0; i < m_chunk_count; ++i) {
         b3_free(m_chunks[i].m_blocks);
     }
@@ -87,7 +89,8 @@ b3BlockAllocator::~b3BlockAllocator() {
 }
 
 
-void* b3BlockAllocator::allocate(int32 size) {
+void* b3BlockAllocator::allocate(int32 size)
+{
     if(size == 0) {
         return nullptr;
     }
@@ -145,7 +148,8 @@ void* b3BlockAllocator::allocate(int32 size) {
 }
 
 
-void b3BlockAllocator::free(void* p, int32 size) {
+void b3BlockAllocator::free(void* p, int32 size)
+{
     if(size == 0 || p == nullptr) {
         return;
     }
@@ -165,7 +169,8 @@ void b3BlockAllocator::free(void* p, int32 size) {
 }
 
 
-void b3BlockAllocator::clear() {
+void b3BlockAllocator::clear()
+{
     for(int32 i = 0; i < m_chunk_count; ++i) {
         b3_free(m_chunks->m_blocks);
     }
