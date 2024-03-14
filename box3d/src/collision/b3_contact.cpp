@@ -36,7 +36,13 @@ b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_
     m_prev = nullptr;
     m_next = nullptr;
 
+    m_restitution = 0;
+    m_friction = 0;
+
     m_manifold.m_point_count = 0;
+
+    m_restitution = b3_mix_restitution(m_fixture_a->get_restitution(), m_fixture_b->get_restitution());
+    m_friction = b3_mix_friction(m_fixture_a->get_friction(), m_fixture_b->get_friction());
 }
 
 
