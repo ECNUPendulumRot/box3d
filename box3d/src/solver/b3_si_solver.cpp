@@ -151,36 +151,28 @@ int b3SISolver::solve(int type)
 	solve_velocity_constraints(false);
   }
 
-<<<<<<< HEAD
-    // solve friction constraints
-    //solve_friction_constraints();
+  // solve friction constraints
+  //solve_friction_constraints();
 
-    // integrate position
-    for(int32 i = 0; i < m_body_count; ++i) {
-        m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
-        m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
-    }
-=======
   // integrate position
   // type 0 = semi-implict Euler integration
   // type 1 = verlet integration
->>>>>>> origin/zhb-dev
 
-  if (type == 0)
-	for (int32 i = 0; i < m_body_count; ++i) {
-	  m_positions[i].set_linear(m_positions[i].linear() + 
-								m_velocities[i].linear() * m_timestep->m_dt);
-	  m_positions[i].set_angular(m_positions[i].angular() + 
-								 m_velocities[i].angular() * m_timestep->m_dt);
-	} else if (type == 1)
-	  for (int32 i = 0; i < m_body_count; ++i) {
-		m_positions[i].set_linear(m_positions[i].linear() +
-								  (m_velocities[i].linear() + m_velocities_w_f[i].linear()) * 
-								  m_timestep->m_dt * 0.5);
-		m_positions[i].set_angular(m_positions[i].angular() +
-								   (m_velocities[i].angular() + m_velocities_w_f[i].angular()) * 
-								   m_timestep->m_dt * 0.5);
-	  }
+  if (type == 0) {
+    for (int32 i = 0; i < m_body_count; ++i) {
+      m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
+      m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
+    }
+  } else if (type == 1) {
+    for (int32 i = 0; i < m_body_count; ++i) {
+      m_positions[i].set_linear(m_positions[i].linear() +
+                                (m_velocities[i].linear() + m_velocities_w_f[i].linear()) *
+                                m_timestep->m_dt * 0.5);
+      m_positions[i].set_angular(m_positions[i].angular() +
+                                 (m_velocities[i].angular() + m_velocities_w_f[i].angular()) *
+                                 m_timestep->m_dt * 0.5);
+    }
+  }
 	// copy state buffers back to the bodies.
 	write_states_back();
 
@@ -188,266 +180,193 @@ int b3SISolver::solve(int type)
 }
 
 
-<<<<<<< HEAD
 void b3SISolver::solve_velocity_constraints(bool is_collision)
 {
-    for(int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-
-        b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
-=======
-void b3SISolver::solve_velocity_constraints(bool is_collision) {
   for (int32 i = 0; i < m_contact_count; ++i) {
-	b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+    b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-	int32 point_count = vc->m_point_count;
+    int32 point_count = vc->m_point_count;
 
-	b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-	b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
->>>>>>> origin/zhb-dev
+    b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
+    b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
 
-	b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
-	b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
+    b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
+    b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-<<<<<<< HEAD
-        double lambda = 0;
-        // iter all contact points, compute the total impulse for body
-        // TODO: prove this algorithm is correct.
-        for (int32 j = 0; j < vc->m_point_count; ++j) {
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
+    double lambda = 0;
+    // iter all contact points, compute the total impulse for body
+    // TODO: prove this algorithm is correct.
+    for (int32 j = 0; j < vc->m_point_count; ++j) {
+      b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-            b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-            double rhs = -v_rel.dot(vc->m_normal);
-            // distinguish contact and collision
-            // collision: we need update velocity by restitution
-            // contact: the restitution is zero.
-            if(is_collision) {
-                lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-            } else {
-                lambda = vcp->m_normal_mass * rhs;
-            }
-        }
-        // apply normal Impulse
-        if(is_collision) {
-            double new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, 0.0);
-            lambda = new_impulse - vc->m_normal_collision_impulse;
-            vc->m_normal_collision_impulse = new_impulse;
-        } else {
-            double new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, 0.0);
-            lambda = new_impulse - vc->m_normal_contact_impulse;
-            vc->m_normal_contact_impulse = new_impulse;
-        }
-        b3Vector3d impluse = lambda * vc->m_normal;
-
-        v_a = v_a - vc->m_inv_mass_a * impluse;
-        w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
-        v_b = v_b + vc->m_inv_mass_b * impluse;
-        w_b = w_b + vc->m_inv_I_b * vc->m_rb.cross(impluse);
-/*/////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (int32 j = 0; j < vc->m_point_count; ++j) {
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
-
-            b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-            double rhs = -v_rel.dot(vc->m_normal);
-            // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
-
-            double lambda = 0;
-            if(is_collision) {
-                lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-                double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
-                lambda = new_impulse - vcp->m_normal_collision_impulse;
-                vcp->m_normal_collision_impulse = new_impulse;
-            } else {
-                lambda = vcp->m_normal_mass * rhs;
-                double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
-                lambda = new_impluse - vcp->m_normal_contact_impulse;
-                vcp->m_normal_contact_impulse = new_impluse;
-            }
-
-            // apply normal Impluse
-            b3Vector3d impluse = lambda * vc->m_normal;
-
-            v_a = v_a - vc->m_inv_mass_a * impluse;
-            w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
-            v_b = v_b + vc->m_inv_mass_b * impluse;
-            w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
-        }
-*//////////////////////////////////////////////////////////////////////////////////////////////
-        m_velocities[vc->m_index_a].set_linear(v_a);
-        m_velocities[vc->m_index_a].set_angular(w_a);
-        m_velocities[vc->m_index_b].set_linear(v_b);
-        m_velocities[vc->m_index_b].set_angular(w_b);
+      b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+      double rhs = -v_rel.dot(vc->m_normal);
+      // distinguish contact and collision
+      // collision: we need update velocity by restitution
+      // contact: the restitution is zero.
+      if(is_collision) {
+        lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+      } else {
+        lambda = vcp->m_normal_mass * rhs;
+      }
     }
+    // apply normal Impulse
+    if(is_collision) {
+      double new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, 0.0);
+      lambda = new_impulse - vc->m_normal_collision_impulse;
+      vc->m_normal_collision_impulse = new_impulse;
+    } else {
+      double new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, 0.0);
+      lambda = new_impulse - vc->m_normal_contact_impulse;
+      vc->m_normal_contact_impulse = new_impulse;
+    }
+    b3Vector3d impluse = lambda * vc->m_normal;
+
+    v_a = v_a - vc->m_inv_mass_a * impluse;
+    w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
+    v_b = v_b + vc->m_inv_mass_b * impluse;
+    w_b = w_b + vc->m_inv_I_b * vc->m_rb.cross(impluse);
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    for (int32 j = 0; j < vc->m_point_count; ++j) {
+      b3VelocityConstraintPoint* vcp = vc->m_points + j;
+
+      b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+      double rhs = -v_rel.dot(vc->m_normal);
+      // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
+
+      double lambda = 0;
+      if(is_collision) {
+        lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+        double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
+        lambda = new_impulse - vcp->m_normal_collision_impulse;
+        vcp->m_normal_collision_impulse = new_impulse;
+      } else {
+          lambda = vcp->m_normal_mass * rhs;
+          double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
+          lambda = new_impluse - vcp->m_normal_contact_impulse;
+          vcp->m_normal_contact_impulse = new_impluse;
+      }
+
+      // apply normal Impluse
+      b3Vector3d impluse = lambda * vc->m_normal;
+
+      v_a = v_a - vc->m_inv_mass_a * impluse;
+      w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
+      v_b = v_b + vc->m_inv_mass_b * impluse;
+      w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
+  }
+*//////////////////////////////////////////////////////////////////////////////////////////////
+    m_velocities[vc->m_index_a].set_linear(v_a);
+    m_velocities[vc->m_index_a].set_angular(w_a);
+    m_velocities[vc->m_index_b].set_linear(v_b);
+    m_velocities[vc->m_index_b].set_angular(w_b);
+  }
 }
 
 
 void b3SISolver::correct_penetration()
 {
-    for(int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
-=======
-	if (point_count == 1) {
-	  for (int32 j = 0; j < vc->m_point_count; ++j) {
-		b3VelocityConstraintPoint *vcp = vc->m_points + j;
+  for(int32 i = 0; i < m_contact_count; ++i) {
+    b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-		b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-		double rhs = -v_rel.dot(vc->m_normal);
-		// double lambda = vcp->m_normal_mass * 
-		// (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
+    // TODO: Check this way is useful. And angle?
+    if (vc->m_penetration < 0) {
+      b3Vector3d p_a = m_positions[vc->m_index_a].linear();
+      b3Vector3d p_b = m_positions[vc->m_index_b].linear();
 
-		double lambda = 0;
-		if (is_collision) {
-		  lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-		  double new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, 0.0);
-		  lambda = new_impulse - vcp->m_normal_collision_impulse;
-		  vcp->m_normal_collision_impulse = new_impulse;
-		} else {
-		  lambda = vcp->m_normal_mass * rhs;
-		  double new_impluse = b3_max(vcp->m_normal_contact_impulse + lambda, 0.0);
-		  lambda = new_impluse - vcp->m_normal_contact_impulse;
-		  vcp->m_normal_contact_impulse = new_impluse;
-		}
+      b3Vector3d position_correction = vc->m_normal * vc->m_penetration;
 
-		// apply normal Impluse
-		b3Vector3d impluse = lambda * vc->m_normal;
+      // at first, two bodies are not static.
+      // if two bodies are dynamic, all need to fix penetration.
+      // if one body is static, the dynamic body need to fix penetration * 2.
+      // because when generate manifold, the penetration is equally distributed to two bodies.
+      if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
+         m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+        p_a += vc->m_normal * vc->m_penetration;
+        p_b -= vc->m_normal * vc->m_penetration;
+      } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
+        p_a += position_correction * 2.0;
+      } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+        p_b -= position_correction * 2.0;
+      }
 
-		v_a = v_a - vc->m_inv_mass_a * impluse;
-		w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
-		v_b = v_b + vc->m_inv_mass_b * impluse;
-		w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impluse);
-	  }
-	}
+      m_positions[vc->m_index_a].set_linear(p_a);
+      m_positions[vc->m_index_b].set_linear(p_b);
 
-	m_velocities[vc->m_index_a].set_linear(v_a);
-	m_velocities[vc->m_index_a].set_angular(w_a);
-	m_velocities[vc->m_index_b].set_linear(v_b);
-	m_velocities[vc->m_index_b].set_angular(w_b);
-  }
-}
-
-
-void b3SISolver::correct_penetration() {
-  for (int32 i = 0; i < m_contact_count; ++i) {
-	b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
->>>>>>> origin/zhb-dev
-
-	// TODO: Check this way is useful. And angle?
-	if (vc->m_penetration < 0) {
-	  b3Vector3d p_a = m_positions[vc->m_index_a].linear();
-	  b3Vector3d p_b = m_positions[vc->m_index_b].linear();
-
-	  b3Vector3d position_correction = vc->m_normal * vc->m_penetration;
-
-<<<<<<< HEAD
-            // at first, two bodies are not static.
-            // if two bodies are dynamic, all need to fix penetration.
-            // if one body is static, the dynamic body need to fix penetration * 2.
-            // because when generate manifold, the penetration is equally distributed to two bodies.
-            if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
-               m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_a += vc->m_normal * vc->m_penetration;
-                p_b -= vc->m_normal * vc->m_penetration;
-            } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_a += position_correction * 2.0;
-            } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_b -= position_correction * 2.0;
-            }
-=======
-	  if (m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
-		  m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-		p_a += vc->m_normal * vc->m_penetration;
-		p_b -= vc->m_normal * vc->m_penetration;
-	  } else if (m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
-		p_a += position_correction * 2.0;
-	  } else if (m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-		p_b -= position_correction * 2.0;
-	  }
->>>>>>> origin/zhb-dev
-
-	  m_positions[vc->m_index_a].set_linear(p_a);
-	  m_positions[vc->m_index_b].set_linear(p_b);
-
-<<<<<<< HEAD
-            // after fix penetration, the penetration should be zero.
-            // TODO: we could fix part of penetration, but not all.
-            vc->m_penetration = 0;
-        }
+      // after fix penetration, the penetration should be zero.
+      // TODO: we could fix part of penetration, but not all.
+      vc->m_penetration = 0;
     }
+  }
 }
 
 
 void b3SISolver::solve_friction_constraints()
 {
-    for(int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+  for(int32 i = 0; i < m_contact_count; ++i) {
+    b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
-        b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
+    b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
+    b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
 
-        b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
-        b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
+    b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
+    b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
 
-        // vc->m_friction is the friction coefficient.
-        // vc->m_normal_contact_impulse is the normal impulse = ft.
-        double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
+    // vc->m_friction is the friction coefficient.
+    // vc->m_normal_contact_impulse is the normal impulse = ft.
+    double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
 
-        // In the view of body a, body a is static, the velocity of body b is v_rel
-        b3Vector3d v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
-        // In the tangent plane, the velocity is v_rel_t
-        b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
+    // In the view of body a, body a is static, the velocity of body b is v_rel
+    b3Vector3d v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
+    // In the tangent plane, the velocity is v_rel_t
+    b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
 
-        // if the tangent velocity is zero ===> static friction
-        if(v_rel_t.is_zero()) {
-            continue;
-        }
-        // get the tangent direction and size
-        double v_rel_t_ = v_rel_t.length();
-        b3Vector3d tangent = v_rel_t / v_rel_t_;
-
-        b3Vector3d friction_v;
-
-        // a and b at least have one dynamic body.
-        // if b is static, we need go to body b view, so the tangent velocity direction is -tangent.
-        // and then we get the max_friction.( (friction coefficient) * ft / m )
-        if(vc->m_inv_mass_b != 0) {
-            max_friction = max_friction * vc->m_inv_mass_b;
-        } else {
-            max_friction = max_friction * vc->m_inv_mass_a;
-            tangent = -tangent;
-        }
-        // we don't consider the friction when we update the velocity of bodies.
-        // So now we consider the friction to try to correct this error.
-        // if max_friction is greater than v_rel_t_, mean that the velocity will be zero by friction.
-        // else we use the max_friction to correct the velocity.
-        if(max_friction >= v_rel_t_) {
-            friction_v = v_rel_t_ * tangent;
-        } else {
-            friction_v = max_friction * tangent;
-        }
-
-        if(vc->m_inv_mass_b != 0) {
-            friction_v /= vc->m_inv_mass_b;
-            if(vc->m_inv_mass_a != 0) {
-                v_a = v_a + vc->m_inv_mass_a * friction_v;
-                // w_a = w_a + vc->m_inv_I_a * vc->m_ra.cross(friction_v);
-            }
-            v_b = v_b - vc->m_inv_mass_b * friction_v;
-            // w_b = w_b - vc->m_inv_I_b * vc->m_rb.cross(friction_v);
-        } else {
-            friction_v /= vc->m_inv_mass_a;
-            v_a = v_a - vc->m_inv_mass_a * friction_v;
-            // w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(friction_v);
-        }
-
-        m_velocities[vc->m_index_a].set_linear(v_a);
-        m_velocities[vc->m_index_a].set_angular(w_a);
-        m_velocities[vc->m_index_b].set_linear(v_b);
-        m_velocities[vc->m_index_b].set_angular(w_b);
+    // if the tangent velocity is zero ===> static friction
+    if(v_rel_t.is_zero()) {
+      continue;
     }
-=======
-	  vc->m_penetration = 0;
-	}
-  }
->>>>>>> origin/zhb-dev
+    // get the tangent direction and size
+    double v_rel_t_ = v_rel_t.length();
+    b3Vector3d tangent = v_rel_t / v_rel_t_;
+
+    b3Vector3d friction_v;
+
+    // a and b at least have one dynamic body.
+    // if b is static, we need go to body b view, so the tangent velocity direction is -tangent.
+    // and then we get the max_friction.( (friction coefficient) * ft / m )
+    if(vc->m_inv_mass_b != 0) {
+      max_friction = max_friction * vc->m_inv_mass_b;
+    } else {
+      max_friction = max_friction * vc->m_inv_mass_a;
+      tangent = -tangent;
+    }
+    // we don't consider the friction when we update the velocity of bodies.
+    // So now we consider the friction to try to correct this error.
+    // if max_friction is greater than v_rel_t_, mean that the velocity will be zero by friction.
+    // else we use the max_friction to correct the velocity.
+    if(max_friction >= v_rel_t_) {
+      friction_v = v_rel_t_ * tangent;
+    } else {
+      friction_v = max_friction * tangent;
+    }
+
+    if(vc->m_inv_mass_b != 0) {
+      friction_v /= vc->m_inv_mass_b;
+      if(vc->m_inv_mass_a != 0) {
+        v_a = v_a + vc->m_inv_mass_a * friction_v;
+        // w_a = w_a + vc->m_inv_I_a * vc->m_ra.cross(friction_v);
+      }
+      v_b = v_b - vc->m_inv_mass_b * friction_v;
+      // w_b = w_b - vc->m_inv_I_b * vc->m_rb.cross(friction_v);
+    } else {
+      friction_v /= vc->m_inv_mass_a;
+      v_a = v_a - vc->m_inv_mass_a * friction_v;
+      // w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(friction_v);
+    }
+
+    m_velocities[vc->m_index_a].set_linear(v_a);
+    m_velocities[vc->m_index_a].set_angular(w_a);
+    m_velocities[vc->m_index_b].set_linear(v_b);
+    m_velocities[vc->m_index_b].set_angular(w_b);
+    }
 }
