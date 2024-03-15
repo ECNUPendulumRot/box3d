@@ -21,7 +21,7 @@ class TestMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     bool m_enable_depth_test = true;
     bool m_show_auxiliary_shapes = true;
-    bool m_show_ground = true;
+    bool m_show_ground = false;
     bool m_show_faces = true;
     bool m_show_edges = true;
     ImVec4 m_line_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);

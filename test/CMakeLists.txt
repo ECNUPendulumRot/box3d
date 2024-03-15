@@ -38,7 +38,8 @@ set(TEST_SOURCE_FILES
         src/imgui_ext.cpp
         src/unit_test_ground_view.cpp
         src/unit_test_plane_sphere_collide.cpp
-        src/unit_test_plane_box_collide.cpp
+        src/scene_test_box_rest.cpp
+        src/scene_test_dropping.cpp
 )
 
 add_executable(
