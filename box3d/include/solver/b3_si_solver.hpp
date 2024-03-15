@@ -15,7 +15,9 @@ public:
 
     void init_velocity_constraints();
 
-    int solve() override;
+    // type 0 = semi-implict Euler integration
+    // type 1 = verlet integration
+    int solve(int type) override;
 
     void solve_velocity_constraints(bool is_collision);
 

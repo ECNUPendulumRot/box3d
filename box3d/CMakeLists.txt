@@ -48,6 +48,7 @@ set(B3D_HEADER_FILES
 
 
         include/solver/b3_solver.hpp
+        #include/solver/b3_solver_verlet.hpp
         include/solver/b3_si_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
@@ -84,7 +85,9 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
+        #src/solver/b3_solver_verlet.cpp
         src/solver/b3_si_solver.cpp
+        #src/solver/b3_si_solver_verlet.cpp
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
 

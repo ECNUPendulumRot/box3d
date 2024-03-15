@@ -32,11 +32,13 @@ class b3Solver {
 protected:
 
     b3Contact** m_contacts = nullptr;
-	int32 m_contact_count;
+    int32 m_contact_count;
 
     int32 m_body_count;
     b3TransformD* m_positions = nullptr;
     b3TransformD* m_velocities = nullptr;
+    //used in verlet integration, store the velocity with out force applied
+    b3TransformD* m_velocities_w_f = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
@@ -57,13 +59,13 @@ public:
 
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
+
     /**
      * @breif solver all constraints in the island.
      */
-    virtual int solve() = 0;
+    virtual int solve(int type) = 0;
 
     virtual ~b3Solver();
-    
 };
 
 
