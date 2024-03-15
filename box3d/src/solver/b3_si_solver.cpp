@@ -332,24 +332,18 @@ void b3SISolver::solve_friction_constraints()
             friction_v = max_friction * tangent;
         }
 
-        // TODO: maybe friction is act at the center of object.
-        // v_a = v_a - vc->m_inv_mass_a * tangent_impulse;
-        // w_a = w_a - vc->m_inv_I_a * (vc->m_ra.cross(tangent_impulse));
-        // v_b = v_b + vc->m_inv_mass_b * tangent_impulse;
-        // w_b = w_b + vc->m_inv_I_b * (vc->m_rb.cross(tangent_impulse));
-
         if(vc->m_inv_mass_b != 0) {
             friction_v /= vc->m_inv_mass_b;
             if(vc->m_inv_mass_a != 0) {
                 v_a = v_a + vc->m_inv_mass_a * friction_v;
-                // w_a = w_a + vc->m_inv_I_a * vc->m_ra.cross(friction_acc);
+                // w_a = w_a + vc->m_inv_I_a * vc->m_ra.cross(friction_v);
             }
             v_b = v_b - vc->m_inv_mass_b * friction_v;
-            // w_b = w_b - vc->m_inv_I_b * vc->m_rb.cross(friction_acc);
+            // w_b = w_b - vc->m_inv_I_b * vc->m_rb.cross(friction_v);
         } else {
             friction_v /= vc->m_inv_mass_a;
             v_a = v_a - vc->m_inv_mass_a * friction_v;
-            // w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(friction_acc);
+            // w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(friction_v);
         }
 
         m_velocities[vc->m_index_a].set_linear(v_a);
