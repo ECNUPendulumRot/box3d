@@ -103,7 +103,7 @@ public:
         inv.m_23 = -inv_det * (m_11 * m_32 - m_12 * m_31);
         inv.m_33 =  inv_det * (m_11 * m_22 - m_12 * m_21);
 
-        return inv * inv_det;
+        return inv;
     }
 
     inline b3Matrix3& operator-=(const b3Matrix3<T>& M) {

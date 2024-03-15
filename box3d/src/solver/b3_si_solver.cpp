@@ -152,7 +152,7 @@ int b3SISolver::solve(int type)
   }
 
   // solve friction constraints
-  //solve_friction_constraints();
+  // solve_friction_constraints();
 
   // integrate position
   // type 0 = semi-implict Euler integration
