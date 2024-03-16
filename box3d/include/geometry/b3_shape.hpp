@@ -23,11 +23,10 @@ class b3BlockAllocator;
 
 enum b3ShapeType {
     e_type_not_defined = -1,
-    e_mesh       = 0,
-    e_cube       = 1,
-    e_sphere     = 2,
-    e_plane      = 3,
-    e_type_count = 4
+    e_cube       = 0,
+    e_sphere     = 1,
+    e_plane      = 2,
+    e_type_count = 3
 };
 
 
@@ -177,7 +176,7 @@ public:
         m_next = next;
     }
 
-    virtual double get_radius() const {
+    virtual real get_radius() const {
         return m_radius;
     }
 

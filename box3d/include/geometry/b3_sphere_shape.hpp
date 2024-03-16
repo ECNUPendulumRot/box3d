@@ -69,7 +69,7 @@ public:
 
     void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
 
-    double get_radius() const override {
+    real get_radius() const override {
         return m_radius;
     }
 
