@@ -7,9 +7,9 @@
 
 class UnitTestBoxCollide : public UnitTestBase {
 
-  b3TransformD xf_A;
+  b3Transformr xf_A;
 
-  b3TransformD xf_B;
+  b3Transformr xf_B;
 
   b3Body *body_A = nullptr;
 
@@ -19,9 +19,9 @@ class UnitTestBoxCollide : public UnitTestBase {
 
   b3CubeShape *cube_B = nullptr;
 
-  b3Vector3d hf_A = b3Vector3d(1, 1, 1);
+  b3Vector3r hf_A = b3Vector3r(1, 1, 1);
 
-  b3Vector3d hf_B = b3Vector3d(1, 1, 1);
+  b3Vector3r hf_B = b3Vector3r(1, 1, 1);
 
   b3Manifold manifold;
 
@@ -42,7 +42,7 @@ public :
     cube_A->set_block_allocator(&m_allocator);
 
 
-    xf_B.set_linear(b3Vector3d(0, 3, 0));
+    xf_B.set_linear(b3Vector3r(0, 3, 0));
     xf_B.set_angular(0, 0, 0);
     cube_B = new b3CubeShape();
     cube_B->set_as_box(hf_B.m_x, hf_B.m_y, hf_B.m_z);
@@ -120,56 +120,56 @@ public :
     // Ensure the key is in upper case
     if (key >= 97 && key <= 122) key -= 32;
 
-    b3TransformD xf = selected_body->get_pose();
+    b3Transformr xf = selected_body->get_pose();
     switch (key) {
     case GLFW_KEY_W:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(-0.1, 0, 0));
+      xf.set_linear(xf.linear() + b3Vector3r(-0.1, 0, 0));
       break;
     }
     case GLFW_KEY_S:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(0.1, 0, 0));
+      xf.set_linear(xf.linear() + b3Vector3r(0.1, 0, 0));
       break;
     }
     case GLFW_KEY_A:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(0, -0.1, 0));
+      xf.set_linear(xf.linear() + b3Vector3r(0, -0.1, 0));
       break;
     }
 	  case GLFW_KEY_D:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(0, 0.1, 0));
+      xf.set_linear(xf.linear() + b3Vector3r(0, 0.1, 0));
       break;
     }
     case GLFW_KEY_T:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(0, 0, 0.1));
+      xf.set_linear(xf.linear() + b3Vector3r(0, 0, 0.1));
       break;
     }
     case GLFW_KEY_G:
     {
-      xf.set_linear(xf.linear() + b3Vector3d(0, 0, -0.1));
+      xf.set_linear(xf.linear() + b3Vector3r(0, 0, -0.1));
       break;
     }
     case GLFW_KEY_Q:
     {
-      xf.set_angular(xf.angular() + b3Vector3d(0, 0, 0.1));
+      xf.set_angular(xf.angular() + b3Vector3r(0, 0, 0.1));
       break;
     }
     case GLFW_KEY_E:
     {
-      xf.set_angular(xf.angular() + b3Vector3d(0, 0, -0.1));
+      xf.set_angular(xf.angular() + b3Vector3r(0, 0, -0.1));
       break;
     }
     case GLFW_KEY_R:
     {
-      xf.set_angular(xf.angular() + b3Vector3d(0, 0.1, 0));
+      xf.set_angular(xf.angular() + b3Vector3r(0, 0.1, 0));
       break;
     }
     case GLFW_KEY_F:
     {
-      xf.set_angular(xf.angular() + b3Vector3d(0, -0.1, 0));
+      xf.set_angular(xf.angular() + b3Vector3r(0, -0.1, 0));
       break;
     }
 

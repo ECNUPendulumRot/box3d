@@ -31,7 +31,7 @@ public:
         return 1;
     }
 
-    void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const override;
+    void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const override;
 
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
@@ -39,7 +39,7 @@ public:
 
     void init_view_data() override;
 
-    void setup_view_data(const b3TransformD& xf) override;
+    void setup_view_data(const b3Transformr& xf) override;
 };
 
 

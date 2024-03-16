@@ -61,7 +61,7 @@ struct b3ViewData {
         int fv2;
     } FaceIndice;
 
-    inline void set_vertex_row(int vertex_index, const b3Vector3d& vertex) const {
+    inline void set_vertex_row(int vertex_index, const b3Vector3r& vertex) const {
         *(m_V + 3 * vertex_index)     = vertex.m_x;
         *(m_V + 3 * vertex_index + 1) = vertex.m_y;
         *(m_V + 3 * vertex_index + 2) = vertex.m_z;
@@ -89,7 +89,7 @@ protected:
      * The radius of the shape.
      * This is used for extending the AABB of the shape for collision test
      */
-    double m_radius = 0;
+    real m_radius = 0;
 
     /**
      * @brief Next mesh in the list
@@ -112,7 +112,7 @@ protected:
     /**
      * @brief This is used for gui
      */
-    b3Vector3d m_color = b3Vector3d::zero();
+    b3Vector3r m_color = b3Vector3r::zero();
 
 public:
 
@@ -122,7 +122,7 @@ public:
         return 0;
     };
 
-    virtual void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const {
+    virtual void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const {
         b3_NOT_USED(aabb);
         b3_NOT_USED(xf);
         b3_NOT_USED(child_index);
@@ -133,7 +133,7 @@ public:
         b3_NOT_USED(density);
     };
 
-    b3ViewData get_view_data(const b3TransformD& xf) {
+    b3ViewData get_view_data(const b3Transformr& xf) {
         if(m_view_data.is_empty()) {
             // allocate memory ti store vertices, edges and faces
             init_view_data();
@@ -149,7 +149,7 @@ public:
 
     }
 
-    virtual void setup_view_data(const b3TransformD& xf) {
+    virtual void setup_view_data(const b3Transformr& xf) {
         b3_NOT_USED(xf);
     }
 
@@ -185,11 +185,11 @@ public:
         return m_body;
     }
 
-    void set_color(const b3Vector3d& color) {
+    void set_color(const b3Vector3r& color) {
         m_color = color;
     }
 
-    b3Vector3d get_color() const {
+    b3Vector3r get_color() const {
         return m_color;
     }
 };

@@ -5,10 +5,10 @@ class TestPlaneSphereCollide : public SceneTestBase {
 
 public:
   TestPlaneSphereCollide() {
-    m_world->set_gravity(b3Vector3d(0, 0, -10));
+    m_world->set_gravity(b3Vector3r(0, 0, -10));
 
     // create a sphere body
-    b3TransformD pose, velocity;
+    b3Transformr pose, velocity;
     pose.set_linear(0, 0, 5);
     b3BodyDef body_def;
     body_def.m_type = b3BodyType::b3_dynamic_body;

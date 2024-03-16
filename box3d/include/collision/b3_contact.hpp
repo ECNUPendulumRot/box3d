@@ -38,6 +38,7 @@ struct b3ContactEdge {
 inline double b3_mix_friction(double friction1, double friction2) {
     return b3_sqrt(friction1 * friction2);
 }
+
 // Restitution mixing law. The idea is to allow for anythings to bounce off an inelastic surface.
 inline double b3_mix_restitution(double restitution1, double restitution2) {
     return restitution1 > restitution2 ? restitution1 : restitution2;
@@ -179,7 +180,7 @@ public:
     }
 
     // generate manifold between two shapes
-    virtual void evaluate(b3Manifold* manifold, const b3TransformD& xfA, const b3TransformD& xfB) = 0;
+    virtual void evaluate(b3Manifold* manifold, const b3Transformr& xfA, const b3Transformr& xfB) = 0;
 
 protected:
 

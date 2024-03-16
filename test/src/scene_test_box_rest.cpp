@@ -9,16 +9,16 @@ public:
 
     TestBoxRest() {
 
-        m_world->set_gravity(b3Vector3d(0, 0, -10));
+        m_world->set_gravity(b3Vector3r(0, 0, -10));
 
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3TransformD pose, velocity;
+            b3Transformr pose, velocity;
             pose.set_linear({0, 0, 1});
             pose.set_angular({0, 0, 0});
-            velocity.set_linear(b3Vector3d(0, 0, 0));
+            velocity.set_linear(b3Vector3r(0, 0, 0));
             body_def.set_initial_status(pose, velocity);
 
             b3Body* cube1 = m_world->create_body(body_def);
@@ -39,10 +39,10 @@ public:
 //            b3BodyDef body_def;
 //            body_def.m_type = b3BodyType::b3_dynamic_body;
 //
-//            b3TransformD pose, velocity;
+//            b3Transformr pose, velocity;
 //            pose.set_linear({0, 0, 2});
 //            pose.set_angular({0, 0, 0.7});
-//            velocity.set_linear(b3Vector3d(0, 0, 0));
+//            velocity.set_linear(b3Vector3r(0, 0, 0));
 //            body_def.set_initial_status(pose, velocity);
 //
 //            b3Body* cube1 = m_world->create_body(body_def);

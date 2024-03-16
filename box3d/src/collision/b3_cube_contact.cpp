@@ -27,8 +27,8 @@ b3CubeContact::b3CubeContact(b3Fixture *fixture_a, b3Fixture *fixture_b) :
 
 
 void b3CubeContact::evaluate(b3Manifold *manifold, 
-							 const b3TransformD &xf_A, 
-							 const b3TransformD &xf_B) {
+							 const b3Transformr &xf_A,
+							 const b3Transformr &xf_B) {
   b3_collide_cube(manifold, (b3CubeShape *)m_fixture_a->get_shape(), xf_A, 
 				  (b3CubeShape *)m_fixture_b->get_shape(), xf_B);
 }

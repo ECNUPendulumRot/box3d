@@ -8,13 +8,13 @@
 struct b3TimeStep {
 
     // time step
-    double m_dt;
+    real m_dt;
 
     // inverse time step (0 if dt == 0).
-    double m_inv_dt;
+    real m_inv_dt;
 
     // dt * inv_dt0
-    double m_dt_ratio;
+    real m_dt_ratio;
 
     int32 m_velocity_iterations;
 

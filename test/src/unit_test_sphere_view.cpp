@@ -3,7 +3,7 @@
 
 class UnitTestShpereView : public UnitTestBase {
 
-  b3TransformD xf_A;
+  b3Transformr xf_A;
 
   b3Body *body_A = nullptr;
 

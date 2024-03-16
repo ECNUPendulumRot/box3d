@@ -166,8 +166,8 @@ b3Matrix3<T> b3Transform<T>::rotation_matrix() const {
 }
 
 
-using b3TransformF = b3Transform<float>;
-using b3TransformD = b3Transform<double>;
-
+using b3Transformf = b3Transform<float>;
+using b3Transformd = b3Transform<double>;
+using b3Transformr = b3Transform<real>;
 
 #endif //BOX3D_B3_TRANSFORM_HPP

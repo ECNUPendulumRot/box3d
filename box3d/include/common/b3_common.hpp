@@ -10,11 +10,6 @@
 
 #define b3_assert(A) assert(A)
 
-#define b3_double_epsilon DBL_EPSILON
-#define b3_float_epsilon FLT_EPSILON
-
-#define b3_double_max DBL_MAX
-#define b3_double_min DBL_MIN
 
 #define b3_pi 3.14159265359
 
@@ -30,7 +25,29 @@
 
 #define b3_aabb_extension (0.1 * b3_length_units_per_meter)
 
-#define b3_max_double DBL_MAX
+
+using real = float;
+
+template<typename T>
+struct b3RealLimits;
+
+template<>
+struct b3RealLimits<float> {
+    static constexpr float Max = FLT_MAX;
+    static constexpr float Min = FLT_MIN;
+    static constexpr float Epsilon = FLT_EPSILON;
+};
+
+template<>
+struct b3RealLimits<double> {
+    static constexpr double Max = DBL_MAX;
+    static constexpr double Min = DBL_MIN;
+    static constexpr double Epsilon = DBL_EPSILON;
+};
+
+constexpr auto b3_real_max = b3RealLimits<real>::Max;
+constexpr auto b3_real_min = b3RealLimits<real>::Min;
+constexpr auto b3_real_epsilon = b3RealLimits<real>::Epsilon;
 
 
 #endif //BOX3D_B3_COMMON_HPP

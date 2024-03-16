@@ -32,18 +32,18 @@ int main() {
     std::cout << "b3ManifoldPoint: "    << sizeof(b3ManifoldPoint)      << "  ";
     std::cout << "b3MassProperty: "     << sizeof(b3MassProperty)       << "  ";
     std::cout << "b3Matrix3f: "         << sizeof(b3Matrix3f)           << "  ";
-    std::cout << "b3Matrix3d: "         << sizeof(b3Matrix3d)           << "  ";
+    std::cout << "b3Matrix3r: " << sizeof(b3Matrix3r) << "  ";
     std::cout << "b3Node: "             << sizeof(b3Node)               << "  ";
     std::cout << "b3Pair: "             << sizeof(b3Pair)               << "  ";
     std::cout << "b3Shape: "            << sizeof(b3Shape)              << "  ";
     std::cout << "b3ShapeType: "        << sizeof(b3ShapeType)          << "  ";
     std::cout << "b3ShapeConfig: "      << sizeof(b3SphereConfig)       << "  ";
     std::cout << "b3SphereShape: "      << sizeof(b3SphereShape)        << "  ";
-    std::cout << "b3TransformD: "       << sizeof(b3TransformD)         << "  ";
-    std::cout << "b3TransformF: "       << sizeof(b3TransformF)         << "  ";
+    std::cout << "b3Transformr: " << sizeof(b3Transformr) << "  ";
+    std::cout << "b3Transformf: " << sizeof(b3Transformf) << "  ";
     std::cout << "b3ViewData: "         << sizeof(b3ViewData)           << "  ";
     std::cout << "b3Vector3f: "         << sizeof(b3Vector3f)           << "  ";
-    std::cout << "b3VertexD: "          << sizeof(b3Vector3d)           << "  ";
+    std::cout << "b3VertexD: " << sizeof(b3Vector3r) << "  ";
     std::cout << "b3World: "            << sizeof(b3World)              << "  ";
 
     std::cout << std::endl;

@@ -16,7 +16,7 @@ public:
 
     SceneTestBase(){
         m_world = new b3World;
-        m_world->set_gravity(b3Vector3d(0.0, 0.0, -10.0));
+        m_world->set_gravity(b3Vector3r(0.0, 0.0, -10.0));
     }
 
     ~SceneTestBase() {

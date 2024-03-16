@@ -11,26 +11,26 @@ static double radius[5] = {
 		0.5
 };
 
-static b3Vector3d hf_cube[5] = {
-		b3Vector3d(0.1, 0.1, 0.1),
-		b3Vector3d(0.1, 0.2, 0.2),
-		b3Vector3d(0.3, 0.1, 0.1),
-		b3Vector3d(0.2, 0.1, 0.3),
-		b3Vector3d(0.4, 0.3, 0.3)
+static b3Vector3r hf_cube[5] = {
+        b3Vector3r(0.1, 0.1, 0.1),
+        b3Vector3r(0.1, 0.2, 0.2),
+        b3Vector3r(0.3, 0.1, 0.1),
+        b3Vector3r(0.2, 0.1, 0.3),
+        b3Vector3r(0.4, 0.3, 0.3)
 };
 
 
-static b3Vector3d position[10] = {
-		b3Vector3d(1, 0, 0),
-		b3Vector3d(1, 2, 0),
-		b3Vector3d(1, 1 ,1),
-		b3Vector3d(2, 3, 1),
-		b3Vector3d(2, 2, 2),
-		b3Vector3d(3, 3, 3),
-		b3Vector3d(2, 4, 2),
-		b3Vector3d(2, 4, 0),
-		b3Vector3d(2, 2, 4),
-		b3Vector3d(5, 1, 3)
+static b3Vector3r position[10] = {
+        b3Vector3r(1, 0, 0),
+        b3Vector3r(1, 2, 0),
+        b3Vector3r(1, 1 , 1),
+        b3Vector3r(2, 3, 1),
+        b3Vector3r(2, 2, 2),
+        b3Vector3r(3, 3, 3),
+        b3Vector3r(2, 4, 2),
+        b3Vector3r(2, 4, 0),
+        b3Vector3r(2, 2, 4),
+        b3Vector3r(5, 1, 3)
 };
 
 
@@ -99,8 +99,8 @@ int dynamic_tree_index = register_test("Unit Test", "Dynamic Tree", UnitTestDyna
 
 void init_auxiliary_shape(b3AABB *aabb, int height, b3AuxiliaryShape *auxiliary_shape) {
   auxiliary_shape->set_color(colors[height]);
-  b3Vector3d min = aabb->min();
-  b3Vector3d max = aabb->max();
+  b3Vector3r min = aabb->min();
+  b3Vector3r max = aabb->max();
   auxiliary_shape->add_line(min.x(), min.y(), min.z(), max.x(), min.y(), min.z());
   auxiliary_shape->add_line(max.x(), min.y(), min.z(), max.x(), max.y(), min.z());
   auxiliary_shape->add_line(max.x(), max.y(), min.z(), min.x(), max.y(), min.z());
@@ -121,7 +121,7 @@ UnitTestDynamicTree::UnitTestDynamicTree() {
   ////////////////////// shape //////////////
   bodies = new b3Body[shape_count];
 
-  b3TransformD xf;
+  b3Transformr xf;
 
   int body_index = 0;
   int shape_num = shape_count / 2;

@@ -36,19 +36,19 @@ class b3CubeShape : public b3Shape {
 
 public:
 
-    b3Vector3d m_centroid;
+    b3Vector3r m_centroid;
 
-    b3Vector3d m_vertices[8];
+    b3Vector3r m_vertices[8];
 
-    b3Vector3d m_normals[6];
+    b3Vector3r m_normals[6];
 
     b3EdgeIndex m_edges[12];
 
     b3FaceIndex m_faces[6];
 
-    b3Vector3d m_xyz;
+    b3Vector3r m_xyz;
 
-    b3Vector3d m_h_xyz;
+    b3Vector3r m_h_xyz;
 
     b3CubeShape();
 
@@ -67,13 +67,13 @@ public:
     }
 
 
-    void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 childIndex) const override;
+    void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 childIndex) const override;
 
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
     void init_view_data() override;
 
-    void setup_view_data(const b3TransformD& xf) override;
+    void setup_view_data(const b3Transformr& xf) override;
 
     b3Shape* clone() const override;
 

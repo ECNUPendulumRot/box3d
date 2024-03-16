@@ -49,7 +49,7 @@ b3DynamicTree::~b3DynamicTree() {
 int32 b3DynamicTree::create_bvh_proxy(const b3AABB &aabb, b3FixtureProxy *fixture_proxy) {
   int32 bvh_proxy_id = assign_node();
 
-  b3Vector3d r(b3_aabb_extension, b3_aabb_extension, b3_aabb_extension);
+  b3Vector3r r(b3_aabb_extension, b3_aabb_extension, b3_aabb_extension);
   m_nodes[bvh_proxy_id].m_aabb.m_min = aabb.m_min - r;
   m_nodes[bvh_proxy_id].m_aabb.m_max = aabb.m_max + r;
 

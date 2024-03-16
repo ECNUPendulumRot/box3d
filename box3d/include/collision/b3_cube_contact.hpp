@@ -18,7 +18,7 @@ public:
 
     virtual ~b3CubeContact() = default;
 
-    void evaluate(b3Manifold* manifold, const b3TransformD& xf_a, const b3TransformD& xf_b) override;
+    void evaluate(b3Manifold* manifold, const b3Transformr& xf_a, const b3Transformr& xf_b) override;
 
 };
 

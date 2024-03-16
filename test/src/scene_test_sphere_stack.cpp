@@ -8,10 +8,10 @@ public:
 
   TestSphereStack() {
 
-	m_world->set_gravity(b3Vector3d(0, 0, -10));
+	m_world->set_gravity(b3Vector3r(0, 0, -10));
 	int num_of_spheres = 5;
 	// create a dynamic body
-	b3TransformD pose, velocity;
+	b3Transformr pose, velocity;
 
 	b3BodyDef body_def;
 	body_def.m_type = b3BodyType::b3_dynamic_body;
@@ -31,8 +31,8 @@ public:
 
 	for (int i = 0; i < 2; i++) {
 	  for (int j = 0; j < 1; j++) {
-      pose.set_linear(b3Vector3d(0, 1.0 * j, 1.0 * i + 5));
-      velocity.set_linear(b3Vector3d(0, 0, 0));
+      pose.set_linear(b3Vector3r(0, 1.0 * j, 1.0 * i + 5));
+      velocity.set_linear(b3Vector3r(0, 0, 0));
       body_def.set_initial_status(pose, velocity);
       m_world->create_body(body_def)->create_fixture(fixture_def);
 	  }

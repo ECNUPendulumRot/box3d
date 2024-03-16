@@ -15,33 +15,33 @@ class b3AABB {
     /**
      * The lower bound of the AABB.
      */
-    b3Vector3d m_min;
+    b3Vector3r m_min;
 
     /**
      * The upper bound of the AABB.
      */
-    b3Vector3d m_max;
+    b3Vector3r m_max;
 
 public:
 
     b3AABB() = default;
 
-    b3AABB(const b3Vector3d& lower_bound, const b3Vector3d& upper_bound);
+    b3AABB(const b3Vector3r& lower_bound, const b3Vector3r& upper_bound);
 
     /**
      * @brief Get the center coordinate of the AABB.
      * @return The center coordinate of the AABB.
      */
-    inline b3Vector3d center() const {
+    inline b3Vector3r center() const {
 
-        return 0.5 * (m_max - m_min);
+        return real(0.5) * (m_max - m_min);
     }
 
-    inline b3Vector3d min() const {
+    inline b3Vector3r min() const {
         return m_min;
     }
 
-    inline b3Vector3d max() const {
+    inline b3Vector3r max() const {
         return m_max;
     }
 
@@ -49,12 +49,12 @@ public:
      * @brief Get the surface area of the AABB.
      * @return The surface area of the AABB.
      */
-    inline double get_surface_area(){
+    inline real get_surface_area(){
 
-        double f1 =  (m_max.m_x - m_min.m_x) * (m_max.m_y - m_min.m_y);
-        double f2 =  (m_max.m_x - m_min.m_x) * (m_max.m_z - m_min.m_z);
-        double f3 =  (m_max.m_y - m_min.m_y) * (m_max.m_z - m_min.m_z);
-        return 2.0 * f1 * f2 * f3;
+        real f1 =  (m_max.m_x - m_min.m_x) * (m_max.m_y - m_min.m_y);
+        real f2 =  (m_max.m_x - m_min.m_x) * (m_max.m_z - m_min.m_z);
+        real f3 =  (m_max.m_y - m_min.m_y) * (m_max.m_z - m_min.m_z);
+        return real(2.0) * f1 * f2 * f3;
     }
 
     /**

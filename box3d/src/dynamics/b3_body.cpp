@@ -13,7 +13,7 @@
 #include "geometry/b3_plane_shape.hpp"
 
 
-b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Matrix3d::zero())
+b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Matrix3r::zero())
 {
   m_type = body_def.m_type;
   m_xf = body_def.m_init_pose;
@@ -60,12 +60,12 @@ void b3Body::reset_mass_data()
 {
   m_mass = 0.0;
   m_inv_mass = 0.0;
-  m_inertia = b3Matrix3d::zero();
-  m_inv_inertia = b3Matrix3d::zero();
+  m_inertia = b3Matrix3r::zero();
+  m_inv_inertia = b3Matrix3r::zero();
 
   b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
-  b3Vector3d local_center = b3Vector3d::zero();
+  b3Vector3r local_center = b3Vector3r::zero();
 
   // see Mirtich's paper, Fast and Accurate Computation of Polyhedral Mass Properties
   for (b3Fixture *f = m_fixture_list; f != nullptr; f = f->m_next) {
@@ -87,17 +87,17 @@ void b3Body::reset_mass_data()
   }
 
   if (m_inertia.determinant() > 0) {
-    double bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
-    double byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
-    double bzz = local_center.x() * local_center.x() + local_center.y() * local_center.y();
-    double bxy = local_center.x() * local_center.y();
-    double bxz = local_center.x() * local_center.z();
-    double byz = local_center.y() * local_center.z();
+    real bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
+    real byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
+    real bzz = local_center.x() * local_center.x() + local_center.y() * local_center.y();
+    real bxy = local_center.x() * local_center.y();
+    real bxz = local_center.x() * local_center.z();
+    real byz = local_center.y() * local_center.z();
 
-    b3Vector3d col1(bxx, -bxy, -bxz);
-    b3Vector3d col2(-bxy, byy, -byz);
-    b3Vector3d col3(-bxz, -byz, bzz);
-    b3Matrix3d bias_center(col1, col2, col3);
+    b3Vector3r col1(bxx, -bxy, -bxz);
+    b3Vector3r col2(-bxy, byy, -byz);
+    b3Vector3r col3(-bxz, -byz, bzz);
+    b3Matrix3r bias_center(col1, col2, col3);
 
     m_inertia -= m_mass * bias_center;
 
@@ -106,8 +106,8 @@ void b3Body::reset_mass_data()
     m_inv_inertia = m_inertia.inverse();
 
   } else {
-    m_inv_inertia = b3Matrix3d::zero();
-    m_inv_inertia = b3Matrix3d::zero();
+    m_inv_inertia = b3Matrix3r::zero();
+    m_inv_inertia = b3Matrix3r::zero();
   }
 
   // TODO: check whether m_sweep is needed

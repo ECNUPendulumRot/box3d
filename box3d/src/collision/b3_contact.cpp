@@ -129,8 +129,8 @@ void b3Contact::update()
   b3Body *body_a = m_fixture_a->get_body();
   b3Body *body_b = m_fixture_b->get_body();
 
-  const b3TransformD xf_a = body_a->get_pose();
-  const b3TransformD xf_b = body_b->get_pose();
+  const b3Transformr xf_a = body_a->get_pose();
+  const b3Transformr xf_b = body_b->get_pose();
 
   // TODO: add sensor ?
   // generate the manifold between the two shapes

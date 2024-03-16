@@ -10,7 +10,7 @@ struct b3SphereConfig {
 
     int m_segments;
 
-    b3Matrix3d m_rot_y, m_rot_z;
+    b3Matrix3r m_rot_y, m_rot_z;
 
     int m_vertices_count;
     int m_faces_count;
@@ -28,7 +28,7 @@ struct b3SphereConfig {
 
 class b3SphereShape : public b3Shape {
 
-    b3Vector3d m_centroid;
+    b3Vector3r m_centroid;
 
     // control generate sphere view data
     static const b3SphereConfig m_config;
@@ -43,13 +43,13 @@ class b3SphereShape : public b3Shape {
     /**
      * This is used to move vertices of sphere.
      */
-    b3Vector3d m_old_center;
+    b3Vector3r m_old_center;
 
     // transform the center of sphere
     // because we want not calculate all vertices position every frame.
     // so we transform all vertices of sphere to display coordinate.
     // sphere allow we work this.
-    void transform(b3Vector3d& v);
+    void transform(b3Vector3r& v);
 
 public:
 
@@ -59,7 +59,7 @@ public:
         return 1;
     }
 
-    b3Vector3d get_centroid() const {
+    b3Vector3r get_centroid() const {
         return m_centroid;
     }
 
@@ -71,7 +71,7 @@ public:
 
     b3Shape* clone() const override;
 
-    void get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const override;
+    void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const override;
 
     void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
 
@@ -81,7 +81,7 @@ public:
 
     void init_view_data() override;
 
-    void setup_view_data(const b3TransformD& xf) override;
+    void setup_view_data(const b3Transformr& xf) override;
 };
 
 

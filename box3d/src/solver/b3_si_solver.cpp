@@ -46,11 +46,11 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
     vc->m_penetration = manifold->m_penetration;
 
-    vc->m_ra = b3Vector3d::zero();
-    vc->m_rb = b3Vector3d::zero();
+    vc->m_ra = b3Vector3r::zero();
+    vc->m_rb = b3Vector3r::zero();
     // the center of body in the world frame
-    b3Vector3d center_a = body_a->get_pose().transform(body_a->get_local_center());
-    b3Vector3d center_b = body_b->get_pose().transform(body_b->get_local_center());
+    b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
+    b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
 
     for (int32 j = 0; j < point_count; j++) {
       b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -72,11 +72,11 @@ void b3SISolver::init_velocity_constraints()
     int32 index_a = vc->m_index_a;
     int32 index_b = vc->m_index_b;
 
-    b3Vector3d v_a = m_velocities[index_a].linear();
-    b3Vector3d w_a = m_velocities[index_a].angular();
+    b3Vector3r v_a = m_velocities[index_a].linear();
+    b3Vector3r w_a = m_velocities[index_a].angular();
 
-    b3Vector3d v_b = m_velocities[index_b].linear();
-    b3Vector3d w_b = m_velocities[index_b].angular();
+    b3Vector3r v_b = m_velocities[index_b].linear();
+    b3Vector3r w_b = m_velocities[index_b].angular();
 
     for (int j = 0; j < vc->m_point_count; ++j) {
       b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -86,8 +86,8 @@ void b3SISolver::init_velocity_constraints()
       vc->m_ra += vcp->m_ra;
       vc->m_rb += vcp->m_rb;
 
-      b3Vector3d ra_n = vcp->m_ra.cross(vc->m_normal);
-      b3Vector3d rb_n = vcp->m_rb.cross(vc->m_normal);
+      b3Vector3r ra_n = vcp->m_ra.cross(vc->m_normal);
+      b3Vector3r rb_n = vcp->m_rb.cross(vc->m_normal);
 
       // JM_INV_J
       // In box3d, a col vector multiply a matrix is the
@@ -133,8 +133,8 @@ int b3SISolver::solve(int type)
   // velocity update
   for(int32 i = 0; i < m_body_count; ++i) {
     b3Body *b = m_bodies[i];
-    b3Vector3d v = m_velocities[i].linear();
-    b3Vector3d w = m_velocities[i].angular();
+    b3Vector3r v = m_velocities[i].linear();
+    b3Vector3r w = m_velocities[i].angular();
     //store the velocity before apply force
     m_velocities_w_f[i].set_linear(v);
     m_velocities_w_f[i].set_angular(w);
@@ -167,10 +167,10 @@ int b3SISolver::solve(int type)
     for (int32 i = 0; i < m_body_count; ++i) {
       m_positions[i].set_linear(m_positions[i].linear() +
                                 (m_velocities[i].linear() + m_velocities_w_f[i].linear()) *
-                                m_timestep->m_dt * 0.5);
+                                m_timestep->m_dt * real(0.5));
       m_positions[i].set_angular(m_positions[i].angular() +
                                  (m_velocities[i].angular() + m_velocities_w_f[i].angular()) *
-                                 m_timestep->m_dt * 0.5);
+                                 m_timestep->m_dt * real(0.5));
     }
   }
 	// copy state buffers back to the bodies.
@@ -187,20 +187,20 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
 
     int32 point_count = vc->m_point_count;
 
-    b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-    b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
+    b3Vector3r v_a = m_velocities[vc->m_index_a].linear();
+    b3Vector3r w_a = m_velocities[vc->m_index_a].angular();
 
-    b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
-    b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
+    b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
+    b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
 
-    double lambda = 0;
+    real lambda = 0;
     // iter all contact points, compute the total impulse for body
     // TODO: prove this algorithm is correct.
     for (int32 j = 0; j < vc->m_point_count; ++j) {
       b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-      b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-      double rhs = -v_rel.dot(vc->m_normal);
+      b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+      real rhs = -v_rel.dot(vc->m_normal);
       // distinguish contact and collision
       // collision: we need update velocity by restitution
       // contact: the restitution is zero.
@@ -212,15 +212,15 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
     }
     // apply normal Impulse
     if(is_collision) {
-      double new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, 0.0);
+      real new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, real(0.0));
       lambda = new_impulse - vc->m_normal_collision_impulse;
       vc->m_normal_collision_impulse = new_impulse;
     } else {
-      double new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, 0.0);
+      real new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, real(0.0));
       lambda = new_impulse - vc->m_normal_contact_impulse;
       vc->m_normal_contact_impulse = new_impulse;
     }
-    b3Vector3d impluse = lambda * vc->m_normal;
+    b3Vector3r impluse = lambda * vc->m_normal;
 
     v_a = v_a - vc->m_inv_mass_a * impluse;
     w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
@@ -230,7 +230,7 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
     for (int32 j = 0; j < vc->m_point_count; ++j) {
       b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-      b3Vector3d v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+      b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
       double rhs = -v_rel.dot(vc->m_normal);
       // double lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity + vcp->m_rhs_penetration);
 
@@ -248,7 +248,7 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
       }
 
       // apply normal Impluse
-      b3Vector3d impluse = lambda * vc->m_normal;
+      b3Vector3r impluse = lambda * vc->m_normal;
 
       v_a = v_a - vc->m_inv_mass_a * impluse;
       w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impluse);
@@ -271,10 +271,10 @@ void b3SISolver::correct_penetration()
 
     // TODO: Check this way is useful. And angle?
     if (vc->m_penetration < 0) {
-      b3Vector3d p_a = m_positions[vc->m_index_a].linear();
-      b3Vector3d p_b = m_positions[vc->m_index_b].linear();
+      b3Vector3r p_a = m_positions[vc->m_index_a].linear();
+      b3Vector3r p_b = m_positions[vc->m_index_b].linear();
 
-      b3Vector3d position_correction = vc->m_normal * vc->m_penetration;
+      b3Vector3r position_correction = vc->m_normal * vc->m_penetration;
 
       // at first, two bodies are not static.
       // if two bodies are dynamic, all need to fix penetration.
@@ -285,9 +285,9 @@ void b3SISolver::correct_penetration()
         p_a += vc->m_normal * vc->m_penetration;
         p_b -= vc->m_normal * vc->m_penetration;
       } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
-        p_a += position_correction * 2.0;
+        p_a += position_correction * real(2.0);
       } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-        p_b -= position_correction * 2.0;
+        p_b -= position_correction * real(2.0);
       }
 
       m_positions[vc->m_index_a].set_linear(p_a);
@@ -306,30 +306,30 @@ void b3SISolver::solve_friction_constraints()
   for(int32 i = 0; i < m_contact_count; ++i) {
     b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
-    b3Vector3d v_a = m_velocities[vc->m_index_a].linear();
-    b3Vector3d w_a = m_velocities[vc->m_index_a].angular();
+    b3Vector3r v_a = m_velocities[vc->m_index_a].linear();
+    b3Vector3r w_a = m_velocities[vc->m_index_a].angular();
 
-    b3Vector3d v_b = m_velocities[vc->m_index_b].linear();
-    b3Vector3d w_b = m_velocities[vc->m_index_b].angular();
+    b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
+    b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
 
     // vc->m_friction is the friction coefficient.
     // vc->m_normal_contact_impulse is the normal impulse = ft.
-    double max_friction = vc->m_friction * vc->m_normal_contact_impulse;
+    real max_friction = vc->m_friction * vc->m_normal_contact_impulse;
 
     // In the view of body a, body a is static, the velocity of body b is v_rel
-    b3Vector3d v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
+    b3Vector3r v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
     // In the tangent plane, the velocity is v_rel_t
-    b3Vector3d v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
+    b3Vector3r v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
 
     // if the tangent velocity is zero ===> static friction
     if(v_rel_t.is_zero()) {
       continue;
     }
     // get the tangent direction and size
-    double v_rel_t_ = v_rel_t.length();
-    b3Vector3d tangent = v_rel_t / v_rel_t_;
+    real v_rel_t_ = v_rel_t.length();
+    b3Vector3r tangent = v_rel_t / v_rel_t_;
 
-    b3Vector3d friction_v;
+    b3Vector3r friction_v;
 
     // a and b at least have one dynamic body.
     // if b is static, we need go to body b view, so the tangent velocity direction is -tangent.

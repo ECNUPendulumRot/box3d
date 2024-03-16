@@ -8,10 +8,10 @@
 
 // project the box onto a separation axis called axis
 // the axis is in the world frame
-static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, const b3Vector3d& axis)
+static double transform_to_axis(const b3CubeShape& box, const b3Transformr& xf, const b3Vector3r& axis)
 {
-  const b3Matrix3d& R = xf.m_r_t;
-  const b3Vector3d& half_xyz = box.m_h_xyz;
+  const b3Matrix3r& R = xf.m_r_t;
+  const b3Vector3r& half_xyz = box.m_h_xyz;
 
   return half_xyz.x() * b3_abs(axis.dot(R.col(0))) + half_xyz.y() * b3_abs(axis.dot(R.col(1))) + half_xyz.z() * b3_abs(axis.dot(R.col(2)));
 }
@@ -21,15 +21,15 @@ static double transform_to_axis(const b3CubeShape& box, const b3TransformD& xf, 
 // separate cube_B from cube_A
 // so the axis is also from cube_A
 static void overlap_on_axis(
-  const b3TransformD& xf_A_plane,
-  const b3CubeShape& cube_B, const b3TransformD& xf_B,
-  const b3Vector3d& axis, double& penetration)
+        const b3Transformr& xf_A_plane,
+        const b3CubeShape& cube_B, const b3Transformr& xf_B,
+        const b3Vector3r& axis, double& penetration)
 {
   // project box onto the axis
   double project_B = transform_to_axis(cube_B, xf_B, axis);
 
-  const b3Vector3d& plane_center = xf_A_plane.linear();
-  b3Vector3d to_center = xf_B.linear() - plane_center;
+  const b3Vector3r& plane_center = xf_A_plane.linear();
+  b3Vector3r to_center = xf_B.linear() - plane_center;
 
   // set the penetration of current axis and return whether overlapped.
   // penetration is a value that is smaller than zero
@@ -42,18 +42,18 @@ static void overlap_on_axis(
 void b3_collide_plane_and_sphere(
   b3Manifold* manifold,
   const b3PlaneShape* plane_a,
-  const b3TransformD& xf_a,
+  const b3Transformr& xf_a,
   const b3SphereShape* sphere_b,
-  const b3TransformD& xf_b)
+  const b3Transformr& xf_b)
 {
   manifold->m_point_count = 0;
 
   // transform sphere center to plane frame
-  b3Vector3d local_center = xf_b.transform(sphere_b->get_centroid());
+  b3Vector3r local_center = xf_b.transform(sphere_b->get_centroid());
   local_center = xf_a.transform_local(local_center);
 
   // find the closest point on the plane to the sphere center
-  b3Vector3d nearest_point;
+  b3Vector3r nearest_point;
   if (local_center.x() < -plane_a->m_half_width) {
 	  nearest_point[0] = -plane_a->m_half_width;
   } else if (local_center.x() > plane_a->m_half_width) {
@@ -78,7 +78,7 @@ void b3_collide_plane_and_sphere(
   // transform the vector form the plane frame to the world frame
   manifold->m_local_normal = xf_a.transform(local_center - nearest_point);
   if (manifold->m_local_normal.is_zero()) {
-	  manifold->m_local_normal = b3Vector3d(0, 0, 1);
+	  manifold->m_local_normal = b3Vector3r(0, 0, 1);
   } else {
 	  manifold->m_local_normal = manifold->m_local_normal.normalized();
   }
@@ -90,12 +90,12 @@ void b3_collide_plane_and_sphere(
 
 static int32 find_incident_face(
   b3ClipVertex c[4],
-  const b3Vector3d & n_p,
-  const b3CubeShape* cube2, const b3TransformD& xf2)
+  const b3Vector3r & n_p,
+  const b3CubeShape* cube2, const b3Transformr& xf2)
 {
   int32 count2 = 6;
-  const b3Vector3d* normals2 = cube2->m_normals;
-  const b3Vector3d* vertices2 = cube2->m_vertices;
+  const b3Vector3r* normals2 = cube2->m_normals;
+  const b3Vector3r* vertices2 = cube2->m_vertices;
   const b3EdgeIndex* edges2 = cube2->m_edges;
   const b3FaceIndex* faces2 = cube2->m_faces;
 
@@ -103,7 +103,7 @@ static int32 find_incident_face(
   // the incident face is the mose anti-parallel face of cube2 to face1
   // so the dot product is the least
   int32 incident_face_index_2 = 0;
-  double min_dot = b3_max_double;
+  double min_dot = b3_real_max;
   for (int32 i = 0; i < count2; ++i) {
     double dot = n_p.dot(normals2[i]);
     if (dot < min_dot) {
@@ -129,15 +129,15 @@ static int32 find_incident_face(
 void b3_collide_plane_and_cube(
   b3Manifold* manifold,
   const b3PlaneShape* plane_a,
-  const b3TransformD& xf_a,
+  const b3Transformr& xf_a,
   const b3CubeShape* cube_b,
-  const b3TransformD& xf_b)
+  const b3Transformr& xf_b)
 {
   manifold->m_point_count = 0;
 
   double total_radius = cube_b->get_radius() + plane_a->get_radius();
 
-  const b3Vector3d& axis = xf_a.rotation_matrix().col(2);
+  const b3Vector3r& axis = xf_a.rotation_matrix().col(2);
 
   double penetration;
   overlap_on_axis(xf_a, *cube_b, xf_b, axis, penetration);

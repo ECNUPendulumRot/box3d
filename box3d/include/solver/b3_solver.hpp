@@ -24,7 +24,7 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
-void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector3d& t2);
+void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2);
 
 
 class b3Solver {
@@ -35,10 +35,10 @@ protected:
     int32 m_contact_count;
 
     int32 m_body_count;
-    b3TransformD* m_positions = nullptr;
-    b3TransformD* m_velocities = nullptr;
+    b3Transformr* m_positions = nullptr;
+    b3Transformr* m_velocities = nullptr;
     //used in verlet integration, store the velocity with out force applied
-    b3TransformD* m_velocities_w_f = nullptr;
+    b3Transformr* m_velocities_w_f = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 

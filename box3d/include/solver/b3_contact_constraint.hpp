@@ -6,8 +6,8 @@
 
 
 struct b3VelocityConstraintPoint {
-    b3Vector3d m_ra;
-    b3Vector3d m_rb;
+    b3Vector3r m_ra;
+    b3Vector3r m_rb;
     double m_normal_collision_impulse = 0;
     double m_normal_contact_impulse = 0;
     double m_tangent_impulse = 0;
@@ -21,31 +21,31 @@ struct b3VelocityConstraintPoint {
 
 struct b3ContactVelocityConstraint {
     b3VelocityConstraintPoint m_points[4];
-    b3Vector3d m_normal;
+    b3Vector3r m_normal;
     int32 m_index_a;
     int32 m_index_b;
-    double m_inv_mass_a;
-    double m_inv_mass_b;
-    b3Matrix3d m_inv_I_a;
-    b3Matrix3d m_inv_I_b;
+    real m_inv_mass_a;
+    real m_inv_mass_b;
+    b3Matrix3r m_inv_I_a;
+    b3Matrix3r m_inv_I_b;
 
     int32 m_point_count;
     int32 m_contact_index;
 
-    double m_restitution;
+    real m_restitution;
 
-    double m_penetration;
+    real m_penetration;
     // TODO
-    double m_normal_collision_impulse = 0;
-    double m_normal_contact_impulse = 0;
+    real m_normal_collision_impulse = 0;
+    real m_normal_contact_impulse = 0;
 
-    b3Vector3d m_ra;
-    b3Vector3d m_rb;
+    b3Vector3r m_ra;
+    b3Vector3r m_rb;
 
-    double m_friction;
+    real m_friction;
 
-    // b3Vector3d m_world_center_a;
-    // b3Vector3d m_world_center_b;
+    // b3Vector3r m_world_center_a;
+    // b3Vector3r m_world_center_b;
 
 
 	// b2Mat22 normalMass;

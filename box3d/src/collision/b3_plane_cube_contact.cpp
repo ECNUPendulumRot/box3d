@@ -28,7 +28,7 @@ b3PlaneCubeContact::b3PlaneCubeContact(b3Fixture *fixture_a, b3Fixture *fixture_
 }
 
 
-void b3PlaneCubeContact::evaluate(b3Manifold *manifold, const b3TransformD &xf_a, const b3TransformD &xf_b)
+void b3PlaneCubeContact::evaluate(b3Manifold *manifold, const b3Transformr &xf_a, const b3Transformr &xf_b)
 {
     b3_collide_plane_and_cube(
         manifold,

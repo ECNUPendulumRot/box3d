@@ -19,14 +19,14 @@
  *   n----> t1
  *
  */
-void b3_get_two_tangent_bases(const b3Vector3d& normal, b3Vector3d& t1, b3Vector3d& t2)
+void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2)
 {
-    if(b3_abs(normal.x()) < b3_double_min && b3_abs(normal.y()) < b3_double_min) {
-        t1 = b3Vector3d(1, 0, 0);
-        t2 = b3Vector3d(0 , 1, 0);
+    if(b3_abs(normal.x()) < b3_real_min && b3_abs(normal.y()) < b3_real_min) {
+        t1 = b3Vector3r(1, 0, 0);
+        t2 = b3Vector3r(0 , 1, 0);
         return;
     }
-    t1 = b3Vector3d(-normal.y(), normal.x(), 0);
+    t1 = b3Vector3r(-normal.y(), normal.x(), 0);
     t2 = normal.cross(t1).normalized();
     t1 = t2.cross(normal).normalized();
 }
@@ -57,15 +57,15 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
   b3_assert(m_body_count > 0);
   m_bodies = island->get_bodies();
 
-  memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
-  m_positions = new (memory) b3TransformD;
+  memory = m_block_allocator->allocate(m_body_count * sizeof(b3Transformr));
+  m_positions = new (memory) b3Transformr;
 
-  memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
-  m_velocities = new (memory) b3TransformD;
+  memory = m_block_allocator->allocate(m_body_count * sizeof(b3Transformr));
+  m_velocities = new (memory) b3Transformr;
 
   // TODO: check if delete this.
-  memory = m_block_allocator->allocate(m_body_count * sizeof(b3TransformD));
-  m_velocities_w_f = new (memory) b3TransformD;
+  memory = m_block_allocator->allocate(m_body_count * sizeof(b3Transformr));
+  m_velocities_w_f = new (memory) b3Transformr;
 
   for(int32 i = 0; i < m_body_count; ++i) {
     b3Body* b = m_bodies[i];
@@ -90,9 +90,9 @@ b3Solver::~b3Solver()
   m_timestep = nullptr;
   m_block_allocator->free(m_contacts, m_contact_count * sizeof(b3Contact*));
   m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
-  m_block_allocator->free(m_positions, m_body_count * sizeof(b3TransformD));
-  m_block_allocator->free(m_velocities, m_body_count * sizeof(b3TransformD));
+  m_block_allocator->free(m_positions, m_body_count * sizeof(b3Transformr));
+  m_block_allocator->free(m_velocities, m_body_count * sizeof(b3Transformr));
   // TODO: check if delete this
-  m_block_allocator->free(m_velocities_w_f, m_body_count * sizeof(b3TransformD));
+  m_block_allocator->free(m_velocities_w_f, m_body_count * sizeof(b3Transformr));
   m_block_allocator = nullptr;
 }

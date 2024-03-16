@@ -37,9 +37,9 @@ class b3World {
 
     int32 m_body_count;
 
-    b3Vector3d m_gravity = b3Vector3d(0, 0, 0);
+    b3Vector3r m_gravity = b3Vector3r(0, 0, 0);
 
-    double m_hz = 60;
+    real m_hz = 60;
 
     b3BlockAllocator m_block_allocator;
 
@@ -65,7 +65,7 @@ public:
      * @param velocity_iterations the numbers of iterations when solving velocity constraints.
      * @param position_iterations the numbers of iterations when solving position constraints. (but we have not use it)
      */
-    void step(double dt, int32 velocity_iterations, int32 position_iterations);
+    void step(real dt, int32 velocity_iterations, int32 position_iterations);
 
     /**
      * This is not use now.
@@ -82,11 +82,11 @@ public:
 
     void add_shape(b3Shape* shape);
 
-    void set_gravity(const b3Vector3d& gravity) {
+    void set_gravity(const b3Vector3r& gravity) {
         m_gravity = gravity;
     }
 
-    b3Vector3d gravity() {
+    b3Vector3r gravity() {
         return m_gravity;
     }
 

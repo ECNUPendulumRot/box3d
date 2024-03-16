@@ -6,10 +6,10 @@ class TestSphereCubeCollide : public SceneTestBase {
 public:
 
   TestSphereCubeCollide() {
-	m_world->set_gravity(b3Vector3d(0.0, 0.0, 0.0));
+	m_world->set_gravity(b3Vector3r(0.0, 0.0, 0.0));
 
 	// create a dynamic body
-	b3TransformD pose, velocity;
+	b3Transformr pose, velocity;
 	pose.set_linear(0, -2, 0);
 	velocity.set_linear(0, 10, 0);
 

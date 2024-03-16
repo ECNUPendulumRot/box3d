@@ -2,6 +2,8 @@
 #ifndef BOX3D_B3_TYPES_HPP
 #define BOX3D_B3_TYPES_HPP
 
+
+#include "common/b3_common.hpp"
 #include "math/b3_vector.hpp"
 #include "math/b3_matrix.hpp"
 
@@ -26,9 +28,11 @@ using uint64 = unsigned long long;
 
 using b3Vector3d = b3Vector3<double>;
 using b3Vector3f = b3Vector3<float>;
+using b3Vector3r = b3Vector3<real>;
 
 using b3Matrix3d = b3Matrix3<double>;
 using b3Matrix3f = b3Matrix3<float>;
+using b3Matrix3r = b3Matrix3<real>;
 
 
 #endif //BOX3D_B3_TYPES_HPP

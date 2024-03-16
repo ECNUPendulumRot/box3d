@@ -164,7 +164,7 @@ void b3GUIViewer::launch()
 void b3GUIViewer::add_ground()
 {
 
-  //    b3TransformD pose, velocity;
+  //    b3Transformr pose, velocity;
   //    pose.set_linear(0, 0, -1);
   //
   //    b3BodyDef bode_def;
@@ -313,7 +313,7 @@ void b3GUIViewer::draw_mesh()
 
     ImVec4 &color = m_mesh_list.m_index_colors[index].color;
     Eigen::RowVector3d c;
-    b3Vector3d shape_color = shape->get_color();
+    b3Vector3r shape_color = shape->get_color();
 
     if (shape_color.is_zero()) {
       c << color.x, color.y, color.z;

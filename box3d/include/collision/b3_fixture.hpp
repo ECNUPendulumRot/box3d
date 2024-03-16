@@ -18,11 +18,11 @@ class b3BroadPhase;
 
 struct b3FixtureDef {
 
-    double m_restitution = 0.0;
+    real m_restitution = 0.0;
 
-    double m_friction = 0.0;
+    real m_friction = 0.0;
 
-    double m_density = 1.0;
+    real m_density = 1.0;
 
     /**
      * @brief The shape of the fixture.
@@ -33,11 +33,11 @@ struct b3FixtureDef {
 
 public:
 
-    inline double get_restitution() const {
+    inline real get_restitution() const {
         return m_restitution;
     }
 
-    inline double get_friction() const {
+    inline real get_friction() const {
         return m_friction;
     }
 
@@ -45,7 +45,7 @@ public:
         return m_shape;
     }
 
-    inline double get_density() const {
+    inline real get_density() const {
         return m_density;
     }
 
@@ -80,11 +80,11 @@ class b3Fixture {
 
     friend class b3Body;
 
-    double m_restitution = 0.0;
+    real m_restitution = 0.0;
 
-    double m_friction = 0.0;
+    real m_friction = 0.0;
 
-    double m_density = 0.0;
+    real m_density = 0.0;
 
     b3Shape* m_shape = nullptr;
 
@@ -100,7 +100,7 @@ public:
 
     void create_fixture(b3BlockAllocator* block_allocator,  const b3FixtureDef& f_def, b3Body* body);
 
-    void create_proxy(b3BroadPhase* broad_phase, b3TransformD& m_xf);
+    void create_proxy(b3BroadPhase* broad_phase, b3Transformr& m_xf);
 
     inline void get_mass_data(b3MassProperty& mass_data) const {
         m_shape->compute_mass_properties(mass_data, m_density);
@@ -127,17 +127,17 @@ public:
         return (m_proxies + index);
     }
 
-    double get_friction() const {
+    real get_friction() const {
         return m_friction;
     }
 
-    double get_restitution() const {
+    real get_restitution() const {
         return m_restitution;
     }
 
 private:
 
-    void synchronize(b3BroadPhase* broad_phase, const b3TransformD& transform1, const b3TransformD& transform2);
+    void synchronize(b3BroadPhase* broad_phase, const b3Transformr& transform1, const b3Transformr& transform2);
 
 };
 

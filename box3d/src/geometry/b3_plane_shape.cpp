@@ -22,14 +22,14 @@ void b3PlaneShape::set_as_plane(double length, double width)
 }
 
 
-void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 child_index) const
+void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const
 {
   b3_NOT_USED(child_index);
 
-  b3Vector3d min;
-  b3Vector3d max;
+  b3Vector3r min;
+  b3Vector3r max;
 
-  b3Vector3d vertices[4];
+  b3Vector3r vertices[4];
 
   vertices[0].set(-m_half_width, -m_half_length, 0);
   vertices[1].set(-m_half_width, m_half_length, 0);
@@ -37,12 +37,12 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 ch
   vertices[3].set(m_half_width, -m_half_length, 0);
 
   for (int32 i = 0; i < 4; i++) {
-    b3Vector3d v = xf.transform(vertices[i]);
+    b3Vector3r v = xf.transform(vertices[i]);
     min = b3_min_coeff(min, v);
     max = b3_max_coeff(max, v);
   }
 
-  b3Vector3d r(m_radius, m_radius, m_radius);
+  b3Vector3r r(m_radius, m_radius, m_radius);
   aabb->m_min = min - r;
   aabb->m_max = max + r;
 }
@@ -51,10 +51,10 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3TransformD& xf, int32 ch
 void b3PlaneShape::compute_mass_properties(b3MassProperty &mass_data, double density) const
 {
   // plane is static object
-  mass_data.m_center = b3Vector3d::zero();
+  mass_data.m_center = b3Vector3r::zero();
   mass_data.m_volume = 0;
   mass_data.m_mass = 0;
-  mass_data.m_Inertia = b3Matrix3d::zero();
+  mass_data.m_Inertia = b3Matrix3r::zero();
 }
 
 b3Shape* b3PlaneShape::clone() const
@@ -86,9 +86,9 @@ void b3PlaneShape::init_view_data()
 }
 
 
-void b3PlaneShape::setup_view_data(const b3TransformD &xf)
+void b3PlaneShape::setup_view_data(const b3Transformr &xf)
 {
-  b3Vector3d vertices[4];
+  b3Vector3r vertices[4];
 
   vertices[0].set(-m_half_width, -m_half_length, 0);
   vertices[1].set(-m_half_width, m_half_length, 0);
@@ -99,8 +99,8 @@ void b3PlaneShape::setup_view_data(const b3TransformD &xf)
 	  vertices[i] = xf.transform(vertices[i]);
   }
 
-  b3Vector3d length_step = (vertices[1] - vertices[0]) / (double)segment_count;
-  b3Vector3d width_step = (vertices[3] - vertices[0]) / (double)segment_count;
+  b3Vector3r length_step = (vertices[1] - vertices[0]) / real(segment_count);
+  b3Vector3r width_step = (vertices[3] - vertices[0]) / real(segment_count);
 
   int index = 0;
   // horizontal edges

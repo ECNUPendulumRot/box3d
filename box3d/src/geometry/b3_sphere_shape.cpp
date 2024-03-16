@@ -26,15 +26,15 @@ b3SphereConfig::b3SphereConfig()
   double sin_inc = sin(k_increments);
   double cos_inc = cos(k_increments);
 
-  b3Vector3d rot_col_1(cos_inc, 0, -sin_inc);
-  b3Vector3d rot_col_2(0, 1, 0);
-  b3Vector3d rot_col_3(sin_inc, 0, cos_inc);
-  m_rot_y = b3Matrix3d(rot_col_1, rot_col_2, rot_col_3);
+  b3Vector3r rot_col_1(cos_inc, 0, -sin_inc);
+  b3Vector3r rot_col_2(0, 1, 0);
+  b3Vector3r rot_col_3(sin_inc, 0, cos_inc);
+  m_rot_y = b3Matrix3r(rot_col_1, rot_col_2, rot_col_3);
 
   rot_col_1 = { cos_inc, sin_inc, 0 };
   rot_col_2 = { -sin_inc, cos_inc, 0 };
   rot_col_3 = { 0, 0, 1 };
-  m_rot_z = b3Matrix3d(rot_col_1, rot_col_2, rot_col_3);
+  m_rot_z = b3Matrix3r(rot_col_1, rot_col_2, rot_col_3);
 
   // the sphere is divided into two points on the end of sphere
   // and %m_segments - 1% rings. 
@@ -63,13 +63,13 @@ void b3SphereShape::set_as_sphere(double radius)
 }
 
 
-void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3TransformD& xf, int32 child_index) const
+void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 child_index) const
 {
   b3_NOT_USED(child_index);
 
-  b3Vector3d centroid = xf.transform(m_centroid);
+  b3Vector3r centroid = xf.transform(m_centroid);
 
-  b3Vector3d radius(m_radius, m_radius, m_radius);
+  b3Vector3r radius(m_radius, m_radius, m_radius);
 
   aabb->m_min = centroid - radius;
   aabb->m_max = centroid + radius;
@@ -87,7 +87,7 @@ void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double de
 
   double ixx = 0.4 * mass_data.m_mass * m_radius * m_radius;
 
-  mass_data.m_Inertia = b3Matrix3d::zero();
+  mass_data.m_Inertia = b3Matrix3r::zero();
   mass_data.m_Inertia(0, 0) = ixx;
   mass_data.m_Inertia(1, 1) = ixx;
   mass_data.m_Inertia(2, 2) = ixx;
@@ -196,13 +196,13 @@ void b3SphereShape::init_view_data()
 }
 
 
-void b3SphereShape::setup_view_data(const b3TransformD& xf)
+void b3SphereShape::setup_view_data(const b3Transformr& xf)
 {
-  const b3Matrix3d& rot_y = m_config.m_rot_y;
-  const b3Matrix3d& rot_z = m_config.m_rot_z;
+  const b3Matrix3r& rot_y = m_config.m_rot_y;
+  const b3Matrix3r& rot_z = m_config.m_rot_z;
 
-  b3Vector3d v1(0, 0, 1);
-  b3Vector3d v2;
+  b3Vector3r v1(0, 0, 1);
+  b3Vector3r v2;
   int index = 0;
 
   // TODO: optimize this loop
@@ -211,7 +211,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
   // then we only need to traverse all vertices and calculate displacement.
 
   // transform the center of sphere to world frame
-  b3Vector3d world_center = xf.transform(m_centroid);
+  b3Vector3r world_center = xf.transform(m_centroid);
   // transform to display coordinate
   transform(world_center);
 
@@ -223,7 +223,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
         for(int j = 0; j < m_config.m_segments; ++j) {
           v2 = rot_z * v2;
 
-          b3Vector3d v = world_center + m_radius * v2;
+          b3Vector3r v = world_center + m_radius * v2;
           m_view_data.m_V[index++] = v.x();
           m_view_data.m_V[index++] = v.y();
           m_view_data.m_V[index++] = v.z();
@@ -234,7 +234,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
         for(int j = 0; j < m_config.m_segments; ++j) {
           v2 = rot_z * v2;
 
-          b3Vector3d v = world_center + m_radius * v2;
+          b3Vector3r v = world_center + m_radius * v2;
           m_view_data.m_V[index++] = v.x();
           m_view_data.m_V[index++] = v.y();
           m_view_data.m_V[index++] = v.z();
@@ -245,7 +245,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
     v2 = rot_z * v1;
 
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
-    b3Vector3d v = world_center + m_radius * v2;
+    b3Vector3r v = world_center + m_radius * v2;
     m_view_data.m_V[index++] = v.x();
     m_view_data.m_V[index++] = v.y();
     m_view_data.m_V[index++] = v.z();
@@ -259,7 +259,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
     m_old_center = world_center;
   } else {
     // the center of sphere displacement, if displacement is zero, we don't need do anything.
-    b3Vector3d displacement = world_center - m_old_center;
+    b3Vector3r displacement = world_center - m_old_center;
     if(displacement.is_zero()) {
       return;
     }
@@ -275,7 +275,7 @@ void b3SphereShape::setup_view_data(const b3TransformD& xf)
   }
 }
 
-void b3SphereShape::transform(b3Vector3d &v) {
+void b3SphereShape::transform(b3Vector3r &v) {
     double z = v[0];
     v[0] = v[1];
     v[1] = v[2];

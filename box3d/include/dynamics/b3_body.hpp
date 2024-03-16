@@ -37,35 +37,35 @@ class b3Body {
     ///////////////// Kinematic Properties /////////////////
 
     // CoM
-    b3Vector3d m_local_center = b3Vector3d::zero();
+    b3Vector3r m_local_center = b3Vector3r::zero();
     /**
      *  position and orientation of the center of body.
      */
-    b3TransformD m_xf;
+    b3Transformr m_xf;
     /**
      * linear velocity and angular velocity of the center of body.
      */
-    b3TransformD m_velocity;
+    b3Transformr m_velocity;
 
     ////////////////// Dynamic Properties //////////////////
 
-    double m_density = 1.0;
+    real m_density = 1.0;
 
-    double m_volume = 0.0;
+    real m_volume = 0.0;
 
-    double m_mass = 0.0;
+    real m_mass = 0.0;
 
-    double m_inv_mass = 0.0;
+    real m_inv_mass = 0.0;
 
-    b3Matrix3d m_inertia = b3Matrix3d::zero();
+    b3Matrix3r m_inertia = b3Matrix3r::zero();
 
-    b3Matrix3d m_inv_inertia = b3Matrix3d::zero();
+    b3Matrix3r m_inv_inertia = b3Matrix3r::zero();
 
-    b3Vector3d m_force = b3Vector3d::zero();
+    b3Vector3r m_force = b3Vector3r::zero();
 
-    b3Vector3d m_gravity = b3Vector3d::zero();
+    b3Vector3r m_gravity = b3Vector3r::zero();
 
-    b3Vector3d m_torque;
+    b3Vector3r m_torque;
 
     ///////////////// Collision Properties /////////////////
 
@@ -115,27 +115,27 @@ public:
         return m_type;
     }
 
-    inline b3Vector3d get_force() const {
+    inline b3Vector3r get_force() const {
         return m_force;
     }
 
-    inline b3Vector3d get_gravity() const {
+    inline b3Vector3r get_gravity() const {
         return m_gravity * m_mass;
     }
 
-    inline b3Vector3d get_torque() const {
+    inline b3Vector3r get_torque() const {
         return m_torque;
     }
 
-    void apply_force(b3Vector3d& force) {
+    void apply_force(b3Vector3r& force) {
         m_force = force;
     }
 
-    void apply_gravity(b3Vector3d& gravity) {
+    void apply_gravity(b3Vector3r& gravity) {
         m_gravity = gravity;
     }
 
-    void apply_torque(b3Vector3d& torque) {
+    void apply_torque(b3Vector3r& torque) {
         m_torque = torque;
     }
 
@@ -147,19 +147,19 @@ public:
         return m_fixture_list;
     }
 
-    b3TransformD get_pose() const {
+    b3Transformr get_pose() const {
         return m_xf;
     }
 
-    void set_pose(b3TransformD& xf) {
+    void set_pose(b3Transformr& xf) {
         m_xf = xf;
     }
 
-    b3TransformD get_velocity() const {
+    b3Transformr get_velocity() const {
         return m_velocity;
     }
 
-    void set_velocity(b3TransformD& velocity) {
+    void set_velocity(b3Transformr& velocity) {
         m_velocity = velocity;
     }
 
@@ -167,15 +167,15 @@ public:
         return m_island_index;
     }
 
-    double get_inv_mass() const {
+    real get_inv_mass() const {
         return m_inv_mass;
     }
 
-    b3Matrix3d get_inv_inertia() const {
+    b3Matrix3r get_inv_inertia() const {
         return m_inv_inertia;
     }
 
-    b3Vector3d get_local_center() const {
+    b3Vector3r get_local_center() const {
         return m_local_center;
     }
 

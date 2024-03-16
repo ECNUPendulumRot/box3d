@@ -9,17 +9,17 @@
 
 struct b3MassProperty {
 
-    double m_volume;
+    real m_volume;
 
-    double m_mass;
+    real m_mass;
 
     /**
      * @brief The center of mass of the rigid body.
      * @note The m_center is just the integral part divide the volume
      */
-    b3Vector3d m_center;
+    b3Vector3r m_center;
 
-    b3Matrix3d m_Inertia;
+    b3Matrix3r m_Inertia;
 
 };
 

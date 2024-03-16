@@ -13,7 +13,7 @@ public:
 
     TestDropping() {
 
-        m_world->set_gravity(b3Vector3d(0, 0, -10));
+        m_world->set_gravity(b3Vector3r(0, 0, -10));
 
         b3PlaneShape ground_shape;
         ground_shape.set_as_plane(10, 10);
@@ -44,10 +44,10 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3TransformD pose, velocity;
-            pose.set_linear({double(distrib_x(gen)), double(distrib_y(gen)), double(distrib_z(gen))});
+            b3Transformr pose, velocity;
+            pose.set_linear({real(distrib_x(gen)), real(distrib_y(gen)), real(distrib_z(gen))});
             pose.set_angular({0, 0, 0});
-            velocity.set_linear(b3Vector3d(0, 0, 0));
+            velocity.set_linear(b3Vector3r(0, 0, 0));
             body_def.set_initial_status(pose, velocity);
 
             b3Body* cube = m_world->create_body(body_def);
