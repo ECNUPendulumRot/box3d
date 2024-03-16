@@ -11,11 +11,11 @@ class b3PlaneShape : public b3Shape {
     /**
      * This is used to generate the edges of the shape.
      */
-    static int segment_count;
+    static int32 segment_count;
 
 public:
 
-    double m_half_length, m_half_width;
+    real m_half_length, m_half_width;
 
     b3PlaneShape();
 
@@ -23,7 +23,7 @@ public:
      * @param point: a point on this plane
      * @param normal: the normal of this plane
     */
-    void set_as_plane(double length, double width);
+    void set_as_plane(real length, real width);
 
     virtual ~b3PlaneShape() = default;
 
@@ -33,7 +33,7 @@ public:
 
     void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const override;
 
-    void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
+    void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
 
     b3Shape* clone() const override;
 

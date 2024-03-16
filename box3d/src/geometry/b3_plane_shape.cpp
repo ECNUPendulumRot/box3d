@@ -15,7 +15,7 @@ b3PlaneShape::b3PlaneShape()
 }
 
 
-void b3PlaneShape::set_as_plane(double length, double width)
+void b3PlaneShape::set_as_plane(real length, real width)
 {
     m_half_length = length / 2.0;
     m_half_width = width / 2.0;
@@ -48,7 +48,7 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 ch
 }
 
 
-void b3PlaneShape::compute_mass_properties(b3MassProperty &mass_data, double density) const
+void b3PlaneShape::compute_mass_properties(b3MassProperty &mass_data, real density) const
 {
   // plane is static object
   mass_data.m_center = b3Vector3r::zero();

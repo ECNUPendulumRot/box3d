@@ -45,12 +45,6 @@ class b3SphereShape : public b3Shape {
      */
     b3Vector3r m_old_center;
 
-    // transform the center of sphere
-    // because we want not calculate all vertices position every frame.
-    // so we transform all vertices of sphere to display coordinate.
-    // sphere allow we work this.
-    void transform(b3Vector3r& v);
-
 public:
 
     b3SphereShape();
@@ -67,13 +61,13 @@ public:
      * when create a sphere, we need call this function at first.
      * @param radius
      */
-    void set_as_sphere(double radius);
+    void set_as_sphere(real radius);
 
     b3Shape* clone() const override;
 
     void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const override;
 
-    void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
+    void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
 
     double get_radius() const override {
         return m_radius;

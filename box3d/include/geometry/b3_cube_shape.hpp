@@ -69,7 +69,7 @@ public:
 
     void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 childIndex) const override;
 
-    void compute_mass_properties(b3MassProperty& mass_data, double density) const override;
+    void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
 
     void init_view_data() override;
 

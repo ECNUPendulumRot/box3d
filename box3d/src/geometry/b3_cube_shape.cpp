@@ -85,7 +85,7 @@ void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 chi
 }
 
 
-void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, double density) const {
+void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real density) const {
   mass_data.m_center = m_centroid;
 
   mass_data.m_volume = m_xyz.x() * m_xyz.y() * m_xyz.z();

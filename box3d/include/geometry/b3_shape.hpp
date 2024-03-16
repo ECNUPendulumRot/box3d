@@ -128,7 +128,7 @@ public:
         b3_NOT_USED(child_index);
     };
 
-    virtual void compute_mass_properties(b3MassProperty& mass_data, double density) const {
+    virtual void compute_mass_properties(b3MassProperty& mass_data, real density) const {
         b3_NOT_USED(mass_data);
         b3_NOT_USED(density);
     };

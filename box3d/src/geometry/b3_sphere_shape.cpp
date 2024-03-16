@@ -16,15 +16,31 @@
 
 const b3SphereConfig b3SphereShape::m_config;
 
+
+namespace {
+    // transform the center of sphere
+    // because we want not calculate all vertices position every frame.
+    // so we transform all vertices of sphere to display coordinate.
+    // sphere allow we work this.
+    void transform(b3Vector3r &v) {
+        real z = v[0];
+        v[0] = v[1];
+        v[1] = v[2];
+        v[2] = z;
+    }
+
+}
+
+
 // This is some configuration data for the sphere shape.
 // It is same for all sphere shapes.
 b3SphereConfig::b3SphereConfig()
 {
   m_segments = K_SEGMENTS;
 
-  double k_increments = b3_pi / m_segments;
-  double sin_inc = sin(k_increments);
-  double cos_inc = cos(k_increments);
+  real k_increments = b3_pi / m_segments;
+  real sin_inc = sin(k_increments);
+  real cos_inc = cos(k_increments);
 
   b3Vector3r rot_col_1(cos_inc, 0, -sin_inc);
   b3Vector3r rot_col_2(0, 1, 0);
@@ -55,7 +71,7 @@ b3SphereShape::b3SphereShape()
 }
 
 
-void b3SphereShape::set_as_sphere(double radius)
+void b3SphereShape::set_as_sphere(real radius)
 {
     m_radius = radius;
     m_centroid.set_zero();
@@ -77,15 +93,15 @@ void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 c
 
 
 
-void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, double density) const
+void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, real density) const
 {
   mass_data.m_center = m_centroid;
 
-  mass_data.m_volume = 4 * b3_pi * m_radius * m_radius * m_radius / 3;
+  mass_data.m_volume = 4 * real(b3_pi) * m_radius * m_radius * m_radius / 3;
 
   mass_data.m_mass = density * mass_data.m_volume;
 
-  double ixx = 0.4 * mass_data.m_mass * m_radius * m_radius;
+  real ixx = real(0.4) * mass_data.m_mass * m_radius * m_radius;
 
   mass_data.m_Inertia = b3Matrix3r::zero();
   mass_data.m_Inertia(0, 0) = ixx;
@@ -273,11 +289,4 @@ void b3SphereShape::setup_view_data(const b3Transformr& xf)
     // Record the old center of sphere
     m_old_center = world_center;
   }
-}
-
-void b3SphereShape::transform(b3Vector3r &v) {
-    double z = v[0];
-    v[0] = v[1];
-    v[1] = v[2];
-    v[2] = z;
 }
