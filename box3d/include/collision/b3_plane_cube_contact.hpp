@@ -6,8 +6,8 @@
 #include "collision/b3_contact.hpp"
 
 
-class b3PlaneCubeContact: public b3Contact
-{
+class b3PlaneCubeContact: public b3Contact {
+
 public:
 
     static b3Contact* create(b3Fixture* fixture_a, int32 index_a, b3Fixture* fixture_b, int32 index_b, b3BlockAllocator* block_allocator);

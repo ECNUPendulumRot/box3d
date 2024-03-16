@@ -47,5 +47,5 @@ public:
 };
 
 
-static int test_plane_sphere_collide = register_test("Debug", "Plane Sphere Collide", 
+static int test_plane_sphere_collide = register_test("Scene Test", "Plane Sphere Collide",
 													 TestPlaneSphereCollide::create);

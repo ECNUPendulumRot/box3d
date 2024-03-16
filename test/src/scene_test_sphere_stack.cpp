@@ -58,4 +58,4 @@ public:
   }
 };
 
-static int test_index = register_test("Debug", "sphere stack", TestSphereStack::create);
+static int test_index = register_test("Scene Test", "Sphere Stack", TestSphereStack::create);

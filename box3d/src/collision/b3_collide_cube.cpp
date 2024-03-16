@@ -105,20 +105,20 @@ static double edge_separation(
 
   for (int32 i = 0; i < 3; i++) {
 
-      const b3Vector3d& axis_A = R_a.col(i);
+    const b3Vector3d& axis_A = R_a.col(i);
 
-      for (int32 j = 0; j < 3; j++){
-          const b3Vector3d& axis_B = R_b.col(j);
-          const b3Vector3d& separation_axis = axis_B.cross(axis_A).normalized();
-          double penetration;
-          overlap_on_axis_absolute(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
+    for (int32 j = 0; j < 3; j++){
+      const b3Vector3d& axis_B = R_b.col(j);
+      const b3Vector3d& separation_axis = axis_B.cross(axis_A).normalized();
+      double penetration;
+      overlap_on_axis_absolute(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
 
-          if (penetration > max_penetration) {
-              max_penetration = penetration;
-              best_axis_index_a = i;
-              best_axis_index_b = j;
-          }
+      if (penetration > max_penetration) {
+        max_penetration = penetration;
+        best_axis_index_a = i;
+        best_axis_index_b = j;
       }
+    }
   }
 
   axis_index_a = best_axis_index_a;

@@ -74,7 +74,7 @@ public:
     }
 };
 
-static int test_index = register_test("Debug", "Dropping", TestDropping::create);
+static int test_index = register_test("Scene Test", "Dropping", TestDropping::create);
 
 
 

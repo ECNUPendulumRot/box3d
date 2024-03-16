@@ -1,6 +1,7 @@
 // This file is same as the one of bullet3
 // for more information, please access:
 // http://bulletphysics.org
+
 #ifndef BOX3D_B3_MIN_MAX_HPP
 #define BOX3D_B3_MIN_MAX_HPP
 

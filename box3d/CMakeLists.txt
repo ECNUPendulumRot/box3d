@@ -32,8 +32,6 @@ set(B3D_HEADER_FILES
         include/dynamics/b3_island.hpp
         include/dynamics/b3_mass_property.hpp
 
-        # include/geometry/b3_mesh.hpp
-        include/geometry/b3_geometry.hpp
         include/geometry/b3_shape.hpp
         include/geometry/b3_cube_shape.hpp
         include/geometry/b3_sphere_shape.hpp
@@ -78,7 +76,6 @@ set(B3D_SOURCE_FILES
         src/dynamics/b3_body.cpp
         src/dynamics/b3_island.cpp
 
-        # src/geometry/b3_mesh.cpp
         src/geometry/b3_shape.cpp
         src/geometry/b3_cube_shape.cpp
         src/geometry/b3_sphere_shape.cpp

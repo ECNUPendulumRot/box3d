@@ -94,7 +94,7 @@ public:
   }
 };
 
-int dynamic_tree_index = register_test("unit test", "dynamic tree", UnitTestDynamicTree::create);
+int dynamic_tree_index = register_test("Unit Test", "Dynamic Tree", UnitTestDynamicTree::create);
 
 
 void init_auxiliary_shape(b3AABB *aabb, int height, b3AuxiliaryShape *auxiliary_shape) {

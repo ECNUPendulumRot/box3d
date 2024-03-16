@@ -1,3 +1,4 @@
+
 #ifndef BOX3D_CONTACT_HPP
 #define BOX3D_CONTACT_HPP
 

@@ -2,7 +2,9 @@
 #ifndef BOX3D_B3PLANESHAPE_HPP
 #define BOX3D_B3PLANESHAPE_HPP
 
+
 #include "geometry/b3_shape.hpp"
+
 
 class b3PlaneShape : public b3Shape {
 

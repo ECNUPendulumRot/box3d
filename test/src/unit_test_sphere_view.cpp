@@ -45,4 +45,4 @@ public:
 
 };
 
-static int register_index = register_test("unit test", "sphere view", UnitTestShpereView::create);
+static int register_index = register_test("Unit Test", "Sphere View", UnitTestShpereView::create);

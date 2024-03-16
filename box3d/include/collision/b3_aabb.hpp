@@ -1,6 +1,3 @@
-//
-// Created by sherman on 11/8/23.
-//
 
 #ifndef BOX3D_B3_AABB_HPP
 #define BOX3D_B3_AABB_HPP
