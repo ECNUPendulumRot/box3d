@@ -2,11 +2,11 @@
 #include "scene_test.hpp"
 
 
-class TestSphereStack : public SceneTestBase {
+class TestSphereStackDropping : public SceneTestBase {
 
 public:
 
-  TestSphereStack() {
+    TestSphereStackDropping() {
 
 	m_world->set_gravity(b3Vector3r(0, 0, -10));
 	int num_of_spheres = 5;
@@ -54,8 +54,8 @@ public:
   }
 
   static TestBase *create() {
-	return new TestSphereStack;
+	return new TestSphereStackDropping;
   }
 };
 
-static int test_index = register_test("Sphere Scene Test", "Sphere Stack Dropping", TestSphereStack::create);
+static int test_index = register_test("Sphere Scene Test", "Sphere Stack Dropping", TestSphereStackDropping::create);

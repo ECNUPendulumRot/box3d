@@ -27,16 +27,18 @@ public:
         fixture_def.m_restitution = 1.0;
         fixture_def.m_density = 1.0;
 
-        //create a series of touching spheres
 
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 1; j++) {
-                pose.set_linear(b3Vector3r(0, 1.0 * j, 1.0 * i + 5));
-                velocity.set_linear(b3Vector3r(0, 0, 0));
-                body_def.set_initial_status(pose, velocity);
-                m_world->create_body(body_def)->create_fixture(fixture_def);
-            }
-        }
+        pose.set_linear(b3Vector3r(0, 0, 0.5));
+        velocity.set_linear(b3Vector3r(0, 0, 0));
+        body_def.set_initial_status(pose, velocity);
+        m_world->create_body(body_def)->create_fixture(fixture_def);
+
+        real x = 2;
+        sphere_shape.set_as_sphere(x);
+        pose.set_linear(b3Vector3r(0, 0, 0.5 + x));
+        velocity.set_linear(b3Vector3r(0, 0, 0));
+        body_def.set_initial_status(pose, velocity);
+        m_world->create_body(body_def)->create_fixture(fixture_def);
 
         // create a ground
         pose.set_linear(0, 0, 0);
