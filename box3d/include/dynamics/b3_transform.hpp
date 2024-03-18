@@ -121,11 +121,11 @@ b3Transform<T>::b3Transform(const T &x,
                             const T &z,
                             const T &r_x,
                             const T &r_y,
-                            const T &r_z):
-    m_p(b3Vector3<T>(x,   y,   z)),
-    m_r(b3Vector3<T>(r_x, r_y, r_z))
+                            const T &r_z)
 {
-    ;
+    m_p = b3Vector3<T>(x,   y,   z);
+    m_r = b3Vector3<T>(r_x, r_y, r_z);
+    m_r_t = rotation_matrix();
 }
 
 
