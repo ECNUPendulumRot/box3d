@@ -149,41 +149,39 @@ struct b3Vector3 {
 
 
 template <typename T>
-inline b3Vector3<T> operator+(const b3Vector3<T>& v1,
-                                     const b3Vector3<T>& v2) {
+inline b3Vector3<T> operator+(const b3Vector3<T>& v1, const b3Vector3<T>& v2) {
     return b3Vector3(v1.x() + v2.x(),
-                            v1.y() + v2.y(),
-                            v1.z() + v2.z());
+                     v1.y() + v2.y(),
+                     v1.z() + v2.z());
 }
 
 
 template <typename T>
-inline b3Vector3<T> operator-(const b3Vector3<T>& v1,
-                                     const b3Vector3<T>& v2) {
+inline b3Vector3<T> operator-(const b3Vector3<T>& v1, const b3Vector3<T>& v2) {
     return b3Vector3(v1.x() - v2.x(),
-                            v1.y() - v2.y(),
-                            v1.z() - v2.z());
+                     v1.y() - v2.y(),
+                     v1.z() - v2.z());
 }
 
 
 template <typename T>
 inline b3Vector3<T> operator-(const b3Vector3<T>& v) {
     return b3Vector3(-v.x(),
-                            -v.y(),
-                            -v.z());
+                     -v.y(),
+                     -v.z());
 }
 
 
-template <typename T>
-inline b3Vector3<T> operator*(T s, const b3Vector3<T>& v) {
-    return b3Vector3(s * v.x(),
-                     s * v.y(),
-                     s * v.z());
+template <typename T, typename U>
+inline b3Vector3<T> operator*(U s, const b3Vector3<T>& v) {
+    return b3Vector3<T>(s * v.x(),
+                        s * v.y(),
+                        s * v.z());
 }
 
 
-template <typename T>
-inline b3Vector3<T> operator*(const b3Vector3<T>& v, T s) {
+template <typename T, typename U>
+inline b3Vector3<T> operator*(const b3Vector3<T>& v, U s) {
     return s * v;
 }
 
