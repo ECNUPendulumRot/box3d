@@ -74,6 +74,7 @@ namespace {
     timer.reset();
     return is_double_clicking;
   }
+
 }
 
 
@@ -140,10 +141,9 @@ void b3GUIViewer::launch()
   m_viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer &) {
 	  return pre_draw_loop();
 	};
-  m_viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer &viewer, int button, int modifier) {
-	  return call_back_mouse_down(viewer, button, modifier);
-	};
+
   m_viewer.callback_key_pressed = [&](igl::opengl::glfw::Viewer &viewer, unsigned int key, int modifiers) {
+
 	  if (m_test != nullptr) {
 	    return m_test->key_pressed(viewer, key, modifiers);
 	  }
@@ -377,13 +377,7 @@ void b3GUIViewer::draw_auxiliary_shapes()
 }
 
 
-bool b3GUIViewer::call_back_mouse_down(b3GUIViewer::Viewer &viewer, int button, int modifier) {
-  if (double_clicked(viewer.current_mouse_x, viewer.current_mouse_y, m_timer)) {
-    spdlog::log(spdlog::level::info, "double clicked");
-    // Add AABB intersect test here;
-  }
-  return false;
-}
+
 
 
 

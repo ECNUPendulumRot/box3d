@@ -12,6 +12,8 @@ protected:
 
     b3World* m_world;
 
+    bool stop = false;
+
 public:
 
     SceneTestBase(){
@@ -19,7 +21,7 @@ public:
         m_world->set_gravity(b3Vector3r(0.0, 0.0, -10.0));
     }
 
-    ~SceneTestBase() {
+    ~SceneTestBase() override {
         m_world->clear();
         delete m_world;
     };
@@ -29,6 +31,8 @@ public:
     }
 
     void step() override {
+        if (stop == true)
+            return;
         m_world->step(1.0 / 60, 8, 8);
     }
 
@@ -39,6 +43,16 @@ public:
     int get_shape_count() const override {
         return m_world->get_shape_count();
     }
+
+    bool key_pressed(Viewer &viewer, unsigned int key, int modifiers) override {
+
+        if (key == GLFW_KEY_SPACE) {
+            // Stop the world step;
+            stop = !stop;
+        }
+        return false;
+    }
+
 };
 
 

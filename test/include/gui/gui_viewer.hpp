@@ -18,9 +18,13 @@
 
 class b3GUIViewer {
 
+public:
+
     using Viewer = igl::opengl::glfw::Viewer;
     using ImGuiPlugin = igl::opengl::glfw::imgui::ImGuiPlugin;
     using ViewerData = igl::opengl::ViewerData;
+
+private:
 
     Viewer m_viewer;
 
@@ -67,8 +71,6 @@ private:
     bool check_test_index();
 
     void add_ground();
-
-    bool call_back_mouse_down(Viewer& viewer, int button, int modifier);
 
     int allocate_mesh();
 

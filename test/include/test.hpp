@@ -44,6 +44,7 @@ public:
     }
 
 
+
     virtual int get_shape_count() const {
         return 0;
     }
