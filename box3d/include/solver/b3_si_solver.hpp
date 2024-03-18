@@ -26,6 +26,10 @@ public:
     void correct_penetration();
 
     ~b3SISolver() = default;
+
+    void solve_friction_help(int index_a, int index_b, const b3Vector3r &normal, const b3Vector3r &tangent,
+                             real friction_impulse, const b3Vector3r &ra, const b3Vector3r &rb, b3Vector3r *points_ra,
+                             b3Vector3r *points_rb, int point_count, b3ContactVelocityConstraint* vc);
 };
 
 

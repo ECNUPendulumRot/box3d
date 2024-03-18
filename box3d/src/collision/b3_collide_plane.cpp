@@ -72,7 +72,7 @@ void b3_collide_plane_and_sphere(
   real sq_distance = (local_center - nearest_point).length2();
   real radius = sphere_b->get_radius(); //+ plane_a->get_radius();
   if (sq_distance > radius * radius) {
-	return;
+	  return;
   }
   manifold->m_point_count = 1;
   // transform the vector form the plane frame to the world frame
@@ -158,7 +158,8 @@ void b3_collide_plane_and_cube(
 
     real separation = axis.dot(incident_vertices[i].v) - front_offset;
 
-    if (separation < total_radius) {
+
+    if (separation <= total_radius) {
       b3ManifoldPoint* cp = manifold->m_points + point_count;
       cp->m_local_point = incident_vertices[i].v;
       cp->id = incident_vertices[i].id;

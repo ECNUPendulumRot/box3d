@@ -8,14 +8,14 @@
 struct b3VelocityConstraintPoint {
     b3Vector3r m_ra;
     b3Vector3r m_rb;
-    double m_normal_collision_impulse = 0;
-    double m_normal_contact_impulse = 0;
-    double m_tangent_impulse = 0;
-    double m_normal_mass = 0;
-    double m_tanget_mass = 0;
+    real m_normal_collision_impulse = 0;
+    real m_normal_contact_impulse = 0;
+    real m_tangent_impulse = 0;
+    real m_normal_mass = 0;
+    real m_tanget_mass = 0;
     // double m_velocity_bias = 0;
-    double m_rhs_restitution_velocity = 0;
-    double m_rhs_penetration = 0;
+    real m_rhs_restitution_velocity = 0;
+    real m_rhs_penetration = 0;
 };
 
 
@@ -26,6 +26,8 @@ struct b3ContactVelocityConstraint {
     int32 m_index_b;
     real m_inv_mass_a;
     real m_inv_mass_b;
+    real m_mass_a;
+    real m_mass_b;
     b3Matrix3r m_inv_I_a;
     b3Matrix3r m_inv_I_b;
 

@@ -171,6 +171,10 @@ public:
         return m_inv_mass;
     }
 
+    real get_mass() const {
+        return m_mass;
+    }
+
     b3Matrix3r get_inv_inertia() const {
         return m_inv_inertia;
     }
