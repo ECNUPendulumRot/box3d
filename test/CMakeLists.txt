@@ -27,7 +27,7 @@ set(TEST_SOURCE_FILES
         test_app.cpp
         src/sim_app.cpp
         src/gui_viewer.cpp
-        src/scene_test_sphere_stack.cpp
+        src/scene_test_sphere_stack_dropping.cpp
         src/unit_test_box_collide.cpp
         src/unit_test_dynamic_tree.cpp
         src/test.cpp
@@ -35,11 +35,12 @@ set(TEST_SOURCE_FILES
         src/scene_test_sphere_cube_collide.cpp
         src/imgui_ext.cpp
         src/scene_test_plane_sphere_collide.cpp
-        src/scene_test_box_rest.cpp
-        src/scene_test_dropping.cpp
+        src/scene_test_cube_rest.cpp
+        src/scene_test_cube_dropping.cpp
         src/scene_test_sphere_friction.cpp
         src/scene_test_cube_friction.cpp
         src/scene_test_cube_collision.cpp
+        src/scene_test_sphere_stack.cpp
 )
 
 add_executable(

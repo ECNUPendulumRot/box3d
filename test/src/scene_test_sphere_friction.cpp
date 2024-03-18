@@ -53,4 +53,4 @@ public:
     }
 };
 
-static int test_index = register_test("Scene Test", "Sphere Friction", TestSphereFriction::create);
+static int test_index = register_test("Sphere Scene Test", "Sphere Friction", TestSphereFriction::create);

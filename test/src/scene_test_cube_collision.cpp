@@ -78,4 +78,4 @@ public:
     }
 };
 
-static int test_index = register_test("Scene Test", "Cube Collision", TestCubeCollision::create);
+static int test_index = register_test("Cube Scene Test", "Cube Collision", TestCubeCollision::create);

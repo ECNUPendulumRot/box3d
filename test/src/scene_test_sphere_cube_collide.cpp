@@ -45,5 +45,4 @@ public:
   }
 };
 
-static int test_sphere_cube_collide = register_test("Scene Test", "Sphere Cube Collide",
-													TestSphereCubeCollide::create);
+static int test_sphere_cube_collide = register_test("Cube Scene Test", "Sphere Cube Collide", TestSphereCubeCollide::create);

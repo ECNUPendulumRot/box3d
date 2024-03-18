@@ -86,6 +86,6 @@ public:
     }
 };
 
-static int test_index = register_test("Scene Test", "Box Rest", TestBoxRest::create);
+static int test_index = register_test("Cube Scene Test", "Cube Rest", TestBoxRest::create);
 
 
