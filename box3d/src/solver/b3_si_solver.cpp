@@ -329,7 +329,7 @@ void b3SISolver::solve_friction_constraints()
       support_impulse += vc->m_points[j].m_normal_collision_impulse;
     }
     // The support impulse is exerted by body A to body B.
-    support_impulse = support_impulse / vc->m_point_count;
+    // support_impulse = support_impulse / vc->m_point_count;
     real max_friction_impulse = vc->m_friction * support_impulse;
 
     // if the relative velocity is non-zero, must exist friction force.

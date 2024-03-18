@@ -77,7 +77,7 @@ struct b3Vector3 {
 
     template <typename U>
     inline b3Vector3& operator/=(U s) {
-        return *this *= (U(1.0) / s);
+        return *this *= (1.0 / (U)s);
     }
 
     inline T dot(const b3Vector3<T>& v) const {
