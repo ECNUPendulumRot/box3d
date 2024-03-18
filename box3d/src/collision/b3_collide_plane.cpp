@@ -99,13 +99,16 @@ static int32 find_incident_face(
   const b3EdgeIndex* edges2 = cube2->m_edges;
   const b3FaceIndex* faces2 = cube2->m_faces;
 
+  // Transform the normal from the world frame to the local frame of cube2
+  const b3Vector3r& n_p_b = xf2.rotation_matrix().transpose() * n_p;
+
   // find the incident face on cube2
   // the incident face is the mose anti-parallel face of cube2 to face1
   // so the dot product is the least
   int32 incident_face_index_2 = 0;
   real min_dot = b3_real_max;
   for (int32 i = 0; i < count2; ++i) {
-    real dot = n_p.dot(normals2[i]);
+    real dot = n_p_b.dot(normals2[i]);
     if (dot < min_dot) {
       min_dot = dot;
       incident_face_index_2 = i;
