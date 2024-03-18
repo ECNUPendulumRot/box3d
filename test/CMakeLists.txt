@@ -39,6 +39,7 @@ set(TEST_SOURCE_FILES
         src/scene_test_dropping.cpp
         src/scene_test_sphere_friction.cpp
         src/scene_test_cube_friction.cpp
+        src/scene_test_cube_collision.cpp
 )
 
 add_executable(

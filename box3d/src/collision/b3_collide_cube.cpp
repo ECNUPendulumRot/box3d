@@ -62,7 +62,7 @@ static void overlap_on_axis_absolute(
 
 
 // test face separation of cube_B from cube_A
-static double face_separation(
+static real face_separation(
         b3Manifold *manifold,
         const b3CubeShape *cube_A, const b3Transformr &xf_A,
         const b3CubeShape *cube_B, const b3Transformr &xf_B, int32 &face_index)
@@ -89,7 +89,7 @@ static double face_separation(
 }
 
 
-static double edge_separation(
+static real edge_separation(
   b3Manifold* manifold,
   const b3CubeShape* cube_A, const b3Transformr& xf_A,
   const b3CubeShape* cube_B, const b3Transformr& xf_B,
@@ -254,28 +254,11 @@ static void create_face_contact(
 {
   const real k_tol = 0.1 * b3_linear_slop;
 
+  // separate cube2 from cube1
   const b3CubeShape *cube1;
   const b3CubeShape *cube2;
   b3Transformr xf1, xf2;
   int32 face1;
-
-  if (separation_B > separation_A + k_tol) {
-    // we will separate A from B
-    cube1 = cube_B;
-    cube2 = cube_A;
-    xf1 = xf_B;
-    xf2 = xf_A;
-    face1 = face_index_B;
-    manifold->m_type = b3Manifold::e_face_B;
-  } else {
-    // we will separate B from A
-    cube1 = cube_A;
-    cube2 = cube_B;
-    xf1 = xf_A;
-    xf2 = xf_B;
-    face1 = face_index_A;
-    manifold->m_type = b3Manifold::e_face_A;
-  }
 
   if (separation_B > separation_A + k_tol) {
     // we will separate A from B
@@ -360,7 +343,7 @@ static void create_face_contact(
   b3_clip_segment_to_face(clip_points4, np, clip_points3, np, 
 						  nc4, side_offset4, faces1.e4, incident_face_index);
 
-  // for complicated poligon, the np maybe invalid, but for box, there is no such problem
+  // for complicated polygon, the np maybe invalid, but for box, there is no such problem
 
   int32 point_count = 0;
   manifold->m_local_normal = n;
@@ -371,6 +354,9 @@ static void create_face_contact(
 
     if (separation <= total_radius) {
       b3ManifoldPoint *cp = manifold->m_points + point_count;
+      b3Vector3r& v = clip_points4[i].v;
+      // The point of manifold is the mid point
+      v = v + (face_centroid - v).dot(n) / real(2.0) * n;
       cp->m_local_point = clip_points4[i].v;
       cp->id = clip_points4[i].id;
 
@@ -511,9 +497,9 @@ void b3_collide_cube(
   // find the best separation axis
   // to avoid parallel situation, we assume that
   // the face separation has more weight than edge separation
-  real tol = 0.95;
-  bool face_contact_A = separation_A * tol >= separation_edge;
-  bool face_contact_B = separation_B * tol >= separation_edge;
+  real tol = real(0.1) * b3_linear_slop;
+  bool face_contact_A = (separation_A + tol) >= separation_edge;
+  bool face_contact_B = (separation_B + tol) >= separation_edge;
 
   if (face_contact_A || face_contact_B) {
     create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,

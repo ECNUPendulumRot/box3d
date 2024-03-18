@@ -161,7 +161,10 @@ void b3_collide_plane_and_cube(
 
     if (separation <= total_radius) {
       b3ManifoldPoint* cp = manifold->m_points + point_count;
-      cp->m_local_point = incident_vertices[i].v;
+      b3Vector3r& v = incident_vertices[i].v;
+      // The point of the manifold is the mid point.
+      v = v + ((xf_a.linear() - v).dot(axis)) / real(2.0) * axis;
+      cp->m_local_point = v;
       cp->id = incident_vertices[i].id;
 
       ++point_count;
