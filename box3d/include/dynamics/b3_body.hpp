@@ -221,7 +221,7 @@ public:
      */
     void destroy_fixtures();
 
-    real get_kinetic_energy() const;
+    real kinetic_energy() const;
 
 private:
     /**
