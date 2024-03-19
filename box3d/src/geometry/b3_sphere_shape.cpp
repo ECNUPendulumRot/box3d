@@ -212,10 +212,9 @@ void b3SphereShape::init_view_data()
 }
 
 
-void b3SphereShape::setup_view_data(const b3Transformr& xf)
-{
-  const b3Matrix3r& rot_y = m_config.m_rot_y;
-  const b3Matrix3r& rot_z = m_config.m_rot_z;
+void b3SphereShape::setup_view_data(const b3Transformr& xf) {
+  const b3Matrix3r &rot_y = m_config.m_rot_y;
+  const b3Matrix3r &rot_z = m_config.m_rot_z;
 
   b3Vector3r v1(0, 0, 1);
   b3Vector3r v2;
@@ -228,65 +227,108 @@ void b3SphereShape::setup_view_data(const b3Transformr& xf)
 
   // transform the center of sphere to world frame
   b3Vector3r world_center = xf.transform(m_centroid);
-  // transform to display coordinate
-  transform(world_center);
 
-  if(m_first_setup_view) {
-    for(int i = 1; i < m_config.m_segments; ++i) {
-        v1 = rot_y * v1;
-        v2 = v1;
-
-        for(int j = 0; j < m_config.m_segments; ++j) {
-          v2 = rot_z * v2;
-
-          b3Vector3r v = world_center + m_radius * v2;
-          m_view_data.m_V[index++] = v.x();
-          m_view_data.m_V[index++] = v.y();
-          m_view_data.m_V[index++] = v.z();
-        }
-
-        v2 = v1;
-        v2.m_x = -v2.m_x;
-        for(int j = 0; j < m_config.m_segments; ++j) {
-          v2 = rot_z * v2;
-
-          b3Vector3r v = world_center + m_radius * v2;
-          m_view_data.m_V[index++] = v.x();
-          m_view_data.m_V[index++] = v.y();
-          m_view_data.m_V[index++] = v.z();
-        }
-    }
-
+  for (int i = 1; i < m_config.m_segments; ++i) {
     v1 = rot_y * v1;
-    v2 = rot_z * v1;
+    v2 = v1;
 
-    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
-    b3Vector3r v = world_center + m_radius * v2;
-    m_view_data.m_V[index++] = v.x();
-    m_view_data.m_V[index++] = v.y();
-    m_view_data.m_V[index++] = v.z();
+    for (int j = 0; j < m_config.m_segments; ++j) {
+      v2 = rot_z * v2;
 
-    v = world_center - m_radius * v2;
-    m_view_data.m_V[index++] = v.x();
-    m_view_data.m_V[index++] = v.y();
-    m_view_data.m_V[index++] = v.z();
-
-    m_first_setup_view = false;
-    m_old_center = world_center;
-  } else {
-    // the center of sphere displacement, if displacement is zero, we don't need do anything.
-    b3Vector3r displacement = world_center - m_old_center;
-    if(displacement.is_zero()) {
-      return;
+      b3Vector3r v = world_center + m_radius * v2;
+      m_view_data.m_V[index++] = v.x();
+      m_view_data.m_V[index++] = v.y();
+      m_view_data.m_V[index++] = v.z();
     }
 
-    int index = 0;
-    for(int i = 0; i < m_config.m_vertices_count; ++i) {
-      m_view_data.m_V[index++] += displacement.x();
-      m_view_data.m_V[index++] += displacement.y();
-      m_view_data.m_V[index++] += displacement.z();
+    v2 = v1;
+    v2.m_x = -v2.m_x;
+    for (int j = 0; j < m_config.m_segments; ++j) {
+      v2 = rot_z * v2;
+
+      b3Vector3r v = world_center + m_radius * v2;
+      m_view_data.m_V[index++] = v.x();
+      m_view_data.m_V[index++] = v.y();
+      m_view_data.m_V[index++] = v.z();
     }
-    // Record the old center of sphere
-    m_old_center = world_center;
   }
+
+  v1 = rot_y * v1;
+  v2 = rot_z * v1;
+
+  // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
+  b3Vector3r v = world_center + m_radius * v2;
+  m_view_data.m_V[index++] = v.x();
+  m_view_data.m_V[index++] = v.y();
+  m_view_data.m_V[index++] = v.z();
+
+  v = world_center - m_radius * v2;
+  m_view_data.m_V[index++] = v.x();
+  m_view_data.m_V[index++] = v.y();
+  m_view_data.m_V[index++] = v.z();
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  // transform to display coordinate
+//  transform(world_center);
+//
+//  if(m_first_setup_view) {
+//    for(int i = 1; i < m_config.m_segments; ++i) {
+//        v1 = rot_y * v1;
+//        v2 = v1;
+//
+//        for(int j = 0; j < m_config.m_segments; ++j) {
+//          v2 = rot_z * v2;
+//
+//          b3Vector3r v = world_center + m_radius * v2;
+//          m_view_data.m_V[index++] = v.x();
+//          m_view_data.m_V[index++] = v.y();
+//          m_view_data.m_V[index++] = v.z();
+//        }
+//
+//        v2 = v1;
+//        v2.m_x = -v2.m_x;
+//        for(int j = 0; j < m_config.m_segments; ++j) {
+//          v2 = rot_z * v2;
+//
+//          b3Vector3r v = world_center + m_radius * v2;
+//          m_view_data.m_V[index++] = v.x();
+//          m_view_data.m_V[index++] = v.y();
+//          m_view_data.m_V[index++] = v.z();
+//        }
+//    }
+//
+//    v1 = rot_y * v1;
+//    v2 = rot_z * v1;
+//
+//    // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
+//    b3Vector3r v = world_center + m_radius * v2;
+//    m_view_data.m_V[index++] = v.x();
+//    m_view_data.m_V[index++] = v.y();
+//    m_view_data.m_V[index++] = v.z();
+//
+//    v = world_center - m_radius * v2;
+//    m_view_data.m_V[index++] = v.x();
+//    m_view_data.m_V[index++] = v.y();
+//    m_view_data.m_V[index++] = v.z();
+//
+//    m_first_setup_view = false;
+//    m_old_center = world_center;
+//  } else {
+//    // the center of sphere displacement, if displacement is zero, we don't need do anything.
+//    b3Vector3r displacement = world_center - m_old_center;
+//    if(displacement.is_zero()) {
+//      return;
+//    }
+//
+//    int index = 0;
+//    for(int i = 0; i < m_config.m_vertices_count; ++i) {
+//      m_view_data.m_V[index++] += displacement.x();
+//      m_view_data.m_V[index++] += displacement.y();
+//      m_view_data.m_V[index++] += displacement.z();
+//    }
+//    // Record the old center of sphere
+//    m_old_center = world_center;
+//   }
+// }
+//////////////////////////////////////////////////////////////////////////////////
