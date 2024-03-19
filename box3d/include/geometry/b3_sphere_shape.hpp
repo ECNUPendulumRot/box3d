@@ -51,6 +51,8 @@ public:
 
     b3SphereShape();
 
+    ~b3SphereShape();
+
     int32 get_child_count() const override {
         return 1;
     }
