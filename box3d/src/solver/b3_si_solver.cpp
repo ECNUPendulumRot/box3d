@@ -352,8 +352,8 @@ void b3SISolver::solve_friction_constraints()
     // if the relative velocity is non-zero, must exist friction force.
     // Previous, we don't consider friction, and now we consider it. so the velocity now is must >= real case.
     // TODO: now only consider one contact point.
-    // b3Vector3r v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
-    b3Vector3r v_rel = v_b - v_a;
+    b3Vector3r v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
+    // b3Vector3r v_rel = v_b - v_a;
     // tangent relative velocity, we get the direction and the size.
     b3Vector3r v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
 
@@ -421,9 +421,9 @@ void b3SISolver::solve_friction_help(
   m_velocities[index_b].set_linear(v_b);
   // if the body friciton is static, we need tangent velocity is zero.
   // and the body should not rotate. so the angular velocity is don't change.
-  if (is_static) {
-    return;
-  }
+//  if (is_static) {
+//    return;
+//  }
 
   // First consider body b 2D cut plane.
   // the x-axis is the tangent velocity direction.
@@ -451,6 +451,10 @@ void b3SISolver::solve_friction_help(
   real w_b_to_zero_torque_impulse = -(vc->m_I_b * w_b).dot(torque_direction);
   // the friction torque direction is pointing inside the plane, so less than zero.
   w_b_to_zero_torque_impulse += friction_impulse * h;
+//  if (!is_static) {
+//    w_b_to_zero_torque_impulse += friction_impulse * h;
+//  }
+
 
   // the support force also produce torque = r cross support_force
   // r is [min_b, max_b] so the support torque is [min_b * support_impulse, max_b * support_impulse]
@@ -466,7 +470,7 @@ void b3SISolver::solve_friction_help(
     support_torque = min_support_torque;
   }
 
-  w_b += vc->m_inv_I_b * ((support_torque - friction_impulse * h) * tangent);
+  w_b += vc->m_inv_I_b * ((friction_impulse * h - support_torque) * torque_direction);
   m_velocities[index_b].set_angular(w_b);
 
 //
@@ -508,6 +512,11 @@ void b3SISolver::solve_friction_help(
   }
 
 }
+
+//
+//void b3SISolver::apply_friction_torque(int index, const b3Vector3r& torque)
+//{
+//}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

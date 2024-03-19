@@ -68,6 +68,7 @@ b3SphereShape::b3SphereShape()
 {
     m_radius = 0;
     m_type = e_sphere;
+    m_vertices = nullptr;
 }
 
 
@@ -264,6 +265,9 @@ void b3SphereShape::setup_view_data(const b3Transformr& xf) {
 }
 
 b3SphereShape::~b3SphereShape() {
+  if (m_vertices == nullptr) {
+    return;
+  }
   m_block_allocator->free(m_vertices, sizeof(b3Vector3r) * m_config.m_vertices_count);
   m_vertices = nullptr;
 }

@@ -25,7 +25,7 @@ public:
         cube_shape.set_as_box(1, 1, 1);
 
         b3FixtureDef cube_fd;
-        cube_fd.m_restitution = 0.7;
+        cube_fd.m_restitution = 1;
         cube_fd.m_friction = 0.4;
         cube_fd.m_density = 1.0;
         cube_fd.m_shape = &cube_shape;
