@@ -28,6 +28,8 @@ struct b3ContactVelocityConstraint {
     real m_inv_mass_b;
     real m_mass_a;
     real m_mass_b;
+    b3Matrix3r m_I_a;
+    b3Matrix3r m_I_b;
     b3Matrix3r m_inv_I_a;
     b3Matrix3r m_inv_I_b;
 

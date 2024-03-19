@@ -30,6 +30,8 @@ class b3SphereShape : public b3Shape {
 
     b3Vector3r m_centroid;
 
+    b3Vector3r* m_vertices;
+
     // control generate sphere view data
     static const b3SphereConfig m_config;
 
