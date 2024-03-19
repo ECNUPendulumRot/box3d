@@ -40,11 +40,13 @@ b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
     vc->m_index_a = body_a->get_island_index();
     vc->m_mass_a = body_a->get_mass();
     vc->m_inv_mass_a = body_a->get_inv_mass();
+    vc->m_I_a = body_a->get_inertia();
     vc->m_inv_I_a = body_a->get_inv_inertia();
 
     vc->m_index_b = body_b->get_island_index();
     vc->m_mass_b = body_b->get_mass();
     vc->m_inv_mass_b = body_b->get_inv_mass();
+    vc->m_I_b = body_b->get_inertia();
     vc->m_inv_I_b = body_b->get_inv_inertia();
 
     vc->m_penetration = manifold->m_penetration;
@@ -325,6 +327,14 @@ void b3SISolver::solve_friction_constraints()
     }
 
     support_impulse += not_apply_support_impulse;
+    if (not_apply_support_impulse == 0) {
+      b3Body* b = m_bodies[vc->m_index_b];
+      if(vc->m_inv_mass_b == 0) {
+        b = m_bodies[vc->m_index_a];
+      }
+      not_apply_support_impulse = (b->get_gravity() + b->get_force()).dot(vc->m_normal);
+      not_apply_support_impulse = b3_abs(not_apply_support_impulse * m_timestep->m_dt);
+    }
 
     // The support impulse is exerted by body A to body B.
     // support_impulse = support_impulse / vc->m_point_count;
@@ -334,6 +344,7 @@ void b3SISolver::solve_friction_constraints()
     // Previous, we don't consider friction, and now we consider it. so the velocity now is must >= real case.
     // TODO: now only consider one contact point.
     b3Vector3r v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
+    // b3Vector3r v_rel = v_b - v_a;
     // tangent relative velocity, we get the direction and the size.
     b3Vector3r v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
 
@@ -357,50 +368,27 @@ void b3SISolver::solve_friction_constraints()
       points_rb[k] = vc->m_points[k].m_rb;
     }
 
+    bool is_static = false;
     if (vc->m_inv_mass_b != 0) {
       real v_real_zero_impulse = v_rel_t_size * vc->m_mass_b;
       if(v_real_zero_impulse < max_friction_impulse) {
+        is_static = true;
         max_friction_impulse = v_real_zero_impulse;
       }
       solve_friction_help(vc->m_index_a, vc->m_index_b,
-                          vc->m_normal, v_rel_t_dir,
+                          vc->m_normal, v_rel_t_dir, is_static,
                           max_friction_impulse, not_apply_support_impulse, vc->m_ra, vc->m_rb,
                           points_ra, points_rb, vc->m_point_count, vc);
     } else {
       real v_real_zero_impulse = v_rel_t_size * vc->m_mass_a;
       if(v_real_zero_impulse < max_friction_impulse) {
+        is_static = true;
         max_friction_impulse = v_real_zero_impulse;
       }
       solve_friction_help(vc->m_index_b, vc->m_index_a,
-                          -vc->m_normal, -v_rel_t_dir,
+                          -vc->m_normal, -v_rel_t_dir, is_static,
                           max_friction_impulse, not_apply_support_impulse, vc->m_rb, vc->m_ra,
                           points_rb, points_ra, vc->m_point_count, vc);
-    }
-
-    if(vc->m_inv_mass_b != 0) {
-      // Consider 2D Cut plane.
-      // the x-axis is the tangent velocity direction.
-      // the y-axis is the contact normal direction.
-      // and the origin point is the center of body b(project to this plane).
-      real h = b3_abs(vc->m_rb.dot(vc->m_normal));
-      real b = vc->m_points[0].m_rb.dot(v_rel_t_dir);
-      for (int k = 1; k < vc->m_point_count; ++k) {
-        real temp = vc->m_points[k].m_rb.dot(v_rel_t_dir);
-        if(temp > b) {
-          b = temp;
-        }
-      }
-      // If the torque is supported, the frictional moment can be corrected
-      // Tf the support torque can correct the frictional torque.
-      // the angular velocity not change.
-      if (vc->m_friction * h <= b) {
-        // only change linear velocity
-      } else {
-        // change linear and angular velocity
-      }
-
-      // friction impulse need to apply to body a.
-    } else {
     }
   }
 }
@@ -411,69 +399,137 @@ void b3SISolver::solve_friction_constraints()
 // the tangent is the relative tangent velocity direction.
 // the friction impulse direction is -tangent.
 void b3SISolver::solve_friction_help(
-  int index_a, int index_b, const b3Vector3r& normal, const b3Vector3r& tangent,
+  int index_a, int index_b, const b3Vector3r& normal, const b3Vector3r& tangent, bool is_static,
   real friction_impulse, real support_impulse, const b3Vector3r& ra, const b3Vector3r& rb,
   b3Vector3r* points_ra, b3Vector3r* points_rb, int point_count, b3ContactVelocityConstraint* vc)
 {
+
+  b3Vector3r v_a = m_velocities[index_a].linear();
+  b3Vector3r v_b = m_velocities[index_b].linear();
+  v_a += vc->m_inv_mass_a * (friction_impulse * tangent);
+  v_b -= vc->m_inv_mass_b * (friction_impulse * tangent);
+  m_velocities[index_a].set_linear(v_a);
+  m_velocities[index_b].set_linear(v_b);
+  // if the body friciton is static, we need tangent velocity is zero.
+  // and the body should not rotate. so the angular velocity is don't change.
+//  if (is_static) {
+//    return;
+//  }
+
   // First consider body b 2D cut plane.
   // the x-axis is the tangent velocity direction.
   // the y-axis is the contact normal direction.
   // and the origin point is the center of body b(project to this plane).
   real h = b3_abs(rb.dot(normal));
+  real max_b = points_rb[0].dot(tangent);
+  real min_b = points_rb[0].dot(tangent);
   real b = points_rb[0].dot(tangent);
   for (int k = 1; k < point_count; ++k) {
     real temp = points_rb[k].dot(tangent);
-    if(temp > b) {
-      b = temp;
-    }
+    b = b3_max(temp, b);
+    max_b = b3_max(temp, max_b);
+    min_b = b3_min(temp, min_b);
   }
   // If the torque is supported, the frictional moment can be corrected
   // Tf the support torque can correct the frictional torque.
   // the angular velocity not change.
   // TODO: if we need consider the support toque to minus the angular velocity.
-  b3Vector3r v_b = m_velocities[index_b].linear();
-  v_b -= vc->m_inv_mass_b * (friction_impulse * tangent);
-  m_velocities[index_b].set_linear(v_b);
-  if (vc->m_friction * h > b) {
-    // also need change linear velocity
-    b3Vector3r torque_impulse = rb.cross(-friction_impulse * tangent);
-    // support force also produce torque.
-    torque_impulse += (b * tangent).cross(support_impulse * normal);
+  b3Vector3r w_b = m_velocities[index_b].angular();
 
-    b3Vector3r w_b = m_velocities[index_b].angular();
-    w_b += vc->m_inv_I_b * torque_impulse;
-    m_velocities[index_b].set_angular(w_b);
+  b3Vector3r torque_direction = normal.cross(tangent);
+  // torque = I * w; and then get the torque direction component.
+  // The direction is pointing inside the plane. maybe less than zero.
+  real w_b_to_zero_torque_impulse = (vc->m_I_b * w_b).dot(torque_direction);
+  // the friction torque direction is pointing inside the plane, so less than zero.
+  w_b_to_zero_torque_impulse += friction_impulse * h;
+//  if (!is_static) {
+//    w_b_to_zero_torque_impulse += friction_impulse * h;
+//  }
+
+
+  // the support force also produce torque = r cross support_force
+  // r is [min_b, max_b] so the support torque is [min_b * support_impulse, max_b * support_impulse]
+  // if w_b_to_zero_torque_impulse is in the range,  the angular velocity will be zero.
+  real min_support_torque = min_b * support_impulse;
+  real max_support_torque = max_b * support_impulse;
+  real support_torque = w_b_to_zero_torque_impulse;
+  // The angular velocity cannot be set to 0 by support torque, so the maximum torque is taken
+  if (w_b_to_zero_torque_impulse > max_support_torque) {
+    support_torque = max_support_torque;
   }
+  if (w_b_to_zero_torque_impulse < min_support_torque) {
+    support_torque = min_support_torque;
+  }
+
+  w_b += vc->m_inv_I_b * ((friction_impulse * h - support_torque) * torque_direction);
+  m_velocities[index_b].set_angular(w_b);
+
+//
+//  if (vc->m_friction * h > b) {
+//    // also need change linear velocity
+//    b3Vector3r torque_impulse = rb.cross(-friction_impulse * tangent);
+//    // support force also produce torque.
+//    torque_impulse += (b * tangent).cross(support_impulse * normal);
+//
+//    b3Vector3r w_b = m_velocities[index_b].angular();
+//    w_b += vc->m_inv_I_b * torque_impulse;
+//    m_velocities[index_b].set_angular(w_b);
+//  }
 
   // friction impulse for body a.
   if (vc->m_inv_mass_a == 0) {
     return;
   }
-  b3Vector3r v_a = m_velocities[index_a].linear();
-  v_a += vc->m_inv_mass_a * (friction_impulse * tangent);
-  m_velocities[index_a].set_linear(v_a);
 
   // we need recompute h and b for body a.
   h = b3_abs(ra.dot(normal));
   b = points_ra[0].dot(tangent);
+  max_b = points_ra[0].dot(tangent);
+  min_b = points_ra[0].dot(tangent);
   for (int k = 1; k < point_count; ++k) {
     real temp = points_ra[k].dot(tangent);
-    if (temp < b) {
-      b = temp;
-    }
+    b = b3_max(temp, b);
+    min_b = b3_min(temp, min_b);
+    max_b = b3_max(temp, max_b);
   }
-  b = b3_abs(b);
 
-  if(vc->m_friction * h > b) {
-    b3Vector3r torque_impulse = ra.cross(friction_impulse * tangent);
-    torque_impulse += (-b * tangent).cross(-support_impulse * normal);
+  b3Vector3r w_a = m_velocities[index_a].angular();
+  // The direction is pointing inside the plane. maybe less than zero.
+  real w_a_to_zero_torque_impulse = (vc->m_I_a * w_a).dot(torque_direction);
+  // the friction works in the opposite direction
+  w_a_to_zero_torque_impulse += friction_impulse * h;
 
-    b3Vector3r w_a = m_velocities[index_a].angular();
-    w_a += vc->m_inv_I_a * torque_impulse;
-    m_velocities[index_a].set_angular(w_a);
+  min_support_torque = max_b * support_impulse;
+  max_support_torque = min_b * support_impulse;
+  support_torque = w_a_to_zero_torque_impulse;
+  if (w_a_to_zero_torque_impulse > max_support_torque) {
+    support_torque = max_support_torque;
   }
+  if (w_a_to_zero_torque_impulse < min_support_torque) {
+    support_torque = min_support_torque;
+  }
+
+  w_a += vc->m_inv_I_a * ((friction_impulse * h - support_torque) * torque_direction);
+  m_velocities[index_a].set_angular(w_a);
+
+
+//  b = b3_abs(b);
+//
+//  if(vc->m_friction * h > b) {
+//    b3Vector3r torque_impulse = ra.cross(friction_impulse * tangent);
+//    torque_impulse += (-b * tangent).cross(-support_impulse * normal);
+//
+//    b3Vector3r w_a = m_velocities[index_a].angular();
+//    w_a += vc->m_inv_I_a * torque_impulse;
+//    m_velocities[index_a].set_angular(w_a);
+//  }
 
 }
+
+//
+//void b3SISolver::apply_friction_torque(int index, const b3Vector3r& torque)
+//{
+//}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

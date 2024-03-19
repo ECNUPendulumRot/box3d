@@ -179,6 +179,10 @@ public:
         return m_inv_inertia;
     }
 
+    b3Matrix3r get_inertia() const {
+        return m_inertia;
+    }
+
     b3Vector3r get_local_center() const {
         return m_local_center;
     }

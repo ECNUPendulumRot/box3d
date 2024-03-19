@@ -12,7 +12,7 @@ public:
         bode_def.m_type = b3BodyType::b3_dynamic_body;
 
         b3Transformr pose, velocity;
-        pose.set_linear({0, -10, 2});
+        pose.set_linear({0, -30, 2});
         pose.set_angular({60.0 / 180 * b3_pi, 0, 0});
 //        pose.set_linear({0, -4, 1});
 //        pose.set_angular({0, 0, 0});
@@ -25,7 +25,7 @@ public:
         cube_shape.set_as_box(1, 1, 1);
 
         b3FixtureDef cube_fd;
-        cube_fd.m_restitution = 1.0;
+        cube_fd.m_restitution = 1;
         cube_fd.m_friction = 0.4;
         cube_fd.m_density = 1.0;
         cube_fd.m_shape = &cube_shape;
@@ -39,7 +39,7 @@ public:
         b3Body* ground_body = m_world->create_body(ground_def);
 
         b3PlaneShape ground_shape;
-        ground_shape.set_as_plane(50, 50);
+        ground_shape.set_as_plane(100, 100);
 
         b3FixtureDef ground_fd;
         ground_fd.m_restitution = 0;

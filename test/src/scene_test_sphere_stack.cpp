@@ -8,7 +8,7 @@ public:
 
     TestSphereStack() {
 
-        m_world->set_gravity(b3Vector3r(0, 0, -10));
+        m_world->set_gravity(b3Vector3r(0, 0, 0));
         int num_of_spheres = 5;
         // create a dynamic body
         b3Transformr pose, velocity;
