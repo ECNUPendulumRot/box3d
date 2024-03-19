@@ -155,3 +155,8 @@ void b3Body::destroy_fixtures() {
 }
 
 
+real b3Body::get_kinetic_energy() const {
+  return 0;
+}
+
+

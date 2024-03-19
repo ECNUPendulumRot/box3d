@@ -106,6 +106,18 @@ public:
         return inv;
     }
 
+    inline real trace() const {
+        return m_11 + m_22 + m_33;
+    }
+
+    inline b3Vector3<T> eigen_values() {
+        T e1 = trace();
+        T e2 = T(0.5) * (e1 * e1 + ((*this) * (*this)).trace());
+        T e3 = determinant();
+
+        return b3Vector3<T>(e1, e2, e3);
+    }
+
     inline b3Matrix3& operator-=(const b3Matrix3<T>& M) {
         m_col1 -= M.m_col1;
         m_col2 -= M.m_col2;
@@ -134,12 +146,36 @@ public:
     static b3Matrix3 zero() {
         return b3Matrix3(b3Vector3<T>::zero(), b3Vector3<T>::zero(), b3Vector3<T>::zero());
     }
+
 };
 
+//////////////////////////////////////////////////////
+
+using b3Matrix3d = b3Matrix3<double>;
+using b3Matrix3f = b3Matrix3<float>;
+using b3Matrix3r = b3Matrix3<real>;
+
+//////////////////////////////////////////////////////
 
 template <typename T>
 inline b3Matrix3<T> operator*(const b3Matrix3<T>& M, const T& s) {
     return b3Matrix3(M.col(0) * s, M.col(1) * s, M.col(2) * s);
+}
+
+
+template <typename T>
+inline b3Matrix3<T> operator*(const b3Matrix3<T>& M1, const b3Matrix3<T>& M2) {
+    b3Matrix3<T> res;
+    res.m_11 = M1.col(0).dot(M2.row(0));
+    res.m_21 = M1.col(0).dot(M2.row(1));
+    res.m_31 = M1.col(0).dot(M2.row(2));
+    res.m_12 = M1.col(1).dot(M2.row(0));
+    res.m_22 = M1.col(1).dot(M2.row(1));
+    res.m_32 = M1.col(1).dot(M2.row(2));
+    res.m_13 = M1.col(2).dot(M2.row(0));
+    res.m_23 = M1.col(2).dot(M2.row(1));
+    res.m_33 = M1.col(2).dot(M2.row(2));
+    return res;
 }
 
 

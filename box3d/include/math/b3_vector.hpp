@@ -148,6 +148,15 @@ struct b3Vector3 {
 };
 
 
+//////////////////////////////////////////////////////
+
+using b3Vector3d = b3Vector3<double>;
+using b3Vector3f = b3Vector3<float>;
+using b3Vector3r = b3Vector3<real>;
+
+//////////////////////////////////////////////////////
+
+
 template <typename T>
 inline b3Vector3<T> operator+(const b3Vector3<T>& v1, const b3Vector3<T>& v2) {
     return b3Vector3(v1.x() + v2.x(),
