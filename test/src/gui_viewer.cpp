@@ -363,6 +363,14 @@ void b3GUIViewer::draw_auxiliary_shapes()
   b3_assert(auxiliary_shape_list != nullptr);
 
   b3AuxiliaryShape *auxiliary_shape = auxiliary_shape_list;
+
+  if (auxiliary_shape->has_points()) {
+      m_viewer.data(auxiliary_index).point_size = 8;
+      Eigen::MatrixXd points = auxiliary_shape->get_points_m();
+      points *= m_transform;
+      m_viewer.data(auxiliary_index).add_points(points, Eigen::RowVector3d(1.0, 0.0, 0.0));
+  }
+
   for (int i = 0; i < auxiliary_shape_count; i++) {
     Eigen::MatrixXd edges_left = auxiliary_shape->get_edges_left_m();
     Eigen::MatrixXd edges_right = auxiliary_shape->get_edges_right_m();

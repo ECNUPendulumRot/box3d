@@ -18,7 +18,6 @@ class b3AuxiliaryShape {
 
     std::vector<double> edge_left_v;
     std::vector<double> edge_right_v;
-
     std::vector<double> point_v;
 
     Eigen::RowVector3d color = Eigen::RowVector3d(0, 0, 0);
@@ -71,6 +70,9 @@ public:
         return ConstMapMatrixX<double, Eigen::RowMajor>(point_v.data(), point_v.size() / 3, 3);
     }
 
+    bool has_points() {
+        return !point_v.empty();
+    }
 };
 
 
