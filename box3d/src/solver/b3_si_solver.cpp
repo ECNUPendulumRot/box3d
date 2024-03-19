@@ -447,8 +447,8 @@ void b3SISolver::solve_friction_help(
 
   b3Vector3r torque_direction = normal.cross(tangent);
   // torque = I * w; and then get the torque direction component.
-  // The direction is pointing inside the plane. if it less than zero, the direction is reverse.
-  real w_b_to_zero_torque_impulse = -(vc->m_I_b * w_b).dot(torque_direction);
+  // The direction is pointing inside the plane. maybe less than zero.
+  real w_b_to_zero_torque_impulse = (vc->m_I_b * w_b).dot(torque_direction);
   // the friction torque direction is pointing inside the plane, so less than zero.
   w_b_to_zero_torque_impulse += friction_impulse * h;
 //  if (!is_static) {
@@ -490,26 +490,48 @@ void b3SISolver::solve_friction_help(
     return;
   }
 
-
   // we need recompute h and b for body a.
   h = b3_abs(ra.dot(normal));
   b = points_ra[0].dot(tangent);
+  max_b = points_ra[0].dot(tangent);
+  min_b = points_ra[0].dot(tangent);
   for (int k = 1; k < point_count; ++k) {
     real temp = points_ra[k].dot(tangent);
-    if (temp < b) {
-      b = temp;
-    }
+    b = b3_max(temp, b);
+    min_b = b3_min(temp, min_b);
+    max_b = b3_max(temp, max_b);
   }
-  b = b3_abs(b);
 
-  if(vc->m_friction * h > b) {
-    b3Vector3r torque_impulse = ra.cross(friction_impulse * tangent);
-    torque_impulse += (-b * tangent).cross(-support_impulse * normal);
+  b3Vector3r w_a = m_velocities[index_a].angular();
+  // The direction is pointing inside the plane. maybe less than zero.
+  real w_a_to_zero_torque_impulse = (vc->m_I_a * w_a).dot(torque_direction);
+  // the friction works in the opposite direction
+  w_a_to_zero_torque_impulse += friction_impulse * h;
 
-    b3Vector3r w_a = m_velocities[index_a].angular();
-    w_a += vc->m_inv_I_a * torque_impulse;
-    m_velocities[index_a].set_angular(w_a);
+  min_support_torque = max_b * support_impulse;
+  max_support_torque = min_b * support_impulse;
+  support_torque = w_a_to_zero_torque_impulse;
+  if (w_a_to_zero_torque_impulse > max_support_torque) {
+    support_torque = max_support_torque;
   }
+  if (w_a_to_zero_torque_impulse < min_support_torque) {
+    support_torque = min_support_torque;
+  }
+
+  w_a += vc->m_inv_I_a * ((friction_impulse * h - support_torque) * torque_direction);
+  m_velocities[index_a].set_angular(w_a);
+
+
+//  b = b3_abs(b);
+//
+//  if(vc->m_friction * h > b) {
+//    b3Vector3r torque_impulse = ra.cross(friction_impulse * tangent);
+//    torque_impulse += (-b * tangent).cross(-support_impulse * normal);
+//
+//    b3Vector3r w_a = m_velocities[index_a].angular();
+//    w_a += vc->m_inv_I_a * torque_impulse;
+//    m_velocities[index_a].set_angular(w_a);
+//  }
 
 }
 
