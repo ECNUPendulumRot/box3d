@@ -221,6 +221,8 @@ public:
      */
     void destroy_fixtures();
 
+    real get_kinetic_energy() const;
+
 private:
     /**
      * recalculate mass, inertia, and center of mass of the body.
