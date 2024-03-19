@@ -269,9 +269,11 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
       w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
   }
     m_velocities[vc->m_index_a].set_linear(v_a);
-    m_velocities[vc->m_index_a].set_angular(w_a);
     m_velocities[vc->m_index_b].set_linear(v_b);
-    m_velocities[vc->m_index_b].set_angular(w_b);
+    if (is_collision) {
+      m_velocities[vc->m_index_a].set_angular(w_a);
+      m_velocities[vc->m_index_b].set_angular(w_b);
+    }
   }
 }
 
@@ -325,10 +327,14 @@ void b3SISolver::solve_friction_constraints()
 
     // compute the support force for b from a
     real support_impulse = 0;
+    real not_apply_support_impulse = 0;
     for (int j = 0; j < vc->m_point_count; ++j) {
-      support_impulse += vc->m_points[j].m_normal_contact_impulse;
+      not_apply_support_impulse += vc->m_points[j].m_normal_contact_impulse;
       support_impulse += vc->m_points[j].m_normal_collision_impulse;
     }
+
+    support_impulse += not_apply_support_impulse;
+
     // The support impulse is exerted by body A to body B.
     // support_impulse = support_impulse / vc->m_point_count;
     real max_friction_impulse = vc->m_friction * support_impulse;
@@ -367,7 +373,7 @@ void b3SISolver::solve_friction_constraints()
       }
       solve_friction_help(vc->m_index_a, vc->m_index_b,
                           vc->m_normal, v_rel_t_dir,
-                          max_friction_impulse, support_impulse, vc->m_ra, vc->m_rb,
+                          max_friction_impulse, not_apply_support_impulse, vc->m_ra, vc->m_rb,
                           points_ra, points_rb, vc->m_point_count, vc);
     } else {
       real v_real_zero_impulse = v_rel_t_size * vc->m_mass_a;
@@ -376,7 +382,7 @@ void b3SISolver::solve_friction_constraints()
       }
       solve_friction_help(vc->m_index_b, vc->m_index_a,
                           -vc->m_normal, -v_rel_t_dir,
-                          max_friction_impulse, support_impulse, vc->m_rb, vc->m_ra,
+                          max_friction_impulse, not_apply_support_impulse, vc->m_rb, vc->m_ra,
                           points_rb, points_ra, vc->m_point_count, vc);
     }
 
