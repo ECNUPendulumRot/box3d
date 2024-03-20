@@ -155,8 +155,14 @@ void b3Body::destroy_fixtures() {
 }
 
 
-real b3Body::get_kinetic_energy() const {
-  return 0;
+real b3Body::kinetic_energy() const {
+
+  const b3Vector3r& v = m_velocity.linear();
+  const b3Vector3r& w = m_velocity.angular();
+
+  // kinetic energy = 1/2 * m * v^2 + 1/2 * (I1 * w1^2 + I2 * w2^2 + I3 * w3^2)
+  return real(0.5) * (m_mass * v.length2() + (w * m_inertia).dot(w));
+
 }
 
 

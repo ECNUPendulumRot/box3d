@@ -128,15 +128,6 @@ int b3SISolver::solve(int type)
 {
   init_velocity_constraints();
 
-  for(int i = 0; i < m_body_count; ++i) {
-    if(m_bodies[i]->get_type() != b3BodyType::b3_static_body) {
-      spdlog::log(spdlog::level::info, "start position: {}, {}, {}, velocity: {}, {}, {}, angular velocity: {}, {}, {}",
-                   m_positions[i].linear().x(), m_positions[i].linear().y(), m_positions[i].linear().z(),
-                   m_velocities[i].linear().x(), m_velocities[i].linear().y(), m_velocities[i].linear().z(),
-                   m_velocities[i].angular().x(), m_velocities[i].angular().y(), m_velocities[i].angular().z());
-    }
-  }
-
   // collision
   for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
     solve_velocity_constraints(true);

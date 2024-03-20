@@ -32,8 +32,8 @@ class UnitTestBoxCollide : public UnitTestBase {
 
 public :
   UnitTestBoxCollide() {
-    xf_A.set_linear(0, 3.8, 2);
-    xf_A.set_angular(0, 0, 0);
+    xf_A.set_linear(0, 2, 0.4);
+    xf_A.set_angular(0, 0, 2.3);
     cube_A = new b3CubeShape();
     cube_A->set_as_box(hf_A.m_x, hf_A.m_y, hf_A.m_z);
     body_A = new b3Body();
