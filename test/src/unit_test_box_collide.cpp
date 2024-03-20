@@ -32,8 +32,8 @@ class UnitTestBoxCollide : public UnitTestBase {
 
 public :
   UnitTestBoxCollide() {
-    xf_A.set_linear(0, 2, 0.4);
-    xf_A.set_angular(0, 0, 2.3);
+    xf_A.set_linear(0.2, 2.6, 0.6);
+    xf_A.set_angular(0, -1.2, 2.3);
     cube_A = new b3CubeShape();
     cube_A->set_as_box(hf_A.m_x, hf_A.m_y, hf_A.m_z);
     body_A = new b3Body();
@@ -223,8 +223,11 @@ public :
       const b3ManifoldPoint *mp = manifold.m_points + i;
       edge_box_A->add_point(mp->m_local_point.x(), mp->m_local_point.y(), mp->m_local_point.z());
     }
-
-	  return edge_box_A;
+//    edge_box_A->add_point(0.04, 4.27, 0.99);
+//    edge_box_A->add_point(-0.87, 3.36, -0.52);
+//    edge_box_A->add_point(-1, 2, 1);
+//    edge_box_A->add_point(1, 2, 1);
+    return edge_box_A;
   }
 
 };

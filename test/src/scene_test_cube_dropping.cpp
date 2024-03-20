@@ -46,7 +46,7 @@ public:
             b3Transformr pose, velocity;
 
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 2; i++) {
                 std::random_device rd;
                 std::mt19937 gen(rd());
                 std::uniform_int_distribution<> distrib_x(-5, 5);
