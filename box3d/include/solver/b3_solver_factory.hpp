@@ -19,13 +19,12 @@ class b3SolverFactory {
 public:
 
     static b3Solver* get_solver(b3SolverType type) {
-
+        static b3SISolver si_solver;
         switch (type) {
             case SI_SOLVER:
-                static b3SISolver si_solver;
                 return &si_solver;
             default:
-                throw std::invalid_argument("Invalid solver type");
+                return nullptr;
         }
     }
 };
