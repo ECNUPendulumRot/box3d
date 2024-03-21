@@ -8,105 +8,105 @@
 #include "solver/b3_solver_factory.hpp"
 
 b3World::b3World():
-  m_body_list(nullptr), m_body_count(0),
-  m_shape_list(nullptr), m_shape_count(0)
+    m_body_list(nullptr), m_body_count(0),
+    m_shape_list(nullptr), m_shape_count(0)
 {
-  m_contact_manager.set_block_allocator(&m_block_allocator);
+    m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
 
 b3World::~b3World()
 {
-  // TODO: think about how to destruct
+    // TODO: think about how to destruct
 }
 
 
 b3Body *b3World::create_body(const b3BodyDef &def)
 {
-  b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
+    b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
 
-  // allocate memory for the body
-  void *mem = m_block_allocator.allocate(sizeof(b3Body));
-  auto *body = new (mem) b3Body(def);
+    // allocate memory for the body
+    void *mem = m_block_allocator.allocate(sizeof(b3Body));
+    auto *body = new (mem) b3Body(def);
 
-  body->set_world(this);
-  body->apply_gravity(m_gravity);
+    body->set_world(this);
+    body->apply_gravity(m_gravity);
 
-  // add to the double linked list
-  body->m_prev = nullptr;
-  body->m_next = this->m_body_list;
+    // add to the double linked list
+    body->m_prev = nullptr;
+    body->m_next = this->m_body_list;
 
-  if (m_body_list) {
-	  m_body_list->m_prev = body;
-  }
-  m_body_list = body;
-  ++m_body_count;
+    if (m_body_list) {
+  	    m_body_list->m_prev = body;
+    }
+    m_body_list = body;
+    ++m_body_count;
 
-  return body;
+    return body;
 }
 
 
 void b3World::add_shape(b3Shape* shape)
 {
-  shape->set_next(m_shape_list);
-  m_shape_list = shape;
-  m_shape_count++;
+    shape->set_next(m_shape_list);
+    m_shape_list = shape;
+    m_shape_count++;
 }
 
 
 b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
 {
-  std::string fs_string = file_path.string();
+    std::string fs_string = file_path.string();
 
-  void *memory = m_block_allocator.allocate(sizeof(b3Shape));
+    void *memory = m_block_allocator.allocate(sizeof(b3Shape));
 
-  // TODO: implement creation of shape from world
-  auto *shape = new(memory) b3Shape;
+    // TODO: implement creation of shape from world
+    auto *shape = new(memory) b3Shape;
 
-  shape->set_next(m_shape_list);
-  m_shape_list = shape;
-  m_shape_count++;
+    shape->set_next(m_shape_list);
+    m_shape_list = shape;
+    m_shape_count++;
 
-  return shape;
+    return shape;
 }
 
 
 void b3World::clear()
 {
-  // TODO: Check this function
-  // Free all bodies
-  b3Body* body = m_body_list;
-  while (body != nullptr) {
-    auto* next = body->next();
-    // b3_free(body);
-    body->destroy_fixtures();
-    // TODO: free contact and contact edge etc related to body (destroy a body)
-    m_block_allocator.free(body, sizeof(b3Body));
-    body = next;
-  }
+    // TODO: Check this function
+    // Free all bodies
+    b3Body* body = m_body_list;
+    while (body != nullptr) {
+        auto* next = body->next();
+        // b3_free(body);
+        body->destroy_fixtures();
+        // TODO: free contact and contact edge etc related to body (destroy a body)
+        m_block_allocator.free(body, sizeof(b3Body));
+        body = next;
+    }
 }
 
 void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations)
 {
-  // when new fixtures were added, we need to find the new contacts.
-  if (m_new_contacts) {
-    m_contact_manager.find_new_contact();
-    m_new_contacts = false;
-  }
+    // when new fixtures were added, we need to find the new contacts.
+    if (m_new_contacts) {
+        m_contact_manager.find_new_contact();
+        m_new_contacts = false;
+    }
 
-  b3TimeStep step;
-  step.m_dt = dt;
-  step.m_velocity_iterations = velocity_iterations;
-  step.m_position_iterations = position_iterations;
-  step.m_integral_method = e_implicit;
-  step.m_inv_dt = dt > 0.0 ? 1.0 / dt : 0.0;
+    b3TimeStep step;
+    step.m_dt = dt;
+    step.m_velocity_iterations = velocity_iterations;
+    step.m_position_iterations = position_iterations;
+    step.m_integral_method = e_implicit;
+    step.m_inv_dt = dt > 0.0 ? 1.0 / dt : 0.0;
 
-  // update contacts, aabb updates, when aabb not overlapping, delete the contact,
-  // otherwise, update the contact manifold.
-  m_contact_manager.collide();
+    // update contacts, aabb updates, when aabb not overlapping, delete the contact,
+    // otherwise, update the contact manifold.
+    m_contact_manager.collide();
 
-  // generate islands, and solve them.
-  solve(step);
+    // generate islands, and solve them.
+    solve(step);
 }
 
 
