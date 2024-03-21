@@ -25,7 +25,7 @@ public:
                 static b3SISolver si_solver;
                 return &si_solver;
             default:
-                throw std::invalid_argument("Invalid solver type");
+                return nullptr;
         }
     }
 };
