@@ -12,11 +12,68 @@
 
 #include <spdlog/spdlog.h>
 
+//b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step):
+//  b3Solver(block_allocator, island, step)
+//{
+//  for(int32 i = 0; i < m_contact_count; ++i) {
+//    b3Contact* contact = m_contacts[i];
+//
+//    b3Fixture *fixture_a = contact->get_fixture_a();
+//    b3Fixture *fixture_b = contact->get_fixture_b();
+//
+//    b3Body *body_a = fixture_a->get_body();
+//    b3Body *body_b = fixture_b->get_body();
+//    b3Manifold *manifold = contact->get_manifold();
+//
+//    int32 point_count = manifold->m_point_count;
+//
+//    b3_assert(point_count > 0);
+//
+//    b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+//    vc->m_restitution = contact->get_restitution();
+//    vc->m_friction = contact->get_friction();
+//    vc->m_contact_index = i;
+//    vc->m_point_count = point_count;
+//
+//    vc->m_normal = manifold->m_local_normal;
+//
+//    vc->m_index_a = body_a->get_island_index();
+//    vc->m_mass_a = body_a->get_mass();
+//    vc->m_inv_mass_a = body_a->get_inv_mass();
+//    vc->m_I_a = body_a->get_inertia();
+//    vc->m_inv_I_a = body_a->get_inv_inertia();
+//
+//    vc->m_index_b = body_b->get_island_index();
+//    vc->m_mass_b = body_b->get_mass();
+//    vc->m_inv_mass_b = body_b->get_inv_mass();
+//    vc->m_I_b = body_b->get_inertia();
+//    vc->m_inv_I_b = body_b->get_inv_inertia();
+//
+//    vc->m_penetration = manifold->m_penetration;
+//
+//    vc->m_ra = b3Vector3r::zero();
+//    vc->m_rb = b3Vector3r::zero();
+//    // the center of body in the world frame
+//    b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
+//    b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
+//
+//    for (int32 j = 0; j < point_count; j++) {
+//      b3VelocityConstraintPoint *vcp = vc->m_points + j;
+//      b3ManifoldPoint *manifold_point = manifold->m_points + j;
+//
+//      vcp->m_ra = manifold_point->m_local_point - center_a;
+//      vcp->m_rb = manifold_point->m_local_point - center_b;
+//      // vcp->m_rhs_penetration = manifold->m_penetration;
+//      // TODO: warm start
+//    }
+//  }
+//}
+
 
 void b3SISolver::init_velocity_constraints()
 {
-    for (int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+    for(int32 i = 0; i < m_contact_count; ++i) {
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
 
@@ -41,10 +98,10 @@ void b3SISolver::init_velocity_constraints()
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
             double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
-                         (ra_n * vc->m_inv_I_a).dot(ra_n) +
-                         (rb_n * vc->m_inv_I_b).dot(rb_n);
+            (ra_n * vc->m_inv_I_a).dot(ra_n) +
+            (rb_n * vc->m_inv_I_b).dot(rb_n);
 
-            vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
+	        vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
 
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
@@ -72,14 +129,14 @@ int b3SISolver::solve()
     init_velocity_constraints();
 
     // collision
-    for (int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         solve_velocity_constraints(true);
     }
     // fix penetration
     correct_penetration();
 
     // velocity update
-    for (int32 i = 0; i < m_body_count; ++i) {
+    for(int32 i = 0; i < m_body_count; ++i) {
         b3Body *b = m_bodies[i];
         b3Vector3r v = m_velocities[i].linear();
         b3Vector3r w = m_velocities[i].angular();
@@ -97,7 +154,7 @@ int b3SISolver::solve()
 
     // contact
     for (int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints(false);
+  	    solve_velocity_constraints(false);
     }
 
     // solve friction constraints
@@ -123,7 +180,7 @@ int b3SISolver::solve()
                                        m_timestep->m_dt * real(0.5));
         }
     }
-    // copy state buffers back to the bodies.
+	// copy state buffers back to the bodies.
     write_states_back();
 
     return 0;
@@ -141,22 +198,57 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
         b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
 
+/*////////////////////////////////////////////////////////////////////////////////////////////////
+    real lambda = 0;
+    // iter all contact points, compute the total impulse for body
+    // TODO: prove this algorithm is correct.
+    for (int32 j = 0; j < vc->m_point_count; ++j) {
+      b3VelocityConstraintPoint* vcp = vc->m_points + j;
+
+      b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+      real rhs = -v_rel.dot(vc->m_normal);
+      // distinguish contact and collision
+      // collision: we need update velocity by restitution
+      // contact: the restitution is zero.
+      if(is_collision) {
+        lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+      } else {
+        lambda = vcp->m_normal_mass * rhs;
+      }
+    }
+    // apply normal Impulse
+    if(is_collision) {
+      real new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, real(0.0));
+      lambda = new_impulse - vc->m_normal_collision_impulse;
+      vc->m_normal_collision_impulse = new_impulse;
+    } else {
+      real new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, real(0.0));
+      lambda = new_impulse - vc->m_normal_contact_impulse;
+      vc->m_normal_contact_impulse = new_impulse;
+    }
+    b3Vector3r impluse = lambda * vc->m_normal;
+
+    v_a = v_a - vc->m_inv_mass_a * impluse;
+    w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
+    v_b = v_b + vc->m_inv_mass_b * impluse;
+    w_b = w_b + vc->m_inv_I_b * vc->m_rb.cross(impluse);
+*/////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int32 j = 0; j < vc->m_point_count; ++j) {
-            b3VelocityConstraintPoint *vcp = vc->m_points + j;
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
             b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
             real rhs = -v_rel.dot(vc->m_normal);
 
             real lambda = 0;
             // TODO:
-            if (is_collision) {
+            if(is_collision) {
                 lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-                real new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, (real) 0.0);
+                real new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_collision_impulse;
                 vcp->m_normal_collision_impulse = new_impulse;
             } else {
                 lambda = vcp->m_normal_mass * rhs;
-                real new_impulse = b3_max(vcp->m_normal_contact_impulse + lambda, (real) 0.0);
+                real new_impulse = b3_max(vcp->m_normal_contact_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_contact_impulse;
                 vcp->m_normal_contact_impulse = new_impulse;
             }
@@ -181,7 +273,7 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
 
 void b3SISolver::correct_penetration()
 {
-    for (int32 i = 0; i < m_contact_count; ++i) {
+    for(int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
         // TODO: Check this way is useful. And angle?
@@ -195,13 +287,13 @@ void b3SISolver::correct_penetration()
             // if two bodies are dynamic, all need to fix penetration.
             // if one body is static, the dynamic body need to fix penetration * 2.
             // because when generate manifold, the penetration is equally distributed to two bodies.
-            if (m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
-                m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+            if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
+               m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
                 p_a += vc->m_normal * vc->m_penetration;
                 p_b -= vc->m_normal * vc->m_penetration;
-            } else if (m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
+            } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
                 p_a += position_correction * real(2.0);
-            } else if (m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
+            } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
                 p_b -= position_correction * real(2.0);
             }
 
@@ -226,49 +318,23 @@ void b3SISolver::solve_friction_constraints()
         b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
         b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
 
-        // compute the support force for b from a
-        real support_impulse = 0;
-        real not_apply_support_impulse = 0;
+        bool all_zero = true;
         for (int j = 0; j < vc->m_point_count; ++j) {
-            not_apply_support_impulse += vc->m_points[j].m_normal_contact_impulse;
-            support_impulse += vc->m_points[j].m_normal_collision_impulse;
+            if (vc->m_points[j].m_normal_contact_impulse != 0) {
+                all_zero = false;
+                break;
+            }
         }
-
-        support_impulse += not_apply_support_impulse;
-        if (not_apply_support_impulse == 0) {
-            b3Body *b = m_bodies[vc->m_index_b];
-            if (vc->m_inv_mass_b == 0) {
+        real not_apply_support_impulse = 0;
+        if (all_zero) {
+            b3Body* b = m_bodies[vc->m_index_b];
+            if(vc->m_inv_mass_b == 0) {
                 b = m_bodies[vc->m_index_a];
             }
             not_apply_support_impulse = (b->get_gravity() + b->get_force()).dot(vc->m_normal);
-            not_apply_support_impulse = b3_abs(not_apply_support_impulse * m_timestep->m_dt);
+            not_apply_support_impulse = b3_abs(not_apply_support_impulse * m_timestep->m_dt) / vc->m_point_count;
         }
 
-        // The support impulse is exerted by body A to body B.
-        // support_impulse = support_impulse / vc->m_point_count;
-        real max_friction_impulse = vc->m_friction * support_impulse;
-
-        // if the relative velocity is non-zero, must exist friction force.
-        // Previous, we don't consider friction, and now we consider it. so the velocity now is must >= real case.
-        // TODO: now only consider one contact point.
-        b3Vector3r v_rel = v_b + w_b.cross(vc->m_rb) - v_a - w_a.cross(vc->m_ra);
-        // b3Vector3r v_rel = v_b - v_a;
-        // tangent relative velocity, we get the direction and the size.
-        b3Vector3r v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
-
-        // static friction, don't change the velocity.
-        if (v_rel_t.is_zero()) {
-            continue;
-        }
-
-        real v_rel_t_size = v_rel_t.length();
-        b3Vector3r v_rel_t_dir = v_rel_t / v_rel_t_size;
-
-        // Can the friction impulse make the body rest ?
-        // At least one of body A and B is dynamic.
-        // if b is static, it means any force is not work for it. we need analyze body a in body b view.
-        // so the velocity direction need reverse.
-        // if the change velocity is greater than the relative velocity, prove the friction is static.
         b3Vector3r points_ra[8];
         b3Vector3r points_rb[8];
         for (int k = 0; k < vc->m_point_count; ++k) {
@@ -276,28 +342,54 @@ void b3SISolver::solve_friction_constraints()
             points_rb[k] = vc->m_points[k].m_rb;
         }
 
-        bool is_static = false;
-        if (vc->m_inv_mass_b != 0) {
-            real v_real_zero_impulse = v_rel_t_size * vc->m_mass_b;
-            if (v_real_zero_impulse < max_friction_impulse) {
-                is_static = true;
-                max_friction_impulse = v_real_zero_impulse;
+        for (int i = 0; i < vc->m_point_count; ++i) {
+            b3VelocityConstraintPoint* vcp = vc->m_points + i;
+            real support_impulse = vcp->m_normal_collision_impulse + vcp->m_normal_contact_impulse;
+            real point_not_apply_support_impulse = all_zero ? not_apply_support_impulse : vcp->m_normal_contact_impulse;
+
+            real max_friction_impulse = vc->m_friction * support_impulse;
+
+            b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+            b3Vector3r v_rel_t = v_rel - vc->m_normal * v_rel.dot(vc->m_normal);
+
+            // static friction, don't change the velocity.
+            if (v_rel_t.is_zero()) {
+                continue;
             }
-            solve_friction_help(vc->m_index_a, vc->m_index_b,
-                                vc->m_normal, v_rel_t_dir, is_static,
-                                max_friction_impulse, not_apply_support_impulse, vc->m_ra, vc->m_rb,
-                                points_ra, points_rb, vc->m_point_count, vc);
-        } else {
-            real v_real_zero_impulse = v_rel_t_size * vc->m_mass_a;
-            if (v_real_zero_impulse < max_friction_impulse) {
-                is_static = true;
-                max_friction_impulse = v_real_zero_impulse;
+
+            real v_rel_t_size = v_rel_t.length();
+            b3Vector3r v_rel_t_dir = v_rel_t / v_rel_t_size;
+
+            bool is_static = false;
+            if (vc->m_inv_mass_b != 0) {
+                real v_real_zero_impulse = v_rel_t_size * vc->m_mass_b;
+                if(v_real_zero_impulse < max_friction_impulse) {
+                    is_static = true;
+                    max_friction_impulse = v_real_zero_impulse;
+                }
+                solve_friction_help(vc->m_index_a, vc->m_index_b,
+                                    vc->m_normal, v_rel_t_dir, is_static,
+                                    max_friction_impulse, not_apply_support_impulse, vc->m_ra, vc->m_rb,
+                                    points_ra, points_rb, vc->m_point_count, vc);
+            } else {
+                real v_real_zero_impulse = v_rel_t_size * vc->m_mass_a;
+                if(v_real_zero_impulse < max_friction_impulse) {
+                    is_static = true;
+                    max_friction_impulse = v_real_zero_impulse;
+                }
+                solve_friction_help(vc->m_index_b, vc->m_index_a,
+                                    -vc->m_normal, -v_rel_t_dir, is_static,
+                                    max_friction_impulse, not_apply_support_impulse, vc->m_rb, vc->m_ra,
+                                    points_rb, points_ra, vc->m_point_count, vc);
             }
-            solve_friction_help(vc->m_index_b, vc->m_index_a,
-                                -vc->m_normal, -v_rel_t_dir, is_static,
-                                max_friction_impulse, not_apply_support_impulse, vc->m_rb, vc->m_ra,
-                                points_rb, points_ra, vc->m_point_count, vc);
         }
+
+        // Can the friction impulse make the body rest ?
+        // At least one of body A and B is dynamic.
+        // if b is static, it means any force is not work for it. we need analyze body a in body b view.
+        // so the velocity direction need reverse.
+        // if the change velocity is greater than the relative velocity, prove the friction is static.
+
     }
 }
 
@@ -307,9 +399,9 @@ void b3SISolver::solve_friction_constraints()
 // the tangent is the relative tangent velocity direction.
 // the friction impulse direction is -tangent.
 void b3SISolver::solve_friction_help(
-        int index_a, int index_b, const b3Vector3r &normal, const b3Vector3r &tangent, bool is_static,
-        real friction_impulse, real support_impulse, const b3Vector3r &ra, const b3Vector3r &rb,
-        b3Vector3r *points_ra, b3Vector3r *points_rb, int point_count, b3ContactVelocityConstraint *vc)
+    int index_a, int index_b, const b3Vector3r& normal, const b3Vector3r& tangent, bool is_static,
+    real friction_impulse, real support_impulse, const b3Vector3r& ra, const b3Vector3r& rb,
+    b3Vector3r* points_ra, b3Vector3r* points_rb, int point_count, b3ContactVelocityConstraint* vc)
 {
 
     b3Vector3r v_a = m_velocities[index_a].linear();
@@ -318,25 +410,23 @@ void b3SISolver::solve_friction_help(
     v_b -= vc->m_inv_mass_b * (friction_impulse * tangent);
     m_velocities[index_a].set_linear(v_a);
     m_velocities[index_b].set_linear(v_b);
-    // if the body friciton is static, we need tangent velocity is zero.
-    // and the body should not rotate. so the angular velocity is don't change.
-    //  if (is_static) {
-    //    return;
-    //  }
+  // if the body friciton is static, we need tangent velocity is zero.
+  // and the body should not rotate. so the angular velocity is don't change.
+//  if (is_static) {
+//    return;
+//  }
 
-    // First consider body b 2D cut plane.
-    // the x-axis is the tangent velocity direction.
-    // the y-axis is the contact normal direction.
-    // and the origin point is the center of body b(project to this plane).
+  // First consider body b 2D cut plane.
+  // the x-axis is the tangent velocity direction.
+  // the y-axis is the contact normal direction.
+  // and the origin point is the center of body b(project to this plane).
     real h = b3_abs(rb.dot(normal));
-    real max_b = points_rb[0].dot(tangent);
-    real min_b = points_rb[0].dot(tangent);
-    real b = points_rb[0].dot(tangent);
-    for (int k = 1; k < point_count; ++k) {
-        real temp = points_rb[k].dot(tangent);
-        b = b3_max(temp, b);
-        max_b = b3_max(temp, max_b);
-        min_b = b3_min(temp, min_b);
+    real max_b = rb.dot(tangent);
+    real min_b = 0;
+    if (max_b < min_b) {
+        real temp = max_b;
+        max_b = min_b;
+        min_b = temp;
     }
     // If the torque is supported, the frictional moment can be corrected
     // Tf the support torque can correct the frictional torque.
@@ -350,10 +440,6 @@ void b3SISolver::solve_friction_help(
     real w_b_to_zero_torque_impulse = (vc->m_I_b * w_b).dot(torque_direction);
     // the friction torque direction is pointing inside the plane, so less than zero.
     w_b_to_zero_torque_impulse += friction_impulse * h;
-    //  if (!is_static) {
-    //    w_b_to_zero_torque_impulse += friction_impulse * h;
-    //  }
-
 
     // the support force also produce torque = r cross support_force
     // r is [min_b, max_b] so the support torque is [min_b * support_impulse, max_b * support_impulse]
@@ -372,18 +458,6 @@ void b3SISolver::solve_friction_help(
     w_b += vc->m_inv_I_b * ((friction_impulse * h - support_torque) * torque_direction);
     m_velocities[index_b].set_angular(w_b);
 
-    //
-    //  if (vc->m_friction * h > b) {
-    //    // also need change linear velocity
-    //    b3Vector3r torque_impulse = rb.cross(-friction_impulse * tangent);
-    //    // support force also produce torque.
-    //    torque_impulse += (b * tangent).cross(support_impulse * normal);
-    //
-    //    b3Vector3r w_b = m_velocities[index_b].angular();
-    //    w_b += vc->m_inv_I_b * torque_impulse;
-    //    m_velocities[index_b].set_angular(w_b);
-    //  }
-
     // friction impulse for body a.
     if (vc->m_inv_mass_a == 0) {
         return;
@@ -391,14 +465,12 @@ void b3SISolver::solve_friction_help(
 
     // we need recompute h and b for body a.
     h = b3_abs(ra.dot(normal));
-    b = points_ra[0].dot(tangent);
-    max_b = points_ra[0].dot(tangent);
-    min_b = points_ra[0].dot(tangent);
-    for (int k = 1; k < point_count; ++k) {
-        real temp = points_ra[k].dot(tangent);
-        b = b3_max(temp, b);
-        min_b = b3_min(temp, min_b);
-        max_b = b3_max(temp, max_b);
+    max_b = ra.dot(tangent);
+    min_b = 0;
+    if (max_b < min_b) {
+        real temp = max_b;
+        max_b = min_b;
+        min_b = temp;
     }
 
     b3Vector3r w_a = m_velocities[index_a].angular();
@@ -419,16 +491,16 @@ void b3SISolver::solve_friction_help(
 
     w_a += vc->m_inv_I_a * ((friction_impulse * h - support_torque) * torque_direction);
     m_velocities[index_a].set_angular(w_a);
+
 }
 
 
-void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
-{
+void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step) {
 
     b3Solver::init(block_allocator, island, step);
 
-    for (int32 i = 0; i < m_contact_count; ++i) {
-        b3Contact *contact = m_contacts[i];
+    for(int32 i = 0; i < m_contact_count; ++i) {
+        b3Contact* contact = m_contacts[i];
 
         b3Fixture *fixture_a = contact->get_fixture_a();
         b3Fixture *fixture_b = contact->get_fixture_b();
@@ -441,7 +513,7 @@ void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
         b3_assert(point_count > 0);
 
-        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
         vc->m_friction = contact->get_friction();
         vc->m_contact_index = i;
@@ -465,7 +537,7 @@ void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
         vc->m_ra = b3Vector3r::zero();
         vc->m_rb = b3Vector3r::zero();
-// the center of body in the world frame
+        // the center of body in the world frame
         b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
         b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
 
@@ -475,8 +547,8 @@ void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
             vcp->m_ra = manifold_point->m_local_point - center_a;
             vcp->m_rb = manifold_point->m_local_point - center_b;
-// vcp->m_rhs_penetration = manifold->m_penetration;
-// TODO: warm start
+            // vcp->m_rhs_penetration = manifold->m_penetration;
+            // TODO: warm start
         }
     }
 }
