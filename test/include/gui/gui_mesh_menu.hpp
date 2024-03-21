@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_MESH_MENU_HPP
-#define BOX3D_MESH_MENU_HPP
+#ifndef BOX3D_GUI_MESH_MENU_HPP
+#define BOX3D_GUI_MESH_MENU_HPP
 
 
 #include "igl/opengl/glfw/Viewer.h"
@@ -24,7 +24,7 @@ struct MeshViewObject {
 };
 
 
-class MeshMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
+class GuiMeshMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -85,4 +85,4 @@ public:
 };
 
 
-#endif //BOX3D_MESH_MENU_HPP
+#endif //BOX3D_GUI_MESH_MENU_HPP

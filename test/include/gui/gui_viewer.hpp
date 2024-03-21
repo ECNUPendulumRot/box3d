@@ -9,9 +9,9 @@
 #include "igl/Timer.h"
 #include "igl/opengl/glfw/Viewer.h"
 
-#include "gui/test_menu.hpp"
-#include "gui/mesh_menu.hpp"
-#include "gui/title_bar.hpp"
+#include "gui/gui_test_menu.hpp"
+#include "gui/gui_mesh_menu.hpp"
+#include "gui/gui_title_bar.hpp"
 
 #include "box3d.hpp"
 
@@ -30,9 +30,9 @@ private:
 
     ImGuiPlugin m_gui_plugin;
 
-    TestMenu m_test_list;
-    MeshMenu m_mesh_list;
-    TitleBar m_title_bar;
+    GuiTestMenu m_gui_test_menu;
+    GuiMeshMenu m_gui_mesh_menu;
+    GuiTitleBar m_gui_title_bar;
 
     TestBase* m_test = nullptr;
 
@@ -72,10 +72,11 @@ private:
 
     void add_ground();
 
-    int allocate_mesh();
+    int allocate_mesh_index();
 
     void draw_auxiliary_shapes();
 
+    void draw_body_axis();
 };
 
 

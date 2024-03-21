@@ -54,23 +54,6 @@ void b3World::add_shape(b3Shape* shape)
 }
 
 
-b3Shape *b3World::create_shape(const std::filesystem::path &file_path)
-{
-    std::string fs_string = file_path.string();
-
-    void *memory = m_block_allocator.allocate(sizeof(b3Shape));
-
-    // TODO: implement creation of shape from world
-    auto *shape = new(memory) b3Shape;
-
-    shape->set_next(m_shape_list);
-    m_shape_list = shape;
-    m_shape_count++;
-
-    return shape;
-}
-
-
 void b3World::clear()
 {
     // TODO: Check this function

@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_TEST_MENU_HPP
-#define BOX3D_TEST_MENU_HPP
+#ifndef BOX3D_GUI_TEST_MENU_HPP
+#define BOX3D_GUI_TEST_MENU_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -13,7 +13,7 @@
 #include "imgui_ext.hpp"
 
 
-class TestMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
+class GuiTestMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -24,6 +24,8 @@ class TestMenu: public igl::opengl::glfw::imgui::ImGuiMenu {
     bool m_show_ground = false;
     bool m_show_faces = true;
     bool m_show_edges = true;
+    bool m_show_local_axis = true;
+
     ImVec4 m_line_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
     float m_line_width = 1.0f;
 
@@ -113,10 +115,10 @@ public:
                 ImGuiWindowFlags_NoMove| ImGuiWindowFlags_NoCollapse
         );
         ImGui::Checkbox("Enable Depth Test", &m_enable_depth_test);
-        ImGui::Checkbox("Show Ground", &m_show_ground);
         ImGui::Checkbox("Show Auxiliary Shapes", &m_show_auxiliary_shapes);
         ImGui::Checkbox("Show Mesh Faces", &m_show_faces);
         ImGui::Checkbox("Show Mesh Edges", &m_show_edges);
+        ImGui::Checkbox("Show Body Local Axis", &m_show_local_axis);
         ImGui::ColorEdit3WithPalette("Edge Color", (float*)&m_line_color);
         ImGui::PushItemWidth(100);
         ImGui::SliderFloat("Line Width", &m_line_width, 0.5f, 3.0f);
@@ -126,4 +128,4 @@ public:
 
 };
 
-#endif //BOX3D_TEST_MENU_HPP
+#endif //BOX3D_GUI_TEST_MENU_HPP

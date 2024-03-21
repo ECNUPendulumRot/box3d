@@ -69,11 +69,6 @@ public:
      */
     void step(real dt, int32 velocity_iterations, int32 position_iterations);
 
-    /**
-     * This is not use now.
-     */
-    b3Shape* create_shape(const std::filesystem::path& file_path);
-
     inline int get_shape_count() const {
         return m_shape_count;
     }
@@ -111,6 +106,14 @@ public:
 
     void set_solver_type(b3SolverType type) {
         m_solver_type = type;
+    }
+
+    inline int32 get_body_count() const {
+        return m_body_count;
+    }
+
+    inline b3Body* get_body_list() {
+        return m_body_list;
     }
 
 protected:

@@ -1,6 +1,6 @@
 
-#ifndef BOX3D_TITLE_BAR_HPP
-#define BOX3D_TITLE_BAR_HPP
+#ifndef BOX3D_GUI_TITLE_BAR_HPP
+#define BOX3D_GUI_TITLE_BAR_HPP
 
 #include "igl/opengl/glfw/Viewer.h"
 
@@ -9,7 +9,7 @@
 #include "igl/opengl/glfw/imgui/ImGuiHelpers.h"
 
 
-class TitleBar: public igl::opengl::glfw::imgui::ImGuiMenu {
+class GuiTitleBar: public igl::opengl::glfw::imgui::ImGuiMenu {
 
     friend class b3GUIViewer;
 
@@ -39,4 +39,4 @@ public:
 };
 
 
-#endif //BOX3D_TITLE_BAR_HPP
+#endif //BOX3D_GUI_TITLE_BAR_HPP

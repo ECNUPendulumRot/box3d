@@ -20,6 +20,8 @@ class b3AuxiliaryShape {
     std::vector<double> edge_right_v;
     std::vector<double> point_v;
 
+    std::vector<double> edge_color;
+
     Eigen::RowVector3d color = Eigen::RowVector3d(0, 0, 0);
 
 public:
@@ -46,6 +48,12 @@ public:
         point_v.emplace_back(z);
     }
 
+    void add_color(const double& x, const double& y, const double& z) {
+        edge_color.emplace_back(x);
+        edge_color.emplace_back(y);
+        edge_color.emplace_back(z);
+    }
+
     void set_next(b3AuxiliaryShape* next) {
         m_next = next;
     }
@@ -68,6 +76,10 @@ public:
 
     Eigen::MatrixXd get_points_m() const {
         return ConstMapMatrixX<double, Eigen::RowMajor>(point_v.data(), point_v.size() / 3, 3);
+    }
+
+    Eigen::MatrixXd get_color_m() const {
+        return ConstMapMatrixX<double, Eigen::RowMajor>(edge_color.data(), edge_color.size() / 3, 3);
     }
 
     bool has_points() {

@@ -61,6 +61,10 @@ public:
         return nullptr;
     }
 
+    virtual b3AuxiliaryShape* get_local_axis() {
+        return nullptr;
+    }
+
     virtual void selected_object(const int& index) {
         ;
     }

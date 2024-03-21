@@ -13,13 +13,13 @@ set(TEST_HEADER_FILES
         include/sim_app.hpp
         include/scene_test.hpp
         include/gui/gui_viewer.hpp
-        include/gui/test_menu.hpp
+        include/gui/gui_test_menu.hpp
         include/unit_test.hpp
         include/test.hpp
         include/auxiliary_shape.hpp
-        include/gui/mesh_menu.hpp
+        include/gui/gui_mesh_menu.hpp
         include/gui/imgui_ext.hpp
-        include/gui/title_bar.hpp
+        include/gui/gui_title_bar.hpp
 
 )
 
