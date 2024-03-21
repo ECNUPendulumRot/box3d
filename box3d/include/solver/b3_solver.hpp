@@ -5,6 +5,7 @@
 #include "dynamics/b3_transform.hpp"
 
 #include "solver/b3_contact_constraint.hpp"
+#include "common/b3_time_step.hpp"
 
 /////////// Forward Delaration ///////////
 
@@ -48,6 +49,8 @@ protected:
 
     b3Body** m_bodies;
 
+    b3IntegralMethod m_method;
+
     /**
      * @brief write the velocity and position back to bodies.
      */
@@ -55,17 +58,22 @@ protected:
 
 public:
 
-    b3Solver() = delete;
+    b3Solver() = default;
 
-    b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    //b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
+    virtual void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     /**
      * @breif solver all constraints in the island.
      */
-    virtual int solve(int type) = 0;
+    virtual int solve() {
+        return 0;
+    };
 
     virtual ~b3Solver();
+
+    void clear();
 };
 
 

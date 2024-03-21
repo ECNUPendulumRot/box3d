@@ -50,6 +50,7 @@ set(B3D_HEADER_FILES
         include/solver/b3_si_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
+        include/solver/b3_solver_factory.hpp
 
 )
 

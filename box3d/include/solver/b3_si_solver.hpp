@@ -9,15 +9,15 @@ class b3SISolver : public b3Solver {
 
 public:
 
-    b3SISolver() = delete;
+    b3SISolver() = default;
 
-    b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    //b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) override;
 
     void init_velocity_constraints();
 
-    // type 0 = semi-implict Euler integration
-    // type 1 = verlet integration
-    int solve(int type) override;
+    int solve() override;
 
     void solve_velocity_constraints(bool is_collision);
 

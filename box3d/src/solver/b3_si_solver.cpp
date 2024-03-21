@@ -12,62 +12,62 @@
 
 #include <spdlog/spdlog.h>
 
-b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step):
-  b3Solver(block_allocator, island, step)
-{
-  for(int32 i = 0; i < m_contact_count; ++i) {
-    b3Contact* contact = m_contacts[i];
-
-    b3Fixture *fixture_a = contact->get_fixture_a();
-    b3Fixture *fixture_b = contact->get_fixture_b();
-
-    b3Body *body_a = fixture_a->get_body();
-    b3Body *body_b = fixture_b->get_body();
-    b3Manifold *manifold = contact->get_manifold();
-
-    int32 point_count = manifold->m_point_count;
-
-    b3_assert(point_count > 0);
-
-    b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-    vc->m_restitution = contact->get_restitution();
-    vc->m_friction = contact->get_friction();
-    vc->m_contact_index = i;
-    vc->m_point_count = point_count;
-
-    vc->m_normal = manifold->m_local_normal;
-
-    vc->m_index_a = body_a->get_island_index();
-    vc->m_mass_a = body_a->get_mass();
-    vc->m_inv_mass_a = body_a->get_inv_mass();
-    vc->m_I_a = body_a->get_inertia();
-    vc->m_inv_I_a = body_a->get_inv_inertia();
-
-    vc->m_index_b = body_b->get_island_index();
-    vc->m_mass_b = body_b->get_mass();
-    vc->m_inv_mass_b = body_b->get_inv_mass();
-    vc->m_I_b = body_b->get_inertia();
-    vc->m_inv_I_b = body_b->get_inv_inertia();
-
-    vc->m_penetration = manifold->m_penetration;
-
-    vc->m_ra = b3Vector3r::zero();
-    vc->m_rb = b3Vector3r::zero();
-    // the center of body in the world frame
-    b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
-    b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
-
-    for (int32 j = 0; j < point_count; j++) {
-      b3VelocityConstraintPoint *vcp = vc->m_points + j;
-      b3ManifoldPoint *manifold_point = manifold->m_points + j;
-
-      vcp->m_ra = manifold_point->m_local_point - center_a;
-      vcp->m_rb = manifold_point->m_local_point - center_b;
-      // vcp->m_rhs_penetration = manifold->m_penetration;
-      // TODO: warm start
-    }
-  }
-}
+//b3SISolver::b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step):
+//  b3Solver(block_allocator, island, step)
+//{
+//  for(int32 i = 0; i < m_contact_count; ++i) {
+//    b3Contact* contact = m_contacts[i];
+//
+//    b3Fixture *fixture_a = contact->get_fixture_a();
+//    b3Fixture *fixture_b = contact->get_fixture_b();
+//
+//    b3Body *body_a = fixture_a->get_body();
+//    b3Body *body_b = fixture_b->get_body();
+//    b3Manifold *manifold = contact->get_manifold();
+//
+//    int32 point_count = manifold->m_point_count;
+//
+//    b3_assert(point_count > 0);
+//
+//    b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+//    vc->m_restitution = contact->get_restitution();
+//    vc->m_friction = contact->get_friction();
+//    vc->m_contact_index = i;
+//    vc->m_point_count = point_count;
+//
+//    vc->m_normal = manifold->m_local_normal;
+//
+//    vc->m_index_a = body_a->get_island_index();
+//    vc->m_mass_a = body_a->get_mass();
+//    vc->m_inv_mass_a = body_a->get_inv_mass();
+//    vc->m_I_a = body_a->get_inertia();
+//    vc->m_inv_I_a = body_a->get_inv_inertia();
+//
+//    vc->m_index_b = body_b->get_island_index();
+//    vc->m_mass_b = body_b->get_mass();
+//    vc->m_inv_mass_b = body_b->get_inv_mass();
+//    vc->m_I_b = body_b->get_inertia();
+//    vc->m_inv_I_b = body_b->get_inv_inertia();
+//
+//    vc->m_penetration = manifold->m_penetration;
+//
+//    vc->m_ra = b3Vector3r::zero();
+//    vc->m_rb = b3Vector3r::zero();
+//    // the center of body in the world frame
+//    b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
+//    b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
+//
+//    for (int32 j = 0; j < point_count; j++) {
+//      b3VelocityConstraintPoint *vcp = vc->m_points + j;
+//      b3ManifoldPoint *manifold_point = manifold->m_points + j;
+//
+//      vcp->m_ra = manifold_point->m_local_point - center_a;
+//      vcp->m_rb = manifold_point->m_local_point - center_b;
+//      // vcp->m_rhs_penetration = manifold->m_penetration;
+//      // TODO: warm start
+//    }
+//  }
+//}
 
 
 void b3SISolver::init_velocity_constraints()
@@ -124,7 +124,7 @@ void b3SISolver::init_velocity_constraints()
 }
 
 
-int b3SISolver::solve(int type)
+int b3SISolver::solve()
 {
   init_velocity_constraints();
 
@@ -165,12 +165,12 @@ int b3SISolver::solve(int type)
   // type 0 = semi-implict Euler integration
   // type 1 = verlet integration
 
-  if (type == 0) {
+  if (m_method == e_implicit) {
     for (int32 i = 0; i < m_body_count; ++i) {
       m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
       m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
     }
-  } else if (type == 1) {
+  } else if (m_method == e_verlet) {
     for (int32 i = 0; i < m_body_count; ++i) {
       m_positions[i].set_linear(m_positions[i].linear() +
                                 (m_velocities[i].linear() + m_velocities_w_f[i].linear()) *
@@ -181,9 +181,9 @@ int b3SISolver::solve(int type)
     }
   }
 	// copy state buffers back to the bodies.
-	write_states_back();
+  write_states_back();
 
-	return 0;
+  return 0;
 }
 
 
@@ -492,4 +492,63 @@ void b3SISolver::solve_friction_help(
   w_a += vc->m_inv_I_a * ((friction_impulse * h - support_torque) * torque_direction);
   m_velocities[index_a].set_angular(w_a);
 
+}
+
+
+void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step) {
+
+    b3Solver::init(block_allocator, island, step);
+
+    for(int32 i = 0; i < m_contact_count; ++i) {
+        b3Contact* contact = m_contacts[i];
+
+        b3Fixture *fixture_a = contact->get_fixture_a();
+        b3Fixture *fixture_b = contact->get_fixture_b();
+
+        b3Body *body_a = fixture_a->get_body();
+        b3Body *body_b = fixture_b->get_body();
+        b3Manifold *manifold = contact->get_manifold();
+
+        int32 point_count = manifold->m_point_count;
+
+        b3_assert(point_count > 0);
+
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+        vc->m_restitution = contact->get_restitution();
+        vc->m_friction = contact->get_friction();
+        vc->m_contact_index = i;
+        vc->m_point_count = point_count;
+
+        vc->m_normal = manifold->m_local_normal;
+
+        vc->m_index_a = body_a->get_island_index();
+        vc->m_mass_a = body_a->get_mass();
+        vc->m_inv_mass_a = body_a->get_inv_mass();
+        vc->m_I_a = body_a->get_inertia();
+        vc->m_inv_I_a = body_a->get_inv_inertia();
+
+        vc->m_index_b = body_b->get_island_index();
+        vc->m_mass_b = body_b->get_mass();
+        vc->m_inv_mass_b = body_b->get_inv_mass();
+        vc->m_I_b = body_b->get_inertia();
+        vc->m_inv_I_b = body_b->get_inv_inertia();
+
+        vc->m_penetration = manifold->m_penetration;
+
+        vc->m_ra = b3Vector3r::zero();
+        vc->m_rb = b3Vector3r::zero();
+        // the center of body in the world frame
+        b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
+        b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
+
+        for (int32 j = 0; j < point_count; j++) {
+            b3VelocityConstraintPoint *vcp = vc->m_points + j;
+            b3ManifoldPoint *manifold_point = manifold->m_points + j;
+
+            vcp->m_ra = manifold_point->m_local_point - center_a;
+            vcp->m_rb = manifold_point->m_local_point - center_b;
+            // vcp->m_rhs_penetration = manifold->m_penetration;
+            // TODO: warm start
+        }
+    }
 }

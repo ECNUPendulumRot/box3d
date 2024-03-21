@@ -30,10 +30,18 @@ void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector
     t2 = normal.cross(t1).normalized();
     t1 = t2.cross(normal).normalized();
 }
+
 /////////////////////////////////////////
 
-b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step)
+//b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step)
+//{
+//  init(block_allocator, island, step);
+//}
+
+
+void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
+  m_method = step->m_integral_method;
   m_timestep = step;
   m_block_allocator = block_allocator;
 
@@ -68,9 +76,9 @@ b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeSt
   m_velocities_w_f = new (memory) b3Transformr;
 
   for(int32 i = 0; i < m_body_count; ++i) {
-    b3Body* b = m_bodies[i];
-    m_positions[i] = b->get_pose();
-    m_velocities[i] = b->get_velocity();
+      b3Body* b = m_bodies[i];
+      m_positions[i] = b->get_pose();
+      m_velocities[i] = b->get_velocity();
   }
 }
 
@@ -87,6 +95,10 @@ void b3Solver::write_states_back()
 
 b3Solver::~b3Solver()
 {
+  clear();
+}
+
+void b3Solver::clear() {
   m_timestep = nullptr;
   m_block_allocator->free(m_contacts, m_contact_count * sizeof(b3Contact*));
   m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
@@ -96,3 +108,5 @@ b3Solver::~b3Solver()
   m_block_allocator->free(m_velocities_w_f, m_body_count * sizeof(b3Transformr));
   m_block_allocator = nullptr;
 }
+
+
