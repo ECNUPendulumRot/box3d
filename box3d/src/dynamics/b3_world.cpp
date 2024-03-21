@@ -7,7 +7,6 @@
 
 #include "solver/b3_solver_factory.hpp"
 
-
 b3World::b3World():
   m_body_list(nullptr), m_body_count(0),
   m_shape_list(nullptr), m_shape_count(0)
