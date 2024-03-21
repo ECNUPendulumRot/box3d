@@ -42,6 +42,8 @@ set(TEST_SOURCE_FILES
         src/scene_test_cube_collision.cpp
         src/scene_test_sphere_stack.cpp
         src/scene_test_cube_stack.cpp
+        src/scene_test_vs_sphere_collision.cpp
+        src/scene_test_vs_box_rotation.cpp
 )
 
 add_executable(

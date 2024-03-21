@@ -7,6 +7,7 @@
 
 #include "b3_solver.hpp"
 #include "b3_si_solver.hpp"
+#include "b3_velocity_solver.hpp"
 
 
 enum b3SolverType {
@@ -20,9 +21,12 @@ public:
 
     static b3Solver* get_solver(b3SolverType type) {
         static b3SISolver si_solver;
+        static b3VelocitySolver velocity_solver;
         switch (type) {
             case SI_SOLVER:
                 return &si_solver;
+            case VELOCITY_SOLVER:
+                return &velocity_solver;
             default:
                 return nullptr;
         }

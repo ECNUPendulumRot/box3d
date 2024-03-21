@@ -53,6 +53,8 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     // allocate memory for all bodies and contacts of every island.
     // and we need extra arrays to store the velocity and position of every body.
     // after solver all contacts and friction constraints, we copy the results back to bodies.
+
+    // The number of velocity constraints is same to the number of contacts.
     void* memory;
     if(m_contact_count > 0) {
         memory = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
