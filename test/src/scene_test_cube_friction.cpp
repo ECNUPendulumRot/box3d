@@ -12,8 +12,12 @@ public:
         bode_def.m_type = b3BodyType::b3_dynamic_body;
 
         b3Transformr pose, velocity;
-        pose.set_linear({0, -20, 1});
-        pose.set_angular({0, 0, 0});
+
+        pose.set_linear({0, -10, 2});
+        pose.set_angular({60.0 / 180 * b3_pi, 0, 0});
+//        pose.set_linear({0, -4, 5});
+//        pose.set_linear({0, -20, 1});
+//        pose.set_angular({0, 0, 0});
 //        pose.set_linear({0, -4, 1});
 //        pose.set_angular({0, 0, 0});
         velocity.set_linear({0, 10, 0});

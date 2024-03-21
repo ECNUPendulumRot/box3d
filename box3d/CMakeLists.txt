@@ -52,6 +52,8 @@ set(B3D_HEADER_FILES
         include/collision/b3_plane_cube_contact.hpp
         include/solver/b3_solver_factory.hpp
 
+        include/solver/b3_si_solver_lxj.hpp
+
 )
 
 set(B3D_SOURCE_FILES
