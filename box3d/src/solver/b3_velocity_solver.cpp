@@ -43,14 +43,21 @@ void b3VelocitySolver::init(b3BlockAllocator *block_allocator, b3Island *island,
         vc->m_index_a = body_a->get_island_index();
         vc->m_mass_a = body_a->get_mass();
         vc->m_inv_mass_a = body_a->get_inv_mass();
-        vc->m_I_a = body_a->get_inertia();
-        vc->m_inv_I_a = body_a->get_inv_inertia();
+
+        const b3Matrix3r& R_a = body_a->get_pose().rotation_matrix_b3();
+
+        vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
+        vc->m_inv_I_a = R_a * body_a->get_inv_inertia() * R_a.transpose();
 
         vc->m_index_b = body_b->get_island_index();
+
         vc->m_mass_b = body_b->get_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
-        vc->m_I_b = body_b->get_inertia();
-        vc->m_inv_I_b = body_b->get_inv_inertia();
+
+        const b3Matrix3r& R_b = body_b->get_pose().rotation_matrix_b3();
+
+        vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
+        vc->m_inv_I_b = R_b * body_b->get_inv_inertia() * R_b.transpose();
 
         vc->m_penetration = manifold->m_penetration;
 
@@ -100,16 +107,16 @@ void b3VelocitySolver::init_velocity_constraints()
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
-            double jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
+            real jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
                          (ra_n * vc->m_inv_I_a).dot(ra_n) +
                          (rb_n * vc->m_inv_I_b).dot(rb_n);
 
-            vcp->m_normal_mass = jmj > 0 ? 1.0 / jmj : 0;
+            vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
 
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv
-            double v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
+            real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             // m_rhs_restitution_velocity is eJv
             vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
 
