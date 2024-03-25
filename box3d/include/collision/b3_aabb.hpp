@@ -54,7 +54,7 @@ public:
         real f1 =  (m_max.m_x - m_min.m_x) * (m_max.m_y - m_min.m_y);
         real f2 =  (m_max.m_x - m_min.m_x) * (m_max.m_z - m_min.m_z);
         real f3 =  (m_max.m_y - m_min.m_y) * (m_max.m_z - m_min.m_z);
-        return real(2.0) * f1 * f2 * f3;
+        return real(2.0) * (f1 + f2 + f3);
     }
 
     /**
