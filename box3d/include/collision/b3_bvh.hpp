@@ -215,8 +215,8 @@ private:
     void remove_leaf(int32 leaf);
 
     /**
-     * @brief Balance the dynamic tree.
-     * @param count
+     * @brief Expand the node capacity of dynamic tree.
+     * @param count: The count of new m_node_capacity
      */
     void expand_node_list(int32 count);
 
