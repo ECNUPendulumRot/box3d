@@ -7,11 +7,11 @@
 
 class b3SISolverLxj : public b3Solver {
 
+    b3FrictionConstraint* m_friction_constraints;
+
 public:
 
     b3SISolverLxj() = default;
-
-    //b3SISolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step) override;
 
@@ -22,6 +22,7 @@ public:
     void solve_velocity_constraints(bool is_collision);
 
     void solve_friction_constraints();
+    void init_friction_constraints();
 
     void correct_penetration();
 

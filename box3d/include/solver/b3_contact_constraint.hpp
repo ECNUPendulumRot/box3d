@@ -60,4 +60,31 @@ struct b3ContactVelocityConstraint {
 	// float tangentSpeed;
 };
 
+
+struct b3FrictionConstraint {
+    int m_index_a;
+    int m_index_b;
+    real m_mass_a;
+    real m_mass_b;
+    real m_inv_mass_a;
+    real m_inv_mass_b;
+    b3Matrix3r m_I_a;
+    b3Matrix3r m_I_b;
+    b3Matrix3r m_inv_I_a;
+    b3Matrix3r m_inv_I_b;
+    b3Vector3r m_normal;
+    int m_point_count;
+    b3Vector3r m_ra;
+    b3Vector3r m_rb;
+    b3Vector3r m_ras[4];
+    b3Vector3r m_rbs[4];
+
+    real m_not_applied_support_impulse;
+    // The tangent plane we divide to 2-axies.
+    real m_max_friction_impulse;
+    real m_friction_impulse[2];
+    b3Vector3r m_friction_axis[2];
+    real m_friction;
+};
+
 #endif // BOX3D_B3_CONTACT_CONSTRAINT_HPP

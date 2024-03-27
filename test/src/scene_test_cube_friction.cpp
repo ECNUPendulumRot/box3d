@@ -13,8 +13,8 @@ public:
 
         b3Transformr pose, velocity;
 
-        pose.set_linear({0, -10, 2});
-        pose.set_angular({60.0 / 180 * b3_pi, 0, 0});
+        pose.set_linear({0, -10, 5});
+//        pose.set_angular({60.0 / 180 * b3_pi, 0, 0});
 //        pose.set_linear({0, -4, 5});
 //        pose.set_linear({0, -20, 1});
 //        pose.set_angular({0, 0, 0});
@@ -26,7 +26,7 @@ public:
         b3Body* cube1 = m_world->create_body(bode_def);
 
         b3CubeShape cube_shape;
-        cube_shape.set_as_box(1, 1, 1);
+        cube_shape.set_as_box(1, 1, 5);
 
         b3FixtureDef cube_fd;
         cube_fd.m_restitution = 1;

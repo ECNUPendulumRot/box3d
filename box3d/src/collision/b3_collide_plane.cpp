@@ -70,13 +70,13 @@ void b3_collide_plane_and_sphere(
   	    nearest_point[1] = local_center.y();
     }
     real sq_distance = (local_center - nearest_point).length2();
-    real radius = sphere_b->get_radius(); //+ plane_a->get_radius();
+    real radius = sphere_b->get_radius() + plane_a->get_radius();
     if (sq_distance > radius * radius) {
   	    return;
     }
     manifold->m_point_count = 1;
     // transform the vector form the plane frame to the world frame
-    manifold->m_local_normal = xf_a.transform(local_center - nearest_point);
+    manifold->m_local_normal = xf_a.rotation_matrix_b3() * (local_center - nearest_point);
     if (manifold->m_local_normal.is_zero()) {
   	    manifold->m_local_normal = b3Vector3r(0, 0, 1);
     } else {
