@@ -57,6 +57,23 @@ struct b3Quaternion {
         m_z = z;
     }
 
+    inline void normalize() {
+        T length = m_w * m_w + m_x * m_x + m_y * m_y + m_z * m_z;
+
+        if (length == T(0)) {
+            m_w = T(1);
+            m_x = m_y = m_z = T(0);
+            return;
+        }
+
+        length = T(1) / b3_sqrt(length);
+
+        m_w *= length;
+        m_x *= length;
+        m_y *= length;
+        m_z *= length;
+    }
+
     inline b3Matrix3<T> rotation_matrix() const {
         T ww = m_w * m_w;
         T xx = m_x * m_x;
@@ -129,6 +146,23 @@ inline b3Quaternion<T> operator-(const b3Quaternion<T>& q1, const b3Quaternion<T
                            q1.m_x - q2.m_x,
                            q1.m_y - q2.m_y,
                            q1.m_z - q2.m_z);
+}
+
+
+template <typename T>
+inline b3Quaternion<T> operator*(const b3Quaternion<T>& q, const T& s) {
+
+    return b3Quaternion<T>(q.m_w * s,
+                           q.m_x * s,
+                           q.m_y * s,
+                           q.m_z * s);
+}
+
+
+template <typename T>
+inline b3Quaternion<T> operator*(const T& s, const b3Quaternion<T>& q) {
+
+    return q * s;
 }
 
 

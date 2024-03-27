@@ -161,6 +161,10 @@ public:
         return m_q;
     }
 
+    void set_quaternion(const b3Quaternionr& q) {
+        m_q = q;
+    }
+
     void set_position(const b3Vector3r& p) {
         m_p = p;
     }

@@ -28,8 +28,8 @@ static void overlap_on_axis(
     // project box onto the axis
     real project_B = transform_to_axis(cube_B, xf_B, axis);
 
-    const b3Vector3r& plane_center = xf_A_plane.linear();
-    b3Vector3r to_center = xf_B.linear() - plane_center;
+    const b3Vector3r& plane_center = xf_A_plane.position();
+    b3Vector3r to_center = xf_B.position() - plane_center;
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
@@ -151,7 +151,7 @@ void b3_collide_plane_and_cube(
 
     // the equation of the plane is n * x - n * t = 0;
     // n * t is called front_offset
-    real front_offset = axis.dot(xf_a.linear());
+    real front_offset = axis.dot(xf_a.position());
 
     b3ClipVertex incident_vertices[4];
     find_incident_face(incident_vertices, axis, cube_b, xf_b);
@@ -166,7 +166,7 @@ void b3_collide_plane_and_cube(
             b3ManifoldPoint* cp = manifold->m_points + point_count;
             b3Vector3r& v = incident_vertices[i].v;
             // The point of the manifold is the mid point.
-            v = v + ((xf_a.linear() - v).dot(axis)) / real(2.0) * axis;
+            v = v + ((xf_a.position() - v).dot(axis)) / real(2.0) * axis;
             cp->m_local_point = v;
             cp->id = incident_vertices[i].id;
 

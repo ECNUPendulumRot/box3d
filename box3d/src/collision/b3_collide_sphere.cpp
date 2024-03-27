@@ -95,9 +95,9 @@ static void find_deep_penetration(
         // max penetration axis is x.
         if(penetration.x() > penetration.z()) {
             if(sphere_center.x() > 0) {
-                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(1.0, 0, 0);
+                manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(1.0, 0, 0);
             } else {
-                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(-1.0, 0, 0);
+                manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(-1.0, 0, 0);
             }
 
             manifold->m_penetration = penetration.x() / 2;
@@ -114,9 +114,9 @@ static void find_deep_penetration(
         // max penetration axis is y.
         if (penetration.y() > penetration.z()) {
             if (sphere_center.y() > 0) {
-                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(0, 1.0, 0);
+                manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 1.0, 0);
             } else {
-                manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(0, -1.0, 0);
+                manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, -1.0, 0);
             }
 
             manifold->m_penetration = penetration.y() / 2;
@@ -132,9 +132,9 @@ static void find_deep_penetration(
     }
 
     if (sphere_center.z() > 0) {
-  	    manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(0, 0, 1.0);
+  	    manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 0, 1.0);
     } else {
-  	    manifold->m_local_normal = cube_xf.rotation_matrix_b3() * b3Vector3r(0, 0, -1.0);
+  	    manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 0, -1.0);
     }
 
     manifold->m_penetration = penetration.z() / 2;
@@ -159,7 +159,7 @@ static void face_separation(
     if(separation < total_radius) {
         manifold->m_point_count = 1;
         // normal only need rotation
-        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * axis;
+        manifold->m_local_normal = cube_xf.rotation_matrix() * axis;
         manifold->m_penetration = (separation - total_radius) / real(2.0);
         manifold->m_type = b3Manifold::e_circles;
         manifold->m_points[0].id.key = 0;
@@ -207,7 +207,7 @@ static void edge_separation(
         manifold->m_penetration = (separation - total_radius) / real(2.0);
 
         b3Vector3r local_normal = (sphere_center_local - project_point).normalized();
-        manifold->m_local_normal = cube_xf.rotation_matrix_b3() * local_normal;
+        manifold->m_local_normal = cube_xf.rotation_matrix() * local_normal;
         manifold->m_points[0].id.key = 0;
 
         // manifold->m_points[0].id.key = 0;
@@ -233,7 +233,7 @@ static void vertex_separation(
 
   if(separation < total_radius) {
     manifold->m_point_count = 1;
-    manifold->m_local_normal = cube_xf.rotation_matrix_b3() * point.normalized();
+    manifold->m_local_normal = cube_xf.rotation_matrix() * point.normalized();
     // this maybe not useful.
     // TODO: delete this.
     // manifold->m_type = b3Manifold::e_circles;

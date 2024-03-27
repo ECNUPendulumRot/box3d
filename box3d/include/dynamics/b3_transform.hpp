@@ -20,6 +20,8 @@ public:
     // The rotation matrix of the pose.
     b3Matrix3<T> m_r_t;
 
+    b3Transform() = default;
+
     b3Transform(const b3Transform& other) {
         m_p = other.m_p;
         m_r_t = other.m_r_t;
@@ -30,7 +32,7 @@ public:
         m_r_t = q.rotation_matrix();
     }
 
-    inline b3Matrix3<T> rotation_matrix_b3() const {
+    inline b3Matrix3<T> rotation_matrix() const {
         return m_r_t;
     };
 
@@ -40,6 +42,10 @@ public:
 
     inline b3Vector3<T> transform_local(const b3Vector3<T>& v) const {
         return m_r_t.transpose() * (v - m_p);
+    }
+
+    inline b3Vector3<T> position() const {
+        return m_p;
     }
 
 };

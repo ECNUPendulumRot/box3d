@@ -37,14 +37,7 @@ protected:
 
     int32 m_body_count;
 
-    // Store positions of every body in the island
-    b3Transformr* m_positions = nullptr;
-
-    // Store velocities of every body in the island
-    b3Transformr* m_velocities = nullptr;
-
-    //used in verlet integration, store the velocity with out force applied
-    b3Transformr* m_velocities_w_f = nullptr;
+    b3Vector3r* m_ps = nullptr;
 
     b3Quaternionr* m_qs = nullptr;
 

@@ -33,7 +33,7 @@ static void overlap_on_axis(
     real project_A = transform_to_axis(cube_A, xf_A, axis);
     real project_B = transform_to_axis(cube_B, xf_B, axis);
 
-    b3Vector3r to_center = xf_B.linear() - xf_A.linear();
+    b3Vector3r to_center = xf_B.position() - xf_A.position();
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
@@ -52,7 +52,7 @@ static void overlap_on_axis_absolute(
     real project_B = transform_to_axis(cube_B, xf_B, axis);
 
 
-    b3Vector3r to_center = xf_B.linear() - xf_A.linear();
+    b3Vector3r to_center = xf_B.position() - xf_A.position();
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
@@ -70,7 +70,7 @@ static real face_separation(
     real max_penetration = -b3_real_max;
     int32 best_index;
 
-    b3Matrix3r R_a = xf_A.rotation_matrix_b3();
+    b3Matrix3r R_a = xf_A.rotation_matrix();
 
     for (int32 i = 0; i < 6; ++i) {
         // get the separation normal of cube_A in the world frame.
@@ -99,8 +99,8 @@ static real edge_separation(
     int32 best_axis_index_a;
     int32 best_axis_index_b;
 
-    b3Matrix3r R_a = xf_A.rotation_matrix_b3();
-    b3Matrix3r R_b = xf_B.rotation_matrix_b3();
+    b3Matrix3r R_a = xf_A.rotation_matrix();
+    b3Matrix3r R_b = xf_B.rotation_matrix();
 
     for (int32 i = 0; i < 3; i++) {
 
