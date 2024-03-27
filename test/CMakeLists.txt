@@ -42,6 +42,9 @@ set(TEST_SOURCE_FILES
         src/scene_test_cube_collision.cpp
         src/scene_test_sphere_stack.cpp
         src/scene_test_cube_stack.cpp
+        src/scene_test_newtons_cradle.cpp
+        src/scene_test_symmetry_collision.cpp
+        src/scene_test_sphere_dropping_no_gravity.cpp
         src/scene_test_vs_sphere_collision.cpp
         src/scene_test_vs_box_rotation.cpp
         src/scene_test_vs_box_rotation_no_gravity.cpp

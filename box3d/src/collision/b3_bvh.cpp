@@ -124,12 +124,12 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 	    int32 child1 = m_nodes[f_index].m_child1;
 	    int32 child2 = m_nodes[f_index].m_child2;
 
-	    float f_area = m_nodes[f_index].m_aabb.get_surface_area();
+	    real f_area = m_nodes[f_index].m_aabb.get_surface_area();
 
 	    b3AABB combined_f_aabb;
 	    combined_f_aabb.combine(m_nodes[f_index].m_aabb, node_aabb);
 
-	    float combined_f_sa = combined_f_aabb.get_surface_area();
+	    real combined_f_sa = combined_f_aabb.get_surface_area();
 
 	    // TODO: compare the cost of Erin with Jeffrey Goldsmith's
 	    // From Zhenyu Xu's perspective, Jeffrey Goldsmith's cost is more reasonable
@@ -137,15 +137,15 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 	    // Every time a parent is created,
 	    // the possibility of hitting the parent is SA(parent)/SA(root).
 	    // If hit, two children will do hit check.
-	    float cost_combine_f = 2.0f * combined_f_sa;
+	    real cost_combine_f = 2.0f * combined_f_sa;
 
 	    // If the leaf will be inserted to next level,
 	    // The SA expansion of this level is SA(new) - SA(old).
 	    // If hit, two children will do hit check.
-	    float cost_inheritance = 2.0f * (combined_f_sa - f_area);
+	    real cost_inheritance = 2.0f * (combined_f_sa - f_area);
 
 	    // Firstly, insert into child1
-	    float cost1;
+	    real cost1;
 	    if (m_nodes[child1].is_leaf()) {
 	        b3AABB combined_c1_aabb;
 	        combined_c1_aabb.combine(m_nodes[child1].m_aabb, node_aabb);
@@ -162,13 +162,13 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 	        // If child1 is not a leaf,
 	        // Combining to it will continue to descending.
 	        // So the cost contains two parts.
-	        float old_c1_sa = m_nodes[child1].m_aabb.get_surface_area();
-	        float new_c1_sa = combined_c1_aabb.get_surface_area();
+	        real old_c1_sa = m_nodes[child1].m_aabb.get_surface_area();
+	        real new_c1_sa = combined_c1_aabb.get_surface_area();
 	        cost1 = 2 * (new_c1_sa - old_c1_sa) + cost_inheritance;
 	    }
 
 	    // Next, insert into child2
-	    float cost2;
+	    real cost2;
 	    if (m_nodes[child2].is_leaf()) {
 	        b3AABB combined_c2_aabb;
 	        combined_c2_aabb.combine(m_nodes[child2].m_aabb, node_aabb);
@@ -177,8 +177,8 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 	        b3AABB combined_c2_aabb;
 	        combined_c2_aabb.combine(m_nodes[child2].m_aabb, node_aabb);
 
-	        float old_c2_sa = m_nodes[child2].m_aabb.get_surface_area();
-	        float new_c2_sa = combined_c2_aabb.get_surface_area();
+	        real old_c2_sa = m_nodes[child2].m_aabb.get_surface_area();
+            real new_c2_sa = combined_c2_aabb.get_surface_area();
 	        cost2 = 2 * (new_c2_sa - old_c2_sa) + cost_inheritance;
 	    }
 
