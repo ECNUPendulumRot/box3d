@@ -4,7 +4,7 @@
 
 
 #include "common/b3_allocator.hpp"
-
+#include "math/b3_quaternion.hpp"
 #include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_body_def.hpp"
 
@@ -38,14 +38,20 @@ class b3Body {
 
     // CoM
     b3Vector3r m_local_center = b3Vector3r::zero();
-    /**
-     *  position and orientation of the center of body.
-     */
-    b3Transformr m_xf;
-    /**
-     * linear velocity and angular velocity of the center of body.
-     */
-    b3Transformr m_velocity;
+
+    // the quaternion of the body
+    b3Quaternionr m_q;
+
+    // the position of the body
+    b3Vector3r m_p;
+
+    // the linear velocity of the body
+    b3Vector3r m_v;
+
+    // the angular velocity of the body
+    // in form of angle axis
+    b3Vector3r m_w;
+
 
     ////////////////// Dynamic Properties //////////////////
 
@@ -147,20 +153,32 @@ public:
         return m_fixture_list;
     }
 
-    b3Transformr get_pose() const {
-        return m_xf;
+    b3Vector3r get_position() const {
+        return m_p;
     }
 
-    void set_pose(b3Transformr& xf) {
-        m_xf = xf;
+    b3Quaternionr get_quaternion() const {
+        return m_q;
     }
 
-    b3Transformr get_velocity() const {
-        return m_velocity;
+    void set_position(const b3Vector3r& p) {
+        m_p = p;
     }
 
-    void set_velocity(b3Transformr& velocity) {
-        m_velocity = velocity;
+    b3Vector3r get_linear_velocity() const {
+        return m_v;
+    }
+
+    b3Vector3r get_angular_velocity() const {
+        return m_w;
+    }
+
+    void set_linear_velocity(b3Vector3r& v) {
+        m_v = v;
+    }
+
+    void set_angular_velocity(b3Vector3r& w) {
+        m_w = w;
     }
 
     int32 get_island_index() const {

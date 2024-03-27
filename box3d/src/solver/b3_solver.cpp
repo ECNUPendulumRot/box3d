@@ -73,14 +73,26 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Transformr));
     m_velocities = new (memory) b3Transformr;
 
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Quaternionr));
+    m_qs = new (memory) b3Quaternionr;
+
     // TODO: check if delete this.
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Transformr));
     m_velocities_w_f = new (memory) b3Transformr;
+
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vector3r));
+    m_vs = new (memory) b3Vector3r;
+
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vector3r));
+    m_ws = new (memory) b3Vector3r;
 
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
         m_positions[i] = b->get_pose();
         m_velocities[i] = b->get_velocity();
+        m_qs[i] = b->get_quaternion();
+        m_vs[i] = b->get_linear_velocity();
+        m_ws[i] = b->get_angular_velocity();
     }
 }
 
@@ -90,6 +102,8 @@ void b3Solver::write_states_back()
     for(int32 i = 0; i < m_body_count; ++i) {
         m_bodies[i]->set_pose(m_positions[i]);
         m_bodies[i]->set_velocity(m_velocities[i]);
+        m_bodies[i]->set_linear_velocity(m_vs[i]);
+        m_bodies[i]->set_angular_velocity(m_ws[i]);
         // TODO: if we need SynchronizeTransform() ?
     }
 }
@@ -108,6 +122,9 @@ void b3Solver::clear() {
     m_block_allocator->free(m_velocities, m_body_count * sizeof(b3Transformr));
     // TODO: check if delete this
     m_block_allocator->free(m_velocities_w_f, m_body_count * sizeof(b3Transformr));
+    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
+    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vector3r));
+    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vector3r));
     m_block_allocator = nullptr;
 }
 

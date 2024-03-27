@@ -87,11 +87,11 @@ void b3VelocitySolver::init_velocity_constraints()
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
 
-        b3Vector3r v_a = m_velocities[index_a].linear();
-        b3Vector3r w_a = m_velocities[index_a].angular();
+        b3Vector3r v_a = m_vs[index_a];
+        b3Vector3r w_a = m_ws[index_a];
 
-        b3Vector3r v_b = m_velocities[index_b].linear();
-        b3Vector3r w_b = m_velocities[index_b].angular();
+        b3Vector3r v_b = m_vs[index_b];
+        b3Vector3r w_b = m_ws[index_b];
 
         for (int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -178,6 +178,7 @@ int b3VelocitySolver::solve()
     if (m_method == e_implicit) {
         for (int32 i = 0; i < m_body_count; ++i) {
             m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
+            m_qs[i] = m_qs[i] + b3Quaternionr(0, m_velocities[i].angular()) * m_qs[i];
             m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
         }
     } else if (m_method == e_verlet) {

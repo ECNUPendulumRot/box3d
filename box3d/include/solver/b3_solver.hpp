@@ -3,7 +3,7 @@
 #define BOX3D_B3_SOLVER_HPP
 
 #include "dynamics/b3_transform.hpp"
-
+#include "math/b3_quaternion.hpp"
 #include "solver/b3_contact_constraint.hpp"
 #include "common/b3_time_step.hpp"
 
@@ -45,6 +45,12 @@ protected:
 
     //used in verlet integration, store the velocity with out force applied
     b3Transformr* m_velocities_w_f = nullptr;
+
+    b3Quaternionr* m_qs = nullptr;
+
+    b3Vector3r* m_vs = nullptr;
+
+    b3Vector3r* m_ws = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
