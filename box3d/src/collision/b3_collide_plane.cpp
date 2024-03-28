@@ -76,7 +76,7 @@ void b3_collide_plane_and_sphere(
     }
     manifold->m_point_count = 1;
     // transform the vector form the plane frame to the world frame
-    manifold->m_local_normal = xf_a.transform(local_center - nearest_point);
+    manifold->m_local_normal = xf_a.rotation_matrix() * (local_center - nearest_point);
     if (manifold->m_local_normal.is_zero()) {
   	    manifold->m_local_normal = b3Vector3r(0, 0, 1);
     } else {
