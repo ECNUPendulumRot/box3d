@@ -63,9 +63,9 @@ public:
         b3Body* body = m_world->get_body_list();
         int32 index = 0;
         while (body != nullptr) {
-            const b3Transformr& xf = body->get_pose();
-            const b3Vector3r p = xf.linear();
-            const b3Matrix3r& R = xf.rotation_matrix_b3();
+            b3Transformr xf(body->get_position(), body->get_quaternion());
+            const b3Vector3r p = xf.position();
+            const b3Matrix3r& R = xf.rotation_matrix();
 
             b3Vector3r e = p + 1 * R.col(0);
             m_local_axis->add_line(p.x(), p.y(), p.z(), e.x(), e.y(), e.z());

@@ -10,9 +10,8 @@ public:
 
 		m_world->set_gravity(b3Vector3r(0, 0, 0));
 		int num_of_spheres = 3;
-		// create a dynamic body
-		b3Transformr pose, velocity;
 
+		// create a dynamic body
 		b3BodyDef body_def;
 		body_def.m_type = b3BodyType::b3_dynamic_body;
 
@@ -31,17 +30,27 @@ public:
 
 		for (int i = 0; i < num_of_spheres; i++) {
 			for (int j = 0; j < 1; j++) {
-				pose.set_linear(b3Vector3r(0, 1.0 * j, 1.0 * i + 10));
-				velocity.set_linear(b3Vector3r(0, 0, -5));
-				body_def.set_initial_status(pose, velocity);
+
+                b3Vector3r p(0, 1.0 * j, 1.0 * i + 10);
+                b3Vector3r q(0, 0, 0);
+                b3Vector3r v(0, 0, -5);
+                b3Vector3r w(0, 0, 0);
+
+                body_def.set_init_pose(p, q);
+                body_def.set_init_velocity(v, w);
+
 				m_world->create_body(body_def)->create_fixture(fixture_def);
 			}
 		}
 
 		// create a ground
-		pose.set_linear(0, 0, 0);
-		velocity.set_linear(0, 0, 0);
-		body_def.set_initial_status(pose, velocity);
+        b3Vector3r p(0, 0, 0);
+        b3Vector3r q(0, 0, 0);
+        b3Vector3r v(0, 0, 0);
+        b3Vector3r w(0, 0, 0);
+
+        body_def.set_init_pose(p, q);
+        body_def.set_init_velocity(v, w);
 		body_def.m_type = b3BodyType::b3_static_body;
 		b3Body* ground_body = m_world->create_body(body_def);
 
@@ -53,9 +62,9 @@ public:
 
 		ground_body->create_fixture(fixture_def);
 
-		pose.set_linear(0, 0, 15);
-		pose.set_angular(b3Vector3f(0, b3_pi, 0));
-		body_def.m_init_pose = pose;
+		p = {0, 0, 15};
+		q = {0, b3_pi, 0};
+		body_def.set_init_pose(p, q);
 		ground_body = m_world->create_body(body_def);
 		ground_body->create_fixture(fixture_def);
 	}

@@ -118,82 +118,88 @@ void init_auxiliary_shape(b3AABB *aabb, int height, b3AuxiliaryShape *auxiliary_
 
 UnitTestDynamicTree::UnitTestDynamicTree() {
 
-  ////////////////////// shape //////////////
-  bodies = new b3Body[shape_count];
+      ////////////////////// shape //////////////
+    bodies = new b3Body[shape_count];
 
-  b3Transformr xf;
+    int body_index = 0;
+    int shape_num = shape_count / 2;
 
-  int body_index = 0;
-  int shape_num = shape_count / 2;
+    // first shape_num == 1
+    sphere_shape = new b3SphereShape[shape_num];
+    for (int i = 1; i < shape_num; ++i) {
+  	    sphere_shape[i - 1].set_next(sphere_shape + i);
+    }
 
-  // first shape_num == 1
-  sphere_shape = new b3SphereShape[shape_num];
-  for (int i = 1; i < shape_num; ++i) {
-	sphere_shape[i - 1].set_next(sphere_shape + i);
-  }
+    for (int i = 0; i < shape_num; ++i) {
+  	    // set xf
+        b3Vector3r p = {position[i % 10].x(), position[i % 10].y(), position[i % 10].z()};
+        b3Vector3r q = {0, 0, 0};
+  	    sphere_shape[i].set_as_sphere(radius[i % 5]);
+  	    sphere_shape[i].set_block_allocator(&m_allocator);
+  	    bodies[body_index].set_position(p);
+        bodies[body_index].set_quaternion(b3_aa_to_quaternion(q));
+  	    sphere_shape[i].set_relative_body(bodies + body_index);
+  	    body_index++;
+    }
 
-  for (int i = 0; i < shape_num; ++i) {
-	// set xf
-	xf.set_linear(position[i % 10].x(), position[i % 10].y(), position[i % 10].z());
-	xf.set_angular(0, 0, 0);
-	sphere_shape[i].set_as_sphere(radius[i % 5]);
-	sphere_shape[i].set_block_allocator(&m_allocator);
-	bodies[body_index].set_pose(xf);
-	sphere_shape[i].set_relative_body(bodies + body_index);
-	body_index++;
-  }
+    cube_shape = new b3CubeShape[shape_num];
+    sphere_shape[shape_num - 1].set_next(cube_shape);
+    for (int i = 1; i < shape_num; ++i) {
+  	    cube_shape[i - 1].set_next(cube_shape + i);
+    }
 
-  cube_shape = new b3CubeShape[shape_num];
-  sphere_shape[shape_num - 1].set_next(cube_shape);
-  for (int i = 1; i < shape_num; ++i) {
-	cube_shape[i - 1].set_next(cube_shape + i);
-  }
-
-  for (int i = 0; i < shape_num; ++i) {
-	xf.set_linear(-position[i % 10].x(), -position[i % 10].y(), -position[i % 10].z());
-	xf.set_angular(0, 0, 0);
-	int index = i % 5;
-	cube_shape[i].set_as_box(hf_cube[index].x(), hf_cube[index].y(), hf_cube[index].z());
-	cube_shape[i].set_block_allocator(&m_allocator);
-	bodies[body_index].set_pose(xf);
-	cube_shape[i].set_relative_body(bodies + body_index);
-	body_index++;
-  }
+    for (int i = 0; i < shape_num; ++i) {
+        b3Vector3r p = {-position[i % 10].x(), -position[i % 10].y(), -position[i % 10].z()};
+        b3Vector3r q = {0, 0, 0};
+  	    int index = i % 5;
+  	    cube_shape[i].set_as_box(hf_cube[index].x(), hf_cube[index].y(), hf_cube[index].z());
+  	    cube_shape[i].set_block_allocator(&m_allocator);
+  	    bodies[body_index].set_position(p);
+        bodies[body_index].set_quaternion(b3_aa_to_quaternion(q));
+  	    cube_shape[i].set_relative_body(bodies + body_index);
+  	    body_index++;
+    }
 
   ///////////////// dynamic tree //////////////////////
-  broad_phase.set_block_allocator(&m_allocator);
-  b3AABB aabb;
-  for (int i = 0; i < shape_num; ++i) {
-	sphere_shape[i].get_bound_aabb(&aabb, bodies[i].get_pose(), 0);
-	tree_id_list.push_back(broad_phase.create_proxy(aabb, nullptr));
-  }
-  for (int i = 0; i < shape_num; ++i) {
-	cube_shape[i].get_bound_aabb(&aabb, bodies[i + shape_num].get_pose(), 0);
-	tree_id_list.push_back(broad_phase.create_proxy(aabb, nullptr));
-  }
+    broad_phase.set_block_allocator(&m_allocator);
+    b3AABB aabb;
+    for (int i = 0; i < shape_num; ++i) {
+        b3Vector3r p = bodies[i].get_position();
+        b3Quaternionr q = bodies[i].get_quaternion();
+        b3Transformr xf(p, q);
+        sphere_shape[i].get_bound_aabb(&aabb, xf, 0);
+        tree_id_list.push_back(broad_phase.create_proxy(aabb, nullptr));
+    }
+    for (int i = 0; i < shape_num; ++i) {
+        b3Vector3r p = bodies[i + shape_num].get_position();
+        b3Quaternionr q = bodies[i + shape_num].get_quaternion();
+        b3Transformr xf(p, q);
+  	    cube_shape[i].get_bound_aabb(&aabb, xf, 0);
+  	    tree_id_list.push_back(broad_phase.create_proxy(aabb, nullptr));
+    }
 
-  /////////////// generate auxiliary shape ///////////////////
-  auxiliary_shape_count = broad_phase.get_dynamic_tree()->get_node_count();
-  int n = broad_phase.get_dynamic_tree()->get_node_capacity();
-  int height;
+    /////////////// generate auxiliary shape ///////////////////
+    auxiliary_shape_count = broad_phase.get_dynamic_tree()->get_node_count();
+    int n = broad_phase.get_dynamic_tree()->get_node_capacity();
+    int height;
 
-  auxiliary_shape_list = new b3AuxiliaryShape[auxiliary_shape_count];
-  for (int i = 1; i < auxiliary_shape_count; ++i) {
-	auxiliary_shape_list[i - 1].set_next(auxiliary_shape_list + i);
-  }
-  int index = 0;
-  for (int i = 0; i < n; ++i) {
-	broad_phase.get_dynamic_tree()->get_node_info(i, height, aabb);
-	if (height != b3_NULL_HEIGHT) {
-	  init_auxiliary_shape(&aabb, height, auxiliary_shape_list + index);
-	  index++;
-	}
-  }
+    auxiliary_shape_list = new b3AuxiliaryShape[auxiliary_shape_count];
+    for (int i = 1; i < auxiliary_shape_count; ++i) {
+  	    auxiliary_shape_list[i - 1].set_next(auxiliary_shape_list + i);
+    }
+    int index = 0;
+    for (int i = 0; i < n; ++i) {
+  	    broad_phase.get_dynamic_tree()->get_node_info(i, height, aabb);
+  	    if (height != b3_NULL_HEIGHT) {
+  	        init_auxiliary_shape(&aabb, height, auxiliary_shape_list + index);
+  	        index++;
+  	    }
+    }
 }
 
 
 UnitTestDynamicTree::~UnitTestDynamicTree() {
-  delete[] sphere_shape;
-  delete[] cube_shape;
-  delete[] bodies;
+    delete[] sphere_shape;
+    delete[] cube_shape;
+    delete[] bodies;
 }

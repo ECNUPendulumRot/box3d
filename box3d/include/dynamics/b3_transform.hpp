@@ -32,6 +32,11 @@ public:
         m_r_t = q.rotation_matrix();
     }
 
+    void set(const b3Vector3<T>& p, const b3Quaternion<T>& q) {
+        m_p = p;
+        m_r_t = q.rotation_matrix();
+    }
+
     inline b3Matrix3<T> rotation_matrix() const {
         return m_r_t;
     };

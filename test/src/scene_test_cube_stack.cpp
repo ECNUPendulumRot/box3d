@@ -15,11 +15,13 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Transformr pose, velocity;
-            pose.set_linear({0, 0, 1});
-            pose.set_angular({0, 0, 0});
-            velocity.set_linear(b3Vector3r(0, 0, 0));
-            body_def.set_initial_status(pose, velocity);
+            b3Vector3r p(0, 0, 1);
+            b3Vector3r q(0, 0, 0);
+            b3Vector3r v(0, 0, 0);
+            b3Vector3r w(0, 0, 0);
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
 
             b3Body* cube1 = m_world->create_body(body_def);
 

@@ -43,9 +43,6 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Transformr pose, velocity;
-
-
             for (int i = 0; i < 2; i++) {
                 std::random_device rd;
                 std::mt19937 gen(rd());
@@ -57,9 +54,10 @@ public:
                 std::uniform_int_distribution<> distrib_w2(-3, 3);
                 std::uniform_int_distribution<> distrib_w3(-3, 3);
 
-                pose.set_linear({real(distrib_x(gen)), real(distrib_y(gen)), real(distrib_z(gen))});
-                pose.set_angular({real(distrib_w1(gen)), real(distrib_w2(gen)), real(distrib_w3(gen))});
-                body_def.set_initial_status(pose, velocity);
+                b3Vector3r p({real(distrib_x(gen)), real(distrib_y(gen)), real(distrib_z(gen))});
+                b3Vector3r q({real(distrib_w1(gen)), real(distrib_w2(gen)), real(distrib_w3(gen))});
+
+                body_def.set_init_pose(p, q);
 
                 b3Body* cube = m_world->create_body(body_def);
 
