@@ -54,6 +54,7 @@ set(B3D_HEADER_FILES
         include/solver/b3_velocity_solver.hpp
 
         include/solver/b3_si_solver_lxj.hpp
+        include/math/b3_quaternion.hpp
 
 )
 

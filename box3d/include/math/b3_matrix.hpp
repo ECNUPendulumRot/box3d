@@ -9,7 +9,7 @@
 
 
 template <typename T>
-class b3Matrix3 {
+struct b3Matrix3 {
 
     // m_ts is col major;
     union {
@@ -108,6 +108,14 @@ public:
 
     inline real trace() const {
         return m_11 + m_22 + m_33;
+    }
+
+    static b3Matrix3<T> skew_symmetric(const b3Vector3<T>& v) {
+
+        return b3Matrix3<T>(b3Vector3<T>(T(0), v.z(), -v.y()),
+                            b3Vector3<T>(-v.z(), T(0), v.x()),
+                            b3Vector3<T>(v.y(), -v.x(), T(0)));
+
     }
 
     inline b3Vector3<T> eigen_values() const {

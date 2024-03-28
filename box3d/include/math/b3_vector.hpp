@@ -7,7 +7,6 @@
 
 #include "math/b3_math.hpp"
 #include "math/b3_min_max.hpp"
-
 #include "common/b3_common.hpp"
 
 

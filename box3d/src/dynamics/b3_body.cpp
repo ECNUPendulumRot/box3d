@@ -16,8 +16,10 @@
 b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Matrix3r::zero())
 {
     m_type = body_def.m_type;
-    m_xf = body_def.m_init_pose;
-    m_velocity = body_def.m_init_velocity;
+    m_p = body_def.m_init_p;
+    m_q = body_def.m_init_q;
+    m_v = body_def.m_init_v;
+    m_w = body_def.m_init_w;
     m_density = body_def.m_density;
 }
 
@@ -37,7 +39,9 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
 
     // create proxies for the fixture
     auto *broad_phase = m_world->get_broad_phase();
-    fixture->create_proxy(broad_phase, m_xf);
+
+    b3Transformr xf(m_p, m_q);
+    fixture->create_proxy(broad_phase, xf);
     fixture->m_body = this;
 
     // adjust the fixture linked list
@@ -125,9 +129,9 @@ void b3Body::synchronize_fixtures()
     // xf1 is the position at the begin of the frame
     // xf2 is the position at the end of the frame
     // TODO: check if we need to do this.
-
+    b3Transformr xf(m_p, m_q);
     for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
-        f->synchronize(broad_phase, m_xf, m_xf);
+        f->synchronize(broad_phase, xf, xf);
     }
 }
 
@@ -157,11 +161,8 @@ void b3Body::destroy_fixtures() {
 
 real b3Body::kinetic_energy() const {
 
-    const b3Vector3r& v = m_velocity.linear();
-    const b3Vector3r& w = m_velocity.angular();
-
     // kinetic energy = 1/2 * m * v^2 + 1/2 * (I1 * w1^2 + I2 * w2^2 + I3 * w3^2)
-    return real(0.5) * (m_mass * v.length2() + (w * m_inertia).dot(w));
+    return real(0.5) * (m_mass * m_v.length2() + (m_w * m_inertia).dot(m_w));
 
 }
 

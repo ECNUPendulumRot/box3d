@@ -10,9 +10,8 @@ public:
 
         m_world->set_gravity(b3Vector3r(0, 0, 0));
         int num_of_spheres = 5;
-        // create a dynamic body
-        b3Transformr pose, velocity;
 
+        // create a dynamic body
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
 
@@ -28,21 +27,28 @@ public:
         fixture_def.m_density = 1.0;
 
 
-        pose.set_linear(b3Vector3r(0, 0, 0.5));
-        velocity.set_linear(b3Vector3r(0, 0, 0));
-        body_def.set_initial_status(pose, velocity);
+        b3Vector3r p(0, 0, 0.5);
+        b3Vector3r q(0, 0, 0);
+        b3Vector3r v(0, 0, 0);
+        b3Vector3r w(0, 0, 0);
+
+        body_def.set_init_pose(p, q);
+        body_def.set_init_velocity(v, w);
+
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
         real x = 2;
         sphere_shape.set_as_sphere(x);
-        pose.set_linear(b3Vector3r(0, 0, 0.5 + x));
-        velocity.set_linear(b3Vector3r(0, 0, 0));
-        body_def.set_initial_status(pose, velocity);
+        p = {0, 0, 0.5 + x};
+        v = {0, 0, 0};
+        body_def.set_init_pose(p, q);
+        body_def.set_init_velocity(v, w);
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
         // create a ground
-        pose.set_linear(0, 0, 0);
-        body_def.set_initial_status(pose, velocity);
+        p = {0, 0, 0};
+        body_def.set_init_pose(p, q);
+        body_def.set_init_velocity(v, w);
         body_def.m_type = b3BodyType::b3_static_body;
         b3Body *ground_body = m_world->create_body(body_def);
 
@@ -58,6 +64,7 @@ public:
     static TestBase *create() {
         return new TestSphereStack;
     }
+
 };
 
 static int test_index = register_test("Sphere Scene Test", "Sphere Stack", TestSphereStack::create);
