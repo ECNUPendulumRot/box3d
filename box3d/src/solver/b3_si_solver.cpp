@@ -20,11 +20,11 @@ void b3SISolver::init_velocity_constraints()
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
 
-        b3Vector3r v_a = m_velocities[index_a].linear();
-        b3Vector3r w_a = m_velocities[index_a].angular();
+        b3Vector3r v_a = m_vs[index_a];
+        b3Vector3r w_a = m_ws[index_a];
 
-        b3Vector3r v_b = m_velocities[index_b].linear();
-        b3Vector3r w_b = m_velocities[index_b].angular();
+        b3Vector3r v_b = m_vs[index_b];
+        b3Vector3r w_b = m_ws[index_b];
 
         for (int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -81,17 +81,17 @@ int b3SISolver::solve()
     // velocity update
     for (int32 i = 0; i < m_body_count; ++i) {
         b3Body *b = m_bodies[i];
-        b3Vector3r v = m_velocities[i].linear();
-        b3Vector3r w = m_velocities[i].angular();
+        b3Vector3r v = m_vs[i];
+        b3Vector3r w = m_ws[i];
         //store the velocity before apply force
-        m_velocities_w_f[i].set_linear(v);
-        m_velocities_w_f[i].set_angular(w);
+        //m_velocities_w_f[i].set_linear(v);
+        //m_velocities_w_f[i].set_angular(w);
 
         v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
         w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
 
-        m_velocities[i].set_linear(v);
-        m_velocities[i].set_angular(w);
+        m_vs[i] = v;
+        m_ws[i] = w;
     }
 
 
@@ -108,21 +108,22 @@ int b3SISolver::solve()
     // type 0 = semi-implict Euler integration
     // type 1 = verlet integration
 
-    if (m_method == e_implicit) {
+    //if (m_method == e_implicit) {
         for (int32 i = 0; i < m_body_count; ++i) {
-            m_positions[i].set_linear(m_positions[i].linear() + m_velocities[i].linear() * m_timestep->m_dt);
-            m_positions[i].set_angular(m_positions[i].angular() + m_velocities[i].angular() * m_timestep->m_dt);
+            m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
+            m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quaternionr(0, m_ws[i]) * m_qs[i];
+            m_qs[i].normalize();
         }
-    } else if (m_method == e_verlet) {
-        for (int32 i = 0; i < m_body_count; ++i) {
-            m_positions[i].set_linear(m_positions[i].linear() +
-                                      (m_velocities[i].linear() + m_velocities_w_f[i].linear()) *
-                                      m_timestep->m_dt * real(0.5));
-            m_positions[i].set_angular(m_positions[i].angular() +
-                                       (m_velocities[i].angular() + m_velocities_w_f[i].angular()) *
-                                       m_timestep->m_dt * real(0.5));
-        }
-    }
+    //} else if (m_method == e_verlet) {
+    //    for (int32 i = 0; i < m_body_count; ++i) {
+    //        m_positions[i].set_linear(m_positions[i].linear() +
+    //                                  (m_velocities[i].linear() + m_velocities_w_f[i].linear()) *
+    //                                  m_timestep->m_dt * real(0.5));
+    //        m_positions[i].set_angular(m_positions[i].angular() +
+    //                                   (m_velocities[i].angular() + m_velocities_w_f[i].angular()) *
+    //                                   m_timestep->m_dt * real(0.5));
+    //    }
+    //}
     // copy state buffers back to the bodies.
     write_states_back();
 
@@ -135,11 +136,11 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
     for (int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-        b3Vector3r v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3r w_a = m_velocities[vc->m_index_a].angular();
+        b3Vector3r v_a = m_vs[vc->m_index_a];
+        b3Vector3r w_a = m_ws[vc->m_index_a];
 
-        b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
-        b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
+        b3Vector3r v_b = m_vs[vc->m_index_b];
+        b3Vector3r w_b = m_ws[vc->m_index_b];
 
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -169,11 +170,11 @@ void b3SISolver::solve_velocity_constraints(bool is_collision)
             v_b = v_b + vc->m_inv_mass_b * impulse;
             w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
         }
-        m_velocities[vc->m_index_a].set_linear(v_a);
-        m_velocities[vc->m_index_b].set_linear(v_b);
+        m_vs[vc->m_index_a] = v_a;
+        m_vs[vc->m_index_b] = v_b;
         if (is_collision) {
-            m_velocities[vc->m_index_a].set_angular(w_a);
-            m_velocities[vc->m_index_b].set_angular(w_b);
+            m_ws[vc->m_index_a] = w_a;
+            m_ws[vc->m_index_b] = w_b;
         }
     }
 }
@@ -186,8 +187,8 @@ void b3SISolver::correct_penetration()
 
         // TODO: Check this way is useful. And angle?
         if (vc->m_penetration < 0) {
-            b3Vector3r p_a = m_positions[vc->m_index_a].linear();
-            b3Vector3r p_b = m_positions[vc->m_index_b].linear();
+            b3Vector3r p_a = m_ps[vc->m_index_a];
+            b3Vector3r p_b = m_ps[vc->m_index_b];
 
             b3Vector3r position_correction = vc->m_normal * vc->m_penetration;
 
@@ -205,8 +206,8 @@ void b3SISolver::correct_penetration()
                 p_b -= position_correction * real(2.0);
             }
 
-            m_positions[vc->m_index_a].set_linear(p_a);
-            m_positions[vc->m_index_b].set_linear(p_b);
+            m_ps[vc->m_index_a] = p_a;
+            m_ps[vc->m_index_b] = p_b;
 
             // after fix penetration, the penetration should be zero.
             // TODO: we could fix part of penetration, but not all.
@@ -221,10 +222,10 @@ void b3SISolver::solve_friction_constraints()
     for (int i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-        b3Vector3r v_a = m_velocities[vc->m_index_a].linear();
-        b3Vector3r w_a = m_velocities[vc->m_index_a].angular();
-        b3Vector3r v_b = m_velocities[vc->m_index_b].linear();
-        b3Vector3r w_b = m_velocities[vc->m_index_b].angular();
+        b3Vector3r v_a = m_vs[vc->m_index_a];
+        b3Vector3r w_a = m_ws[vc->m_index_a];
+        b3Vector3r v_b = m_vs[vc->m_index_b];
+        b3Vector3r w_b = m_ws[vc->m_index_b];
 
         // compute the support force for b from a
         real support_impulse = 0;
@@ -312,12 +313,12 @@ void b3SISolver::solve_friction_help(
         b3Vector3r *points_ra, b3Vector3r *points_rb, int point_count, b3ContactVelocityConstraint *vc)
 {
 
-    b3Vector3r v_a = m_velocities[index_a].linear();
-    b3Vector3r v_b = m_velocities[index_b].linear();
+    b3Vector3r v_a = m_vs[index_a];
+    b3Vector3r v_b = m_vs[index_b];
     v_a += vc->m_inv_mass_a * (friction_impulse * tangent);
     v_b -= vc->m_inv_mass_b * (friction_impulse * tangent);
-    m_velocities[index_a].set_linear(v_a);
-    m_velocities[index_b].set_linear(v_b);
+    m_vs[index_a] = v_a;
+    m_vs[index_b] = v_b;
     // if the body friciton is static, we need tangent velocity is zero.
     // and the body should not rotate. so the angular velocity is don't change.
     //  if (is_static) {
@@ -342,7 +343,7 @@ void b3SISolver::solve_friction_help(
     // Tf the support torque can correct the frictional torque.
     // the angular velocity not change.
     // TODO: if we need consider the support toque to minus the angular velocity.
-    b3Vector3r w_b = m_velocities[index_b].angular();
+    b3Vector3r w_b = m_ws[index_b];
 
     b3Vector3r torque_direction = normal.cross(tangent);
     // torque = I * w; and then get the torque direction component.
@@ -370,7 +371,7 @@ void b3SISolver::solve_friction_help(
     }
 
     w_b += vc->m_inv_I_b * ((friction_impulse * h - support_torque) * torque_direction);
-    m_velocities[index_b].set_angular(w_b);
+    m_ws[index_b] = w_b;
 
     //
     //  if (vc->m_friction * h > b) {
@@ -401,7 +402,7 @@ void b3SISolver::solve_friction_help(
         max_b = b3_max(temp, max_b);
     }
 
-    b3Vector3r w_a = m_velocities[index_a].angular();
+    b3Vector3r w_a = m_ws[index_a];
     // The direction is pointing inside the plane. maybe less than zero.
     real w_a_to_zero_torque_impulse = (vc->m_I_a * w_a).dot(torque_direction);
     // the friction works in the opposite direction
@@ -418,7 +419,7 @@ void b3SISolver::solve_friction_help(
     }
 
     w_a += vc->m_inv_I_a * ((friction_impulse * h - support_torque) * torque_direction);
-    m_velocities[index_a].set_angular(w_a);
+    m_ws[index_a] = w_a;
 }
 
 
@@ -466,8 +467,10 @@ void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
         vc->m_ra = b3Vector3r::zero();
         vc->m_rb = b3Vector3r::zero();
 // the center of body in the world frame
-        b3Vector3r center_a = body_a->get_pose().transform(body_a->get_local_center());
-        b3Vector3r center_b = body_b->get_pose().transform(body_b->get_local_center());
+        b3Transformr xf_A(body_a->get_position(), body_a->get_quaternion());
+        b3Transformr xf_B(body_b->get_position(), body_b->get_quaternion());
+        b3Vector3r center_a = xf_A.transform(body_a->get_local_center());
+        b3Vector3r center_b = xf_B.transform(body_b->get_local_center());
 
         for (int32 j = 0; j < point_count; j++) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
