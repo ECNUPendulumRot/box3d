@@ -163,6 +163,7 @@ void b3BlockAllocator::free(void* p, int32 size)
     b3_assert(index >= 0 && index < b3_block_size_count);
 
     b3Block *block = (b3Block *)p;
+
     block->m_next = m_free_lists[index];
     m_free_lists[index] = block;
 }

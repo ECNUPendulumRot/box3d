@@ -62,6 +62,11 @@ add_executable(
 )
 
 add_executable(
+    test_block_allocator
+    src/test_block_allocator.cpp
+)
+
+add_executable(
     test_sphere_manifold
     unit_test/test_sphere_manifold.cpp
 )
@@ -76,6 +81,11 @@ target_link_libraries(test_app
 
 target_link_libraries(
     test_all_class_size
+    PUBLIC box3d
+)
+
+target_link_libraries(
+    test_block_allocator
     PUBLIC box3d
 )
 

@@ -10,6 +10,8 @@
 #include "collision/b3_fixture.hpp"
 
 
+#include <iostream>
+
 //////////////////////////////////////////
 // In the tangent plane, t1 and t2 are counterclockwise
 /*
@@ -109,7 +111,6 @@ b3Solver::~b3Solver()
 
 void b3Solver::clear() {
     m_timestep = nullptr;
-    m_block_allocator->free(m_contacts, m_contact_count * sizeof(b3Contact*));
     m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
     m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vector3r));
     m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
