@@ -131,7 +131,7 @@ void b3World::solve(b3TimeStep &step)
 
                 // Has this contact already has been added to this island ?
                 if (contact->test_flag(b3Contact::e_island_flag)) {
-                continue;
+                    continue;
                 }
                 if (!contact->test_flag(b3Contact::e_touching_flag)) {
                     continue;
