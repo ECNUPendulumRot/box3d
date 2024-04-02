@@ -65,7 +65,15 @@ public:
     }
 
     inline void set_zero() {
-        m_ts = {T(0)};
+        m_11 = T(0);
+        m_21 = T(0);
+        m_31 = T(0);
+        m_12 = T(0);
+        m_22 = T(0);
+        m_32 = T(0);
+        m_13 = T(0);
+        m_23 = T(0);
+        m_33 = T(0);
     }
 
     inline void set_identity() {

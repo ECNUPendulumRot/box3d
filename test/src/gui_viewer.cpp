@@ -265,7 +265,9 @@ void b3GUIViewer::draw_mesh()
         ViewerData &data = m_viewer.data(shape_index);
         b3Shape *shape = m_shapes[index];
 
-        b3Transformr xf(shape->get_body()->get_position(), shape->get_body()->get_quaternion());
+        // TODO: test affine
+        // b3Transformr xf(shape->get_body()->get_position(), shape->get_body()->get_quaternion());
+        b3Transformr xf(shape->get_body()->get_affine_q());
         b3ViewData view_data = shape->get_view_data(xf);
         MapMatrixX<double, Eigen::RowMajor> vertices(view_data.m_V, view_data.m_vertex_count, 3);
 

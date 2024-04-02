@@ -7,7 +7,7 @@
 
 #include "math/b3_matrix.hpp"
 #include "math/b3_quaternion.hpp"
-
+#include <Eigen/Dense>
 
 template <typename T>
 struct b3Transform {
@@ -25,6 +25,11 @@ public:
     b3Transform(const b3Transform& other) {
         m_p = other.m_p;
         m_r_t = other.m_r_t;
+    }
+
+    explicit b3Transform(const Eigen::Vector<real, 12>& q) {
+        m_p = b3Vector3<T>(q[0], q[1], q[2]);
+        m_r_t = b3Matrix3<T>({q[3], q[6], q[9]}, {q[4], q[7], q[10]}, {q[5], q[8], q[11]});
     }
 
     b3Transform(const b3Vector3<T>& p, const b3Quaternion<T>& q) {

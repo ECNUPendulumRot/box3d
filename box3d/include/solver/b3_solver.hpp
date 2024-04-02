@@ -58,7 +58,7 @@ protected:
     /**
      * @brief write the velocity and position back to bodies.
      */
-    void write_states_back();
+    virtual void write_states_back();
 
 public:
 

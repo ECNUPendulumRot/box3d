@@ -200,41 +200,6 @@ void b3VelocitySolver::solve_velocity_constraints(bool is_collision)
         b3Vector3r v_b = m_vs[vc->m_index_b];
         b3Vector3r w_b = m_ws[vc->m_index_b];
 
-/*////////////////////////////////////////////////////////////////////////////////////////////////
-    real lambda = 0;
-    // iter all contact points, compute the total impulse for body
-    // TODO: prove this algorithm is correct.
-    for (int32 j = 0; j < vc->m_point_count; ++j) {
-      b3VelocityConstraintPoint* vcp = vc->m_points + j;
-
-      b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-      real rhs = -v_rel.dot(vc->m_normal);
-      // distinguish contact and collision
-      // collision: we need update velocity by restitution
-      // contact: the restitution is zero.
-      if(is_collision) {
-        lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
-      } else {
-        lambda = vcp->m_normal_mass * rhs;
-      }
-    }
-    // apply normal Impulse
-    if(is_collision) {
-      real new_impulse = b3_max(vc->m_normal_collision_impulse + lambda, real(0.0));
-      lambda = new_impulse - vc->m_normal_collision_impulse;
-      vc->m_normal_collision_impulse = new_impulse;
-    } else {
-      real new_impulse = b3_max(vc->m_normal_contact_impulse + lambda, real(0.0));
-      lambda = new_impulse - vc->m_normal_contact_impulse;
-      vc->m_normal_contact_impulse = new_impulse;
-    }
-    b3Vector3r impluse = lambda * vc->m_normal;
-
-    v_a = v_a - vc->m_inv_mass_a * impluse;
-    w_a = w_a - vc->m_inv_I_a * vc->m_ra.cross(impluse);
-    v_b = v_b + vc->m_inv_mass_b * impluse;
-    w_b = w_b + vc->m_inv_I_b * vc->m_rb.cross(impluse);
-*/////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
 

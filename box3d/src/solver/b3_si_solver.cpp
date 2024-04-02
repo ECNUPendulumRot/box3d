@@ -466,7 +466,8 @@ void b3SISolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
         vc->m_ra = b3Vector3r::zero();
         vc->m_rb = b3Vector3r::zero();
-// the center of body in the world frame
+
+        // the center of body in the world frame
         b3Transformr xf_A(body_a->get_position(), body_a->get_quaternion());
         b3Transformr xf_B(body_b->get_position(), body_b->get_quaternion());
         b3Vector3r center_a = xf_A.transform(body_a->get_local_center());

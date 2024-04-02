@@ -8,6 +8,7 @@
 #include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_body_def.hpp"
 
+#include <Eigen/Dense>
 
 /////////// Forward Delaration ///////////
 
@@ -73,6 +74,18 @@ class b3Body {
 
     b3Vector3r m_torque;
 
+    ///////////////// Affine System /////////////////
+
+    real m_k = 0.0;
+
+    Eigen::Vector<real, 12> m_affine_q;
+
+    Eigen::Vector<real, 12> m_affine_q_dot;
+
+    Eigen::Matrix<real, 12, 12> m_affine_mass;
+
+    Eigen::Matrix<real, 12, 12> m_affine_inv_mass;
+
     ///////////////// Collision Properties /////////////////
 
     b3ContactEdge* m_contact_list = nullptr;
@@ -112,6 +125,7 @@ public:
     b3Fixture* create_fixture(const b3FixtureDef& def);
 
     ///////////////// Getter and Setter /////////////////
+
 
     inline b3Body* next() const {
         return m_next;
@@ -203,6 +217,30 @@ public:
 
     b3Matrix3r get_inertia() const {
         return m_inertia;
+    }
+
+    auto get_affine_mass() const {
+        return m_affine_mass;
+    }
+
+    auto get_affine_inv_mass() const {
+        return m_affine_inv_mass;
+    }
+
+    auto get_affine_q() const {
+        return m_affine_q;
+    }
+
+    void set_affine_q(const Eigen::Vector<real, 12>& q) {
+        m_affine_q = q;
+    }
+
+    auto get_affine_q_dot() const {
+        return m_affine_q_dot;
+    }
+
+    void set_affine_q_dot(const Eigen::Vector<real, 12>& q_dot) {
+        m_affine_q_dot = q_dot;
     }
 
     b3Vector3r get_local_center() const {

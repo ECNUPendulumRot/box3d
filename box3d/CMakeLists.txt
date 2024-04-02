@@ -1,6 +1,7 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
 include(spdlog)
+include(eigen)
 
 set(B3D_HEADER_FILES
         include/box3d.hpp
@@ -55,6 +56,7 @@ set(B3D_HEADER_FILES
 
         #include/solver/b3_si_solver_lxj.hpp
         include/math/b3_quaternion.hpp
+        include/solver/b3_affine_solver.hpp
 
 )
 
@@ -94,6 +96,7 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
         src/solver/b3_velocity_solver.cpp
+        src/solver/b3_affine_solver.cpp
 
 )
 
@@ -102,7 +105,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
 add_library(box3d ${B3D_SOURCE_FILES} ${B3D_HEADER_FILES})
 
-target_link_libraries(box3d PUBLIC spdlog::spdlog)
+target_link_libraries(box3d PUBLIC spdlog::spdlog Eigen3::Eigen)
 
 target_include_directories(box3d
     PUBLIC

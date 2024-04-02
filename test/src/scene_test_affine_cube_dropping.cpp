@@ -23,7 +23,7 @@ static void init_auxiliary_shape(b3AABB *aabb, b3AuxiliaryShape *auxiliary_shape
     auxiliary_shape->add_line(min.x(), max.y(), min.z(), min.x(), max.y(), max.z());
 }
 
-class TestDropping: public SceneTestBase {
+class TestAffineDropping: public SceneTestBase {
 
     b3Timer m_timer;
 
@@ -35,8 +35,8 @@ class TestDropping: public SceneTestBase {
 
 public:
 
-    TestDropping() {
-
+    TestAffineDropping() {
+        m_world->set_solver_type(AFFINE_SOLVER);
         m_world->set_gravity(b3Vector3r(0, 0, -10));
 
         {
@@ -96,7 +96,7 @@ public:
         ground_body->create_fixture(ground_fd);
     }
 
-    ~TestDropping() override {
+    ~TestAffineDropping() override {
         delete[] auxiliary_shape_list;
     }
 
@@ -135,11 +135,11 @@ public:
 //    }
 
     static TestBase* create() {
-        return new TestDropping;
+        return new TestAffineDropping;
     }
 };
 
-static int test_index = register_test("Cube Scene Test", "Cube Dropping", TestDropping::create);
+static int test_index = register_test("Affine Scene Test", "Cube Dropping", TestAffineDropping::create);
 
 
 
