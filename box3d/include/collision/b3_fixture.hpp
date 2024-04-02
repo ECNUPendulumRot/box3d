@@ -80,8 +80,6 @@ class b3Fixture {
 
     friend class b3Body;
 
-    real m_restitution = 0.0;
-
     real m_friction = 0.0;
 
     real m_density = 0.0;
@@ -129,10 +127,6 @@ public:
 
     real get_friction() const {
         return m_friction;
-    }
-
-    real get_restitution() const {
-        return m_restitution;
     }
 
 private:

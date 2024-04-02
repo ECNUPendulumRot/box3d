@@ -191,7 +191,7 @@ public :
         auto *edge_box_B = new b3AuxiliaryShape();
         edge_box_A->set_next(edge_box_B);
 
-        b3Transformr xf_A(body_A->get_position(), body_A->get_quaternion());
+        b3Transformr xf_A(body_A->get_affine_q());
         b3ViewData view_data_A = cube_A->get_view_data(xf_A);
         double *V = view_data_A.m_V;
         edge_box_A->add_line(VERTEX(V, 0), VERTEX(V, 1));
@@ -207,7 +207,7 @@ public :
         edge_box_A->add_line(VERTEX(V, 2), VERTEX(V, 6));
         edge_box_A->add_line(VERTEX(V, 3), VERTEX(V, 7));
 
-        b3Transformr xf_B(body_B->get_position(), body_B->get_quaternion());
+        b3Transformr xf_B(body_B->get_affine_q());
         b3ViewData view_data_B = cube_B->get_view_data(xf_B);
         V = view_data_B.m_V;
         edge_box_B->add_line(VERTEX(V, 0), VERTEX(V, 1));

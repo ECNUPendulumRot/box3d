@@ -42,7 +42,6 @@ b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_
 
     m_manifold.m_point_count = 0;
 
-    m_restitution = b3_mix_restitution(m_fixture_a->get_restitution(), m_fixture_b->get_restitution());
     m_friction = b3_mix_friction(m_fixture_a->get_friction(), m_fixture_b->get_friction());
 }
 
@@ -129,8 +128,8 @@ void b3Contact::update()
     b3Body *body_a = m_fixture_a->get_body();
     b3Body *body_b = m_fixture_b->get_body();
 
-    b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
-    b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
+    b3Transformr xf_a(body_a->get_affine_q());
+    b3Transformr xf_b(body_b->get_affine_q());
 
     // TODO: add sensor ?
     // generate the manifold between the two shapes

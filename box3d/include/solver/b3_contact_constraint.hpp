@@ -19,19 +19,22 @@ struct b3VelocityConstraintPoint {
 };
 
 
-struct b3ContactVelocityConstraint {
+struct b3AffineContactVelocityConstraint {
+
     b3VelocityConstraintPoint m_points[4];
-    b3Vector3r m_normal;
+
     int32 m_index_a;
     int32 m_index_b;
     real m_inv_mass_a;
     real m_inv_mass_b;
     real m_mass_a;
     real m_mass_b;
-    b3Matrix3r m_I_a;
-    b3Matrix3r m_I_b;
-    b3Matrix3r m_inv_I_a;
-    b3Matrix3r m_inv_I_b;
+
+    Eigen::Vector3<real> m_normal;
+    Eigen::Matrix<real, 12, 12> m_affine_I_a;
+    Eigen::Matrix<real, 12, 12> m_affine_I_b;
+    Eigen::Matrix<real, 12, 12> m_affine_inv_I_a;
+    Eigen::Matrix<real, 12, 12> m_affine_inv_I_b;
 
     int32 m_point_count;
     int32 m_contact_index;
@@ -47,17 +50,6 @@ struct b3ContactVelocityConstraint {
     b3Vector3r m_rb;
 
     real m_friction;
-
-    // b3Vector3r m_world_center_a;
-    // b3Vector3r m_world_center_b;
-
-
-	// b2Mat22 normalMass;
-	// b2Mat22 K;
-
-	// float friction;
-	// float threshold;
-	// float tangentSpeed;
 };
 
 

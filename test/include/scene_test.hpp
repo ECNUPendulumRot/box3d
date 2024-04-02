@@ -63,7 +63,7 @@ public:
         b3Body* body = m_world->get_body_list();
         int32 index = 0;
         while (body != nullptr) {
-            b3Transformr xf(body->get_position(), body->get_quaternion());
+            b3Transformr xf(body->get_affine_q());
             const b3Vector3r p = xf.position();
             const b3Matrix3r& R = xf.rotation_matrix();
 

@@ -19,7 +19,7 @@ class b3Body;
 
 class b3Island;
 
-class b3ContactVelocityConstraint;
+class b3AffineContactVelocityConstraint;
 
 class b3BlockAllocator;
 
@@ -37,16 +37,6 @@ protected:
 
     int32 m_body_count;
 
-    b3Vector3r* m_ps = nullptr;
-
-    b3Quaternionr* m_qs = nullptr;
-
-    b3Vector3r* m_vs = nullptr;
-
-    b3Vector3r* m_ws = nullptr;
-
-    b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
-
     b3TimeStep* m_timestep = nullptr;
 
     b3BlockAllocator* m_block_allocator = nullptr;
@@ -55,10 +45,16 @@ protected:
 
     b3IntegralMethod m_method;
 
+    b3AffineContactVelocityConstraint* m_avc = nullptr;
+
+    Eigen::Vector<real, 12>* m_affine_qs = nullptr;
+
+    Eigen::Vector<real, 12>* m_affine_q_dots = nullptr;
+
     /**
      * @brief write the velocity and position back to bodies.
      */
-    virtual void write_states_back();
+    void write_states_back();
 
 public:
 
@@ -75,9 +71,10 @@ public:
         return 0;
     };
 
-    virtual ~b3Solver();
+    virtual ~b3Solver() = default;
 
     void clear();
+
 };
 
 

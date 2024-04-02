@@ -40,21 +40,10 @@ class b3Body {
     // CoM
     b3Vector3r m_local_center = b3Vector3r::zero();
 
-    // the quaternion of the body
-    b3Quaternionr m_q;
-
-    // the position of the body
-    b3Vector3r m_p;
-
-    // the linear velocity of the body
-    b3Vector3r m_v;
-
-    // the angular velocity of the body
-    // in form of angle axis
-    b3Vector3r m_w;
-
-
     ////////////////// Dynamic Properties //////////////////
+
+    // solidity stiffness
+    real m_k = 0.0;
 
     real m_density = 1.0;
 
@@ -64,10 +53,6 @@ class b3Body {
 
     real m_inv_mass = 0.0;
 
-    b3Matrix3r m_inertia = b3Matrix3r::zero();
-
-    b3Matrix3r m_inv_inertia = b3Matrix3r::zero();
-
     b3Vector3r m_force = b3Vector3r::zero();
 
     b3Vector3r m_gravity = b3Vector3r::zero();
@@ -75,8 +60,6 @@ class b3Body {
     b3Vector3r m_torque;
 
     ///////////////// Affine System /////////////////
-
-    real m_k = 0.0;
 
     Eigen::Vector<real, 12> m_affine_q;
 
@@ -131,6 +114,14 @@ public:
         return m_next;
     }
 
+    inline real get_volume() const {
+        return m_volume;
+    }
+
+    inline real get_stiffness() const {
+        return m_k;
+    }
+
     inline b3BodyType get_type() const {
         return m_type;
     }
@@ -141,6 +132,12 @@ public:
 
     inline b3Vector3r get_gravity() const {
         return m_gravity * m_mass;
+    }
+
+    inline Eigen::Vector<real, 12> get_affine_gravity() const {
+        Eigen::Vector<real, 12> g = {m_gravity.x(), m_gravity.y(), m_gravity.z(), 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        auto g1 = m_affine_inv_mass * g;
+        return g1;
     }
 
     inline b3Vector3r get_torque() const {
@@ -167,38 +164,6 @@ public:
         return m_fixture_list;
     }
 
-    b3Vector3r get_position() const {
-        return m_p;
-    }
-
-    b3Quaternionr get_quaternion() const {
-        return m_q;
-    }
-
-    void set_quaternion(const b3Quaternionr& q) {
-        m_q = q;
-    }
-
-    void set_position(const b3Vector3r& p) {
-        m_p = p;
-    }
-
-    b3Vector3r get_linear_velocity() const {
-        return m_v;
-    }
-
-    b3Vector3r get_angular_velocity() const {
-        return m_w;
-    }
-
-    void set_linear_velocity(b3Vector3r& v) {
-        m_v = v;
-    }
-
-    void set_angular_velocity(b3Vector3r& w) {
-        m_w = w;
-    }
-
     int32 get_island_index() const {
         return m_island_index;
     }
@@ -209,14 +174,6 @@ public:
 
     real get_mass() const {
         return m_mass;
-    }
-
-    b3Matrix3r get_inv_inertia() const {
-        return m_inv_inertia;
-    }
-
-    b3Matrix3r get_inertia() const {
-        return m_inertia;
     }
 
     auto get_affine_mass() const {

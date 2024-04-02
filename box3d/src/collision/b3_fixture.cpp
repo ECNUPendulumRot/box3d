@@ -6,11 +6,8 @@
 
 #include "common/b3_block_allocator.hpp"
 
-void b3Fixture::create_fixture(
-  b3BlockAllocator *block_allocator,
-  const b3FixtureDef &f_def, b3Body *body)
+void b3Fixture::create_fixture(b3BlockAllocator *block_allocator, const b3FixtureDef &f_def, b3Body *body)
 {
-    m_restitution = f_def.get_restitution();
     m_friction = f_def.get_friction();
     m_density = f_def.get_density();
     m_body = body;

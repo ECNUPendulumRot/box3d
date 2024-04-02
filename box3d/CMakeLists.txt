@@ -4,6 +4,7 @@ include(spdlog)
 include(eigen)
 
 set(B3D_HEADER_FILES
+
         include/box3d.hpp
 
         include/common/b3_types.hpp
@@ -44,19 +45,14 @@ set(B3D_HEADER_FILES
         include/math/b3_vector.hpp
         include/math/b3_min_max.hpp
         include/math/b3_math.hpp
-
+        include/math/b3_quaternion.hpp
 
         include/solver/b3_solver.hpp
-        #include/solver/b3_solver_verlet.hpp
-        include/solver/b3_si_solver.hpp
+        include/solver/b3_affine_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
         include/solver/b3_solver_factory.hpp
-        include/solver/b3_velocity_solver.hpp
 
-        #include/solver/b3_si_solver_lxj.hpp
-        include/math/b3_quaternion.hpp
-        include/solver/b3_affine_solver.hpp
 
 )
 
@@ -89,13 +85,8 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
-        src/solver/b3_si_solver.cpp
-        #src/solver/b3_si_solver_lxj.cpp
-        #src/solver/b3_solver_verlet.cpp
-        #src/solver/b3_si_solver_verlet.cpp
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
-        src/solver/b3_velocity_solver.cpp
         src/solver/b3_affine_solver.cpp
 
 )
