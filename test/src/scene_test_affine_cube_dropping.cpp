@@ -42,7 +42,7 @@ public:
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
-            body_def.m_k = 10;
+            body_def.m_k = 1500;
 
             b3Vector3r p(0, 0, 3);
             b3Vector3r q(0, 0, 0);
@@ -87,6 +87,10 @@ public:
     }
 
     void step() override {
+
+        if (stop == true)
+            return;
+
         m_world->step(1.0 / 60, 8, 8);
 
         b3AABB aabb;

@@ -151,7 +151,7 @@ void b3AffineSolver::init_velocity_constraints()
             avc->m_ra += vcp->m_ra;
             avc->m_rb += vcp->m_rb;
 
-            Eigen::Vector3<real> normal = {avc->m_normal.x(), avc->m_normal.y(), avc->m_normal.z()};
+            Eigen::Vector3<real> normal = avc->m_normal;
 
             Eigen::Matrix<real, 3, 12> Jra = Jacobian(vcp->m_ra);
             Eigen::Matrix<real, 3, 12> Jrb = Jacobian(vcp->m_rb);
@@ -191,9 +191,9 @@ int b3AffineSolver::solve()
     init_velocity_constraints();
 
     // collision
-    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints(true);
-    }
+//    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+//        solve_velocity_constraints(true);
+//    }
     // fix penetration
     // correct_penetration();
 
@@ -204,20 +204,24 @@ int b3AffineSolver::solve()
 
         Eigen::Vector<real, 12> affine_q_dot = m_affine_q_dots[i];
 
-        Eigen::Vector<real, 12> g = b->get_affine_gravity();
-        affine_q_dot += m_timestep->m_dt * g;
+        const real& k = b->get_stiffness();
+        const real& v = b->get_volume();
+        auto g = b->get_affine_gravity();
+        auto M_inv = b->get_affine_inv_mass();
+        auto d = energy_gradient(k, v, m_affine_qs[i]);
+        auto f_d = b->get_affine_inv_mass() * d;
+        affine_q_dot += m_timestep->m_dt * g - m_timestep->m_dt * M_inv * f_d;
 
         m_affine_q_dots[i] = affine_q_dot;
     }
 
+    // collision
+    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+        solve_velocity_constraints(true);
+    }
+
     for (int32 i = 0; i < m_body_count; ++i) {
-        b3Body* b = m_bodies[i];
-        const real& k = b->get_stiffness();
-        const real& v = b->get_volume();
-        auto d = energy_gradient(k, v, m_affine_qs[i]);
-        Eigen::Vector<real, 12> f_d = b->get_affine_inv_mass() * d;
-        m_affine_qs[i] = m_affine_qs[i] + m_timestep->m_dt * m_affine_q_dots[i] - m_timestep->m_dt * f_d;
-        //m_affine_qs[i] = m_affine_qs[i] + m_timestep->m_dt * m_affine_q_dots[i];
+        m_affine_qs[i] = m_affine_qs[i] + m_timestep->m_dt * m_affine_q_dots[i];
     }
 
     // copy state buffers back to the bodies.
@@ -252,7 +256,7 @@ void b3AffineSolver::solve_velocity_constraints(bool is_collision)
 
             real lambda;
 
-            lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+            lambda = vcp->m_normal_mass * rhs;
             real new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, (real)0.0);
             lambda = new_impulse - vcp->m_normal_collision_impulse;
             vcp->m_normal_collision_impulse = new_impulse;
@@ -260,8 +264,10 @@ void b3AffineSolver::solve_velocity_constraints(bool is_collision)
             // apply normal Impulse
             Eigen::Vector3<real> impulse = lambda * normal;
 
-            q_dot_a = q_dot_a - vc->m_affine_inv_I_a * Jra.transpose() * impulse;
-            q_dot_b = q_dot_b + vc->m_affine_inv_I_b * Jrb.transpose() * impulse;
+            Eigen::Vector<real, 12> delta_q_a = vc->m_affine_inv_I_a * Jra.transpose() * impulse;
+            Eigen::Vector<real, 12> delta_q_b = vc->m_affine_inv_I_b * Jrb.transpose() * impulse;
+            q_dot_a = q_dot_a - delta_q_a;
+            q_dot_b = q_dot_b + delta_q_b;
         }
         m_affine_q_dots[vc->m_index_a] = q_dot_a;
         m_affine_q_dots[vc->m_index_b] = q_dot_b;

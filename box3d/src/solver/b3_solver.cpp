@@ -32,7 +32,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     m_affine_q_dots = new (memory) Eigen::Vector<real, 12>;
 
     if(m_contact_count > 0) {
-        memory = m_block_allocator->allocate(m_body_count * sizeof(b3AffineContactVelocityConstraint));
+        memory = m_block_allocator->allocate(m_contact_count * sizeof(b3AffineContactVelocityConstraint));
         m_avc = new (memory) b3AffineContactVelocityConstraint;
     } else {
         m_avc = nullptr;
