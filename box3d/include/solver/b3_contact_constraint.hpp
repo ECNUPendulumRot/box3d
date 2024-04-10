@@ -16,6 +16,9 @@ struct b3VelocityConstraintPoint {
     // double m_velocity_bias = 0;
     real m_rhs_restitution_velocity = 0;
     real m_rhs_penetration = 0;
+
+    Eigen::Vector<double, 12> Ja;
+    Eigen::Vector<double, 12> Jb;
 };
 
 

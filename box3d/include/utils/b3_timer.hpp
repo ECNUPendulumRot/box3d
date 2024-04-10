@@ -31,6 +31,11 @@ public:
         std::chrono::duration<double> duration = std::chrono::steady_clock::now() - m_t0;
         return duration.count() * 1000.0;
     }
+
+    double get_time_us() {
+        std::chrono::duration<double> duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - m_t0);
+        return duration.count();
+    }
 };
 
 

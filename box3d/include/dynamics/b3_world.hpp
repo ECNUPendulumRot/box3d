@@ -47,7 +47,7 @@ class b3World {
 
     bool m_new_contacts = false;
 
-    b3SolverType m_solver_type = b3SolverType::SI_SOLVER;
+    b3SolverType m_solver_type = b3SolverType::AFFINE_OPT_SOLVER;
 
 public:
 

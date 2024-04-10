@@ -31,6 +31,19 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     memory = m_block_allocator->allocate(m_body_count * sizeof(Eigen::Vector<real, 12>));
     m_affine_q_dots = new (memory) Eigen::Vector<real, 12>;
 
+    memory = m_block_allocator->allocate(m_body_count * sizeof(Eigen::Vector<double, 12>));
+    m_affine_q_preds = new (memory) Eigen::Vector<double, 12>;
+
+    memory = m_block_allocator->allocate(m_body_count * sizeof(double));
+    m_ks = new (memory) double;
+
+    memory = m_block_allocator->allocate(m_body_count * sizeof(double));
+    m_vs = new (memory) double;
+
+    memory = m_block_allocator->allocate(m_body_count * sizeof(Eigen::Matrix<double, 12, 12>));
+    m_Ms = new (memory) Eigen::Matrix<double, 12, 12>;
+
+
     if(m_contact_count > 0) {
         memory = m_block_allocator->allocate(m_contact_count * sizeof(b3AffineContactVelocityConstraint));
         m_avc = new (memory) b3AffineContactVelocityConstraint;
@@ -38,10 +51,17 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         m_avc = nullptr;
     }
 
+    const real& delta_t = m_timestep->m_dt;
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
+        auto g = b->get_affine_gravity();
+
+        m_ks[i] = b->get_stiffness();
+        m_vs[i] = b->get_volume();
         m_affine_qs[i] = b->get_affine_q();
         m_affine_q_dots[i] = b->get_affine_q_dot();
+        m_affine_q_preds[i] = (m_affine_qs[i] + delta_t * m_affine_q_dots[i] + delta_t * delta_t * g).cast<double>();
+        m_Ms[i] = b->get_affine_mass().cast<double>();
     }
 }
 
@@ -64,7 +84,10 @@ void b3Solver::clear() {
     m_block_allocator->free(m_avc, m_contact_count * sizeof(b3AffineContactVelocityConstraint));
     m_block_allocator->free(m_affine_qs, m_body_count * sizeof(Eigen::Vector<real, 12>));
     m_block_allocator->free(m_affine_q_dots, m_body_count * sizeof(Eigen::Vector<real, 12>));
-
+    m_block_allocator->free(m_affine_q_preds, m_body_count * sizeof(Eigen::Vector<real, 12>));
+    m_block_allocator->free(m_ks, m_body_count * sizeof(double));
+    m_block_allocator->free(m_vs, m_body_count * sizeof(double));
+    m_block_allocator->free(m_Ms, m_body_count * sizeof(Eigen::Matrix<double, 12, 12>));
     m_block_allocator = nullptr;
 }
 

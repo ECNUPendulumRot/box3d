@@ -27,27 +27,11 @@ set(TEST_SOURCE_FILES
         test_app.cpp
         src/sim_app.cpp
         src/gui_viewer.cpp
-        src/scene_test_sphere_stack_dropping.cpp
         # src/unit_test_box_collide.cpp
         # src/unit_test_dynamic_tree.cpp
         src/test.cpp
         # src/unit_test_sphere_view.cpp
-        src/scene_test_sphere_cube_collide.cpp
         src/imgui_ext.cpp
-        src/scene_test_plane_sphere_collide.cpp
-        src/scene_test_cube_rest.cpp
-        src/scene_test_cube_dropping.cpp
-        src/scene_test_sphere_friction.cpp
-        src/scene_test_cube_friction.cpp
-        src/scene_test_cube_collision.cpp
-        src/scene_test_sphere_stack.cpp
-        src/scene_test_cube_stack.cpp
-        src/scene_test_newtons_cradle.cpp
-        src/scene_test_symmetry_collision.cpp
-        src/scene_test_sphere_dropping_no_gravity.cpp
-        src/scene_test_vs_sphere_collision.cpp
-        src/scene_test_vs_box_rotation.cpp
-        src/scene_test_vs_box_rotation_no_gravity.cpp
         src/scene_test_affine_cube_dropping.cpp
         src/scene_test_affine_ground.cpp
         src/scene_test_affine_sphere_collide.cpp

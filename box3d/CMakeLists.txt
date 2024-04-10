@@ -52,6 +52,7 @@ set(B3D_HEADER_FILES
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
         include/solver/b3_solver_factory.hpp
+        include/solver/b3_affine_opt_solver.hpp
 
 
 )
@@ -88,6 +89,7 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
         src/solver/b3_affine_solver.cpp
+        src/solver/b3_affine_opt_solver.cpp
 
 )
 
@@ -101,4 +103,5 @@ target_link_libraries(box3d PUBLIC spdlog::spdlog Eigen3::Eigen)
 target_include_directories(box3d
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/optim>
 )

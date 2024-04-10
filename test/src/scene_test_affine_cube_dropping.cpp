@@ -36,7 +36,7 @@ class TestAffineDropping: public SceneTestBase {
 public:
 
     TestAffineDropping() {
-        m_world->set_solver_type(AFFINE_SOLVER);
+        //m_world->set_solver_type(AFFINE_SOLVER);
         m_world->set_gravity(b3Vector3r(0, 0, -10));
 
         {
@@ -65,21 +65,21 @@ public:
         ////////////////////////////////////////////////////
 
 
-        b3BodyDef ground_bd;
-        ground_bd.m_type = b3BodyType::b3_static_body;
-
-        b3Body* ground_body = m_world->create_body(ground_bd);
-
-        b3PlaneShape ground_shape;
-        ground_shape.set_as_plane(20, 20);
-
-        b3FixtureDef ground_fd;
-        ground_fd.m_shape = &ground_shape;
-        ground_fd.m_friction = 0.0;
-        ground_fd.m_density = 0.0;
-
-
-        ground_body->create_fixture(ground_fd);
+//        b3BodyDef ground_bd;
+//        ground_bd.m_type = b3BodyType::b3_static_body;
+//
+//        b3Body* ground_body = m_world->create_body(ground_bd);
+//
+//        b3PlaneShape ground_shape;
+//        ground_shape.set_as_plane(20, 20);
+//
+//        b3FixtureDef ground_fd;
+//        ground_fd.m_shape = &ground_shape;
+//        ground_fd.m_friction = 0.0;
+//        ground_fd.m_density = 0.0;
+//
+//
+//        ground_body->create_fixture(ground_fd);
     }
 
     ~TestAffineDropping() override {

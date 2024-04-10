@@ -10,3 +10,5 @@ build-debug/*
 
 out/*
 /.gitattributes
+
+box3d/include/optim/BaseMatrixOps/

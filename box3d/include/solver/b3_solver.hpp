@@ -51,6 +51,14 @@ protected:
 
     Eigen::Vector<real, 12>* m_affine_q_dots = nullptr;
 
+    Eigen::Vector<double, 12>* m_affine_q_preds = nullptr;
+
+    Eigen::Matrix<double, 12, 12>* m_Ms = nullptr;
+
+    double* m_ks;
+
+    double* m_vs;
+
     /**
      * @brief write the velocity and position back to bodies.
      */
