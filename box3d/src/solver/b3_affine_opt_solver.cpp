@@ -155,9 +155,59 @@ namespace {
         return res;
     }
 
-    double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* opt_data) {
+    double log_barrier_term(const Eigen::VectorXd& q) {
+        const b3AffineContactVelocityConstraint* vcs = opt_data.vcs;
+        const int32& contact_count = opt_data.contact_count;
 
-        OptData* data = static_cast<OptData*>(opt_data);
+        double res = 0.0;
+
+        for (int32 i = 0; i < contact_count; i++) {
+
+            const int32& point_count = vcs[i].m_point_count;
+
+            int32 index_a = vcs[i].m_index_a;
+            int32 index_b = vcs[i].m_index_b;
+
+            for (int32 j = 0; j < point_count; j++) {
+                const b3VelocityConstraintPoint* vp = vcs[i].m_points + j;
+
+                const auto& q_a = q.segment<12>(index_a * 12);
+                const auto& q_b = q.segment<12>(index_b * 12);
+                double c_value = vp->Ja.dot(q_a) + vp->Jb.dot(q_b);
+                res += -log(-c_value);
+            }
+        }
+        return res;
+    }
+
+    double ip_constraints(const Eigen::VectorXd& q) {
+
+        const b3AffineContactVelocityConstraint* vcs = opt_data.vcs;
+
+        const int32& contact_count = opt_data.contact_count;
+
+        double res = 0.0;
+
+        for (int32 i = 0; i < contact_count; i++) {
+
+            const int32& point_count = vcs[i].m_point_count;
+
+            int32 index_a = vcs[i].m_index_a;
+            int32 index_b = vcs[i].m_index_b;
+
+            for (int32 j = 0; j < point_count; j++) {
+                const b3VelocityConstraintPoint* vp = vcs[i].m_points + j;
+
+                const auto& q_a = q.segment<12>(index_a * 12);
+                const auto& q_b = q.segment<12>(index_b * 12);
+                double c_value = vp->Ja.dot(q_a) + vp->Jb.dot(q_b);
+                res += c_value * c_value;
+            }
+        }
+
+    }
+
+    double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* opt_data) {
 
         double M_obj = ip_mass_terms(q);
         double V_obj = ip_energy_terms(q);
@@ -174,7 +224,7 @@ void b3AffineOptSolver::init(b3BlockAllocator *block_allocator, b3Island *island
 
     b3Solver::init(block_allocator, island, step);
 
-    int32 constraint_count = 0;
+    m_constraint_count = 0;
 
     for(int32 i = 0; i < m_contact_count; ++i) {
 
@@ -233,12 +283,9 @@ void b3AffineOptSolver::init(b3BlockAllocator *block_allocator, b3Island *island
             vcp->m_rb = xf_b.transform_local(manifold_point->m_local_point);
             // vcp->m_rhs_penetration = manifold->m_penetration;
 
-            constraint_count++;
+            m_constraint_count++;
         }
     }
-    // The number of constraints is the number of contacts.
-    m_affine_lambda.resize(constraint_count);
-    m_affine_lambda.setZero();
 }
 
 
@@ -289,8 +336,9 @@ int b3AffineOptSolver::solve()
     opt_data.contact_count = m_contact_count;
 
     Eigen::VectorXd affine_qs;
-    affine_qs.resize(m_body_count * 12 + m_contact_count);
+    affine_qs.resize(m_body_count * 12 + m_constraint_count);
     affine_qs.setZero();
+
     for(int32 i = 0; i < m_body_count; ++i) {
         affine_qs.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
     }

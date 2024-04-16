@@ -16,6 +16,7 @@ class b3AffineOptSolver : public b3Solver {
 
     Eigen::VectorXd m_affine_lambda;
 
+    int32 m_constraint_count = 0;
 public:
 
     b3AffineOptSolver() = default;
