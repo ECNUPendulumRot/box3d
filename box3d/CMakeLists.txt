@@ -48,7 +48,6 @@ set(B3D_HEADER_FILES
         include/math/b3_quaternion.hpp
 
         include/solver/b3_solver.hpp
-        include/solver/b3_affine_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
         include/solver/b3_solver_factory.hpp
@@ -88,7 +87,6 @@ set(B3D_SOURCE_FILES
         src/solver/b3_solver.cpp
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
-        src/solver/b3_affine_solver.cpp
         src/solver/b3_affine_opt_solver.cpp
 
 )

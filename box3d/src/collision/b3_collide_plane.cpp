@@ -52,39 +52,18 @@ void b3_collide_plane_and_sphere(
     b3Vector3r local_center = xf_b.transform(sphere_b->get_centroid());
     local_center = xf_a.transform_local(local_center);
 
-    // find the closest point on the plane to the sphere center
-    b3Vector3r nearest_point;
-    if (local_center.x() < -plane_a->m_half_width) {
-  	    nearest_point[0] = -plane_a->m_half_width;
-    } else if (local_center.x() > plane_a->m_half_width) {
-  	    nearest_point[0] = plane_a->m_half_width;
-    } else {
-  	    nearest_point[0] = local_center.x();
+    if (local_center.z() > sphere_b->get_radius()) {
+        return;
     }
 
-    if (local_center.y() < -plane_a->m_half_length) {
-  	    nearest_point[1] = -plane_a->m_half_length;
-    } else if (local_center.y() > plane_a->m_half_length) {
-  	    nearest_point[1] = plane_a->m_half_length;
-    } else {
-  	    nearest_point[1] = local_center.y();
-    }
-    real sq_distance = (local_center - nearest_point).length2();
-    real radius = sphere_b->get_radius() + plane_a->get_radius();
-    if (sq_distance > radius * radius) {
-  	    return;
-    }
     manifold->m_point_count = 1;
-    // transform the vector form the plane frame to the world frame
-    manifold->m_local_normal = xf_a.rotation_matrix() * (local_center - nearest_point);
-    if (manifold->m_local_normal.is_zero()) {
-  	    manifold->m_local_normal = b3Vector3r(0, 0, 1);
-    } else {
-  	    manifold->m_local_normal = manifold->m_local_normal.normalized();
-    }
-    manifold->m_penetration = (b3_sqrt(sq_distance) - radius) / real(2.0);
-    manifold->m_points[0].m_local_point = xf_a.transform(nearest_point) +
-                                          manifold->m_local_normal * manifold->m_penetration;
+
+    manifold->m_local_normal = xf_a.rotation_matrix().col(2);
+
+    manifold->m_penetration = local_center.z() - sphere_b->get_radius();
+    manifold->m_local_point = xf_a.position();
+    manifold->m_points[0].m_local_point = xf_b.position() - manifold->m_local_normal * sphere_b->get_radius();
+    manifold->flipped = true;
 }
 
 

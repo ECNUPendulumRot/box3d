@@ -88,6 +88,8 @@ struct b3Manifold {
 
     b3Vector3r m_local_point;								///< usage depends on manifold type
 
+    bool flipped = false;
+
     // TODO: this maybe not useful, check to delete it.
     Type m_type;
 

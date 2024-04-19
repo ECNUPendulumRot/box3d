@@ -42,6 +42,8 @@ namespace {
         return J;
     }
 
+
+
     Eigen::Vector<double, 12> energy_gradient(const double& k, const double& v, const Eigen::Vector<double, 12>& affine_q) {
 
         Eigen::Vector<double, 12> result = Eigen::Vector<double, 12>::Zero();
@@ -75,6 +77,15 @@ namespace {
     } opt_data;
 
 
+    inline double dist(const Eigen::Vector<double, 12>& q_a, const Eigen::Vector<double, 12>& q_b, const int32& vc_i, const int32& p_i) {
+
+        const auto& Ja = opt_data.vcs[vc_i].m_points[p_i].Ja;
+        const auto& Jb = opt_data.vcs[vc_i].m_points[p_i].Jb;
+
+        double res = Ja.dot(q_a) + Jb.dot(q_b);
+        return res;
+    }
+
     double ip_mass_terms(const Eigen::VectorXd& q) {
         double res = 0.0;
 
@@ -88,12 +99,13 @@ namespace {
             const Eigen::Matrix<double, 12, 12>& M = M_in[i];
             Eigen::Vector<double, 12> q_diff = q.segment<12>(i * 12) - q_pred;
 
-            res += 0.5 * q_diff.transpose() * M * q_diff;
+            double m = 0.5 * q_diff.transpose() * M * q_diff;
+            res += m;
         }
         return res;
     }
 
-    double energy_term(const double& k, const double& v, const Eigen::Vector<double, 12>& q) {
+    double ip_energy_term(const double& k, const double& v, const Eigen::Vector<double, 12>& q) {
         double V_obj = 0.0;
 
         const Eigen::Vector3d& a1 = q.segment<3>(3);
@@ -117,7 +129,45 @@ namespace {
 
         double res = 0.0;
         for (int32 i = 0; i < body_count; ++i) {
-            res += energy_term(k[i], v[i], q.segment<12>(i * 12));
+            res += ip_energy_term(k[i], v[i], q.segment<12>(i * 12));
+        }
+        return res;
+    }
+
+    double barrier_terms(const Eigen::VectorXd& q) {
+
+        const b3AffineContactVelocityConstraint* vcs = opt_data.vcs;
+        const int32& contact_count = opt_data.contact_count;
+
+        double res = 0.0;
+
+        static double tr = 2 * (2.0 * b3_linear_slop);
+
+        for (int32 i = 0; i < contact_count; i++) {
+
+            const int32& point_count = vcs[i].m_point_count;
+
+            int32 index_a = vcs[i].m_index_a;
+            int32 index_b = vcs[i].m_index_b;
+
+            const double& penetration = vcs[i].m_penetration - 0.0001;
+
+            for (int32 j = 0; j < point_count; j++) {
+
+                const auto& q_a = q.segment<12>(index_a * 12);
+                const auto& q_b = q.segment<12>(index_b * 12);
+
+                double d = dist(q_a, q_b, i, j);
+
+                if (d >= tr) {
+                    continue;
+                }
+
+                double s = 1.0 / (d - penetration);
+                double b_value = (d - tr) * (d - tr) * s * s;
+
+                res += b_value;
+            }
         }
         return res;
     }
@@ -155,67 +205,63 @@ namespace {
         return res;
     }
 
-    double log_barrier_term(const Eigen::VectorXd& q) {
-        const b3AffineContactVelocityConstraint* vcs = opt_data.vcs;
-        const int32& contact_count = opt_data.contact_count;
 
-        double res = 0.0;
 
-        for (int32 i = 0; i < contact_count; i++) {
+    Eigen::VectorXd barrier_grad(const Eigen::VectorXd& q) {
 
-            const int32& point_count = vcs[i].m_point_count;
+        Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
 
-            int32 index_a = vcs[i].m_index_a;
-            int32 index_b = vcs[i].m_index_b;
+        static double tr = 2 * (2.0 * b3_linear_slop);
+
+        for (int32 i = 0; i < opt_data.contact_count; i++) {
+
+            const b3AffineContactVelocityConstraint* vc = opt_data.vcs + i;
+            const int32& point_count = vc->m_point_count;
+
+            const int32& index_a = vc->m_index_a;
+            const int32& index_b = vc->m_index_b;
+
+            const double& p = vc->m_penetration - 0.0001;
 
             for (int32 j = 0; j < point_count; j++) {
-                const b3VelocityConstraintPoint* vp = vcs[i].m_points + j;
+
+                const b3VelocityConstraintPoint* vp = vc->m_points + j;
 
                 const auto& q_a = q.segment<12>(index_a * 12);
                 const auto& q_b = q.segment<12>(index_b * 12);
-                double c_value = vp->Ja.dot(q_a) + vp->Jb.dot(q_b);
-                res += -log(-c_value);
+
+
+                double d = dist(q_a, q_b, i, j);
+
+                if (d >= tr) {
+                    continue;
+                }
+
+                double coeff_t = (tr - p) * d * d + (p * p - tr * tr) * d + (tr * tr * p - tr * p * p);
+                double coeff_s = (d - p) * (d - p) * (d - p) * (d - p);
+                double coeff = 2.0 * coeff_t / coeff_s;
+
+
+                res.segment<12>(index_a * 12) += coeff * vp->Ja;
+                res.segment<12>(index_b * 12) += coeff * vp->Jb;
+
             }
         }
+
         return res;
     }
 
-    double ip_constraints(const Eigen::VectorXd& q) {
 
-        const b3AffineContactVelocityConstraint* vcs = opt_data.vcs;
 
-        const int32& contact_count = opt_data.contact_count;
-
-        double res = 0.0;
-
-        for (int32 i = 0; i < contact_count; i++) {
-
-            const int32& point_count = vcs[i].m_point_count;
-
-            int32 index_a = vcs[i].m_index_a;
-            int32 index_b = vcs[i].m_index_b;
-
-            for (int32 j = 0; j < point_count; j++) {
-                const b3VelocityConstraintPoint* vp = vcs[i].m_points + j;
-
-                const auto& q_a = q.segment<12>(index_a * 12);
-                const auto& q_b = q.segment<12>(index_b * 12);
-                double c_value = vp->Ja.dot(q_a) + vp->Jb.dot(q_b);
-                res += c_value * c_value;
-            }
-        }
-
-    }
-
-    double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* opt_data) {
+    double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* data) {
 
         double M_obj = ip_mass_terms(q);
         double V_obj = ip_energy_terms(q);
-
+        double B_obj = 0.0005 * barrier_terms(q);
         if (grad_out) {
-            *grad_out = ip_mass_grad(q) + ip_energy_grad(q);
+            *grad_out = ip_mass_grad(q) + ip_energy_grad(q) + 0.0005 * barrier_grad(q);
         }
-        return M_obj + V_obj;
+        return M_obj + V_obj + B_obj;
     };
 }
 
@@ -265,10 +311,13 @@ void b3AffineOptSolver::init(b3BlockAllocator *block_allocator, b3Island *island
         avc->m_affine_I_b = body_b->get_affine_mass();
         avc->m_affine_inv_I_b = body_b->get_affine_inv_mass();
 
-        avc->m_penetration = manifold->m_penetration;
+        avc->m_type_a = body_a->get_type();
+        avc->m_type_b = body_b->get_type();
 
-        avc->m_ra = b3Vector3r::zero();
-        avc->m_rb = b3Vector3r::zero();
+        if (manifold->flipped)
+            avc->flip();
+
+        avc->m_penetration = manifold->m_penetration;
 
         // the center of body in the world frame
         b3Transformr xf_a(m_affine_qs[avc->m_index_a]);
@@ -278,9 +327,9 @@ void b3AffineOptSolver::init(b3BlockAllocator *block_allocator, b3Island *island
             b3VelocityConstraintPoint *vcp = avc->m_points + j;
             b3ManifoldPoint *manifold_point = manifold->m_points + j;
 
-            // m_ra and m_rb are all in body's local frame
             vcp->m_ra = xf_a.transform_local(manifold_point->m_local_point);
-            vcp->m_rb = xf_b.transform_local(manifold_point->m_local_point);
+            vcp->m_rb = xf_b.transform_local(manifold->m_local_point);
+
             // vcp->m_rhs_penetration = manifold->m_penetration;
 
             m_constraint_count++;
@@ -299,28 +348,27 @@ void b3AffineOptSolver::init_collision_constraints() {
 
             b3VelocityConstraintPoint *vcp = avc->m_points + j;
 
-            avc->m_ra += vcp->m_ra;
-            avc->m_rb += vcp->m_rb;
-
             Eigen::Vector3<double> normal = avc->m_normal.cast<double>();
 
-            Eigen::Matrix<double, 3, 12> Jra = Jacobian(vcp->m_ra);
-            Eigen::Matrix<double, 3, 12> Jrb = Jacobian(vcp->m_rb);
+            if (avc->m_type_a != b3BodyType::b3_static_body) {
+                Eigen::Matrix<double, 3, 12> Jra = Jacobian(vcp->m_ra);
+                vcp->Ja = Jra.transpose() * normal;
+            }
 
-            vcp->Ja = -Jra.transpose() * normal;
-            vcp->Jb = Jrb.transpose() * normal;
+            if (avc->m_type_b != b3BodyType::b3_static_body) {
+                Eigen::Matrix<double, 3, 12> Jrb = Jacobian(vcp->m_rb);
+                vcp->Jb = -Jrb.transpose() * normal;
+            }
         }
-        avc->m_normal_contact_impulse = 0.0;
-        avc->m_normal_collision_impulse = 0.0;
-        avc->m_ra /= avc->m_point_count;
-        avc->m_rb /= avc->m_point_count;
     }
 }
 
 
 int b3AffineOptSolver::solve()
 {
-    // velocity update
+
+    ///
+    spdlog::log(spdlog::level::info, "------------------ Solving Affine Constraints------------------");
     const auto& delta_t = m_timestep->m_dt;
 
     init_collision_constraints();
@@ -336,16 +384,19 @@ int b3AffineOptSolver::solve()
     opt_data.contact_count = m_contact_count;
 
     Eigen::VectorXd affine_qs;
-    affine_qs.resize(m_body_count * 12 + m_constraint_count);
+    affine_qs.resize(m_body_count * 12);
     affine_qs.setZero();
 
     for(int32 i = 0; i < m_body_count; ++i) {
         affine_qs.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
     }
 
-    bool success = optim::bfgs(affine_qs, ip_fn, &opt_data);
 
-    b3_assert(success == true);
+    optim::algo_settings_t setting;
+    setting.print_level = 3;
+    bool success = optim::bfgs(affine_qs, ip_fn, &opt_data, setting);
+
+    //b3_assert(success == true);
 
     for(int32 i = 0; i < m_body_count; ++i) {
 

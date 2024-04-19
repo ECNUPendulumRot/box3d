@@ -3,22 +3,17 @@
 #define BOX3D_B3_CONTACT_CONSTRAINT_HPP
 
 #include <common/b3_types.hpp>
-
+#include "dynamics/b3_body_def.hpp"
 
 struct b3VelocityConstraintPoint {
     b3Vector3r m_ra;
     b3Vector3r m_rb;
-    real m_normal_collision_impulse = 0;
-    real m_normal_contact_impulse = 0;
-    real m_tangent_impulse = 0;
+
     real m_normal_mass = 0;
     real m_tanget_mass = 0;
-    // double m_velocity_bias = 0;
-    real m_rhs_restitution_velocity = 0;
-    real m_rhs_penetration = 0;
 
-    Eigen::Vector<double, 12> Ja;
-    Eigen::Vector<double, 12> Jb;
+    Eigen::Vector<double, 12> Ja = Eigen::Vector<double, 12>::Zero();
+    Eigen::Vector<double, 12> Jb = Eigen::Vector<double, 12>::Zero();
 };
 
 
@@ -42,17 +37,22 @@ struct b3AffineContactVelocityConstraint {
     int32 m_point_count;
     int32 m_contact_index;
 
+    b3BodyType m_type_a;
+    b3BodyType m_type_b;
+
     real m_restitution;
 
     real m_penetration;
     // TODO
-    real m_normal_collision_impulse = 0;
-    real m_normal_contact_impulse = 0;
 
-    b3Vector3r m_ra;
-    b3Vector3r m_rb;
-
-    real m_friction;
+    void flip() {
+        std::swap(m_index_a, m_index_b);
+        std::swap(m_inv_mass_a, m_inv_mass_b);
+        std::swap(m_mass_a, m_mass_b);
+        std::swap(m_affine_I_a, m_affine_I_b);
+        std::swap(m_affine_inv_I_a, m_affine_inv_I_b);
+        std::swap(m_type_a, m_type_b);
+    }
 };
 
 
