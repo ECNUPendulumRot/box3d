@@ -17,6 +17,8 @@ protected:
 
     bool stop = false;
 
+    bool step_by_step = false;
+
     b3AuxiliaryShape* m_local_axis = nullptr;
 
 public:
@@ -38,8 +40,10 @@ public:
     }
 
     void step() override {
-        if (stop == true)
+        if (stop == true) {
             return;
+        }
+
         m_world->step(1.0 / 60, 8, 8);
     }
 
@@ -92,6 +96,12 @@ public:
             // Stop the world step;
             stop = !stop;
         }
+
+        if (key == GLFW_KEY_S) {
+            // Step by step
+            m_world->step(1.0 / 60, 8, 8);
+        }
+
         return false;
     }
 

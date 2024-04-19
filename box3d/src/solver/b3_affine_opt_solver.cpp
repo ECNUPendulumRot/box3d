@@ -105,6 +105,24 @@ namespace {
         return res;
     }
 
+    // TODO: check this function
+    Eigen::VectorXd ip_mass_grad(const Eigen::VectorXd& q) {
+
+        const Eigen::Vector<double, 12>* q_pred_in = opt_data.q_pred;
+        const Eigen::Matrix<double, 12, 12>* M_in = opt_data.Ms;
+        const int32 body_count = opt_data.body_count;
+
+        Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
+
+        for (int32 i = 0; i < body_count; ++i) {
+            const Eigen::Vector<double, 12>& q_pred = q_pred_in[i];
+            const Eigen::Matrix<double, 12, 12>& M = M_in[i];
+            res.segment<12>(i * 12) = q.segment<12>(i * 12) - q_pred;
+        }
+
+        return res;
+    }
+
     double ip_energy_term(const double& k, const double& v, const Eigen::Vector<double, 12>& q) {
         double V_obj = 0.0;
 
@@ -131,6 +149,21 @@ namespace {
         for (int32 i = 0; i < body_count; ++i) {
             res += ip_energy_term(k[i], v[i], q.segment<12>(i * 12));
         }
+        return res;
+    }
+
+    Eigen::VectorXd ip_energy_grad(const Eigen::VectorXd& q) {
+        const int32 body_count = opt_data.body_count;
+        const double* k = opt_data.ks;
+        const double* v = opt_data.vs;
+
+
+        Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
+
+        for (int32 i = 0; i < body_count; ++i) {
+            res.segment<12>(i * 12) = energy_gradient(k[i], v[i], q.segment<12>(i * 12));
+        }
+
         return res;
     }
 
@@ -164,48 +197,13 @@ namespace {
                 }
 
                 double s = 1.0 / (d - penetration);
-                double b_value = (d - tr) * (d - tr) * s * s;
+                double b_value = (d) * (d) * s * s;
 
                 res += b_value;
             }
         }
         return res;
     }
-
-    // TODO: check this function
-    Eigen::VectorXd ip_mass_grad(const Eigen::VectorXd& q) {
-
-        const Eigen::Vector<double, 12>* q_pred_in = opt_data.q_pred;
-        const Eigen::Matrix<double, 12, 12>* M_in = opt_data.Ms;
-        const int32 body_count = opt_data.body_count;
-
-        Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
-
-        for (int32 i = 0; i < body_count; ++i) {
-            const Eigen::Vector<double, 12>& q_pred = q_pred_in[i];
-            const Eigen::Matrix<double, 12, 12>& M = M_in[i];
-            res.segment<12>(i * 12) = q.segment<12>(i * 12) - q_pred;
-        }
-
-        return res;
-    }
-
-    Eigen::VectorXd ip_energy_grad(const Eigen::VectorXd& q) {
-        const int32 body_count = opt_data.body_count;
-        const double* k = opt_data.ks;
-        const double* v = opt_data.vs;
-
-
-        Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
-
-        for (int32 i = 0; i < body_count; ++i) {
-            res.segment<12>(i * 12) += energy_gradient(k[i], v[i], q.segment<12>(i * 12));
-        }
-
-        return res;
-    }
-
-
 
     Eigen::VectorXd barrier_grad(const Eigen::VectorXd& q) {
 
@@ -251,15 +249,14 @@ namespace {
         return res;
     }
 
-
-
     double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* data) {
 
         double M_obj = ip_mass_terms(q);
         double V_obj = ip_energy_terms(q);
-        double B_obj = 0.0005 * barrier_terms(q);
+        double B_obj = 10 * barrier_terms(q);
         if (grad_out) {
-            *grad_out = ip_mass_grad(q) + ip_energy_grad(q) + 0.0005 * barrier_grad(q);
+            *grad_out = ip_mass_grad(q) + ip_energy_grad(q) + 10 * barrier_grad(q);
+            //*grad_out = ip_mass_grad(q) + 100 * barrier_grad(q);
         }
         return M_obj + V_obj + B_obj;
     };
@@ -329,8 +326,6 @@ void b3AffineOptSolver::init(b3BlockAllocator *block_allocator, b3Island *island
 
             vcp->m_ra = xf_a.transform_local(manifold_point->m_local_point);
             vcp->m_rb = xf_b.transform_local(manifold->m_local_point);
-
-            // vcp->m_rhs_penetration = manifold->m_penetration;
 
             m_constraint_count++;
         }

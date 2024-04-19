@@ -42,7 +42,7 @@ public:
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
-            body_def.m_k = 10;
+            body_def.m_k = 100000000;
 
             b3Vector3r p(0, 0, 3);
             b3Vector3r q(0, 0, 0);
