@@ -192,12 +192,12 @@ namespace {
 
                 double d = dist(q_a, q_b, i, j);
 
-                if (d >= tr) {
+                if (d >= 0) {
                     continue;
                 }
 
-                double s = 1.0 / (d - penetration);
-                double b_value = (d) * (d) * s * s;
+                double s = (d - penetration) / b3_abs(penetration);
+                double b_value = - d * d * log(s);
 
                 res += b_value;
             }
@@ -219,7 +219,7 @@ namespace {
             const int32& index_a = vc->m_index_a;
             const int32& index_b = vc->m_index_b;
 
-            const double& p = vc->m_penetration - 0.0001;
+            const double& p = vc->m_penetration - 0.00001;
 
             for (int32 j = 0; j < point_count; j++) {
 
@@ -231,13 +231,13 @@ namespace {
 
                 double d = dist(q_a, q_b, i, j);
 
+
                 if (d >= tr) {
                     continue;
                 }
 
-                double coeff_t = (tr - p) * d * d + (p * p - tr * tr) * d + (tr * tr * p - tr * p * p);
-                double coeff_s = (d - p) * (d - p) * (d - p) * (d - p);
-                double coeff = 2.0 * coeff_t / coeff_s;
+                double s = (d - p) / b3_abs(p);
+                double coeff = -d * d / (d - p) - 2 * d * log(s);
 
 
                 res.segment<12>(index_a * 12) += coeff * vp->Ja;
