@@ -406,4 +406,15 @@ internal::mt_step(
     return info;
 }
 
+inline
+fp_t
+internal::mt_sup_norm(
+        const fp_t a,
+        const fp_t b,
+        const fp_t c
+)
+{
+    return std::max( std::max(std::abs(a), std::abs(b)), std::abs(c) );
+}
+
 #endif

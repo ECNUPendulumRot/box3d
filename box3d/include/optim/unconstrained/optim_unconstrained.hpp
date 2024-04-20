@@ -22,14 +22,14 @@
 #define OPTIMLIB_UNCONSTRAINED_INCLUDES
 
 #include "bfgs.hpp"
-#include "lbfgs.hpp"
-#include "newton.hpp"
-#include "cg.hpp"
-#include "gd.hpp"
-#include "de.hpp"
-#include "de_prmm.hpp"
-#include "nm.hpp"
-#include "pso.hpp"
-#include "pso_dv.hpp"
+//#include "lbfgs.hpp"
+//#include "newton.hpp"
+//#include "cg.hpp"
+//#include "gd.hpp"
+//#include "de.hpp"
+//#include "de_prmm.hpp"
+//#include "nm.hpp"
+//#include "pso.hpp"
+//#include "pso_dv.hpp"
 
 #endif

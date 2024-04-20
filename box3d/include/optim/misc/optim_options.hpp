@@ -41,10 +41,6 @@
 
 //
 
-#ifdef _MSC_VER
-    #error OptimLib: MSVC is not supported
-#endif
-
 //
 
 #if defined(_OPENMP) && !defined(OPTIM_DONT_USE_OPENMP)
@@ -77,19 +73,9 @@
 
 // floating point number type
 
-#ifndef OPTIM_FPN_TYPE
-    #define OPTIM_FPN_TYPE double
-#endif
+#define OPTIM_FPN_TYPE double
+#define OPTIM_FPN_SMALL_NUMBER fp_t(1e-08)
 
-#if OPTIM_FPN_TYPE == float
-    #undef OPTIM_FPN_SMALL_NUMBER
-    #define OPTIM_FPN_SMALL_NUMBER fp_t(1e-05)
-#elif OPTIM_FPN_TYPE == double
-    #undef OPTIM_FPN_SMALL_NUMBER
-    #define OPTIM_FPN_SMALL_NUMBER fp_t(1e-08)
-#else
-    #error OptimLib: floating-point number type (OPTIM_FPN_TYPE) must be 'float' or 'double'
-#endif
 
 //
 
@@ -106,86 +92,27 @@ namespace optim
 
 //
 
-#if defined(OPTIM_ENABLE_ARMA_WRAPPERS) || defined(OPTIM_USE_RCPP_ARMADILLO)
-    #ifndef OPTIM_ENABLE_ARMA_WRAPPERS
-        #define OPTIM_ENABLE_ARMA_WRAPPERS
-    #endif
 
-    #ifdef OPTIM_USE_RCPP_ARMADILLO
-        #include <RcppArmadillo.h>
-    #else
-        #ifndef ARMA_DONT_USE_WRAPPER
-            #define ARMA_DONT_USE_WRAPPER
-        #endif
-        
-        #include "armadillo"
-    #endif
+#include <iostream>
+#include <Eigen/Dense>
 
-    #ifdef OPTIM_USE_OPENMP
-        #ifndef ARMA_USE_OPENMP
-            #define ARMA_USE_OPENMP
-        #endif
-    #endif
+// template<typename eT, int iTr, int iTc>
+// using EigenMat = Eigen::Matrix<eT,iTr,iTc>;
 
-    #ifdef OPTIM_DONT_USE_OPENMP
-        #ifndef ARMA_DONT_USE_OPENMP
-            #define ARMA_DONT_USE_OPENMP
-        #endif
-    #endif
+namespace optim
+{
+    using Mat_t = Eigen::Matrix<fp_t, Eigen::Dynamic, Eigen::Dynamic>;
 
-    #ifndef BMO_ENABLE_ARMA_WRAPPERS
-        #define BMO_ENABLE_ARMA_WRAPPERS
-    #endif
+    using ColVec_t = Eigen::Matrix<fp_t, Eigen::Dynamic, 1>;
+    using RowVec_t = Eigen::Matrix<fp_t, 1, Eigen::Dynamic>;
 
-    namespace optim
-    {
-        using Mat_t = arma::Mat<fp_t>;
+    using ColVecInt_t = Eigen::Matrix<int, Eigen::Dynamic, 1>;
+    using RowVecInt_t = Eigen::Matrix<int, 1, Eigen::Dynamic>;
 
-        using ColVec_t = arma::Col<fp_t>;
-        using RowVec_t = arma::Row<fp_t>;
+    using ColVecUInt_t = Eigen::Matrix<size_t, Eigen::Dynamic, 1>;
+    using RowVecUInt_t = Eigen::Matrix<size_t, 1, Eigen::Dynamic>;
+}
 
-        using ColVecInt_t = arma::Col<int>;
-        using RowVecInt_t = arma::Row<int>;
-
-        using ColVecUInt_t = arma::Col<unsigned long long>;
-        using RowVecUInt_t = arma::Row<unsigned long long>;
-    }
-#elif defined(OPTIM_ENABLE_EIGEN_WRAPPERS) || defined(OPTIM_USE_RCPP_EIGEN)
-    #ifndef OPTIM_ENABLE_EIGEN_WRAPPERS
-        #define OPTIM_ENABLE_EIGEN_WRAPPERS
-    #endif
-    
-    #include <iostream>
-
-    #ifdef OPTIM_USE_RCPP_EIGEN
-        #include <RcppEigen.h>
-    #else
-        #include <Eigen/Dense>
-    #endif
-
-    #ifndef BMO_ENABLE_EIGEN_WRAPPERS
-        #define BMO_ENABLE_EIGEN_WRAPPERS
-    #endif
-
-    // template<typename eT, int iTr, int iTc>
-    // using EigenMat = Eigen::Matrix<eT,iTr,iTc>;
-
-    namespace optim
-    {
-        using Mat_t = Eigen::Matrix<fp_t, Eigen::Dynamic, Eigen::Dynamic>;
-
-        using ColVec_t = Eigen::Matrix<fp_t, Eigen::Dynamic, 1>;
-        using RowVec_t = Eigen::Matrix<fp_t, 1, Eigen::Dynamic>;
-
-        using ColVecInt_t = Eigen::Matrix<int, Eigen::Dynamic, 1>;
-        using RowVecInt_t = Eigen::Matrix<int, 1, Eigen::Dynamic>;
-
-        using ColVecUInt_t = Eigen::Matrix<size_t, Eigen::Dynamic, 1>;
-        using RowVecUInt_t = Eigen::Matrix<size_t, 1, Eigen::Dynamic>;
-    }
-#else
-    #error OptimLib: you must enable the Armadillo OR Eigen wrappers
-#endif
 
 //
 
@@ -218,4 +145,24 @@ namespace optim
     }
 #endif
 
-#include "BaseMatrixOps/include/BaseMatrixOps.hpp"
+#define BMO_MATOPS_SET_VALUES_SCALAR(x,a) (x).setConstant(a)
+#define BMO_MATOPS_COUT std::cout
+#define BMO_MATOPS_TRANSPOSE_INPLACE(x) (x).transpose()
+#define BMO_MATOPS_SIZE(x) static_cast<size_t>((x).size())
+#define BMO_MATOPS_EYE(n) bmo::Mat_t::Identity(n,n)
+#define BMO_MATOPS_CONSTANT_COLVEC(n,a) bmo::ColVec_t::Constant(n,a)
+#define BMO_MATOPS_ABS(x) (x).cwiseAbs()
+#define BMO_MATOPS_MAX(x,y) (x).array().max((y).array())
+#define BMO_MATOPS_ZERO_COLVEC(n) bmo::ColVec_t::Zero(n)
+#define BMO_MATOPS_ONE_COLVEC(n) bmo::ColVec_t::Ones(n)
+#define BMO_MATOPS_ZERO_MAT(n,k) bmo::Mat_t::Zero(n,k)
+#define BMO_MATOPS_DOT_PROD(x,y) (x).dot(y)
+#define BMO_MATOPS_EXTRACT_DIAG(x) (x).diagonal()
+#define BMO_MATOPS_HADAMARD_PROD(x,y) (x).cwiseProduct(y)
+#define BMO_MATOPS_IS_FINITE(x) static_cast<bool>((( (x - (x)).array() == (x - (x)).array() )).all())
+#define BMO_MATOPS_L1NORM(x) (x).array().abs().sum()
+#define BMO_MATOPS_L2NORM(x) (x).norm()
+#define BMO_MATOPS_ARRAY_ADD_SCALAR(x,a) ((x).array() + (a)).matrix()
+#define BMO_MATOPS_ARRAY_DIV_ARRAY(x,y)  ((x).array() / (y).array()).matrix()
+#define BMO_MATOPS_TRANSPOSE(x) (x).transpose()
+#define BMO_MATOPS_TRANSPOSE_INPLACE(x) (x).transpose()

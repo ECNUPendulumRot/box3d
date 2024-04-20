@@ -104,8 +104,7 @@ namespace {
         }
         return res;
     }
-
-    // TODO: check this function
+    
     Eigen::VectorXd ip_mass_grad(const Eigen::VectorXd& q) {
 
         const Eigen::Vector<double, 12>* q_pred_in = opt_data.q_pred;
@@ -117,7 +116,7 @@ namespace {
         for (int32 i = 0; i < body_count; ++i) {
             const Eigen::Vector<double, 12>& q_pred = q_pred_in[i];
             const Eigen::Matrix<double, 12, 12>& M = M_in[i];
-            res.segment<12>(i * 12) = q.segment<12>(i * 12) - q_pred;
+            res.segment<12>(i * 12) = M * (q.segment<12>(i * 12) - q_pred);
         }
 
         return res;
@@ -232,7 +231,7 @@ namespace {
                 double d = dist(q_a, q_b, i, j);
 
 
-                if (d >= tr) {
+                if (d >= 0) {
                     continue;
                 }
 
