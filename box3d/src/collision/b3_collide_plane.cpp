@@ -41,29 +41,28 @@ static void overlap_on_axis(
 
 void b3_collide_plane_and_sphere(
     b3Manifold* manifold,
-    const b3PlaneShape* plane_a,
+    const b3SphereShape* sphere_a,
     const b3Transformr& xf_a,
-    const b3SphereShape* sphere_b,
+    const b3PlaneShape* plane_b,
     const b3Transformr& xf_b)
 {
     manifold->m_point_count = 0;
 
     // transform sphere center to plane frame
-    b3Vector3r local_center = xf_b.transform(sphere_b->get_centroid());
-    local_center = xf_a.transform_local(local_center);
+    b3Vector3r local_center = xf_a.transform(sphere_a->get_centroid());
+    local_center = xf_b.transform_local(local_center);
 
-    if (local_center.z() > sphere_b->get_radius()) {
+    if (local_center.z() > sphere_a->get_radius()) {
         return;
     }
 
     manifold->m_point_count = 1;
 
-    manifold->m_local_normal = xf_a.rotation_matrix().col(2);
+    manifold->m_local_normal = xf_b.rotation_matrix().col(2);
 
-    manifold->m_penetration = local_center.z() - sphere_b->get_radius();
-    manifold->m_local_point = xf_a.position();
-    manifold->m_points[0].m_local_point = xf_b.position() - manifold->m_local_normal * sphere_b->get_radius();
-    manifold->flipped = true;
+    manifold->m_penetration = local_center.z() - sphere_a->get_radius();
+    manifold->m_local_point = xf_b.position();
+    manifold->m_points[0].m_local_point = xf_a.position() - manifold->m_local_normal * sphere_a->get_radius();
 }
 
 

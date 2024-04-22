@@ -24,8 +24,8 @@ void b3PlaneSphereContact::destroy(b3Contact *contact, b3BlockAllocator *block_a
 b3PlaneSphereContact::b3PlaneSphereContact(b3Fixture *fixture_a, b3Fixture *fixture_b):
     b3Contact(fixture_a, 0, fixture_b, 0)
 {
-    b3_assert(fixture_a->get_shape_type() == e_plane);
-    b3_assert(fixture_b->get_shape_type() == e_sphere);
+    b3_assert(fixture_a->get_shape_type() == e_sphere);
+    b3_assert(fixture_b->get_shape_type() == e_plane);
 }
 
 
@@ -33,7 +33,7 @@ void b3PlaneSphereContact::evaluate(b3Manifold *manifold, const b3Transformr &xf
 {
     b3_collide_plane_and_sphere(
         manifold,
-        (b3PlaneShape*)get_fixture_a()->get_shape(), xf_a,
-        (b3SphereShape*)get_fixture_b()->get_shape(), xf_b
+        (b3SphereShape*)get_fixture_a()->get_shape(), xf_a,
+        (b3PlaneShape*)get_fixture_b()->get_shape(), xf_b
     );
 }

@@ -19,7 +19,7 @@ void b3Contact::initialize_registers()
     add_type(b3SphereContact::create, b3SphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_sphere);
     add_type(b3CubeContact::create, b3CubeContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_cube);
     add_type(b3CubeAndSphereContact::create, b3CubeAndSphereContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_sphere);
-    add_type(b3PlaneSphereContact::create, b3PlaneSphereContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_sphere);
+    add_type(b3PlaneSphereContact::create, b3PlaneSphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_plane);
     add_type(b3PlaneCubeContact::create, b3PlaneCubeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cube);
 }
 

@@ -18,9 +18,9 @@ void b3_collide_spheres(
     b3Vector3r ca = xf_a.transform(sphere_a->get_centroid());
     b3Vector3r cb = xf_b.transform(sphere_b->get_centroid());
 
-    b3Vector3r ab = cb - ca;
+    b3Vector3r ba = ca - cb;
 
-    real sq_distance = ab.length2();
+    real sq_distance = ba.length2();
     real radius = sphere_a->get_radius() + sphere_b->get_radius();
 
     if (sq_distance > radius * radius) {
@@ -28,23 +28,24 @@ void b3_collide_spheres(
         return;
     }
 
-    // TODO: delete this.
-    // manifold->m_type = b3Manifold::e_circles;
     manifold->m_point_count = 1;
 
+
     // if the vector ab is nearly zero, we select the x-axis as the normal
-    if(ab.is_zero()) {
+    if(ba.is_zero()) {
         manifold->m_local_normal = b3Vector3r(1.0, 0, 0);
     } else {
-        manifold->m_local_normal = ab.normalized();
+        manifold->m_local_normal = ba.normalized();
     }
 
-    real penetration = (b3_sqrt(sq_distance) - radius) / real(2.0);
+    // TODO: consider avoid sqrt
+    real penetration = b3_sqrt(sq_distance) - radius;
     real length = sphere_a->get_radius() + penetration;
 
-    manifold->m_points[0].m_local_point = ca + manifold->m_local_normal * length;
-    // manifold->m_points[0].id.key = 0;
     manifold->m_penetration = penetration;
+    manifold->m_local_point = cb + manifold->m_local_normal * sphere_b->get_radius();
+
+    manifold->m_points[0].m_local_point = ca - manifold->m_local_normal * sphere_a->get_radius();
 }
 
 

@@ -123,9 +123,9 @@ void b3_collide_cube(b3Manifold* manifold,
 
 /// Compute the collision manifold between a plane and a sphere.
 void b3_collide_plane_and_sphere(b3Manifold* manifold,
-                                 const b3PlaneShape* plane_a,
+                                 const b3SphereShape* sphere_a,
                                  const b3Transformr& xf_a,
-                                 const b3SphereShape* sphere_b,
+                                 const b3PlaneShape* plane_b,
                                  const b3Transformr& xf_b);
 
 /// Compute the collision manifold between a plane and a cube.

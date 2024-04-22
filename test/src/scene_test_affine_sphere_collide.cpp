@@ -12,7 +12,7 @@ public:
         b3Transformr pose, velocity;
 
         b3BodyDef body_def;
-        body_def.m_k = 2;
+        // body_def.m_k = 2;
         body_def.m_type = b3BodyType::b3_dynamic_body;
 
         // create a sphere shape
@@ -47,23 +47,6 @@ public:
             m_world->create_body(body_def)->create_fixture(fixture_def);
         }
 
-
-        // create a ground
-//        p = {0, 0, 0};
-//        v = {0, 0, 0};
-//        body_def.set_init_pose(p, q);
-//        body_def.set_init_velocity(v, w);
-//        body_def.m_type = b3BodyType::b3_static_body;
-//        b3Body* ground_body = m_world->create_body(body_def);
-//
-//        b3PlaneShape ground_shape;
-//        ground_shape.set_as_plane(50, 50);
-//
-//        fixture_def.m_shape = &ground_shape;
-//        fixture_def.m_density = 0;
-//
-//        ground_body->create_fixture(fixture_def);
-
     }
 
     static TestBase* create() {
@@ -72,4 +55,4 @@ public:
 
 };
 
-static int test_index = register_test("Affine Scene Test", "Newton's Cradle", TestAffineNewtonsCradle::create);
+static int test_index = register_test("Affine Scene Test", "Sphere collide", TestAffineNewtonsCradle::create);
