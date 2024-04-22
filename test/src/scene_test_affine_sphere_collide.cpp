@@ -7,7 +7,7 @@ public:
     TestAffineNewtonsCradle() {
         //m_world->set_solver_type(AFFINE_SOLVER);
         m_world->set_gravity(b3Vector3r(0, 0, 0));
-        int num_of_spheres = 2;
+        int num_of_spheres = 3;
         // create a dynamic body
         b3Transformr pose, velocity;
 

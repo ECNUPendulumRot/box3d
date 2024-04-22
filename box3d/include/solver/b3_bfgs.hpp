@@ -9,27 +9,33 @@
 
 class b3BFGS {
 
-    Eigen::VectorXd q;
+public:
 
-    Eigen::Matrix<double, 12, 12>* Ms;
+    Eigen::VectorXd m_q;
 
-    Eigen::Vector<double, 12>* q_pred;
+    Eigen::Matrix<double, 12, 12>* m_Ms;
 
-    b3AffineContactVelocityConstraint* vcs;
+    Eigen::Vector<double, 12>* m_q_preds;
 
-    b3Body** bodies;
+    b3AffineContactVelocityConstraint* m_vcs;
 
-    double* ks;
+    b3Body** m_bodies;
 
-    double* vs;
+    double* m_ks;
 
-    double delta_t;
+    double* m_vs;
 
-    int32 body_count;
+    double m_delta_t;
 
-    int32 contact_count;
+    int32 m_body_count;
+
+    int32 m_contact_count;
+
+    double m_bk = 1000000;
 
 public:
+
+    double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* data);
 
 private:
 
@@ -39,14 +45,14 @@ private:
 
     double ip_barrier_terms();
 
-//    double ip_mass_grad();
-//
-//    double ip_energy_grad();
-//
-//    double ip_barrier_grad();
+    Eigen::VectorXd ip_mass_grad();
 
+    Eigen::VectorXd ip_energy_grad();
+
+    Eigen::VectorXd ip_barrier_grad();
 
     double dist(const Eigen::Vector<double, 12>& q_a, const Eigen::Vector<double, 12>& q_b, const int32& vc_i, const int32& p_i);
+    
 };
 
 

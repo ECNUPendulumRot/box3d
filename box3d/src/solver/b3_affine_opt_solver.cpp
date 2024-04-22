@@ -13,7 +13,7 @@
 #include <spdlog/spdlog.h>
 
 #include "utils/b3_timer.hpp"
-
+#include "solver/b3_bfgs.hpp"
 
 namespace {
 
@@ -122,7 +122,7 @@ namespace {
         return res;
     }
 
-    double ip_energy_term(const double& k, const double& v, const Eigen::Vector<double, 12>& q) {
+    double energy_term(const double& k, const double& v, const Eigen::Vector<double, 12>& q) {
         double V_obj = 0.0;
 
         const Eigen::Vector3d& a1 = q.segment<3>(3);
@@ -146,7 +146,7 @@ namespace {
 
         double res = 0.0;
         for (int32 i = 0; i < body_count; ++i) {
-            res += ip_energy_term(k[i], v[i], q.segment<12>(i * 12));
+            res += energy_term(k[i], v[i], q.segment<12>(i * 12));
         }
         return res;
     }
@@ -247,6 +247,7 @@ namespace {
 
         return res;
     }
+
 
     double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* data) {
 
@@ -367,15 +368,33 @@ int b3AffineOptSolver::solve()
 
     init_collision_constraints();
 
-    opt_data.delta_t = delta_t;
-    opt_data.ks = m_ks;
-    opt_data.vs = m_vs;
-    opt_data.Ms = m_Ms;
-    opt_data.bodies = m_bodies;
-    opt_data.vcs = m_avc;
-    opt_data.q_pred = m_affine_q_preds;
-    opt_data.body_count = m_body_count;
-    opt_data.contact_count = m_contact_count;
+    b3BFGS bfgs = b3BFGS();
+    bfgs.m_delta_t = delta_t;
+    bfgs.m_ks = m_ks;
+    bfgs.m_vs = m_vs;
+    bfgs.m_Ms = m_Ms;
+    bfgs.m_bodies = m_bodies;
+    bfgs.m_vcs = m_avc;
+    bfgs.m_q_preds = m_affine_q_preds;
+    bfgs.m_body_count = m_body_count;
+    bfgs.m_contact_count = m_contact_count;
+    bfgs.m_q.resize(m_body_count * 12);
+    bfgs.m_q.setZero();
+
+    for(int32 i = 0; i < m_body_count; ++i) {
+        bfgs.m_q.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
+    }
+    auto ip_fn_func = std::bind(&b3BFGS::ip_fn, &bfgs, std::placeholders::_1, std::placeholders::_2,  std::placeholders::_3);
+
+//    opt_data.delta_t = delta_t;
+//    opt_data.ks = m_ks;
+//    opt_data.vs = m_vs;
+//    opt_data.Ms = m_Ms;
+//    opt_data.bodies = m_bodies;
+//    opt_data.vcs = m_avc;
+//    opt_data.q_pred = m_affine_q_preds;
+//    opt_data.body_count = m_body_count;
+//    opt_data.contact_count = m_contact_count;
 
     Eigen::VectorXd affine_qs;
     affine_qs.resize(m_body_count * 12);
@@ -385,12 +404,14 @@ int b3AffineOptSolver::solve()
         affine_qs.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
     }
 
-
     optim::algo_settings_t setting;
     setting.print_level = 3;
-    bool success = optim::bfgs(affine_qs, ip_fn, &opt_data, setting);
+    setting.iter_max = 200;
+    setting.grad_err_tol = 1E-4;
 
-    //b3_assert(success == true);
+    bool success = optim::bfgs(affine_qs, ip_fn_func, &opt_data, setting);
+
+    // b3_assert(success == true);
 
     for(int32 i = 0; i < m_body_count; ++i) {
 
