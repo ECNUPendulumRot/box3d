@@ -12,7 +12,7 @@ public:
         b3Transformr pose, velocity;
 
         b3BodyDef body_def;
-        // body_def.m_k = 2;
+        body_def.m_k = 100000000;
         body_def.m_type = b3BodyType::b3_dynamic_body;
 
         // create a sphere shape

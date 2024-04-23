@@ -381,41 +381,12 @@ int b3AffineOptSolver::solve()
     bfgs.m_q.resize(m_body_count * 12);
     bfgs.m_q.setZero();
 
-    for(int32 i = 0; i < m_body_count; ++i) {
-        bfgs.m_q.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
-    }
-    auto ip_fn_func = std::bind(&b3BFGS::ip_fn, &bfgs, std::placeholders::_1, std::placeholders::_2,  std::placeholders::_3);
-
-//    opt_data.delta_t = delta_t;
-//    opt_data.ks = m_ks;
-//    opt_data.vs = m_vs;
-//    opt_data.Ms = m_Ms;
-//    opt_data.bodies = m_bodies;
-//    opt_data.vcs = m_avc;
-//    opt_data.q_pred = m_affine_q_preds;
-//    opt_data.body_count = m_body_count;
-//    opt_data.contact_count = m_contact_count;
-
-    Eigen::VectorXd affine_qs;
-    affine_qs.resize(m_body_count * 12);
-    affine_qs.setZero();
-
-    for(int32 i = 0; i < m_body_count; ++i) {
-        affine_qs.segment<12>(i * 12) = m_affine_qs[i].cast<double>();
-    }
-
-    optim::algo_settings_t setting;
-    setting.print_level = 3;
-    setting.iter_max = 200;
-    setting.grad_err_tol = 1E-4;
-
-    bool success = optim::bfgs(affine_qs, ip_fn_func, &opt_data, setting);
-
+    bool success = bfgs.solve(m_affine_qs);
     // b3_assert(success == true);
 
     for(int32 i = 0; i < m_body_count; ++i) {
 
-        Eigen::Vector<real, 12> q = affine_qs.segment<12>(12 * i).cast<real>();
+        Eigen::Vector<real, 12> q = bfgs.m_q.segment<12>(12 * i).cast<real>();
         Eigen::Vector<real, 12> q_dot = (q - m_affine_qs[i]) / delta_t;
         m_affine_qs[i] = q;
         m_affine_q_dots[i] = q_dot;

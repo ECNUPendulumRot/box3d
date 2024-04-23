@@ -1,6 +1,8 @@
 
 #include "solver/b3_bfgs.hpp"
 
+#define OPTIM_ENABLE_EIGEN_WRAPPERS
+#include "optim/optim.hpp"
 
 namespace {
 
@@ -56,7 +58,7 @@ double b3BFGS::dist(
 }
 
 
-double b3BFGS::ip_mass_terms() {
+double b3BFGS::ip_mass_terms(const Eigen::VectorXd& q) {
 
     double res = 0.0;
 
@@ -64,7 +66,7 @@ double b3BFGS::ip_mass_terms() {
 
         const Eigen::Vector<double, 12>& q_pred = m_q_preds[i];
         const Eigen::Matrix<double, 12, 12>& M = m_Ms[i];
-        Eigen::Vector<double, 12> q_diff = m_q.segment<12>(i * 12) - q_pred;
+        Eigen::Vector<double, 12> q_diff = q.segment<12>(i * 12) - q_pred;
 
         double m = 0.5 * q_diff.transpose() * M * q_diff;
         res += m;
@@ -74,7 +76,7 @@ double b3BFGS::ip_mass_terms() {
 
 
 
-double b3BFGS::ip_energy_terms() {
+double b3BFGS::ip_energy_terms(const Eigen::VectorXd& q) {
 
     const double* k = m_ks;
     const double* v = m_vs;
@@ -82,17 +84,43 @@ double b3BFGS::ip_energy_terms() {
 
     double res = 0.0;
     for (int32 i = 0; i < body_count; ++i) {
-        res += energy_term(k[i], v[i], m_q.segment<12>(i * 12));
+        res += energy_term(k[i], v[i], q.segment<12>(i * 12));
     }
     return res;
 }
 
 
-double b3BFGS::ip_barrier_terms() {
+Eigen::VectorXd b3BFGS::ip_mass_grad(const Eigen::VectorXd& q) {
+
+    const int32 body_count = m_body_count;
+
+    Eigen::VectorXd res = Eigen::VectorXd::Zero(q.size());
+
+    for (int32 i = 0; i < body_count; ++i) {
+        const Eigen::Vector<double, 12>& q_pred = m_q_preds[i];
+        const Eigen::Matrix<double, 12, 12>& M = m_Ms[i];
+        res.segment<12>(i * 12) = M * (q.segment<12>(i * 12) - q_pred);
+    }
+
+    return res;
+}
+
+
+Eigen::VectorXd b3BFGS::ip_energy_grad(const Eigen::VectorXd& q) {
+
+    Eigen::VectorXd res = Eigen::VectorXd::Zero(m_q.size());
+
+    for (int32 i = 0; i < m_body_count; ++i) {
+        res.segment<12>(i * 12) = energy_gradient(m_ks[i], m_vs[i], q.segment<12>(i * 12));
+    }
+
+    return res;
+}
+
+
+double b3BFGS::ip_barrier_terms(const Eigen::VectorXd& q) {
 
     double res = 0.0;
-
-    static double tr = 2 * (2.0 * b3_linear_slop);
 
     for (int32 i = 0; i < m_contact_count; i++) {
 
@@ -101,12 +129,11 @@ double b3BFGS::ip_barrier_terms() {
         int32 index_a = m_vcs[i].m_index_a;
         int32 index_b = m_vcs[i].m_index_b;
 
-        const double& penetration = m_vcs[i].m_penetration - 0.0001;
-
+        double p = m_vcs[i].m_penetration - 1E-8;
         for (int32 j = 0; j < point_count; j++) {
 
-            const auto& q_a = m_q.segment<12>(index_a * 12);
-            const auto& q_b = m_q.segment<12>(index_b * 12);
+            const auto& q_a = q.segment<12>(index_a * 12);
+            const auto& q_b = q.segment<12>(index_b * 12);
 
             double d = dist(q_a, q_b, i, j);
 
@@ -114,7 +141,8 @@ double b3BFGS::ip_barrier_terms() {
                 continue;
             }
 
-            double s = (d - penetration) / b3_abs(penetration);
+            //double s = (d - m_total_penetration) / b3_abs(m_total_penetration);
+            double s = (d - p) / b3_abs(p);
             double b_value = - d * d * log(s);
 
             res += b_value;
@@ -124,38 +152,9 @@ double b3BFGS::ip_barrier_terms() {
 }
 
 
-Eigen::VectorXd b3BFGS::ip_mass_grad() {
-
-    const int32 body_count = m_body_count;
+Eigen::VectorXd b3BFGS::ip_barrier_grad(const Eigen::VectorXd& q) {
 
     Eigen::VectorXd res = Eigen::VectorXd::Zero(m_q.size());
-
-    for (int32 i = 0; i < body_count; ++i) {
-        const Eigen::Vector<double, 12>& q_pred = m_q_preds[i];
-        const Eigen::Matrix<double, 12, 12>& M = m_Ms[i];
-        res.segment<12>(i * 12) = M * (m_q.segment<12>(i * 12) - q_pred);
-    }
-
-    return res;
-}
-
-
-Eigen::VectorXd b3BFGS::ip_energy_grad() {
-
-    Eigen::VectorXd res = Eigen::VectorXd::Zero(m_q.size());
-
-    for (int32 i = 0; i < m_body_count; ++i) {
-        res.segment<12>(i * 12) = energy_gradient(m_ks[i], m_vs[i], m_q.segment<12>(i * 12));
-    }
-
-    return res;
-}
-
-
-Eigen::VectorXd b3BFGS::ip_barrier_grad() {
-    Eigen::VectorXd res = Eigen::VectorXd::Zero(m_q.size());
-
-    static double tr = 2 * (2.0 * b3_linear_slop);
 
     for (int32 i = 0; i < m_contact_count; i++) {
 
@@ -165,14 +164,15 @@ Eigen::VectorXd b3BFGS::ip_barrier_grad() {
         const int32& index_a = vc->m_index_a;
         const int32& index_b = vc->m_index_b;
 
-        const double& p = vc->m_penetration - 0.00001;
+
+        double p = m_vcs[i].m_penetration - 1E-8;
 
         for (int32 j = 0; j < point_count; j++) {
 
             const b3VelocityConstraintPoint* vp = vc->m_points + j;
 
-            const auto& q_a = m_q.segment<12>(index_a * 12);
-            const auto& q_b = m_q.segment<12>(index_b * 12);
+            const auto& q_a = q.segment<12>(index_a * 12);
+            const auto& q_b = q.segment<12>(index_b * 12);
 
 
             double d = dist(q_a, q_b, i, j);
@@ -181,6 +181,9 @@ Eigen::VectorXd b3BFGS::ip_barrier_grad() {
             if (d >= 0) {
                 continue;
             }
+
+//            double s = (d - m_total_penetration) / b3_abs(m_total_penetration);
+//            double coeff = -d * d / (d - m_total_penetration) - 2 * d * log(s);
 
             double s = (d - p) / b3_abs(p);
             double coeff = -d * d / (d - p) - 2 * d * log(s);
@@ -196,18 +199,39 @@ Eigen::VectorXd b3BFGS::ip_barrier_grad() {
 }
 
 
-double b3BFGS::ip_fn(const Eigen::VectorXd &q, Eigen::VectorXd *grad_out, void *data) {
+double b3BFGS::ip_fn(const Eigen::VectorXd &q, Eigen::VectorXd *grad_out, void *data = nullptr) {
 
-    m_q = q;
-
-    double M_obj = ip_mass_terms();
-    double V_obj = ip_energy_terms();
-    double B_obj = m_bk * ip_barrier_terms();
+    double M_obj = ip_mass_terms(q);
+    double V_obj = ip_energy_terms(q);
+    double B_obj = m_bk * ip_barrier_terms(q);
 
     if (grad_out) {
-        *grad_out = ip_mass_grad() + ip_energy_grad() + m_bk * ip_barrier_grad();
-        //*grad_out = ip_mass_grad(q) + 100 * barrier_grad(q);
+        *grad_out = ip_mass_grad(q) + ip_energy_grad(q) + m_bk * ip_barrier_grad(q);
     }
     return M_obj + V_obj + B_obj;
+}
+
+
+bool b3BFGS::solve(Eigen::Vector<real, 12>* qs) {
+
+    m_q.resize(m_body_count * 12);
+    m_q.setZero();
+    for(int32 i = 0; i < m_body_count; ++i) {
+        m_q.segment<12>(i * 12) = qs[i].cast<double>();
+    }
+
+    m_total_penetration = -2 * DBL_EPSILON;
+    for (int32 i = 0; i < m_contact_count; i++) {
+        m_total_penetration += m_vcs[i].m_penetration;
+    }
+
+    optim::algo_settings_t setting;
+    setting.print_level = 3;
+    setting.iter_max = 200;
+    setting.grad_err_tol = 1E-4;
+    auto ip_fn_func = std::bind(&b3BFGS::ip_fn, this, std::placeholders::_1, std::placeholders::_2,  std::placeholders::_3);
+    bool success = optim::bfgs(m_q, ip_fn_func, nullptr, setting);
+
+    return success;
 }
 

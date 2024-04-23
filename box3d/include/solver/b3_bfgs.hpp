@@ -31,25 +31,29 @@ public:
 
     int32 m_contact_count;
 
-    double m_bk = 1000000;
+    double m_bk = 100000;
+
+    double m_total_penetration = 0.0;
 
 public:
 
     double ip_fn(const Eigen::VectorXd& q, Eigen::VectorXd* grad_out, void* data);
 
+    bool solve(Eigen::Vector<real, 12>* qs);
+
 private:
 
-    double ip_mass_terms();
+    double ip_mass_terms(const Eigen::VectorXd& q);
 
-    double ip_energy_terms();
+    double ip_energy_terms(const Eigen::VectorXd& q);
 
-    double ip_barrier_terms();
+    double ip_barrier_terms(const Eigen::VectorXd& q);
 
-    Eigen::VectorXd ip_mass_grad();
+    Eigen::VectorXd ip_mass_grad(const Eigen::VectorXd& q);
 
-    Eigen::VectorXd ip_energy_grad();
+    Eigen::VectorXd ip_energy_grad(const Eigen::VectorXd& q);
 
-    Eigen::VectorXd ip_barrier_grad();
+    Eigen::VectorXd ip_barrier_grad(const Eigen::VectorXd& q);
 
     double dist(const Eigen::Vector<double, 12>& q_a, const Eigen::Vector<double, 12>& q_b, const int32& vc_i, const int32& p_i);
     
