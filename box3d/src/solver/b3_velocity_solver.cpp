@@ -164,9 +164,9 @@ int b3VelocitySolver::solve()
 
 
     // contact
-    for (int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints(false);
-    }
+//    for (int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+//        solve_velocity_constraints(false);
+//    }
 
     // solve friction constraints
     // TODO: It needs to be re-implemented
@@ -271,41 +271,3 @@ void b3VelocitySolver::solve_velocity_constraints(bool is_collision)
         }
     }
 }
-
-
-void b3VelocitySolver::correct_penetration()
-{
-    for(int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
-
-        // TODO: Check this way is useful. And angle?
-        if (vc->m_penetration < 0) {
-            b3Vector3r p_a = m_ps[vc->m_index_a];
-            b3Vector3r p_b = m_ps[vc->m_index_b];
-
-            b3Vector3r position_correction = vc->m_normal * vc->m_penetration;
-
-            // at first, two bodies are not static.
-            // if two bodies are dynamic, all need to fix penetration.
-            // if one body is static, the dynamic body need to fix penetration * 2.
-            // because when generate manifold, the penetration is equally distributed to two bodies.
-            if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body &&
-               m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_a += vc->m_normal * vc->m_penetration;
-                p_b -= vc->m_normal * vc->m_penetration;
-            } else if(m_bodies[vc->m_index_a]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_a += position_correction * real(2.0);
-            } else if(m_bodies[vc->m_index_b]->get_type() == b3BodyType::b3_dynamic_body) {
-                p_b -= position_correction * real(2.0);
-            }
-
-            m_ps[vc->m_index_a] = p_a;
-            m_ps[vc->m_index_b] = p_b;
-
-            // after fix penetration, the penetration should be zero.
-            // TODO: we could fix part of penetration, but not all.
-            vc->m_penetration = 0;
-        }
-    }
-}
-

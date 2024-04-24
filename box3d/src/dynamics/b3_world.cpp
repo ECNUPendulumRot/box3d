@@ -69,8 +69,10 @@ void b3World::clear()
     }
 }
 
+
 void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations)
 {
+
     // when new fixtures were added, we need to find the new contacts.
     if (m_new_contacts) {
         m_contact_manager.find_new_contact();

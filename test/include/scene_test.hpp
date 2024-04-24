@@ -92,6 +92,11 @@ public:
             // Stop the world step;
             stop = !stop;
         }
+
+        if (key == GLFW_KEY_S) {
+            m_world->step(1.0 / 60, 8, 8);
+        }
+
         return false;
     }
 

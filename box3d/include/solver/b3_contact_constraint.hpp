@@ -20,7 +20,7 @@ struct b3VelocityConstraintPoint {
 
 
 struct b3ContactVelocityConstraint {
-    b3VelocityConstraintPoint m_points[4];
+    b3VelocityConstraintPoint m_points[8];
     b3Vector3r m_normal;
     int32 m_index_a;
     int32 m_index_b;
