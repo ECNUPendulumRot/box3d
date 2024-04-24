@@ -36,6 +36,7 @@ set(TEST_SOURCE_FILES
         src/scene_test_affine_ground.cpp
         src/scene_test_affine_sphere_collide.cpp
         src/scene_test_affine_sphere_dropping.cpp
+        src/scene_test_affine_sphere_rest.cpp
 )
 
 add_executable(
