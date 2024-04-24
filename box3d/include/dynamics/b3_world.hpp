@@ -91,6 +91,10 @@ public:
         return m_contact_manager.get_broad_phase();
     }
 
+    b3Contact* get_contact_list() {
+        return m_contact_manager.get_contact_list();
+    }
+
     /**
      * @brief Clear all objects in the world.
      */

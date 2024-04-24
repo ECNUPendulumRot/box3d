@@ -12,6 +12,7 @@
 
 #include "collision/b3_bvh.hpp"
 #include "collision/b3_fixture.hpp"
+#include "collision/b3_contact.hpp"
 #include "collision/b3_collision.hpp"
 
 #include "utils/b3_timer.hpp"
