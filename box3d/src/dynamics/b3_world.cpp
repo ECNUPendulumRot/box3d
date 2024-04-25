@@ -4,8 +4,8 @@
 #include "common/b3_time_step.hpp"
 
 #include "collision/b3_contact.hpp"
+#include "solver/b3_solver.hpp"
 
-#include "solver/b3_solver_factory.hpp"
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -154,11 +154,9 @@ void b3World::solve(b3TimeStep &step)
 	        }
         }
 
-//        b3SISolver solver(&m_block_allocator, island, &step);
-//        solver.solve();
-        b3Solver* solver = b3SolverFactory::get_solver(m_solver_type);
-        solver->init(&m_block_allocator, island, &step);
-        solver->solve();
+        // solve the constraints
+        b3Solver solver(&m_block_allocator, island, &step);
+        solver.solve();
 
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {
@@ -170,7 +168,6 @@ void b3World::solve(b3TimeStep &step)
         }
         // clear all bodies and contacts count, so we can reuse the island for the next island.
         island->clear();
-        solver->clear();
     }
 
     // Free the stack and island memory.

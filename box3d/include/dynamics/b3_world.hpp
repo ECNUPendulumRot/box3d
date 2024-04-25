@@ -15,7 +15,6 @@
 #include "dynamics/b3_island.hpp"
 
 #include "common/b3_block_allocator.hpp"
-#include "solver/b3_solver_factory.hpp"
 
 struct b3TimeStep;
 
@@ -46,8 +45,6 @@ class b3World {
     b3ContactManager m_contact_manager;
 
     bool m_new_contacts = false;
-
-    b3SolverType m_solver_type = b3SolverType::SI_SOLVER;
 
 public:
 
@@ -106,10 +103,6 @@ public:
 
     inline b3BlockAllocator* get_block_allocator() {
         return &m_block_allocator;
-    }
-
-    void set_solver_type(b3SolverType type) {
-        m_solver_type = type;
     }
 
     inline int32 get_body_count() const {

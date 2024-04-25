@@ -6,7 +6,6 @@ class TestVSCubeRotation : public SceneTestBase {
 public:
     TestVSCubeRotation() {
         m_world->set_gravity(b3Vector3r(0, 0, -10));
-        m_world->set_solver_type(VELOCITY_SOLVER);
 
         {
             b3BodyDef body_def;

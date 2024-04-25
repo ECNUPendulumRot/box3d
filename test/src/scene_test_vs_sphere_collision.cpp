@@ -6,7 +6,7 @@ class TestVSPlaneSphereCollide : public SceneTestBase {
 public:
     TestVSPlaneSphereCollide() {
         m_world->set_gravity(b3Vector3r(0, 0, -10));
-        m_world->set_solver_type(VELOCITY_SOLVER);
+
         // create a sphere body
         b3Transformr pose, velocity;
 

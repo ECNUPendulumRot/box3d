@@ -64,18 +64,17 @@ public:
 
     b3Solver() = default;
 
-    //b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    virtual void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    /**
-     * @breif solver all constraints in the island.
-     */
-    virtual int solve() {
-        return 0;
-    };
+    void solve_velocity_constraints(bool is_collision);
 
-    virtual ~b3Solver();
+    void init_velocity_constraints();
+
+    int solve();
+
+    ~b3Solver();
 
     void clear();
 };
