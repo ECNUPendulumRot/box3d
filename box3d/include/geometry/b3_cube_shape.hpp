@@ -15,18 +15,20 @@ struct b3EdgeIndex {
 };
 
 
-union b3FaceIndex {
+struct b3FaceIndex {
 
-    int32 e[4];
+    union {
+        int32 e[4];
 
-    struct {
-        int32 e1;
+        struct {
+            int32 e1;
 
-        int32 e2;
+            int32 e2;
 
-        int32 e3;
+            int32 e3;
 
-        int32 e4;
+            int32 e4;
+        };
     };
 
 };

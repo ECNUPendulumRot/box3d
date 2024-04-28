@@ -2,10 +2,14 @@
 #ifndef BOX3D_B3_DRAW_HPP
 #define BOX3D_B3_DRAW_HPP
 
-#include "common/b3_types.hpp"
 #include "math/b3_vector.hpp"
 
+
+struct b3EdgeIndex;
+struct b3FaceIndex;
+
 struct b3Color {
+
     b3Color() = default;
 
     b3Color(float rIn, float gIn, float bIn, float aIn = 1.0f)
@@ -18,8 +22,12 @@ struct b3Color {
         r = rIn; g = gIn; b = bIn; a = aIn;
     }
 
+    static const b3Color black;
+
     float r, g, b, a;
 };
+
+
 
 class b3Draw {
 
@@ -29,8 +37,7 @@ public:
 
     virtual ~b3Draw() = default;
 
-    enum
-    {
+    enum {
         e_shape_bit		     = 0x0001,	///< draw shapes
         e_joint_bit		     = 0x0002,	///< draw joint connections
         e_aabb_bit		     = 0x0004,	///< draw axis aligned bounding boxes
@@ -54,7 +61,8 @@ public:
         m_draw_flags &= ~flags;
     }
 
-    virtual void draw_box(const b3Vector3r& centroid,const b3Vector3r& hf, const b3Color& color) = 0;
+    virtual void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
+                          const b3Vector3r* n, const b3Vector3r* v, const b3Color& color) = 0;
 
 protected:
 

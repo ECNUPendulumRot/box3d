@@ -246,11 +246,11 @@ static void vertex_separation(
 
 
 void b3_collide_cube_and_sphere(
-  b3Manifold* manifold,
-  const b3CubeShape* cube_a,
-  const b3Transformr& xf_a,
-  const b3SphereShape* sphere_b,
-  const b3Transformr& xf_b)
+    b3Manifold* manifold,
+    const b3CubeShape* cube_a,
+    const b3Transformr& xf_a,
+    const b3SphereShape* sphere_b,
+    const b3Transformr& xf_b)
 {
     
     manifold->m_point_count = 0;

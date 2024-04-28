@@ -26,12 +26,12 @@ struct Camera
         reset_view();
     }
 
-    void build_projection_matrix(float* m);
+    void build_projection_matrix(float* m) const ;
 
     void reset_view() {
         m_zoom = 1.0;
         m_lookat = {0, 0, 0};
-        m_position = {0, 0, 10};
+        m_position = {-2, 2, 7};
     }
 
     real m_zoom;
@@ -59,9 +59,12 @@ public:
 
     void create();
 
-    void draw_box(const b3Vector3r& centroid, const b3Vector3r& hf_gl, const b3Color& color) override;
+    void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
+                  const b3Vector3r* n, const b3Vector3r* v, const b3Color& color) override;
 
     void flush();
+
+    void destroy();
 };
 
 extern Camera g_camera;

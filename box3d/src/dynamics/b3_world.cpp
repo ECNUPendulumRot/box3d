@@ -216,7 +216,7 @@ void b3World::debug_draw() {
             b3Transform xf(body->get_position(), body->get_quaternion());
 
             for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
-                draw_shape(f, xf, b3Color(0.0f, 0.0f, 0.0f));
+                draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
             }
         }
     }
@@ -227,10 +227,17 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
     switch (fixture->get_shape_type()) {
         case b3ShapeType::e_cube: {
             b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
-            b3Vector3r center = xf.transform(cube->m_centroid);
-            b3Vector3r hf = cube->m_h_xyz;
+            b3Vector3r vertices[8];
+            b3Vector3r normals[6];
+            for (int32 i = 0; i < 8; ++i) {
+                vertices[i] = xf.transform(cube->m_vertices[i]);
+            }
 
-            m_debug_draw->draw_box(center, hf, color);
+            for (int32 i = 0; i < 6; ++i) {
+                normals[i] = xf.rotate(cube->m_normals[i]);
+            }
+
+            m_debug_draw->draw_box(cube->m_edges, cube->m_faces, normals, vertices, color);
             break;
         }
         default:
