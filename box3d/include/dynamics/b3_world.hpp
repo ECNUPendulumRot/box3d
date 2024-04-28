@@ -16,7 +16,9 @@
 
 #include "common/b3_block_allocator.hpp"
 
+struct b3Color;
 struct b3TimeStep;
+class b3Draw;
 
 class b3World {
 
@@ -46,9 +48,13 @@ class b3World {
 
     bool m_new_contacts = false;
 
+    b3Draw* m_debug_draw;
+
 public:
 
     b3World();
+
+    explicit b3World(const b3Vector3r& gravity);
 
     ~b3World();
 
@@ -113,11 +119,19 @@ public:
         return m_body_list;
     }
 
-protected:
+    inline void set_debug_draw(b3Draw* draw) {
+        m_debug_draw = draw;
+    }
+
+    void debug_draw();
+
+private:
 
     // void solve(double delta_t);
 
     void solve(b3TimeStep& step);
+
+    void draw_shape(b3Fixture* fixture, const b3Transformr& xf, const b3Color& color);
 
 };
 

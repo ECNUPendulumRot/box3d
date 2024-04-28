@@ -1537,7 +1537,7 @@ ImFont* ImFontAtlas::AddFont(const ImFontConfig* font_cfg)
     IM_ASSERT(font_cfg->FontData != NULL && font_cfg->FontDataSize > 0);
     IM_ASSERT(font_cfg->SizePixels > 0.0f);
 
-    // Create new font
+    // create new font
     if (!font_cfg->MergeMode)
         Fonts.push_back(IM_NEW(ImFont));
     else
@@ -1865,7 +1865,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     IM_ASSERT(buf_packedchars_n == total_glyphs_count);
     IM_ASSERT(buf_ranges_n == total_ranges_count);
 
-    // Create texture
+    // create texture
     atlas->TexHeight = (atlas->Flags & ImFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
     atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
     atlas->TexPixelsAlpha8 = (unsigned char*)ImGui::MemAlloc(atlas->TexWidth * atlas->TexHeight);
@@ -2354,7 +2354,7 @@ void ImFont::BuildLookupTable()
         IndexLookup[codepoint] = (ImWchar)i;
     }
 
-    // Create a glyph to handle TAB
+    // create a glyph to handle TAB
     // FIXME: Needs proper TAB handling but it needs to be contextualized (or we could arbitrary say that each string starts at "column 0" ?)
     if (FindGlyph((ImWchar)' '))
     {

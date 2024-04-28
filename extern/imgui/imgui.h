@@ -1729,12 +1729,12 @@ struct ImDrawCmd
     ImDrawCmd() { ElemCount = 0; ClipRect.x = ClipRect.y = ClipRect.z = ClipRect.w = 0.0f; TextureId = (ImTextureID)NULL; UserCallback = NULL; UserCallbackData = NULL; }
 };
 
-// Vertex index (override with '#define ImDrawIdx unsigned int' in imconfig.h)
+// vertex index (override with '#define ImDrawIdx unsigned int' in imconfig.h)
 #ifndef ImDrawIdx
 typedef unsigned short ImDrawIdx;
 #endif
 
-// Vertex layout
+// vertex layout
 #ifndef IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT
 struct ImDrawVert
 {
@@ -1789,7 +1789,7 @@ struct ImDrawList
     // This is what you have to render
     ImVector<ImDrawCmd>     CmdBuffer;          // Draw commands. Typically 1 command = 1 GPU draw call, unless the command is a callback.
     ImVector<ImDrawIdx>     IdxBuffer;          // Index buffer. Each command consume ImDrawCmd::ElemCount of those
-    ImVector<ImDrawVert>    VtxBuffer;          // Vertex buffer.
+    ImVector<ImDrawVert>    VtxBuffer;          // vertex buffer.
     ImDrawListFlags         Flags;              // Flags, you may poke into these to adjust anti-aliasing settings per-primitive.
 
     // [Internal, used while building lists]
@@ -1857,7 +1857,7 @@ struct ImDrawList
     // Advanced
     IMGUI_API void  AddCallback(ImDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in ImDrawCmd and call the function instead of rendering triangles.
     IMGUI_API void  AddDrawCmd();                                               // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
-    IMGUI_API ImDrawList* CloneOutput() const;                                  // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
+    IMGUI_API ImDrawList* CloneOutput() const;                                  // create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
 
     // Internal helpers
     // NB: all primitives needs to be reserved via PrimReserve() beforehand!

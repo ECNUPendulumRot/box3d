@@ -3458,7 +3458,7 @@ void ImGui::NewFrame()
     g.BeginPopupStack.resize(0);
     ClosePopupsOverWindow(g.NavWindow);
 
-    // Create implicit/fallback window - which we will only render it if the user has added something to it.
+    // create implicit/fallback window - which we will only render it if the user has added something to it.
     // We don't use "Debug" to avoid colliding with user trying to create a "Debug" window with custom flags.
     // This fallback is particularly important as it avoid ImGui:: calls from crashing.
     SetNextWindowSize(ImVec2(400,400), ImGuiCond_FirstUseEver);
@@ -4394,7 +4394,7 @@ static ImGuiWindow* CreateNewWindow(const char* name, ImVec2 size, ImGuiWindowFl
 {
     ImGuiContext& g = *GImGui;
 
-    // Create window the first time
+    // create window the first time
     ImGuiWindow* window = IM_NEW(ImGuiWindow)(&g, name);
     window->Flags = flags;
     g.WindowsById.SetVoidPtr(window->ID, window);
@@ -5740,7 +5740,7 @@ void ImGui::PopStyleVar(int count)
 
 const char* ImGui::GetStyleColorName(ImGuiCol idx)
 {
-    // Create switch-case from enum with regexp: ImGuiCol_{.*}, --> case ImGuiCol_\1: return "\1";
+    // create switch-case from enum with regexp: ImGuiCol_{.*}, --> case ImGuiCol_\1: return "\1";
     switch (idx)
     {
     case ImGuiCol_Text: return "Text";

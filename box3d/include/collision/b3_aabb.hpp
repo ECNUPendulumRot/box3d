@@ -3,7 +3,7 @@
 #define BOX3D_B3_AABB_HPP
 
 #include "common/b3_types.hpp"
-
+#include "math/b3_vector.hpp"
 
 class b3AABB {
 

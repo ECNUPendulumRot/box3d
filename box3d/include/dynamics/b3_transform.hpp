@@ -37,7 +37,17 @@ public:
         m_r_t = q.rotation_matrix();
     }
 
-    inline b3Matrix3<T> rotation_matrix() const {
+    void set_position(const b3Vector3<T>& p) {
+        m_p = p;
+    }
+
+    void set_euler_angles(const b3Vector3<T>& euler) {
+        b3Quaternion<T> q(euler);
+        m_r_t = q.rotation_matrix();
+    }
+
+
+    inline const b3Matrix3<T>& rotation_matrix() const {
         return m_r_t;
     };
 

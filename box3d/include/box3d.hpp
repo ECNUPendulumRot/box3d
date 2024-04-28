@@ -16,6 +16,7 @@
 #include "collision/b3_collision.hpp"
 
 #include "utils/b3_timer.hpp"
+#include "common/b3_draw.hpp"
 
 #endif //BOX3D_HPP
 

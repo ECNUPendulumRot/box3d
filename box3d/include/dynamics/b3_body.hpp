@@ -149,7 +149,7 @@ public:
         return m_contact_list;
     }
 
-    b3Fixture* get_fixture() const {
+    b3Fixture* get_fixture_list() const {
         return m_fixture_list;
     }
 

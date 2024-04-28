@@ -307,7 +307,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
             ImGui::CheckboxFlags("io.ConfigFlags: NavEnableSetMousePos", (unsigned int *)&io.ConfigFlags, ImGuiConfigFlags_NavEnableSetMousePos);
             ImGui::SameLine(); ShowHelpMarker("Instruct navigation to move the mouse cursor. See comment for ImGuiConfigFlags_NavEnableSetMousePos.");
             ImGui::CheckboxFlags("io.ConfigFlags: NoMouse", (unsigned int *)&io.ConfigFlags, ImGuiConfigFlags_NoMouse);
-            if (io.ConfigFlags & ImGuiConfigFlags_NoMouse) // Create a way to restore this flag otherwise we could be stuck completely!
+            if (io.ConfigFlags & ImGuiConfigFlags_NoMouse) // create a way to restore this flag otherwise we could be stuck completely!
             {
                 if (fmodf((float)ImGui::GetTime(), 0.40f) < 0.20f)
                 {
@@ -938,14 +938,14 @@ static void ShowDemoWindowWidgets()
         static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
         ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr));
 
-        // Create a dummy array of contiguous float values to plot
+        // create a dummy array of contiguous float values to plot
         // Tip: If your float aren't contiguous but part of a structure, you can pass a pointer to your first float and the sizeof() of your structure in the Stride parameter.
         static float values[90] = { 0 };
         static int values_offset = 0;
         static double refresh_time = 0.0;
         if (!animate || refresh_time == 0.0f)
             refresh_time = ImGui::GetTime();
-        while (refresh_time < ImGui::GetTime()) // Create dummy data at fixed 60 hz rate for the demo
+        while (refresh_time < ImGui::GetTime()) // create dummy data at fixed 60 hz rate for the demo
         {
             static float phase = 0.0f;
             values[values_offset] = cosf(phase);
@@ -2265,7 +2265,7 @@ static void ShowDemoWindowColumns()
         ImGui::TreePop();
     }
 
-    // Create multiple items in a same cell before switching to next column
+    // create multiple items in a same cell before switching to next column
     if (ImGui::TreeNode("Mixed items"))
     {
         ImGui::Columns(3, "mixed");

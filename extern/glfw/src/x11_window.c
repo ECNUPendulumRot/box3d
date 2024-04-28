@@ -586,7 +586,7 @@ static void enableCursor(_GLFWwindow* window)
     updateCursorImage(window);
 }
 
-// Create the X11 window (and its colormap)
+// create the X11 window (and its colormap)
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    const _GLFWwndconfig* wndconfig,
@@ -601,7 +601,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         height *= _glfw.x11.contentScaleY;
     }
 
-    // Create a colormap based on the visual used by the current context
+    // create a colormap based on the visual used by the current context
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
                                            _glfw.x11.root,
                                            visual,
@@ -609,7 +609,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     window->x11.transparent = _glfwIsVisualTransparentX11(visual);
 
-    // Create the actual window
+    // create the actual window
     {
         XSetWindowAttributes wa;
         const unsigned long wamask = CWBorderPixel | CWColormap | CWEventMask;

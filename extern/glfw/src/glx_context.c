@@ -140,7 +140,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
     return closest != NULL;
 }
 
-// Create the OpenGL context using legacy API
+// create the OpenGL context using legacy API
 //
 static GLXContext createLegacyContextGLX(_GLFWwindow* window,
                                          GLXFBConfig fbconfig,
@@ -226,7 +226,7 @@ static GLFWglproc getProcAddressGLX(const char* procname)
         return _glfw_dlsym(_glfw.glx.handle, procname);
 }
 
-// Destroy the OpenGL context
+// destroy the OpenGL context
 //
 static void destroyContextGLX(_GLFWwindow* window)
 {
@@ -440,7 +440,7 @@ void _glfwTerminateGLX(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
+// create the OpenGL or OpenGL ES context
 //
 GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,

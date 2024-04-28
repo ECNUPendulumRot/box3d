@@ -226,7 +226,7 @@ static int translateKeyCode(int scancode)
     return GLFW_KEY_UNKNOWN;
 }
 
-// Create key code translation tables
+// create key code translation tables
 //
 static void createKeyTables(void)
 {
@@ -814,7 +814,7 @@ static void getSystemContentScale(float* xscale, float* yscale)
     *yscale = ydpi / 96.f;
 }
 
-// Create a blank cursor for hidden and disabled cursor modes
+// create a blank cursor for hidden and disabled cursor modes
 //
 static Cursor createHiddenCursor(void)
 {
@@ -823,7 +823,7 @@ static Cursor createHiddenCursor(void)
     return _glfwCreateCursorX11(&image, 0, 0);
 }
 
-// Create a helper window for IPC
+// create a helper window for IPC
 //
 static Window createHelperWindow(void)
 {

@@ -126,12 +126,12 @@ public:
     void set_block_allocator(b3BlockAllocator* block_allocator);
 
     /**
-     * @brief Destroy the b3DynamicTree object
+     * @brief destroy the b3DynamicTree object
      */
     ~b3DynamicTree();
 
     /**
-     * @brief Create a proxy in the dynamic tree.
+     * @brief create a proxy in the dynamic tree.
      * @param aabb: The AABB of the proxy.
      * @param user_data: general is proxy of the fixture
      * @return The index of the proxy.
@@ -139,7 +139,7 @@ public:
     int32 create_bvh_proxy(const b3AABB& aabb, b3FixtureProxy* user_data);
 
     /**
-     * @brief Destroy a proxy in the dynamic tree.
+     * @brief destroy a proxy in the dynamic tree.
      * @param proxy_id: The index of the proxy.
      */
     void destroy_bvh_proxy(int32 proxy_id);

@@ -2604,7 +2604,7 @@ int ImParseFormatPrecision(const char* fmt, int default_precision)
     return (precision == INT_MAX) ? default_precision : precision;
 }
 
-// Create text input in place of an active drag/slider (used when doing a CTRL+Click on drag/slider widgets)
+// create text input in place of an active drag/slider (used when doing a CTRL+Click on drag/slider widgets)
 // FIXME: Logic is awkward and confusing. This should be reworked to facilitate using in other situations.
 bool ImGui::InputScalarAsWidgetReplacement(const ImRect& bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* data_ptr, const char* format)
 {
@@ -4973,7 +4973,7 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_open, ImGuiTreeNodeFlags
     bool is_open = TreeNodeBehavior(id, flags | ImGuiTreeNodeFlags_CollapsingHeader | (p_open ? ImGuiTreeNodeFlags_AllowItemOverlap : 0), label);
     if (p_open)
     {
-        // Create a small overlapping close button // FIXME: We can evolve this into user accessible helpers to add extra buttons on title bars, headers, etc.
+        // create a small overlapping close button // FIXME: We can evolve this into user accessible helpers to add extra buttons on title bars, headers, etc.
         ImGuiContext& g = *GImGui;
         ImGuiItemHoveredDataBackup last_item_backup;
         float button_radius = g.FontSize * 0.5f;

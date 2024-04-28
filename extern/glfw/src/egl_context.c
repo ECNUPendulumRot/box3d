@@ -451,7 +451,7 @@ void _glfwTerminateEGL(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
+// create the OpenGL or OpenGL ES context
 //
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,

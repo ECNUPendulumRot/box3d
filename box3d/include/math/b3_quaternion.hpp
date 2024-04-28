@@ -4,7 +4,7 @@
 
 
 #include "b3_vector.hpp"
-
+#include "b3_matrix.hpp"
 
 template <typename T>
 struct b3Quaternion {

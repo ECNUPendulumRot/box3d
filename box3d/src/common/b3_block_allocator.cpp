@@ -5,6 +5,7 @@
 #include <cstring>
 #include <climits>
 #include "common/b3_allocator.hpp"
+#include "common/b3_common.hpp"
 
 //TODO: this const value need modify
 

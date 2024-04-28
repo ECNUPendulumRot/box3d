@@ -51,6 +51,7 @@ set(B3D_HEADER_FILES
         include/solver/b3_velocity_solver.hpp
 
         include/math/b3_quaternion.hpp
+        include/common/b3_draw.hpp
 
 )
 
@@ -85,6 +86,7 @@ set(B3D_SOURCE_FILES
         src/solver/b3_solver.cpp
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
+        src/common/b3_draw.cpp
 
 )
 

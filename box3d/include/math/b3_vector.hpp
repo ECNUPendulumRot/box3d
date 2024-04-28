@@ -133,17 +133,18 @@ struct b3Vector3 {
         return b3Vector3(T(0), T(0), T(0));
     }
 
-    inline T x() const {
+    inline const T& x() const {
         return m_x;
     }
 
-    inline T y() const {
+    inline const T& y() const {
         return m_y;
     }
 
-    inline T z() const {
+    inline const T& z() const {
         return m_z;
     }
+
 };
 
 
