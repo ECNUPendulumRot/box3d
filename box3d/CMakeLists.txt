@@ -48,7 +48,6 @@ set(B3D_HEADER_FILES
         include/solver/b3_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
-        include/solver/b3_velocity_solver.hpp
 
         include/math/b3_quat.hpp
         include/common/b3_draw.hpp
