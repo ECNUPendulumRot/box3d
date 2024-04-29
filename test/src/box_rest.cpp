@@ -12,7 +12,7 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vector3r p(-5, 0, 0);
+            b3Vector3r p(0, 0, 0);
             b3Vector3r q(0, 0, 0);
             b3Vector3r v(0, 0, 0);
             b3Vector3r w(0, 0, 0);

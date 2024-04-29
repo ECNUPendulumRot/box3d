@@ -8,39 +8,13 @@
 
 #include "glad/gl.h"
 #include "GLFW/glfw3.h"
-
+#include "camera.hpp"
 #include "box3d.hpp"
 
 
 struct GLRenderPoints;
 struct GLRenderLines;
-struct GLRenderTriangles;
-
-
-struct Camera
-{
-    Camera() {
-        m_width = 1280;
-        m_height = 800;
-
-        reset_view();
-    }
-
-    void build_projection_matrix(float* m) const ;
-
-    void reset_view() {
-        m_zoom = 1.0;
-        m_lookat = {0, 0, 0};
-        m_position = {-2, 2, 7};
-    }
-
-    real m_zoom;
-    int32 m_width;
-    int32 m_height;
-
-    b3Vector3r m_position;
-    b3Vector3r m_lookat;
-};
+struct gl_render_triangles;
 
 
 class DebugDraw : public b3Draw {
@@ -51,7 +25,7 @@ public:
     bool m_show_ui = true;
     GLRenderPoints* m_points = nullptr;
     GLRenderLines* m_lines = nullptr;
-    GLRenderTriangles* m_triangles = nullptr;
+    gl_render_triangles* m_triangles = nullptr;
 
 public:
 
@@ -67,7 +41,11 @@ public:
     void destroy();
 };
 
+
 extern Camera g_camera;
 extern DebugDraw g_debug_draw;
+extern float g_light_color[3];
+extern float g_light_position[3];
+
 
 #endif //BOX3D_DRAW_HPP

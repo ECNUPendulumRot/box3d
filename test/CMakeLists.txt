@@ -110,6 +110,11 @@ set (TESTBED_SOURCE_FILES
         include/test.hpp
         src/test.cpp
         src/box_rest.cpp
+        include/gl_render_triangles.hpp
+        include/gl_common.hpp
+        src/gl_render_triangles.cpp
+        include/camera.hpp
+        src/camera.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

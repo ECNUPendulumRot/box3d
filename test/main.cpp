@@ -15,6 +15,12 @@ static int32 s_test_selection = 0;
 static Test* s_test = nullptr;
 static float s_display_scale = 1.0f;
 
+static bool s_mid_mouse_down = false;
+static bool s_left_mouse_down = false;
+
+static b3Vector3f s_click_point_ws = b3Vector3f::zero();
+static float s_click_ss[2] = {0, 0};
+
 static void resize_window_callback(GLFWwindow *, int width, int height) {
     g_camera.m_width = width;
     g_camera.m_height = height;
@@ -53,6 +59,70 @@ static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
     }
 
     return result < 0;
+}
+
+
+static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action, int32 mods) {
+
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+
+    double xd, yd;
+    glfwGetCursorPos(window, &xd, &yd);
+    spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
+
+    if (action == GLFW_PRESS) {
+        s_click_ss[0] = float(xd);
+        s_click_ss[1] = float(yd);
+    }
+
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+        if (action == GLFW_PRESS) {
+            s_mid_mouse_down = true;
+        } else if (action == GLFW_RELEASE) {
+            s_mid_mouse_down = false;
+        }
+    } else if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            s_left_mouse_down = true;
+        } else if (action == GLFW_RELEASE) {
+            s_left_mouse_down = false;
+        }
+    }
+}
+
+
+static void mouse_motion_call_back(GLFWwindow*, double xd, double yd) {
+
+    float ss[2] = {float(xd), float(yd)};
+    if (s_mid_mouse_down) {
+        // this operation will not change the camera rotation
+        float diff_ss[2] = {ss[0] - s_click_ss[0], ss[1] - s_click_ss[1]};
+        b3Vector3f diff_camera_r = -g_camera.m_r * diff_ss[0] * 0.01f;
+        b3Vector3f diff_camera_u = b3Vector3f(0, 1, 0) * diff_ss[1] * 0.02f;
+        g_camera.m_position += diff_camera_r;
+        g_camera.m_position += diff_camera_u;
+        g_camera.m_lookat += diff_camera_r;
+        g_camera.m_lookat += diff_camera_u;
+    } else if (s_left_mouse_down) {
+        float diff_sx = ss[0] - s_click_ss[0];
+
+        g_camera.m_position += -g_camera.m_r * diff_sx * 0.04f;
+        g_camera.build_up_camera_coordinate();
+    }
+    s_click_ss[0] = ss[0];
+    s_click_ss[1] = ss[1];
+}
+
+
+static void scroll_callback(GLFWwindow* window, double dx, double dy) {
+
+    ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
+    if (ImGui::GetIO().WantCaptureMouse) {
+        return;
+    }
+
+    g_camera.m_position += g_camera.m_d * float(dy) * 0.8f;
+
 }
 
 
@@ -158,8 +228,9 @@ int main(int argc, char *argv[]) {
     spdlog::info("OpenGL {}, GLSL {}", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     glfwSetWindowSizeCallback(g_mainWindow, resize_window_callback);
-
-
+    glfwSetMouseButtonCallback(g_mainWindow, mouse_button_callback);
+    glfwSetCursorPosCallback(g_mainWindow, mouse_motion_call_back);
+    glfwSetScrollCallback(g_mainWindow, scroll_callback);
     g_debug_draw.create();
 
     create_ui(g_mainWindow, nullptr);
@@ -169,7 +240,7 @@ int main(int argc, char *argv[]) {
     s_test_selection = s_settings.m_test_index;
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 
-    glClearColor(0.4f, 0.5f, 0.7f, 1.0f);
+    glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
     while (!glfwWindowShouldClose(g_mainWindow)) {
 
         glfwGetWindowSize(g_mainWindow, &g_camera.m_width, &g_camera.m_height);
