@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.24)
 
 project(box3d
         DESCRIPTION "3D Simulation developed by ECNU Robot lab")
