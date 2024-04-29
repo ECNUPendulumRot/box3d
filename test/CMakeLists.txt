@@ -14,12 +14,12 @@ set (TESTBED_SOURCE_FILES
         draw.cpp
         settings.hpp
         include/test.hpp
-        src/test.cpp
-        src/box_rest.cpp
         include/gl_render_triangles.hpp
         include/gl_common.hpp
-        src/gl_render_triangles.cpp
         include/camera.hpp
+        src/test.cpp
+        src/box_rest.cpp
+        src/gl_render_triangles.cpp
         src/camera.cpp
 )
 

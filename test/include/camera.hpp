@@ -22,8 +22,6 @@ struct Camera
 
     void build_view_matrix(float* v) const;
 
-    b3Vector3f convert_scree_to_world(float x, float y) const;
-
     int32 m_width;
     int32 m_height;
 

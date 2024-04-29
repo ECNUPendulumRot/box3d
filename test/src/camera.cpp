@@ -16,6 +16,7 @@ void Camera::build_up_camera_coordinate() {
     m_u = m_d.cross(m_r).normalized();
 }
 
+
 void Camera::build_projection_matrix(float* m)
 {
     float w = float(m_width);
@@ -38,15 +39,12 @@ void Camera::build_projection_matrix(float* m)
     m[8] = 0.0f;
     m[9] = 0.0f;
     m[10] =-(m_f + m_n) / (m_f - m_n);
-    //m[10] =-1;
     m[11] = -1;
 
     m[12] = 0.0f;
     m[13] = 0.0f;
     m[14] = -2.0f * m_f * m_n / (m_f - m_n);
-    //m[14] = -2.0f * m_n;
     m[15] = 0.0f;
-
 }
 
 
@@ -72,19 +70,6 @@ void Camera::build_view_matrix(float *v) const {
     v[14] = -m_d.dot(m_position);
     v[15] = 1.0f;
 }
-
-
-b3Vector3f Camera::convert_scree_to_world(float x, float y) const {
-
-    float w = float(m_width);
-    float h = float(m_height);
-
-    float u = 0.5f * w - x / w;
-    float v = 0.5f * h - (h - y) / h;
-
-    return -m_n * m_d + u * m_r + v * m_u;
-}
-
 
 
 
