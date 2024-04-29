@@ -34,7 +34,7 @@ public:
     void create();
 
     void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                  const b3Vector3r* n, const b3Vector3r* v, const b3Color& color) override;
+                  const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) override;
 
     void flush();
 

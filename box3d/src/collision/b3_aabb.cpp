@@ -2,7 +2,7 @@
 #include "collision/b3_aabb.hpp"
 
 
-b3AABB::b3AABB(const b3Vector3r &lower_bound, const b3Vector3r &upper_bound) {
+b3AABB::b3AABB(const b3Vec3r &lower_bound, const b3Vec3r &upper_bound) {
     m_min = lower_bound;
     m_max = upper_bound;
 }

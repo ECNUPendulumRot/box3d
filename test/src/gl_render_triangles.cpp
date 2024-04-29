@@ -104,7 +104,7 @@ void gl_render_triangles::destroy() {
     }
 }
 
-void gl_render_triangles::vertex(const b3Vector3r &v, const b3Vector3r &n, const b3Color &c) {
+void gl_render_triangles::vertex(const b3Vec3r &v, const b3Vec3r &n, const b3Color &c) {
     if (m_count == e_maxVertices)
         flush();
 
@@ -135,13 +135,13 @@ void gl_render_triangles::flush() {
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vector3r), m_vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_vertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Color), m_colors);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[2]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vector3r), m_normals);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_normals);
 
     glEnable(GL_POLYGON_SMOOTH);
     //glEnable(GL_BLEND);

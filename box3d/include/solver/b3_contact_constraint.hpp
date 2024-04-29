@@ -6,8 +6,8 @@
 
 
 struct b3VelocityConstraintPoint {
-    b3Vector3r m_ra;
-    b3Vector3r m_rb;
+    b3Vec3r m_ra;
+    b3Vec3r m_rb;
     real m_normal_collision_impulse = 0;
     real m_normal_contact_impulse = 0;
     real m_tangent_impulse = 0;
@@ -21,7 +21,7 @@ struct b3VelocityConstraintPoint {
 
 struct b3ContactVelocityConstraint {
     b3VelocityConstraintPoint m_points[8];
-    b3Vector3r m_normal;
+    b3Vec3r m_normal;
     int32 m_index_a;
     int32 m_index_b;
     real m_inv_mass_a;
@@ -43,13 +43,13 @@ struct b3ContactVelocityConstraint {
     real m_normal_collision_impulse = 0;
     real m_normal_contact_impulse = 0;
 
-    b3Vector3r m_ra;
-    b3Vector3r m_rb;
+    b3Vec3r m_ra;
+    b3Vec3r m_rb;
 
     real m_friction;
 
-    // b3Vector3r m_world_center_a;
-    // b3Vector3r m_world_center_b;
+    // b3Vec3r m_world_center_a;
+    // b3Vec3r m_world_center_b;
 
 
 	// b2Mat22 normalMass;
@@ -72,18 +72,18 @@ struct b3FrictionConstraint {
     b3Matrix3r m_I_b;
     b3Matrix3r m_inv_I_a;
     b3Matrix3r m_inv_I_b;
-    b3Vector3r m_normal;
+    b3Vec3r m_normal;
     int m_point_count;
-    b3Vector3r m_ra;
-    b3Vector3r m_rb;
-    b3Vector3r m_ras[4];
-    b3Vector3r m_rbs[4];
+    b3Vec3r m_ra;
+    b3Vec3r m_rb;
+    b3Vec3r m_ras[4];
+    b3Vec3r m_rbs[4];
 
     real m_not_applied_support_impulse;
     // The tangent plane we divide to 2-axies.
     real m_max_friction_impulse;
     real m_friction_impulse[2];
-    b3Vector3r m_friction_axis[2];
+    b3Vec3r m_friction_axis[2];
     real m_friction;
 };
 

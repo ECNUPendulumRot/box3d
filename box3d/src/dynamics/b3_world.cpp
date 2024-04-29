@@ -18,7 +18,7 @@ b3World::b3World():
 }
 
 
-b3World::b3World(const b3Vector3r &gravity):b3World()
+b3World::b3World(const b3Vec3r &gravity):b3World()
 {
     m_gravity = gravity;
     m_contact_manager.set_block_allocator(&m_block_allocator);
@@ -227,8 +227,8 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
     switch (fixture->get_shape_type()) {
         case b3ShapeType::e_cube: {
             b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
-            b3Vector3r vertices[8];
-            b3Vector3r normals[6];
+            b3Vec3r vertices[8];
+            b3Vec3r normals[6];
             for (int32 i = 0; i < 8; ++i) {
                 vertices[i] = xf.transform(cube->m_vertices[i]);
             }

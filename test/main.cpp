@@ -5,6 +5,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "box3d.hpp"
+
 #include "draw.hpp"
 #include "settings.hpp"
 #include "test.hpp"
@@ -18,8 +20,8 @@ static float s_display_scale = 1.0f;
 static bool s_mid_mouse_down = false;
 static bool s_left_mouse_down = false;
 
-static b3Vector3f s_click_point_ws = b3Vector3f::zero();
-static float s_click_ss[2] = {0, 0};
+static b3Vec3f s_click_point_ws = b3Vec3f::zero();
+static b3Vec2f s_click_ss = {0, 0};
 
 static void resize_window_callback(GLFWwindow *, int width, int height) {
     g_camera.m_width = width;
@@ -35,13 +37,13 @@ static void create_ui(GLFWwindow *window, const char *glslVersion = NULL) {
 
     bool success;
     success = ImGui_ImplGlfw_InitForOpenGL(window, false);
-    if (success == false) {
+    if (!success) {
         spdlog::error("ImGui_ImplGlfw_InitForOpenGL failed\n");
         assert(false);
     }
 
     success = ImGui_ImplOpenGL3_Init(glslVersion);
-    if (success == false) {
+    if (!success) {
         spdlog::error("ImGui_ImplOpenGL3_Init failed\n");
         assert(false);
     }
@@ -71,8 +73,7 @@ static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action
     spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
 
     if (action == GLFW_PRESS) {
-        s_click_ss[0] = float(xd);
-        s_click_ss[1] = float(yd);
+        s_click_ss = { float(xd), float(yd)};
     }
 
     if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
@@ -93,24 +94,22 @@ static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action
 
 static void mouse_motion_call_back(GLFWwindow*, double xd, double yd) {
 
-    float ss[2] = {float(xd), float(yd)};
+    b3Vec2f ss = {float(xd), float(yd)};
     if (s_mid_mouse_down) {
         // this operation will not change the camera rotation
-        float diff_ss[2] = {ss[0] - s_click_ss[0], ss[1] - s_click_ss[1]};
-        b3Vector3f diff_camera_r = -g_camera.m_r * diff_ss[0] * 0.01f;
-        b3Vector3f diff_camera_u = b3Vector3f(0, 1, 0) * diff_ss[1] * 0.02f;
+        b3Vec2f diff_ss = ss - s_click_ss;
+        b3Vec3f diff_camera_r = -g_camera.m_r * diff_ss.x * 0.01f;
+        b3Vec3f diff_camera_u = b3Vec3f(0, 1, 0) * diff_ss.y * 0.02f;
         g_camera.m_position += diff_camera_r;
         g_camera.m_position += diff_camera_u;
         g_camera.m_lookat += diff_camera_r;
         g_camera.m_lookat += diff_camera_u;
     } else if (s_left_mouse_down) {
-        float diff_sx = ss[0] - s_click_ss[0];
-
+        float diff_sx = ss.x - s_click_ss.x;
         g_camera.m_position += -g_camera.m_r * diff_sx * 0.04f;
         g_camera.build_up_camera_coordinate();
     }
-    s_click_ss[0] = ss[0];
-    s_click_ss[1] = ss[1];
+    s_click_ss = ss;
 }
 
 
@@ -122,12 +121,10 @@ static void scroll_callback(GLFWwindow* window, double dx, double dy) {
     }
 
     g_camera.m_position += g_camera.m_d * float(dy) * 0.8f;
-
 }
 
 
-static void sort_tests()
-{
+static void sort_tests() {
     std::sort(g_test_entries, g_test_entries + g_test_count, compare_tests);
 }
 

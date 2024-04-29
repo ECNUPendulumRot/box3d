@@ -3,7 +3,7 @@
 #include "settings.hpp"
 
 Test::Test() {
-    b3Vector3r gravity(0.0, 0.0, -10.0);
+    b3Vec3r gravity(0.0, 0.0, -10.0);
     m_world = new b3World(gravity);
 
     m_world->set_debug_draw(&g_debug_draw);

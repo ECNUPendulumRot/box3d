@@ -1,15 +1,15 @@
 
-#ifndef BOX3D_B3_MATRIX_HPP
-#define BOX3D_B3_MATRIX_HPP
+#ifndef BOX3D_B3_MAT33_HPP
+#define BOX3D_B3_MAT33_HPP
 
 
 #include <cstring>
-#include "math/b3_vector.hpp"
+#include "math/b3_vec3.hpp"
 #include "common/b3_common.hpp"
 
 
 template <typename T>
-struct b3Matrix3 {
+struct b3Mat33 {
 
     // m_ts is col major;
     union {
@@ -22,36 +22,36 @@ struct b3Matrix3 {
         };
 
         struct {
-            b3Vector3<T> m_col1, m_col2, m_col3;
+            b3Vec3<T> m_col1, m_col2, m_col3;
         };
     };
 
 public:
 
-    b3Matrix3() {
+    b3Mat33() {
         memset(m_ts, 0, sizeof(T) * 9);
     }
 
-    b3Matrix3(const b3Matrix3 &other) {
+    b3Mat33(const b3Mat33 &other) {
         memcpy(m_ts, other.m_ts, sizeof(T) * 9);
     }
 
-    b3Matrix3(const b3Vector3<T>& col1, const b3Vector3<T>& col2, const b3Vector3<T>& col3) {
+    b3Mat33(const b3Vec3<T>& col1, const b3Vec3<T>& col2, const b3Vec3<T>& col3) {
         m_col1 = col1;
         m_col2 = col2;
         m_col3 = col3;
     }
 
-    inline b3Vector3<T> col(const int i) const {
-        return b3Vector3<T>(m_ts[i * 3], m_ts[i * 3 + 1], m_ts[i * 3 + 2]);
+    inline b3Vec3<T> col(const int i) const {
+        return b3Vec3<T>(m_ts[i * 3], m_ts[i * 3 + 1], m_ts[i * 3 + 2]);
     }
 
-    inline b3Vector3<T> row(const int i) const {
-        return b3Vector3<T>(m_ts[i], m_ts[i + 3], m_ts[i + 6]);
+    inline b3Vec3<T> row(const int i) const {
+        return b3Vec3<T>(m_ts[i], m_ts[i + 3], m_ts[i + 6]);
     }
 
-    inline b3Matrix3<T> transpose() const {
-        b3Matrix3<T> m;
+    inline b3Mat33<T> transpose() const {
+        b3Mat33<T> m;
         m.m_11 = m_11;
         m.m_21 = m_12;
         m.m_31 = m_13;
@@ -86,13 +86,13 @@ public:
                m_31 * (m_12 * m_23 - m_22 * m_13);
     }
 
-    inline b3Matrix3 inverse() {
+    inline b3Mat33 inverse() {
 
         double det = determinant();
         b3_assert(det > 0);
         double inv_det = 1.0 / det;
 
-        b3Matrix3 inv;
+        b3Mat33 inv;
         inv.m_11 =  inv_det * (m_22 * m_33 - m_23 * m_32);
         inv.m_21 = -inv_det * (m_12 * m_33 - m_13 * m_32);
         inv.m_31 =  inv_det * (m_12 * m_23 - m_22 * m_13);
@@ -110,30 +110,30 @@ public:
         return m_11 + m_22 + m_33;
     }
 
-    static b3Matrix3<T> skew_symmetric(const b3Vector3<T>& v) {
+    static b3Mat33<T> skew_symmetric(const b3Vec3<T>& v) {
 
-        return b3Matrix3<T>(b3Vector3<T>(T(0), v.z, -v.y),
-                            b3Vector3<T>(-v.z, T(0), v.x),
-                            b3Vector3<T>(v.y, -v.x, T(0)));
+        return b3Mat33<T>(b3Vec3<T>(T(0), v.z, -v.y),
+                          b3Vec3<T>(-v.z, T(0), v.x),
+                          b3Vec3<T>(v.y, -v.x, T(0)));
 
     }
 
-    inline b3Vector3<T> eigen_values() const {
+    inline b3Vec3<T> eigen_values() const {
         T e1 = trace();
         T e2 = T(0.5) * (e1 * e1 + ((*this) * (*this)).trace());
         T e3 = determinant();
 
-        return b3Vector3<T>(e1, e2, e3);
+        return b3Vec3<T>(e1, e2, e3);
     }
 
-    inline b3Matrix3& operator-=(const b3Matrix3<T>& M) {
+    inline b3Mat33& operator-=(const b3Mat33<T>& M) {
         m_col1 -= M.m_col1;
         m_col2 -= M.m_col2;
         m_col3 -= M.m_col3;
         return *this;
     }
 
-    inline b3Matrix3& operator+=(const b3Matrix3<T>& M) {
+    inline b3Mat33& operator+=(const b3Mat33<T>& M) {
         m_col1 += M.m_col1;
         m_col2 += M.m_col2;
         m_col3 += M.m_col3;
@@ -145,65 +145,65 @@ public:
         return m_ts[3 * j + i];
     }
 
-    static b3Matrix3 identity() {
-        return b3Matrix3(b3Vector3<T>(T(1), T(0), T(0)),
-                         b3Vector3<T>(T(0), T(1), T(0)),
-                         b3Vector3<T>(T(0), T(0), T(1)));
+    static b3Mat33 identity() {
+        return b3Mat33(b3Vec3<T>(T(1), T(0), T(0)),
+                       b3Vec3<T>(T(0), T(1), T(0)),
+                       b3Vec3<T>(T(0), T(0), T(1)));
     }
 
-    static b3Matrix3 zero() {
-        return b3Matrix3(b3Vector3<T>::zero(), b3Vector3<T>::zero(), b3Vector3<T>::zero());
+    static b3Mat33 zero() {
+        return b3Mat33(b3Vec3<T>::zero(), b3Vec3<T>::zero(), b3Vec3<T>::zero());
     }
 
 };
 
 //////////////////////////////////////////////////////
 
-using b3Matrix3d = b3Matrix3<double>;
-using b3Matrix3f = b3Matrix3<float>;
-using b3Matrix3r = b3Matrix3<real>;
+using b3Matrix3d = b3Mat33<double>;
+using b3Matrix3f = b3Mat33<float>;
+using b3Matrix3r = b3Mat33<real>;
 
 //////////////////////////////////////////////////////
 
 template <typename T>
-inline b3Matrix3<T> operator*(const b3Matrix3<T>& M, const T& s) {
-    return b3Matrix3(M.col(0) * s, M.col(1) * s, M.col(2) * s);
+inline b3Mat33<T> operator*(const b3Mat33<T>& M, const T& s) {
+    return b3Mat33(M.col(0) * s, M.col(1) * s, M.col(2) * s);
 }
 
 template <typename T>
-inline b3Matrix3<T> operator*(const b3Matrix3<T>& M1, const b3Matrix3<T>& M2) {
+inline b3Mat33<T> operator*(const b3Mat33<T>& M1, const b3Mat33<T>& M2) {
 
-    b3Vector3<T> col1 = {M1.row(0).dot(M2.col(0)),
-                         M1.row(1).dot(M2.col(0)),
-                         M1.row(2).dot(M2.col(0))};
+    b3Vec3<T> col1 = {M1.row(0).dot(M2.col(0)),
+                      M1.row(1).dot(M2.col(0)),
+                      M1.row(2).dot(M2.col(0))};
 
-    b3Vector3<T> col2 = {M1.row(0).dot(M2.col(1)),
-                         M1.row(1).dot(M2.col(1)),
-                         M1.row(2).dot(M2.col(1))};
+    b3Vec3<T> col2 = {M1.row(0).dot(M2.col(1)),
+                      M1.row(1).dot(M2.col(1)),
+                      M1.row(2).dot(M2.col(1))};
 
-    b3Vector3<T> col3 = {M1.row(0).dot(M2.col(2)),
-                         M1.row(1).dot(M2.col(2)),
-                         M1.row(2).dot(M2.col(2))};
+    b3Vec3<T> col3 = {M1.row(0).dot(M2.col(2)),
+                      M1.row(1).dot(M2.col(2)),
+                      M1.row(2).dot(M2.col(2))};
 
-    return b3Matrix3<T>(col1, col2, col3);
+    return b3Mat33<T>(col1, col2, col3);
 }
 
 
 template <typename T>
-inline b3Matrix3<T> operator*(const T& s, const b3Matrix3<T>& M) {
+inline b3Mat33<T> operator*(const T& s, const b3Mat33<T>& M) {
     return M * s;
 }
 
 
 template <typename T>
-inline b3Vector3<T> operator*(b3Matrix3<T> M, const b3Vector3<T>& v) {
+inline b3Vec3<T> operator*(b3Mat33<T> M, const b3Vec3<T>& v) {
     return M.col(0) * v.x + M.col(1) * v.y + M.col(2) * v.z;
 }
 
 
 template <typename T>
-inline b3Vector3<T> operator*(const b3Vector3<T>& v, b3Matrix3<T> M) {
+inline b3Vec3<T> operator*(const b3Vec3<T>& v, b3Mat33<T> M) {
     return M * v;
 }
 
-#endif //BOX3D_B3_MATRIX_HPP
+#endif //BOX3D_B3_MAT33_HPP

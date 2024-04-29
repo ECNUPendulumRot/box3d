@@ -38,7 +38,7 @@ class b3World {
 
     int32 m_body_count;
 
-    b3Vector3r m_gravity = b3Vector3r(0, 0, 0);
+    b3Vec3r m_gravity = b3Vec3r(0, 0, 0);
 
     real m_hz = 60;
 
@@ -54,7 +54,7 @@ public:
 
     b3World();
 
-    explicit b3World(const b3Vector3r& gravity);
+    explicit b3World(const b3Vec3r& gravity);
 
     ~b3World();
 
@@ -82,11 +82,11 @@ public:
 
     void add_shape(b3Shape* shape);
 
-    void set_gravity(const b3Vector3r& gravity) {
+    void set_gravity(const b3Vec3r& gravity) {
         m_gravity = gravity;
     }
 
-    b3Vector3r gravity() {
+    b3Vec3r gravity() {
         return m_gravity;
     }
 

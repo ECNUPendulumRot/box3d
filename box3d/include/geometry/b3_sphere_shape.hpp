@@ -28,9 +28,9 @@ struct b3SphereConfig {
 
 class b3SphereShape : public b3Shape {
 
-    b3Vector3r m_centroid;
+    b3Vec3r m_centroid;
 
-    b3Vector3r* m_vertices;
+    b3Vec3r* m_vertices;
 
     // control generate sphere view data
     static const b3SphereConfig m_config;
@@ -45,7 +45,7 @@ class b3SphereShape : public b3Shape {
     /**
      * This is used to move vertices of sphere.
      */
-    b3Vector3r m_old_center;
+    b3Vec3r m_old_center;
 
 public:
 
@@ -57,7 +57,7 @@ public:
         return 1;
     }
 
-    b3Vector3r get_centroid() const {
+    b3Vec3r get_centroid() const {
         return m_centroid;
     }
 

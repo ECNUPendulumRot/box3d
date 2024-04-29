@@ -39,8 +39,8 @@ set(B3D_HEADER_FILES
 
         include/utils/b3_timer.hpp
 
-        include/math/b3_matrix_operation.hpp
-        include/math/b3_vector.hpp
+        include/math/b3_vec3.hpp
+        include/math/b3_vec2.hpp
         include/math/b3_min_max.hpp
         include/math/b3_math.hpp
 
@@ -50,7 +50,7 @@ set(B3D_HEADER_FILES
         include/collision/b3_plane_cube_contact.hpp
         include/solver/b3_velocity_solver.hpp
 
-        include/math/b3_quaternion.hpp
+        include/math/b3_quat.hpp
         include/common/b3_draw.hpp
 
 )

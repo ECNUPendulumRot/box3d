@@ -18,14 +18,14 @@
  *   n----> t1
  *
  */
-void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2)
+void b3_get_two_tangent_bases(const b3Vec3r& normal, b3Vec3r& t1, b3Vec3r& t2)
 {
     if(b3_abs(normal.x) < b3_real_min && b3_abs(normal.y) < b3_real_min) {
-        t1 = b3Vector3r(1, 0, 0);
-        t2 = b3Vector3r(0 , 1, 0);
+        t1 = b3Vec3r(1, 0, 0);
+        t2 = b3Vec3r(0 , 1, 0);
         return;
     }
-    t1 = b3Vector3r(-normal.y, normal.x, 0);
+    t1 = b3Vec3r(-normal.y, normal.x, 0);
     t2 = normal.cross(t1).normalized();
     t1 = t2.cross(normal).normalized();
 }
@@ -72,17 +72,17 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     b3_assert(m_body_count > 0);
     m_bodies = island->get_bodies();
 
-    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vector3r));
-    m_ps = new (memory) b3Vector3r;
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
+    m_ps = new (memory) b3Vec3r;
 
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Quaternionr));
     m_qs = new (memory) b3Quaternionr;
 
-    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vector3r));
-    m_vs = new (memory) b3Vector3r;
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
+    m_vs = new (memory) b3Vec3r;
 
-    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vector3r));
-    m_ws = new (memory) b3Vector3r;
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
+    m_ws = new (memory) b3Vec3r;
 
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
@@ -138,15 +138,15 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
         vc->m_penetration = manifold->m_penetration;
 
-        vc->m_ra = b3Vector3r::zero();
-        vc->m_rb = b3Vector3r::zero();
+        vc->m_ra = b3Vec3r::zero();
+        vc->m_rb = b3Vec3r::zero();
         // the center of body in the world frame
 
         b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
         b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
 
-        b3Vector3r center_a = xf_a.transform(body_a->get_local_center());
-        b3Vector3r center_b = xf_b.transform(body_b->get_local_center());
+        b3Vec3r center_a = xf_a.transform(body_a->get_local_center());
+        b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
 
         for (int32 j = 0; j < point_count; j++) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -185,10 +185,10 @@ void b3Solver::clear() {
     m_contacts = nullptr;
 
     m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vector3r));
+    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
-    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vector3r));
-    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vector3r));
+    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
 
     m_block_allocator = nullptr;
 }
@@ -204,8 +204,8 @@ int b3Solver::solve() {
     // velocity update
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body *b = m_bodies[i];
-        b3Vector3r v = m_vs[i];
-        b3Vector3r w = m_ws[i];
+        b3Vec3r v = m_vs[i];
+        b3Vec3r w = m_ws[i];
 
         v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
         w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
@@ -236,18 +236,18 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
     for (int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-        b3Vector3r v_a = m_vs[vc->m_index_a];
-        b3Vector3r w_a = m_ws[vc->m_index_a];
+        b3Vec3r v_a = m_vs[vc->m_index_a];
+        b3Vec3r w_a = m_ws[vc->m_index_a];
 
-        b3Vector3r v_b = m_vs[vc->m_index_b];
-        b3Vector3r w_b = m_ws[vc->m_index_b];
+        b3Vec3r v_b = m_vs[vc->m_index_b];
+        b3Vec3r w_b = m_ws[vc->m_index_b];
 
         if (vc->m_point_count == 1) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-                b3Vector3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+                b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
                 real rhs = -v_rel.dot(vc->m_normal);
 
                 real lambda = 0;
@@ -265,7 +265,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
                 }
 
                 // apply normal Impulse
-                b3Vector3r impulse = lambda * vc->m_normal;
+                b3Vec3r impulse = lambda * vc->m_normal;
 
                 v_a = v_a - vc->m_inv_mass_a * impulse;
                 w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
@@ -296,11 +296,11 @@ void b3Solver::init_velocity_constraints()
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
 
-        b3Vector3r v_a = m_vs[index_a];
-        b3Vector3r w_a = m_ws[index_a];
+        b3Vec3r v_a = m_vs[index_a];
+        b3Vec3r w_a = m_ws[index_a];
 
-        b3Vector3r v_b = m_vs[index_b];
-        b3Vector3r w_b = m_ws[index_b];
+        b3Vec3r v_b = m_vs[index_b];
+        b3Vec3r w_b = m_ws[index_b];
 
         for (int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -310,8 +310,8 @@ void b3Solver::init_velocity_constraints()
             vc->m_ra += vcp->m_ra;
             vc->m_rb += vcp->m_rb;
 
-            b3Vector3r ra_n = vcp->m_ra.cross(vc->m_normal);
-            b3Vector3r rb_n = vcp->m_rb.cross(vc->m_normal);
+            b3Vec3r ra_n = vcp->m_ra.cross(vc->m_normal);
+            b3Vec3r rb_n = vcp->m_rb.cross(vc->m_normal);
 
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the

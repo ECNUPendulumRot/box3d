@@ -25,16 +25,16 @@ struct Camera
     int32 m_width;
     int32 m_height;
 
-    b3Vector3f m_position;
-    b3Vector3f m_lookat;
+    b3Vec3f m_position;
+    b3Vec3f m_lookat;
 
     float m_s = 0.1f;
     float m_n = 0.1f;
     float m_f = 100.0f;
 
-    b3Vector3f m_d;
-    b3Vector3f m_u;
-    b3Vector3f m_r;
+    b3Vec3f m_d;
+    b3Vec3f m_u;
+    b3Vec3f m_r;
 };
 
 

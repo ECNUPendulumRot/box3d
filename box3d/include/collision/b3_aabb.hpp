@@ -3,7 +3,7 @@
 #define BOX3D_B3_AABB_HPP
 
 #include "common/b3_types.hpp"
-#include "math/b3_vector.hpp"
+#include "math/b3_vec3.hpp"
 
 class b3AABB {
 
@@ -15,33 +15,33 @@ class b3AABB {
     /**
      * The lower bound of the AABB.
      */
-    b3Vector3r m_min;
+    b3Vec3r m_min;
 
     /**
      * The upper bound of the AABB.
      */
-    b3Vector3r m_max;
+    b3Vec3r m_max;
 
 public:
 
     b3AABB() = default;
 
-    b3AABB(const b3Vector3r& lower_bound, const b3Vector3r& upper_bound);
+    b3AABB(const b3Vec3r& lower_bound, const b3Vec3r& upper_bound);
 
     /**
      * @brief Get the center coordinate of the AABB.
      * @return The center coordinate of the AABB.
      */
-    inline b3Vector3r center() const {
+    inline b3Vec3r center() const {
 
         return real(0.5) * (m_max - m_min);
     }
 
-    inline b3Vector3r min() const {
+    inline b3Vec3r min() const {
         return m_min;
     }
 
-    inline b3Vector3r max() const {
+    inline b3Vec3r max() const {
         return m_max;
     }
 

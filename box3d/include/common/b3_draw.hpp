@@ -2,7 +2,7 @@
 #ifndef BOX3D_B3_DRAW_HPP
 #define BOX3D_B3_DRAW_HPP
 
-#include "math/b3_vector.hpp"
+#include "math/b3_vec3.hpp"
 
 
 struct b3EdgeIndex;
@@ -62,7 +62,7 @@ public:
     }
 
     virtual void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                          const b3Vector3r* n, const b3Vector3r* v, const b3Color& color) = 0;
+                          const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) = 0;
 
 protected:
 

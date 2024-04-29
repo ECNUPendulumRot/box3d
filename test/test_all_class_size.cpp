@@ -42,8 +42,8 @@ int main() {
     std::cout << "b3Transformr: " << sizeof(b3Transformr) << "  ";
     std::cout << "b3Transformf: " << sizeof(b3Transformf) << "  ";
     std::cout << "b3ViewData: "         << sizeof(b3ViewData)           << "  ";
-    std::cout << "b3Vector3f: "         << sizeof(b3Vector3f)           << "  ";
-    std::cout << "b3VertexD: " << sizeof(b3Vector3r) << "  ";
+    std::cout << "b3Vec3f: "         << sizeof(b3Vec3f)           << "  ";
+    std::cout << "b3VertexD: " << sizeof(b3Vec3r) << "  ";
     std::cout << "b3World: "            << sizeof(b3World)              << "  ";
 
     std::cout << std::endl;

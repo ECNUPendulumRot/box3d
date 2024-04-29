@@ -93,7 +93,7 @@ struct GLRenderPoints
         }
     }
 
-    void vertex(const b3Vector3r& v, const b3Color& c, float size)
+    void vertex(const b3Vec3r& v, const b3Color& c, float size)
     {
         if (m_count == e_maxVertices)
             flush();
@@ -120,7 +120,7 @@ struct GLRenderPoints
         glBindVertexArray(m_vao_id);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[0]);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vector3r), m_vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_vertices);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[1]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Color), m_colors);
@@ -142,7 +142,7 @@ struct GLRenderPoints
     }
 
     enum { e_maxVertices = 512 };
-    b3Vector3r m_vertices[e_maxVertices];
+    b3Vec3r m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
     float m_sizes[e_maxVertices];
 
@@ -232,7 +232,7 @@ struct GLRenderLines
         }
     }
 
-    void vertex(const b3Vector3r& v, const b3Color& c)
+    void vertex(const b3Vec3r& v, const b3Color& c)
     {
         if (m_count == e_maxVertices)
             flush();
@@ -258,7 +258,7 @@ struct GLRenderLines
         glBindVertexArray(m_vao_id);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[0]);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vector3r), m_vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_vertices);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[1]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Color), m_colors);
@@ -276,7 +276,7 @@ struct GLRenderLines
     }
 
     enum { e_maxVertices = 2 * 512 };
-    b3Vector3r m_vertices[e_maxVertices];
+    b3Vec3r m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
 
     int32 m_count;
@@ -292,7 +292,7 @@ struct GLRenderLines
 
 
 void DebugDraw::draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                         const b3Vector3r* n, const b3Vector3r* v, const b3Color& color)
+                         const b3Vec3r* n, const b3Vec3r* v, const b3Color& color)
 {
     for (int32 i = 0; i < 6; i++) {
         m_triangles->vertex({v[face_index[i].e1].y, v[face_index[i].e1].z, v[face_index[i].e1].x},

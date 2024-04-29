@@ -22,7 +22,7 @@ namespace {
     // because we want not calculate all vertices position every frame.
     // so we transform all vertices of sphere to display coordinate.
     // sphere allow we work this.
-    void transform(b3Vector3r &v) {
+    void transform(b3Vec3r &v) {
         real z = v[0];
         v[0] = v[1];
         v[1] = v[2];
@@ -42,9 +42,9 @@ b3SphereConfig::b3SphereConfig()
     real sin_inc = sin(k_increments);
     real cos_inc = cos(k_increments);
 
-    b3Vector3r rot_col_1(cos_inc, 0, -sin_inc);
-    b3Vector3r rot_col_2(0, 1, 0);
-    b3Vector3r rot_col_3(sin_inc, 0, cos_inc);
+    b3Vec3r rot_col_1(cos_inc, 0, -sin_inc);
+    b3Vec3r rot_col_2(0, 1, 0);
+    b3Vec3r rot_col_3(sin_inc, 0, cos_inc);
     m_rot_y = b3Matrix3r(rot_col_1, rot_col_2, rot_col_3);
 
     rot_col_1 = { cos_inc, sin_inc, 0 };
@@ -84,9 +84,9 @@ void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 c
 {
     b3_NOT_USED(child_index);
 
-    b3Vector3r centroid = xf.transform(m_centroid);
+    b3Vec3r centroid = xf.transform(m_centroid);
 
-    b3Vector3r radius(m_radius, m_radius, m_radius);
+    b3Vec3r radius(m_radius, m_radius, m_radius);
 
     aabb->m_min = centroid - radius;
     aabb->m_max = centroid + radius;
@@ -211,14 +211,14 @@ void b3SphereShape::init_view_data()
         }
     }
 
-    mem = m_block_allocator->allocate(sizeof(b3Vector3r) * m_config.m_vertices_count);
-    m_vertices = new (mem) b3Vector3r[m_config.m_vertices_count];
+    mem = m_block_allocator->allocate(sizeof(b3Vec3r) * m_config.m_vertices_count);
+    m_vertices = new (mem) b3Vec3r[m_config.m_vertices_count];
 
     const b3Matrix3r &rot_y = m_config.m_rot_y;
     const b3Matrix3r &rot_z = m_config.m_rot_z;
 
-    b3Vector3r v1(0, 0, 1);
-    b3Vector3r v2;
+    b3Vec3r v1(0, 0, 1);
+    b3Vec3r v2;
     index = 0;
 
     for (int i = 1; i < m_config.m_segments; ++i) {
@@ -228,7 +228,7 @@ void b3SphereShape::init_view_data()
         for (int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
 
-            b3Vector3r v = m_centroid + v2 * m_radius;
+            b3Vec3r v = m_centroid + v2 * m_radius;
             m_vertices[index++] = v;
         }
 
@@ -237,7 +237,7 @@ void b3SphereShape::init_view_data()
         for (int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
 
-            b3Vector3r v = m_centroid + v2 * m_radius;
+            b3Vec3r v = m_centroid + v2 * m_radius;
             m_vertices[index++] = v;
         }
     }
@@ -246,7 +246,7 @@ void b3SphereShape::init_view_data()
     v2 = rot_z * v1;
 
     // two end of sphere, actually are (0, 0, 1) and (0, 0, -1)
-    b3Vector3r v = m_centroid + v2 * m_radius;
+    b3Vec3r v = m_centroid + v2 * m_radius;
     m_vertices[index++] = v;
 
     v = m_centroid - v2 * m_radius;
@@ -257,7 +257,7 @@ void b3SphereShape::init_view_data()
 void b3SphereShape::setup_view_data(const b3Transformr& xf) {
     int index = 0;
     for (int i = 0; i < m_config.m_vertices_count; ++i) {
-        b3Vector3r point = xf.transform(m_vertices[i]);
+        b3Vec3r point = xf.transform(m_vertices[i]);
         m_view_data.m_V[index++] = point.x;
         m_view_data.m_V[index++] = point.y;
         m_view_data.m_V[index++] = point.z;
@@ -268,6 +268,6 @@ b3SphereShape::~b3SphereShape() {
     if (m_vertices == nullptr) {
         return;
     }
-    m_block_allocator->free(m_vertices, sizeof(b3Vector3r) * m_config.m_vertices_count);
+    m_block_allocator->free(m_vertices, sizeof(b3Vec3r) * m_config.m_vertices_count);
     m_vertices = nullptr;
 }

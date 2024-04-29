@@ -12,7 +12,7 @@ void Camera::reset_view() {
 
 void Camera::build_up_camera_coordinate() {
     m_d = (m_position - m_lookat).normalized();
-    m_r = b3Vector3f(0, 1, 0).cross(m_d).normalized();
+    m_r = b3Vec3f(0, 1, 0).cross(m_d).normalized();
     m_u = m_d.cross(m_r).normalized();
 }
 

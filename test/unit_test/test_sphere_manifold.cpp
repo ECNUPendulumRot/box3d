@@ -19,10 +19,10 @@ igl::opengl::glfw::Viewer viewer;
 b3SphereShape sphere[2];
 b3CubeShape cube;
 double radius[2] = { 0.5, 0.5 };
-b3Vector3r position[2] = {
-        b3Vector3r(1.5, 1.5, 0.9),
-		// b3Vector3r(0, 0, 0)
-		b3Vector3r(1.2, 1.4, 0.1)
+b3Vec3r position[2] = {
+        b3Vec3r(1.5, 1.5, 0.9),
+		// b3Vec3r(0, 0, 0)
+		b3Vec3r(1.2, 1.4, 0.1)
 };
 
 b3Body body[2];
@@ -54,7 +54,7 @@ bool same_click_position(int x, int y) {
 }
 
 bool line_AABB_intersect(const Eigen::Vector3d &origin, const Eigen::Vector3d &dir,
-                         const b3Vector3r &min_corner, const b3Vector3r &max_corner) {
+                         const b3Vec3r &min_corner, const b3Vec3r &max_corner) {
 
   double t_min = 0.0f;
   double t_max = std::numeric_limits<double>::infinity();
@@ -98,8 +98,8 @@ void interact_object(Eigen::Vector3d &origin, Eigen::Vector3d &point) {
 	} else {
 	  cube.get_bound_aabb(&aabb, body[i].get_pose(), 0);
 	}
-	const b3Vector3r min_a = aabb.min();
-	const b3Vector3r max_a = aabb.max();
+	const b3Vec3r min_a = aabb.min();
+	const b3Vec3r max_a = aabb.max();
 	if (line_AABB_intersect(origin, direction, min_a, max_a)) {
 	  select_object_index = i;
 	}
@@ -235,7 +235,7 @@ bool callback_key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key,
 					   int modifier) {
   if (select_object_index >= 0) {
 	b3Transformr pose = body[select_object_index].get_pose();
-	b3Vector3r position = pose.linear();
+	b3Vec3r position = pose.linear();
 	// b3Timer key_down_timer;
 	// key_down_timer.reset();
 	if (key == GLFW_KEY_W) {
@@ -258,7 +258,7 @@ bool callback_key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key,
   return false;
 }
 
-void print_vector3d(const b3Vector3r &v) {
+void print_vector3d(const b3Vec3r &v) {
   std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 }
 
@@ -282,10 +282,10 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer) {
 	  print_vector3d(xf_a.linear());
 	  std::cout << "xf_b: ";
 	  print_vector3d(xf_b.linear());
-	  b3Vector3r contact_point = manifold.m_points[0].m_local_point;
+	  b3Vec3r contact_point = manifold.m_points[0].m_local_point;
 	  std::cout << "contact_point: ";
 	  print_vector3d(contact_point);
-	  b3Vector3r contact_normal = manifold.m_local_normal;
+	  b3Vec3r contact_normal = manifold.m_local_normal;
 	  double penetration = manifold.m_penetration;
 	  std::cout << "contact_normal: ";
 	  print_vector3d(contact_normal);

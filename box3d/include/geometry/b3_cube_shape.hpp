@@ -38,19 +38,19 @@ class b3CubeShape : public b3Shape {
 
 public:
 
-    b3Vector3r m_centroid;
+    b3Vec3r m_centroid;
 
-    b3Vector3r m_vertices[8];
+    b3Vec3r m_vertices[8];
 
-    b3Vector3r m_normals[6];
+    b3Vec3r m_normals[6];
 
     b3EdgeIndex m_edges[12];
 
     b3FaceIndex m_faces[6];
 
-    b3Vector3r m_xyz;
+    b3Vec3r m_xyz;
 
-    b3Vector3r m_h_xyz;
+    b3Vec3r m_h_xyz;
 
     b3CubeShape();
 
