@@ -6,14 +6,13 @@
 
 Camera g_camera;
 DebugDraw g_debug_draw;
-float g_light_color[3] = {1.0f, 1.0f, 1.0f};
-float g_light_position[3] = {20.0f, 100.0f, 20.0f};
+b3Vec3r g_light_color = {1.0f, 1.0f, 1.0f};
+b3Vec3r g_light_position = {20.0f, 20.0f, 20.0f};
 
 
 struct GLRenderPoints
 {
-    void create()
-    {
+    void create() {
         const char* vs = \
 			"#version 330\n"
             "uniform mat4 projection_matrix;\n"
@@ -253,7 +252,7 @@ struct GLRenderLines
         g_camera.build_projection_matrix(proj);
 
         glUniformMatrix4fv(m_projection_uniform, 1, GL_FALSE, proj);
-        glUniform3fv(m_light_uniform, 1, g_light_color);
+        glUniform3fv(m_light_uniform, 1, g_light_color.data());
 
         glBindVertexArray(m_vao_id);
 
@@ -291,26 +290,6 @@ struct GLRenderLines
 };
 
 
-void DebugDraw::draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                         const b3Vec3r* n, const b3Vec3r* v, const b3Color& color)
-{
-    for (int32 i = 0; i < 6; i++) {
-        m_triangles->vertex({v[face_index[i].e1].y, v[face_index[i].e1].z, v[face_index[i].e1].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-        m_triangles->vertex({v[face_index[i].e2].y, v[face_index[i].e2].z, v[face_index[i].e2].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-        m_triangles->vertex({v[face_index[i].e3].y, v[face_index[i].e3].z, v[face_index[i].e3].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-        m_triangles->vertex({v[face_index[i].e3].y, v[face_index[i].e3].z, v[face_index[i].e3].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-        m_triangles->vertex({v[face_index[i].e4].y, v[face_index[i].e4].z, v[face_index[i].e4].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-        m_triangles->vertex({v[face_index[i].e1].y, v[face_index[i].e1].z, v[face_index[i].e1].x},
-                            {n[i].y, n[i].z, n[i].x}, color);
-    }
-}
-
-
 void DebugDraw::create()
 {
     m_points = new GLRenderPoints;
@@ -345,6 +324,47 @@ void DebugDraw::destroy()
     m_triangles->destroy();
     delete m_triangles;
     m_triangles = nullptr;
+}
+
+
+void DebugDraw::draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
+                         const b3Vec3r* n, const b3Vec3r* v, const b3Color& color)
+{
+    for (int32 i = 0; i < 6; i++) {
+        m_triangles->vertex(v[face_index[i].e1], n[i], color);
+        m_triangles->vertex(v[face_index[i].e2], n[i], color);
+        m_triangles->vertex(v[face_index[i].e3], n[i], color);
+        m_triangles->vertex(v[face_index[i].e3], n[i], color);
+        m_triangles->vertex(v[face_index[i].e4], n[i], color);
+        m_triangles->vertex(v[face_index[i].e1], n[i], color);
+    }
+}
+
+
+void DebugDraw::draw_plane(const b3Transformr &xf, const real &hf_w, const real &hf_l, const b3Color &color)
+{
+    b3Vec3r lf = xf.position();
+    b3Vec3r d_w = {hf_w, 0.0f, 0.0f};
+    b3Vec3r d_l = {0.0f, hf_l, 0.0f};
+
+    d_w = xf.transform(d_w);
+    d_l = xf.transform(d_l);
+
+    lf = lf - d_w - d_l;
+
+    d_w = 2.0 * d_w / real(m_plane_segment);
+    d_l = 2.0 * d_l / real(m_plane_segment);
+
+    for (int32 i = 0; i < m_plane_segment; i++) {
+        for (int j = 0; j < m_plane_segment; j++) {
+            m_triangles->vertex(lf + i * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+            m_triangles->vertex(lf + (i + 1) * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+            m_triangles->vertex(lf + (i + 1) * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+            m_triangles->vertex(lf + (i + 1) * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+            m_triangles->vertex(lf + i * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+            m_triangles->vertex(lf + i * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+        }
+    }
 }
 
 

@@ -19,6 +19,7 @@ struct gl_render_triangles;
 
 class DebugDraw : public b3Draw {
 
+    int32 m_plane_segment = 4;
 
 public:
 
@@ -36,6 +37,8 @@ public:
     void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
                   const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) override;
 
+    void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) override;
+
     void flush();
 
     void destroy();
@@ -44,8 +47,8 @@ public:
 
 extern Camera g_camera;
 extern DebugDraw g_debug_draw;
-extern float g_light_color[3];
-extern float g_light_position[3];
+extern b3Vec3r g_light_color;
+extern b3Vec3r g_light_position;
 
 
 #endif //BOX3D_DRAW_HPP

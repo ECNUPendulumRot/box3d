@@ -25,8 +25,6 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
-void b3_get_two_tangent_bases(const b3Vec3r& normal, b3Vec3r& t1, b3Vec3r& t2);
-
 
 class b3Solver {
 

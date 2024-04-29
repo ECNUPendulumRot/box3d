@@ -18,7 +18,7 @@ set (TESTBED_SOURCE_FILES
         include/gl_common.hpp
         include/camera.hpp
         src/test.cpp
-        src/box_rest.cpp
+        src/test_box_rest.cpp
         src/gl_render_triangles.cpp
         src/camera.cpp
 )

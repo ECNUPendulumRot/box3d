@@ -7,12 +7,12 @@ public:
 
     BoxRestTest() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, 0));
+        m_world->set_gravity(b3Vec3r(0, 0, -10));
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 0);
+            b3Vec3r p(0, 0, 10);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);

@@ -22,6 +22,8 @@ struct Camera
 
     void build_view_matrix(float* v) const;
 
+    void build_model_matrix(float* m) const;
+
     int32 m_width;
     int32 m_height;
 

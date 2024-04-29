@@ -8,7 +8,7 @@
 #include "solver/b3_solver.hpp"
 #include "common/b3_draw.hpp"
 #include "geometry/b3_cube_shape.hpp"
-
+#include "geometry/b3_plane_shape.hpp"
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -239,6 +239,10 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
 
             m_debug_draw->draw_box(cube->m_edges, cube->m_faces, normals, vertices, color);
             break;
+        }
+        case b3ShapeType::e_plane: {
+            b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
+            m_debug_draw->draw_plane(xf, plane->m_half_width, plane->m_half_length, color);
         }
         default:
             break;

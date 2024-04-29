@@ -32,6 +32,7 @@ struct gl_render_triangles
 
     GLint m_projection_uniform;
     GLint m_view_uniform;
+    GLint m_model_uniform;
 
     GLint m_color_uniform;
     GLint m_light_pos_uniform;
@@ -39,10 +40,18 @@ struct gl_render_triangles
     GLint m_vertex_attribute;
     GLint m_color_attribute;
     GLint m_normal_attribute;
+
+    GLint m_const_attenuation_uniform;
+    GLint m_linear_attenuation_uniform;
+    GLint m_quadratic_attenuation_uniform;
+
+    float m_const_attenuation = 1.0f;
+    float m_linear_attenuation = 0.004f;
+    float m_quadratic_attenuation = 0.000004f;
 };
 
 extern Camera g_camera;
-extern float g_light_color[3];
-extern float g_light_position[3];
+extern b3Vec3r g_light_color;
+extern b3Vec3r g_light_position;
 
 #endif //BOX3D_GL_RENDER_TRIANGLES_HPP

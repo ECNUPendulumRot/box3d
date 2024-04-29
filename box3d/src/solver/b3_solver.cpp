@@ -9,34 +9,6 @@
 #include "common/b3_block_allocator.hpp"
 #include "collision/b3_fixture.hpp"
 
-//////////////////////////////////////////
-// In the tangent plane, t1 and t2 are counterclockwise
-/*
- *   ^ t2
- *   |
- *   |
- *   n----> t1
- *
- */
-void b3_get_two_tangent_bases(const b3Vec3r& normal, b3Vec3r& t1, b3Vec3r& t2)
-{
-    if(b3_abs(normal.x) < b3_real_min && b3_abs(normal.y) < b3_real_min) {
-        t1 = b3Vec3r(1, 0, 0);
-        t2 = b3Vec3r(0 , 1, 0);
-        return;
-    }
-    t1 = b3Vec3r(-normal.y, normal.x, 0);
-    t2 = normal.cross(t1).normalized();
-    t1 = t2.cross(normal).normalized();
-}
-
-/////////////////////////////////////////
-
-//b3Solver::b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step)
-//{
-//  init(block_allocator, island, step);
-//}
-
 
 b3Solver::b3Solver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
@@ -242,7 +214,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         b3Vec3r v_b = m_vs[vc->m_index_b];
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
-        if (vc->m_point_count == 1) {
+        if (true) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;

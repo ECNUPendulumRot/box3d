@@ -3,7 +3,7 @@
 #define BOX3D_B3_DRAW_HPP
 
 #include "math/b3_vec3.hpp"
-
+#include "dynamics/b3_transform.hpp"
 
 struct b3EdgeIndex;
 struct b3FaceIndex;
@@ -63,6 +63,8 @@ public:
 
     virtual void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
                           const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) = 0;
+
+    virtual void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) = 0;
 
 protected:
 

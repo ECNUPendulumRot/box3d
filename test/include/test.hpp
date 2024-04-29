@@ -15,7 +15,6 @@ struct Settings;
 class Test;
 
 
-
 class Test {
 
 protected:
