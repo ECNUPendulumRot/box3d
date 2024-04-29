@@ -233,7 +233,7 @@ void b3SphereShape::init_view_data()
         }
 
         v2 = v1;
-        v2.m_x = -v2.m_x;
+        v2.x = -v2.x;
         for (int j = 0; j < m_config.m_segments; ++j) {
             v2 = rot_z * v2;
 
@@ -258,9 +258,9 @@ void b3SphereShape::setup_view_data(const b3Transformr& xf) {
     int index = 0;
     for (int i = 0; i < m_config.m_vertices_count; ++i) {
         b3Vector3r point = xf.transform(m_vertices[i]);
-        m_view_data.m_V[index++] = point.x();
-        m_view_data.m_V[index++] = point.y();
-        m_view_data.m_V[index++] = point.z();
+        m_view_data.m_V[index++] = point.x;
+        m_view_data.m_V[index++] = point.y;
+        m_view_data.m_V[index++] = point.z;
     }
 }
 

@@ -147,13 +147,13 @@ bool callback_mouse_down(igl::opengl::glfw::Viewer &viewer, int button, int modi
 
   proj_point = proj_point / proj_point[3];
 
-  Eigen::Vector3f world_point(proj_point.x(), proj_point.y(), proj_point.z());
+  Eigen::Vector3f world_point(proj_point.x, proj_point.y, proj_point.z);
   world_point = view_r * (world_point - view_t);
 
-  Eigen::Vector3d point_b(world_point.x(), world_point.y(), world_point.z());
-  Eigen::Vector3d point_a(viewer.core().camera_eye.x(),
-						  viewer.core().camera_eye.y(),
-						  viewer.core().camera_eye.z());
+  Eigen::Vector3d point_b(world_point.x, world_point.y, world_point.z);
+  Eigen::Vector3d point_a(viewer.core().camera_eye.x,
+						  viewer.core().camera_eye.y,
+						  viewer.core().camera_eye.z);
 
   interact_object(point_a, point_b);
 
@@ -207,7 +207,7 @@ void add_mesh(int color_index, b3SphereShape &sphere) {
 
   viewer.data(igl_index[color_index]).set_mesh(vertices, faces);
   Eigen::MatrixXd color(1, 4);
-  color << colors[color_index].x(), colors[color_index].y(), colors[color_index].z(), 0.1;
+  color << colors[color_index].x, colors[color_index].y, colors[color_index].z, 0.1;
   viewer.data(igl_index[color_index]).set_colors(color);
   viewer.data(igl_index[color_index]).show_lines = false;
 }
@@ -223,8 +223,8 @@ void add_mesh(int color_index /* = 1 */, b3CubeShape &cube) {
 
   viewer.data(igl_index[color_index]).set_mesh(vertices, faces);
   Eigen::MatrixXd color(1, 4);
-  color << colors[color_index].x(), colors[color_index].y(), 
-	colors[color_index].z(), 0.1;
+  color << colors[color_index].x, colors[color_index].y,
+	colors[color_index].z, 0.1;
   viewer.data(igl_index[color_index]).set_colors(color);
   viewer.data(igl_index[color_index]).show_lines = false;
 }
@@ -259,7 +259,7 @@ bool callback_key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key,
 }
 
 void print_vector3d(const b3Vector3r &v) {
-  std::cout << v.x() << " " << v.y() << " " << v.z() << std::endl;
+  std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 }
 
 bool pre_draw(igl::opengl::glfw::Viewer &viewer) {
@@ -291,9 +291,9 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer) {
 	  print_vector3d(contact_normal);
 	  std::cout << "penetration: " << penetration << std::endl;
 
-	  Eigen::RowVector3d point(contact_point.x(), contact_point.y(), contact_point.z());
+	  Eigen::RowVector3d point(contact_point.x, contact_point.y, contact_point.z);
 
-	  Eigen::RowVector3d normal(contact_normal.x(), contact_normal.y(), contact_normal.z());
+	  Eigen::RowVector3d normal(contact_normal.x, contact_normal.y, contact_normal.z);
 	  Eigen::RowVector3d point_color(0, 0, 0);
 	  Eigen::RowVector3d point_b = point + 2 * normal;
 

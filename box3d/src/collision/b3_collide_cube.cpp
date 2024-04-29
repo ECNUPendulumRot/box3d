@@ -15,9 +15,9 @@ static real transform_to_axis(
     const b3Matrix3r &R = xf.m_r_t;
     const b3Vector3r &half_xyz = box.m_h_xyz;
 
-    return half_xyz.x() * b3_abs(axis.dot(R.col(0))) +
-           half_xyz.y() * b3_abs(axis.dot(R.col(1))) +
-           half_xyz.z() * b3_abs(axis.dot(R.col(2)));
+    return half_xyz.x * b3_abs(axis.dot(R.col(0))) +
+           half_xyz.y * b3_abs(axis.dot(R.col(1))) +
+           half_xyz.z * b3_abs(axis.dot(R.col(2)));
 }
 
 

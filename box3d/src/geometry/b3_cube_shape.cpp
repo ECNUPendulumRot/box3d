@@ -88,13 +88,13 @@ void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 chi
 void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real density) const {
     mass_data.m_center = m_centroid;
 
-    mass_data.m_volume = m_xyz.x() * m_xyz.y() * m_xyz.z();
+    mass_data.m_volume = m_xyz.x * m_xyz.y * m_xyz.z;
 
     mass_data.m_mass = density * mass_data.m_volume;
 
-    real x2 = m_xyz.x() * m_xyz.x();
-    real y2 = m_xyz.y() * m_xyz.y();
-    real z2 = m_xyz.z() * m_xyz.z();
+    real x2 = m_xyz.x * m_xyz.x;
+    real y2 = m_xyz.y * m_xyz.y;
+    real z2 = m_xyz.z * m_xyz.z;
     real ot = 1.0 / 12.0;
 
     real i11 = ot * mass_data.m_mass * (y2 + z2);
@@ -135,9 +135,9 @@ void b3CubeShape::setup_view_data(const b3Transformr &xf) {
     int index = 0;
     for (const b3Vector3r &vertex : m_vertices) {
   	    b3Vector3r v = xf.transform(vertex);
-  	    m_view_data.m_V[index++] = v.x();
-  	    m_view_data.m_V[index++] = v.y();
-  	    m_view_data.m_V[index++] = v.z();
+  	    m_view_data.m_V[index++] = v.x;
+  	    m_view_data.m_V[index++] = v.y;
+  	    m_view_data.m_V[index++] = v.z;
     }
 }
 

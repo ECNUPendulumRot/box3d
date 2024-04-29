@@ -91,12 +91,12 @@ void b3Body::reset_mass_data()
     }
 
     if (m_inertia.determinant() > 0) {
-        real bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
-        real byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
-        real bzz = local_center.x() * local_center.x() + local_center.y() * local_center.y();
-        real bxy = local_center.x() * local_center.y();
-        real bxz = local_center.x() * local_center.z();
-        real byz = local_center.y() * local_center.z();
+        real bxx = local_center.y * local_center.y + local_center.z * local_center.z;
+        real byy = local_center.x * local_center.x + local_center.z * local_center.z;
+        real bzz = local_center.x * local_center.x + local_center.y * local_center.y;
+        real bxy = local_center.x * local_center.y;
+        real bxz = local_center.x * local_center.z;
+        real byz = local_center.y * local_center.z;
 
         b3Vector3r col1(bxx, -bxy, -bxz);
         b3Vector3r col2(-bxy, byy, -byz);

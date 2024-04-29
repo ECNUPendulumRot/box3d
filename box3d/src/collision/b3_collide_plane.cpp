@@ -13,7 +13,7 @@ static real transform_to_axis(const b3CubeShape& box, const b3Transformr& xf, co
     const b3Matrix3r& R = xf.m_r_t;
     const b3Vector3r& half_xyz = box.m_h_xyz;
 
-    return half_xyz.x() * b3_abs(axis.dot(R.col(0))) + half_xyz.y() * b3_abs(axis.dot(R.col(1))) + half_xyz.z() * b3_abs(axis.dot(R.col(2)));
+    return half_xyz.x * b3_abs(axis.dot(R.col(0))) + half_xyz.y * b3_abs(axis.dot(R.col(1))) + half_xyz.z * b3_abs(axis.dot(R.col(2)));
 }
 
 
@@ -54,20 +54,20 @@ void b3_collide_plane_and_sphere(
 
     // find the closest point on the plane to the sphere center
     b3Vector3r nearest_point;
-    if (local_center.x() < -plane_a->m_half_width) {
+    if (local_center.x < -plane_a->m_half_width) {
   	    nearest_point[0] = -plane_a->m_half_width;
-    } else if (local_center.x() > plane_a->m_half_width) {
+    } else if (local_center.x > plane_a->m_half_width) {
   	    nearest_point[0] = plane_a->m_half_width;
     } else {
-  	    nearest_point[0] = local_center.x();
+  	    nearest_point[0] = local_center.x;
     }
 
-    if (local_center.y() < -plane_a->m_half_length) {
+    if (local_center.y < -plane_a->m_half_length) {
   	    nearest_point[1] = -plane_a->m_half_length;
-    } else if (local_center.y() > plane_a->m_half_length) {
+    } else if (local_center.y > plane_a->m_half_length) {
   	    nearest_point[1] = plane_a->m_half_length;
     } else {
-  	    nearest_point[1] = local_center.y();
+  	    nearest_point[1] = local_center.y;
     }
     real sq_distance = (local_center - nearest_point).length2();
     real radius = sphere_b->get_radius() + plane_a->get_radius();

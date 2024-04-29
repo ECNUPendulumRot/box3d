@@ -89,22 +89,22 @@ public:
 //    T c = cos(l);
 //    b3Vector3<T> cos1_axis = (T(1) - c) * v;
 //
-//    T tmp = cos1_axis.x() * v.y();
-//    res(0, 1) = tmp - sin_axis.z();
-//    res(1, 0) = tmp + sin_axis.z();
+//    T tmp = cos1_axis.x * v.y;
+//    res(0, 1) = tmp - sin_axis.z;
+//    res(1, 0) = tmp + sin_axis.z;
 //
-//    tmp = cos1_axis.x() * v.z();
-//    res(0, 2) = tmp + sin_axis.y();
-//    res(2, 0) = tmp - sin_axis.y();
+//    tmp = cos1_axis.x * v.z;
+//    res(0, 2) = tmp + sin_axis.y;
+//    res(2, 0) = tmp - sin_axis.y;
 //
-//    tmp = cos1_axis.y() * v.z();
-//    res(1, 2) = tmp - sin_axis.x();
-//    res(2, 1) = tmp + sin_axis.x();
+//    tmp = cos1_axis.y * v.z;
+//    res(1, 2) = tmp - sin_axis.x;
+//    res(2, 1) = tmp + sin_axis.x;
 //
 //    cos1_axis = cos1_axis.cwise_product(v);
-//    res(0, 0) = cos1_axis.x() + c;
-//    res(1, 1) = cos1_axis.y() + c;
-//    res(2, 2) = cos1_axis.z() + c;
+//    res(0, 0) = cos1_axis.x + c;
+//    res(1, 1) = cos1_axis.y + c;
+//    res(2, 2) = cos1_axis.z + c;
 //
 //    return res;
 //}

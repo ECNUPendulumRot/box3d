@@ -20,12 +20,12 @@
  */
 void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2)
 {
-    if(b3_abs(normal.x()) < b3_real_min && b3_abs(normal.y()) < b3_real_min) {
+    if(b3_abs(normal.x) < b3_real_min && b3_abs(normal.y) < b3_real_min) {
         t1 = b3Vector3r(1, 0, 0);
         t2 = b3Vector3r(0 , 1, 0);
         return;
     }
-    t1 = b3Vector3r(-normal.y(), normal.x(), 0);
+    t1 = b3Vector3r(-normal.y, normal.x, 0);
     t2 = normal.cross(t1).normalized();
     t1 = t2.cross(normal).normalized();
 }

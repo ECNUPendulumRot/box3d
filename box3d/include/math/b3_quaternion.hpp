@@ -24,9 +24,9 @@ struct b3Quaternion {
 
     explicit b3Quaternion(const b3Vector3<T>& v) {
         m_w = T(0);
-        m_x = v.m_x;
-        m_y = v.m_y;
-        m_z = v.m_z;
+        m_x = v.x;
+        m_y = v.y;
+        m_z = v.z;
     }
 
     b3Quaternion(const b3Quaternion& other) {
@@ -38,9 +38,9 @@ struct b3Quaternion {
 
     b3Quaternion(const T& w, const b3Vector3<T>& v) {
         m_w = w;
-        m_x = v.m_x;
-        m_y = v.m_y;
-        m_z = v.m_z;
+        m_x = v.x;
+        m_y = v.y;
+        m_z = v.z;
     }
 
     b3Quaternion(T w, T x, T y, T z) {

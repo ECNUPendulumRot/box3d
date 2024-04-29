@@ -295,18 +295,18 @@ void DebugDraw::draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_
                          const b3Vector3r* n, const b3Vector3r* v, const b3Color& color)
 {
     for (int32 i = 0; i < 6; i++) {
-        m_triangles->vertex({v[face_index[i].e1].y(), v[face_index[i].e1].z(), v[face_index[i].e1].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
-        m_triangles->vertex({v[face_index[i].e2].y(), v[face_index[i].e2].z(), v[face_index[i].e2].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
-        m_triangles->vertex({v[face_index[i].e3].y(), v[face_index[i].e3].z(), v[face_index[i].e3].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
-        m_triangles->vertex({v[face_index[i].e3].y(), v[face_index[i].e3].z(), v[face_index[i].e3].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
-        m_triangles->vertex({v[face_index[i].e4].y(), v[face_index[i].e4].z(), v[face_index[i].e4].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
-        m_triangles->vertex({v[face_index[i].e1].y(), v[face_index[i].e1].z(), v[face_index[i].e1].x()},
-                            {n[i].y(), n[i].z(), n[i].x()}, color);
+        m_triangles->vertex({v[face_index[i].e1].y, v[face_index[i].e1].z, v[face_index[i].e1].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
+        m_triangles->vertex({v[face_index[i].e2].y, v[face_index[i].e2].z, v[face_index[i].e2].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
+        m_triangles->vertex({v[face_index[i].e3].y, v[face_index[i].e3].z, v[face_index[i].e3].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
+        m_triangles->vertex({v[face_index[i].e3].y, v[face_index[i].e3].z, v[face_index[i].e3].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
+        m_triangles->vertex({v[face_index[i].e4].y, v[face_index[i].e4].z, v[face_index[i].e4].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
+        m_triangles->vertex({v[face_index[i].e1].y, v[face_index[i].e1].z, v[face_index[i].e1].x},
+                            {n[i].y, n[i].z, n[i].x}, color);
     }
 }
 

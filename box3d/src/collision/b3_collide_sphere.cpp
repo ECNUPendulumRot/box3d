@@ -71,9 +71,9 @@ static void init_feature(const real& value, const real& x, b3SphereCubeFeature& 
 
 static void find_feature(const b3Vector3r &point, const b3CubeShape *cube, b3SphereCubeFeature &feature)
 {
-    init_feature(point.x(), cube->m_h_xyz.x(), feature, 0);
-    init_feature(point.y(), cube->m_h_xyz.y(), feature, 1);
-    init_feature(point.z(), cube->m_h_xyz.z(), feature, 2);
+    init_feature(point.x, cube->m_h_xyz.x, feature, 0);
+    init_feature(point.y, cube->m_h_xyz.y, feature, 1);
+    init_feature(point.z, cube->m_h_xyz.z, feature, 2);
 }
 
 
@@ -91,19 +91,19 @@ static void find_deep_penetration(
     // because the points are in the world frame when we construct manifold.
     b3Vector3r penetration = sphere_center.abs() - cube_h_xyz;
     // penetration < 0
-    if(penetration.x() > penetration.y()) {
+    if(penetration.x > penetration.y) {
         // max penetration axis is x.
-        if(penetration.x() > penetration.z()) {
-            if(sphere_center.x() > 0) {
+        if(penetration.x > penetration.z) {
+            if(sphere_center.x > 0) {
                 manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(1.0, 0, 0);
             } else {
                 manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(-1.0, 0, 0);
             }
 
-            manifold->m_penetration = penetration.x() / 2;
-            real local_point_x = sphere_center.x() +
-            manifold->m_penetration * manifold->m_local_normal.x();
-            b3Vector3r local_point(local_point_x, sphere_center.y(), sphere_center.z());
+            manifold->m_penetration = penetration.x / 2;
+            real local_point_x = sphere_center.x +
+            manifold->m_penetration * manifold->m_local_normal.x;
+            b3Vector3r local_point(local_point_x, sphere_center.y, sphere_center.z);
             manifold->m_points[0].m_local_point = cube_xf.transform(local_point);
             manifold->m_points[0].id.key = 0;
 
@@ -112,17 +112,17 @@ static void find_deep_penetration(
 	    // max penetration axis is z.
     } else {
         // max penetration axis is y.
-        if (penetration.y() > penetration.z()) {
-            if (sphere_center.y() > 0) {
+        if (penetration.y > penetration.z) {
+            if (sphere_center.y > 0) {
                 manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 1.0, 0);
             } else {
                 manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, -1.0, 0);
             }
 
-            manifold->m_penetration = penetration.y() / 2;
-            real local_point_y = sphere_center.y() +
-            manifold->m_penetration * manifold->m_local_normal.y();
-            b3Vector3r local_point(sphere_center.x(), local_point_y, sphere_center.z());
+            manifold->m_penetration = penetration.y / 2;
+            real local_point_y = sphere_center.y +
+            manifold->m_penetration * manifold->m_local_normal.y;
+            b3Vector3r local_point(sphere_center.x, local_point_y, sphere_center.z);
             manifold->m_points[0].m_local_point = cube_xf.transform(local_point);
             manifold->m_points[0].id.key = 0;
 
@@ -131,15 +131,15 @@ static void find_deep_penetration(
 	    // max penetration axis is z.
     }
 
-    if (sphere_center.z() > 0) {
+    if (sphere_center.z > 0) {
   	    manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 0, 1.0);
     } else {
   	    manifold->m_local_normal = cube_xf.rotation_matrix() * b3Vector3r(0, 0, -1.0);
     }
 
-    manifold->m_penetration = penetration.z() / 2;
-    real local_point_z = sphere_center.z() + manifold->m_penetration * manifold->m_local_normal.z();
-    b3Vector3r local_point(sphere_center.x(), sphere_center.y(), local_point_z);
+    manifold->m_penetration = penetration.z / 2;
+    real local_point_z = sphere_center.z + manifold->m_penetration * manifold->m_local_normal.z;
+    b3Vector3r local_point(sphere_center.x, sphere_center.y, local_point_z);
     manifold->m_points[0].m_local_point = cube_xf.transform(local_point);
     manifold->m_points[0].id.key = 0;
 }

@@ -105,20 +105,20 @@ void b3PlaneShape::setup_view_data(const b3Transformr &xf)
     int index = 0;
     // horizontal edges
     for (int i = 0; i <= segment_count; ++i) {
-        m_view_data.m_V[index++] = vertices[0].x() + i * width_step.x();
-        m_view_data.m_V[index++] = vertices[0].y() + i * width_step.y();
-        m_view_data.m_V[index++] = vertices[0].z() + i * width_step.z();
-        m_view_data.m_V[index++] = vertices[1].x() + i * width_step.x();
-        m_view_data.m_V[index++] = vertices[1].y() + i * width_step.y();
-        m_view_data.m_V[index++] = vertices[1].z() + i * width_step.z();
+        m_view_data.m_V[index++] = vertices[0].x + i * width_step.x;
+        m_view_data.m_V[index++] = vertices[0].y + i * width_step.y;
+        m_view_data.m_V[index++] = vertices[0].z + i * width_step.z;
+        m_view_data.m_V[index++] = vertices[1].x + i * width_step.x;
+        m_view_data.m_V[index++] = vertices[1].y + i * width_step.y;
+        m_view_data.m_V[index++] = vertices[1].z + i * width_step.z;
     }
     // vertical edges
     for (int i = 0; i <= segment_count; ++i) {
-        m_view_data.m_V[index++] = vertices[0].x() + i * length_step.x();
-        m_view_data.m_V[index++] = vertices[0].y() + i * length_step.y();
-        m_view_data.m_V[index++] = vertices[0].z() + i * length_step.z();
-        m_view_data.m_V[index++] = vertices[3].x() + i * length_step.x();
-        m_view_data.m_V[index++] = vertices[3].y() + i * length_step.y();
-        m_view_data.m_V[index++] = vertices[3].z() + i * length_step.z();
+        m_view_data.m_V[index++] = vertices[0].x + i * length_step.x;
+        m_view_data.m_V[index++] = vertices[0].y + i * length_step.y;
+        m_view_data.m_V[index++] = vertices[0].z + i * length_step.z;
+        m_view_data.m_V[index++] = vertices[3].x + i * length_step.x;
+        m_view_data.m_V[index++] = vertices[3].y + i * length_step.y;
+        m_view_data.m_V[index++] = vertices[3].z + i * length_step.z;
     }
 }

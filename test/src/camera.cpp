@@ -50,19 +50,19 @@ void Camera::build_projection_matrix(float* m)
 
 void Camera::build_view_matrix(float *v) const {
 
-    v[0] = m_r.x();
-    v[1] = m_u.x();
-    v[2] = m_d.x();
+    v[0] = m_r.x;
+    v[1] = m_u.x;
+    v[2] = m_d.x;
     v[3] = 0.0f;
 
-    v[4] = m_r.y();
-    v[5] = m_u.y();
-    v[6] = m_d.y();
+    v[4] = m_r.y;
+    v[5] = m_u.y;
+    v[6] = m_d.y;
     v[7] = 0.0f;
 
-    v[8] = m_r.z();
-    v[9] = m_u.z();
-    v[10] = m_d.z();
+    v[8] = m_r.z;
+    v[9] = m_u.z;
+    v[10] = m_d.z;
     v[11] = 0.0f;
 
     v[12] = -m_r.dot(m_position);

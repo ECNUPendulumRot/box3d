@@ -112,9 +112,9 @@ public:
 
     static b3Matrix3<T> skew_symmetric(const b3Vector3<T>& v) {
 
-        return b3Matrix3<T>(b3Vector3<T>(T(0), v.z(), -v.y()),
-                            b3Vector3<T>(-v.z(), T(0), v.x()),
-                            b3Vector3<T>(v.y(), -v.x(), T(0)));
+        return b3Matrix3<T>(b3Vector3<T>(T(0), v.z, -v.y),
+                            b3Vector3<T>(-v.z, T(0), v.x),
+                            b3Vector3<T>(v.y, -v.x, T(0)));
 
     }
 
@@ -197,7 +197,7 @@ inline b3Matrix3<T> operator*(const T& s, const b3Matrix3<T>& M) {
 
 template <typename T>
 inline b3Vector3<T> operator*(b3Matrix3<T> M, const b3Vector3<T>& v) {
-    return M.col(0) * v.x() + M.col(1) * v.y() + M.col(2) * v.z();
+    return M.col(0) * v.x + M.col(1) * v.y + M.col(2) * v.z;
 }
 
 

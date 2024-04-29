@@ -61,9 +61,9 @@ struct b3ViewData {
     } FaceIndice;
 
     inline void set_vertex_row(int vertex_index, const b3Vector3r& vertex) const {
-        *(m_V + 3 * vertex_index)     = vertex.m_x;
-        *(m_V + 3 * vertex_index + 1) = vertex.m_y;
-        *(m_V + 3 * vertex_index + 2) = vertex.m_z;
+        *(m_V + 3 * vertex_index)     = vertex.x;
+        *(m_V + 3 * vertex_index + 1) = vertex.y;
+        *(m_V + 3 * vertex_index + 2) = vertex.z;
     }
 
     inline void set_face_row(int face_index, const FaceIndice& face) const {
