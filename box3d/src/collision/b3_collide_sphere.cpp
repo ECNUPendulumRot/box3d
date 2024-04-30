@@ -3,7 +3,7 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_cube_shape.hpp"
 
-#include "math/b3_math.hpp"
+#include "math/b3_math_op.hpp"
 
 void b3_collide_spheres(
     b3Manifold* manifold,

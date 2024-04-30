@@ -42,7 +42,7 @@ set(B3D_HEADER_FILES
         include/math/b3_vec3.hpp
         include/math/b3_vec2.hpp
         include/math/b3_min_max.hpp
-        include/math/b3_math.hpp
+        include/math/b3_math_op.hpp
 
 
         include/solver/b3_solver.hpp

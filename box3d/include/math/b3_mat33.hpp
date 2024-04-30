@@ -13,7 +13,7 @@ struct b3Mat33 {
 
     // m_ts is col major;
     union {
-        T m_ts[9];
+        T m_ts[3][3];
 
         struct {
             T m_11, m_21, m_31;
@@ -43,24 +43,22 @@ public:
     }
 
     inline b3Vec3<T> col(const int i) const {
-        return b3Vec3<T>(m_ts[i * 3], m_ts[i * 3 + 1], m_ts[i * 3 + 2]);
+        return b3Vec3<T>(m_ts[i][0], m_ts[i][1], m_ts[i][2]);
     }
 
     inline b3Vec3<T> row(const int i) const {
-        return b3Vec3<T>(m_ts[i], m_ts[i + 3], m_ts[i + 6]);
+        return b3Vec3<T>(m_ts[0][i], m_ts[1][i], m_ts[2][i]);
     }
 
     inline b3Mat33<T> transpose() const {
         b3Mat33<T> m;
-        m.m_11 = m_11;
-        m.m_21 = m_12;
-        m.m_31 = m_13;
-        m.m_12 = m_21;
-        m.m_22 = m_22;
-        m.m_32 = m_23;
-        m.m_13 = m_31;
-        m.m_23 = m_32;
-        m.m_33 = m_33;
+
+        for (int32 i = 0; i < 3; i++) {
+            for (int32 j = 0; j < 3; j++) {
+                if (i == j) continue;
+                m.m_ts[i][j] = m_ts[j][i];
+            }
+        }
         return m;
     }
 
@@ -69,15 +67,10 @@ public:
     }
 
     inline void set_identity() {
-        m_11 = T(1);
-        m_21 = T(0);
-        m_31 = T(0);
-        m_12 = T(0);
-        m_22 = T(1);
-        m_32 = T(0);
-        m_13 = T(0);
-        m_23 = T(0);
-        m_33 = T(1);
+        memset(m_ts, 0, sizeof(T) * 9);
+        m_ts[0][0] = T(1);
+        m_ts[1][1] = T(1);
+        m_ts[2][2] = T(1);
     }
 
     inline T determinant() const {
@@ -87,7 +80,6 @@ public:
     }
 
     inline b3Mat33 inverse() {
-
         double det = determinant();
         b3_assert(det > 0);
         double inv_det = 1.0 / det;
@@ -111,18 +103,15 @@ public:
     }
 
     static b3Mat33<T> skew_symmetric(const b3Vec3<T>& v) {
-
         return b3Mat33<T>(b3Vec3<T>(T(0), v.z, -v.y),
                           b3Vec3<T>(-v.z, T(0), v.x),
                           b3Vec3<T>(v.y, -v.x, T(0)));
-
     }
 
     inline b3Vec3<T> eigen_values() const {
         T e1 = trace();
         T e2 = T(0.5) * (e1 * e1 + ((*this) * (*this)).trace());
         T e3 = determinant();
-
         return b3Vec3<T>(e1, e2, e3);
     }
 
@@ -142,20 +131,21 @@ public:
 
     inline T& operator()(const int i, const int j) {
         b3_assert(0 <= i && i < 3 && 0 <= j && j < 3);
-        return m_ts[3 * j + i];
+        return m_ts[j][i];
     }
 
-    static b3Mat33 identity() {
+    static constexpr b3Mat33 identity() {
         return b3Mat33(b3Vec3<T>(T(1), T(0), T(0)),
                        b3Vec3<T>(T(0), T(1), T(0)),
                        b3Vec3<T>(T(0), T(0), T(1)));
     }
 
-    static b3Mat33 zero() {
+    static constexpr b3Mat33 zero() {
         return b3Mat33(b3Vec3<T>::zero(), b3Vec3<T>::zero(), b3Vec3<T>::zero());
     }
 
 };
+
 
 //////////////////////////////////////////////////////
 
@@ -164,6 +154,7 @@ using b3Matrix3f = b3Mat33<float>;
 using b3Matrix3r = b3Mat33<real>;
 
 //////////////////////////////////////////////////////
+
 
 template <typename T>
 inline b3Mat33<T> operator*(const b3Mat33<T>& M, const T& s) {
