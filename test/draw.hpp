@@ -39,6 +39,8 @@ public:
 
     void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) override;
 
+    void draw_sphere(const b3Transformr& xf, const real& radius, const b3Color& color) override;
+
     void flush();
 
     void destroy();

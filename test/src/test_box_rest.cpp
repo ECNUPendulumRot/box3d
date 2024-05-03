@@ -1,11 +1,11 @@
 #include "test.hpp"
 #include <random>
 
-class BoxRestTest: public Test {
+class TestBoxRest: public Test {
 
 public:
 
-    BoxRestTest() {
+    TestBoxRest() {
 
         m_world->set_gravity(b3Vec3r(0, 0, -10));
         {
@@ -83,9 +83,9 @@ public:
     }
 
     static Test* create() {
-        return new BoxRestTest;
+        return new TestBoxRest;
     }
 
 };
 
-static int test_index = register_test("Cube Scene Test", "Cube Rest", BoxRestTest::create);
+static int test_index = register_test("Cube Scene Test", "Cube Rest", TestBoxRest::create);

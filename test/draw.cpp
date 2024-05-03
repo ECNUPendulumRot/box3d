@@ -368,3 +368,66 @@ void DebugDraw::draw_plane(const b3Transformr &xf, const real &hf_w, const real 
 }
 
 
+void DebugDraw::draw_sphere(const b3Transformr &xf, const real &radius, const b3Color &color)
+{
+    // vertex position
+    float x, y, z, xy;
+
+    // vertex normal
+    float nx, ny, nz, lengthInv = 1.0f / radius;
+
+    int32 sector_count = 10;
+    int32 stack_count = 10;
+
+    b3Vec3r vertices[(sector_count + 1) * (stack_count + 1)];
+    b3Vec3r normals[(sector_count + 1) * (stack_count + 1)];
+
+    float sector_step = 2.0f * b3_pi / sector_count;
+    float stack_step = b3_pi / stack_count;
+    float sector_angle, stack_angle;
+
+    int32 index_v = 0;
+    int32 index_n = 0;
+    for (int32 i = 0; i <= stack_count; ++i) {
+        stack_angle = b3_pi / 2.0f - i * stack_step;
+        xy = radius * cosf(stack_angle);
+        z = radius * sinf(stack_angle);
+
+        for (int32 j = 0; j <= sector_count; ++j) {
+            sector_angle = j * sector_step;
+
+            x = xy * cosf(sector_angle);
+            y = xy * sinf(sector_angle);
+            vertices[index_v++] = b3Vec3r(x, y, z);
+
+            nx = x * lengthInv;
+            ny = y * lengthInv;
+            nz = z * lengthInv;
+            normals[index_n++] = b3Vec3r(nx, ny, nz);
+
+        }
+    }
+
+    int32 k1, k2;
+    for (int32 i = 0; i < stack_count; ++i) {
+        k1 = i * (sector_count + 1);
+        k2 = k1 + sector_count + 1;
+
+        for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
+            if (i != 0) {
+                m_triangles->vertex(vertices[k1], normals[k1], color);
+                m_triangles->vertex(vertices[k2], normals[k2], color);
+                m_triangles->vertex(vertices[k1 + 1], normals[k1 + 1], color);
+            }
+
+            if (i != (stack_count - 1)) {
+                m_triangles->vertex(vertices[k1 + 1], normals[k1 + 1], color);
+                m_triangles->vertex(vertices[k2], normals[k2], color);
+                m_triangles->vertex(vertices[k2 + 1], normals[k2 + 1], color);
+            }
+        }
+
+    }
+}
+
+

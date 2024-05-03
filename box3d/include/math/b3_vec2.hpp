@@ -170,5 +170,4 @@ inline b3Vec2<T> operator/(const b3Vec2<T>& v, T s) {
 }
 
 
-
 #endif //BOX3D_B3_VEC2_HPP

@@ -7,8 +7,10 @@
 #include "collision/b3_contact.hpp"
 #include "solver/b3_solver.hpp"
 #include "common/b3_draw.hpp"
+
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
+#include "geometry/b3_sphere_shape.hpp"
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -243,6 +245,11 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
         case b3ShapeType::e_plane: {
             b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
             m_debug_draw->draw_plane(xf, plane->m_half_width, plane->m_half_length, color);
+        }
+
+        case b3ShapeType::e_sphere: {
+            b3SphereShape* sphere = (b3SphereShape*)fixture->get_shape();
+            m_debug_draw->draw_sphere(xf, sphere->get_radius(), color);
         }
         default:
             break;

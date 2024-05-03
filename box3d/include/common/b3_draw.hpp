@@ -66,6 +66,8 @@ public:
 
     virtual void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) = 0;
 
+    virtual void draw_sphere(const b3Transformr& xf, const real& radius, const b3Color& color) = 0;
+
 protected:
 
     uint32 m_draw_flags = 0;
