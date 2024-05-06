@@ -18,6 +18,8 @@ set (TESTBED_SOURCE_FILES
         src/gl_render_triangles.cpp
         src/camera.cpp
         src/test_sphere_drop.cpp
+        src/test_sphere_friction.cpp
+        src/test_sphere_drop_with_angular_velocity.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

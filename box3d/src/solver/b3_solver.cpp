@@ -9,7 +9,7 @@
 #include "common/b3_block_allocator.hpp"
 #include "collision/b3_fixture.hpp"
 
-
+#include "spdlog/spdlog.h"
 //////////////////////////////////////////
 // In the tangent plane, t1 and t2 are counterclockwise
 /*
@@ -114,8 +114,6 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
         const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
 
-        auto I_a = body_a->get_inertia();
-        auto I_b = body_b->get_inertia();
         vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
         vc->m_inv_I_a = R_a * body_a->get_inv_inertia() * R_a.transpose();
 
@@ -137,8 +135,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_radius[1] = (real)0.1 * fixture_b->get_shape()->get_radius();
         vc->m_inv_radius[1] = (real)1.0 / vc->m_radius[1];
 
-        auto test = vc->m_inv_I_a + vc->m_inv_I_b;
-        vc->m_inv_I_ab = test.inverse();
+        vc->m_inv_I_ab = (vc->m_inv_I_a + vc->m_inv_I_b).inverse();
 
         b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
         b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
@@ -169,27 +166,21 @@ void b3Solver::write_states_back()
         m_bodies[i]->set_angular_velocity(m_ws[i]);
         // TODO: if we need SynchronizeTransform() ?
     }
+
+    for(int32 i = 0; i < m_body_count; i++) {
+        if(m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
+            spdlog::log(spdlog::level::info, "velocity: {}, {}, {}, {}, {}, {}",
+                        m_bodies[i]->get_linear_velocity().x,
+                        m_bodies[i]->get_linear_velocity().y,
+                        m_bodies[i]->get_linear_velocity().z,
+                        m_bodies[i]->get_angular_velocity().x,
+                        m_bodies[i]->get_angular_velocity().y,
+                        m_bodies[i]->get_angular_velocity().z
+            );
+        }
+    }
 }
 
-
-b3Solver::~b3Solver()
-{
-    clear();
-}
-
-
-void b3Solver::clear() {
-    m_timestep = nullptr;
-    m_contacts = nullptr;
-
-    m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
-    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
-
-    m_block_allocator = nullptr;
-}
 
 int b3Solver::solve() {
     init_velocity_constraints();
@@ -511,3 +502,21 @@ void b3Solver::init_velocity_constraints()
 }
 
 
+b3Solver::~b3Solver()
+{
+    clear();
+}
+
+
+void b3Solver::clear() {
+    m_timestep = nullptr;
+    m_contacts = nullptr;
+
+    m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
+    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
+    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
+
+    m_block_allocator = nullptr;
+}

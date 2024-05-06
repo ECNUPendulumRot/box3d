@@ -28,7 +28,7 @@ public:
             b3FixtureDef box_fd;
             box_fd.m_shape = &cube_shape;
             box_fd.m_friction = 0.3;
-            box_fd.m_restitution = 1.0;
+            box_fd.m_restitution = 0.9;
             box_fd.m_density = 1.0;
 
             cube->create_fixture(box_fd);
@@ -74,7 +74,7 @@ public:
         b3FixtureDef ground_fd;
         ground_fd.m_shape = &ground_shape;
         ground_fd.m_friction = 0.3;
-        ground_fd.m_restitution = 1.0;
+        ground_fd.m_restitution = 0.0;
         ground_fd.m_density = 0.0;
 
 

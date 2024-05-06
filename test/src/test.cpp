@@ -17,7 +17,7 @@ void Test::step(Settings &settings) {
     flags += settings.m_draw_shapes * b3Draw::e_shape_bit;
     g_debug_draw.set_flags(flags);
 
-    m_world->step(1.0/60.0, 8, 8);
+    m_world->step(1.0/60.0, 32, 32);
 
     m_world->debug_draw();
 
