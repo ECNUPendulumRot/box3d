@@ -34,12 +34,13 @@ public:
 
     void create();
 
-    void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                  const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) override;
+    void draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color) override;
 
-    void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) override;
+    void draw_plane(const b3PlaneShape* plane, const b3Transformr& xf, const b3Color& color) override;
 
-    void draw_sphere(const b3Transformr& xf, const real& radius, const b3Color& color) override;
+    void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) override;
+
+    void draw_segment(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) override;
 
     void flush();
 

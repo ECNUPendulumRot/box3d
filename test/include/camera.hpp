@@ -11,6 +11,8 @@ struct Camera
         m_width = 1280;
         m_height = 800;
 
+        build_model_matrix(m_model_matrix);
+
         reset_view();
     }
 
@@ -33,6 +35,8 @@ struct Camera
     float m_s = 0.1f;
     float m_n = 0.1f;
     float m_f = 100.0f;
+
+    float m_model_matrix[16];
 
     b3Vec3f m_d;
     b3Vec3f m_u;

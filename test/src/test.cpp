@@ -12,12 +12,22 @@ Test::Test() {
 
 void Test::step(Settings &settings) {
 
+    float time_step = settings.m_hertz > 0.0f ? 1.0f / settings.m_hertz : float(0.0f);
+    if (settings.m_pause) {
+        if (settings.m_single_step) {
+            settings.m_single_step = false;
+        } else {
+            time_step = 0.0f;
+        }
+    }
     // set up flags
     uint32 flags = 0;
     flags += settings.m_draw_shapes * b3Draw::e_shape_bit;
+    flags += settings.m_draw_frame_only * b3Draw::e_frame_only_bit;
+
     g_debug_draw.set_flags(flags);
 
-    m_world->step(1.0/60.0, 8, 8);
+    m_world->step(time_step, 8, 8);
 
     m_world->debug_draw();
 
