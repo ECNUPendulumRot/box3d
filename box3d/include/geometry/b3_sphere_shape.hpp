@@ -35,18 +35,6 @@ class b3SphereShape : public b3Shape {
     // control generate sphere view data
     static const b3SphereConfig m_config;
 
-    /**
-     * when the first get view data, we need generate all vertices of sphere.
-     * after first, we only need to move the vertices of sphere.
-     * because the rotation is not effect to the sphere.
-     */
-    bool m_first_setup_view;
-
-    /**
-     * This is used to move vertices of sphere.
-     */
-    b3Vec3r m_old_center;
-
 public:
 
     b3SphereShape();

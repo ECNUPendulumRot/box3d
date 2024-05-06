@@ -75,6 +75,7 @@ void b3_collide_plane_and_sphere(
   	    return;
     }
     manifold->m_point_count = 1;
+    manifold->m_type = b3Manifold::e_circles;
     // transform the vector form the plane frame to the world frame
     manifold->m_local_normal = xf_a.rotation_matrix() * (local_center - nearest_point);
     if (manifold->m_local_normal.is_zero()) {

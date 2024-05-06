@@ -51,6 +51,7 @@ protected:
 
     b3Body** m_bodies;
 
+    // TODO: not used now
     b3IntegralMethod m_method;
 
     /**
@@ -62,13 +63,18 @@ public:
 
     b3Solver() = default;
 
-    b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    // b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void solve_velocity_constraints(bool is_collision);
 
+    void solve_sphere_angular_velocity(b3ContactVelocityConstraint* vc);
+
     void init_velocity_constraints();
+
+    // TODO: This function is not used now, it's effect not good.
+    void correct_penetration();
 
     int solve();
 

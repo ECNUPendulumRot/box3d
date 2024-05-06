@@ -88,7 +88,6 @@ struct b3Manifold {
 
     b3Vec3r m_local_point;								///< usage depends on manifold type
 
-    // TODO: this maybe not useful, check to delete it.
     Type m_type;
 
     int32 m_point_count;								///< the number of manifold points

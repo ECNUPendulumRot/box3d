@@ -28,9 +28,8 @@ void b3_collide_spheres(
         return;
     }
 
-    // TODO: delete this.
-    // manifold->m_type = b3Manifold::e_circles;
     manifold->m_point_count = 1;
+    manifold->m_type = b3Manifold::e_circles;
 
     // if the vector ab is nearly zero, we select the x-axis as the normal
     if(ab.is_zero()) {
@@ -254,6 +253,7 @@ void b3_collide_cube_and_sphere(
 {
     
     manifold->m_point_count = 0;
+    manifold->m_type = b3Manifold::e_circles;
 
     // Compute the center of sphere position on cube frame
     b3Vec3r sphere_c_local = xf_b.transform(sphere_b->get_centroid());
