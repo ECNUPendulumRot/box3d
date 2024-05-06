@@ -1,7 +1,3 @@
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
-
-include(spdlog)
-
 ###################### b3simapp ######################
 
 set (TESTBED_SOURCE_FILES

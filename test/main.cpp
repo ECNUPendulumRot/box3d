@@ -223,7 +223,6 @@ int main(int argc, char *argv[]) {
     // If do not write these three lines, glViewPort will be wrong
     int version = gladLoadGL(glfwGetProcAddress);
     spdlog::info("GL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-    spdlog::info("OpenGL {}, GLSL {}", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     glfwSetWindowSizeCallback(g_main_window, resize_window_callback);
     glfwSetMouseButtonCallback(g_main_window, mouse_button_callback);

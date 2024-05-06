@@ -1,7 +1,5 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
-include(spdlog)
-
 set(B3D_HEADER_FILES
         include/box3d.hpp
 
