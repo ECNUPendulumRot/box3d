@@ -62,4 +62,4 @@ public:
 
 };
 
-static int test_index = register_test("Cube Scene Test", "Sphere Drop", TestSphereDrop::create);
+static int test_index = register_test("Sphere Scene Test", "Sphere Drop", TestSphereDrop::create);

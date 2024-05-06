@@ -20,6 +20,10 @@ set (TESTBED_SOURCE_FILES
         src/test_sphere_drop.cpp
         src/test_sphere_friction.cpp
         src/test_sphere_drop_with_angular_velocity.cpp
+        src/test_sphere_collide_plane.cpp
+
+        include/gl_render_lines.hpp
+        src/gl_render_lines.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

@@ -134,8 +134,7 @@ void gl_render_triangles::flush() {
     g_camera.build_projection_matrix(proj);
     float view[16] = { 0.0f };
     g_camera.build_view_matrix(view);
-    float model[16] = { 0.0f };
-    g_camera.build_model_matrix(model);
+    const float* model = g_camera.m_model_matrix;
 
     float view_pos[3] = {g_camera.m_position.x, g_camera.m_position.y, g_camera.m_position.z};
     glUniformMatrix4fv(m_projection_uniform, 1, GL_FALSE, proj);
