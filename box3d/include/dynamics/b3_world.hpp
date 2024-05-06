@@ -15,9 +15,10 @@
 #include "dynamics/b3_island.hpp"
 
 #include "common/b3_block_allocator.hpp"
-#include "solver/b3_solver_factory.hpp"
 
+struct b3Color;
 struct b3TimeStep;
+class b3Draw;
 
 class b3World {
 
@@ -37,7 +38,7 @@ class b3World {
 
     int32 m_body_count;
 
-    b3Vector3r m_gravity = b3Vector3r(0, 0, 0);
+    b3Vec3r m_gravity = b3Vec3r(0, 0, 0);
 
     real m_hz = 60;
 
@@ -47,11 +48,13 @@ class b3World {
 
     bool m_new_contacts = false;
 
-    b3SolverType m_solver_type = b3SolverType::SI_SOLVER;
+    b3Draw* m_debug_draw;
 
 public:
 
     b3World();
+
+    explicit b3World(const b3Vec3r& gravity);
 
     ~b3World();
 
@@ -79,16 +82,20 @@ public:
 
     void add_shape(b3Shape* shape);
 
-    void set_gravity(const b3Vector3r& gravity) {
+    void set_gravity(const b3Vec3r& gravity) {
         m_gravity = gravity;
     }
 
-    b3Vector3r gravity() {
+    b3Vec3r gravity() {
         return m_gravity;
     }
 
     b3BroadPhase* get_broad_phase() {
         return m_contact_manager.get_broad_phase();
+    }
+
+    b3Contact* get_contact_list() {
+        return m_contact_manager.get_contact_list();
     }
 
     /**
@@ -104,10 +111,6 @@ public:
         return &m_block_allocator;
     }
 
-    void set_solver_type(b3SolverType type) {
-        m_solver_type = type;
-    }
-
     inline int32 get_body_count() const {
         return m_body_count;
     }
@@ -116,11 +119,19 @@ public:
         return m_body_list;
     }
 
-protected:
+    inline void set_debug_draw(b3Draw* draw) {
+        m_debug_draw = draw;
+    }
+
+    void debug_draw();
+
+private:
 
     // void solve(double delta_t);
 
     void solve(b3TimeStep& step);
+
+    void draw_shape(b3Fixture* fixture, const b3Transformr& xf, const b3Color& color);
 
 };
 

@@ -8,12 +8,9 @@
 
 class b3PlaneShape : public b3Shape {
 
-    /**
-     * This is used to generate the edges of the shape.
-     */
-    static int32 segment_count;
-
 public:
+
+    static int32 segment_count;
 
     real m_half_length, m_half_width;
 

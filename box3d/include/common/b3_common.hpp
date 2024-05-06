@@ -7,9 +7,9 @@
 #include <cfloat>
 #include <cmath>
 
+#include "common/b3_types.hpp"
 
 #define b3_assert(A) assert(A)
-
 
 #define b3_pi 3.14159265359
 
@@ -56,5 +56,6 @@ inline bool b3_is_zero(real x) {
 inline bool b3_close_to_zero(real x) {
     return fabs(x) < b3_close_to_zero_epsilon;
 }
+
 
 #endif //BOX3D_B3_COMMON_HPP

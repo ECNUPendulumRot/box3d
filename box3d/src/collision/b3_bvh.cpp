@@ -49,7 +49,7 @@ b3DynamicTree::~b3DynamicTree() {
 int32 b3DynamicTree::create_bvh_proxy(const b3AABB &aabb, b3FixtureProxy *fixture_proxy) {
     int32 bvh_proxy_id = assign_node();
 
-    b3Vector3r r(b3_aabb_extension, b3_aabb_extension, b3_aabb_extension);
+    b3Vec3r r(b3_aabb_extension, b3_aabb_extension, b3_aabb_extension);
     m_nodes[bvh_proxy_id].m_aabb.m_min = aabb.m_min - r;
     m_nodes[bvh_proxy_id].m_aabb.m_max = aabb.m_max + r;
 
@@ -192,7 +192,7 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 
     int32 sibling = f_index;
 
-    // Create A new parent for the sibling and the insertion leaf
+    // create A new parent for the sibling and the insertion leaf
     int32 old_parent = m_nodes[sibling].m_parent;
     int32 new_parent = assign_node();
     m_nodes[new_parent].m_parent = old_parent;
@@ -259,7 +259,7 @@ void b3DynamicTree::remove_leaf(int32 leaf) {
 
     // If grandparent of this leaf exists
     if (i_grand_parent != b3_NULL_NODE) {
-	    // Destroy the parent because only this parent has only one child
+	    // destroy the parent because only this parent has only one child
 	    if (m_nodes[i_grand_parent].m_child1 == i_parent)
 	        m_nodes[i_grand_parent].m_child1 = i_sibling;
 	    else

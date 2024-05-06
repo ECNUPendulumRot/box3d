@@ -69,7 +69,7 @@ void b3Body::reset_mass_data()
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
-    b3Vector3r local_center = b3Vector3r::zero();
+    b3Vec3r local_center = b3Vec3r::zero();
 
     // see Mirtich's paper, Fast and Accurate Computation of Polyhedral Mass Properties
     for (b3Fixture *f = m_fixture_list; f != nullptr; f = f->m_next) {
@@ -91,16 +91,16 @@ void b3Body::reset_mass_data()
     }
 
     if (m_inertia.determinant() > 0) {
-        real bxx = local_center.y() * local_center.y() + local_center.z() * local_center.z();
-        real byy = local_center.x() * local_center.x() + local_center.z() * local_center.z();
-        real bzz = local_center.x() * local_center.x() + local_center.y() * local_center.y();
-        real bxy = local_center.x() * local_center.y();
-        real bxz = local_center.x() * local_center.z();
-        real byz = local_center.y() * local_center.z();
+        real bxx = local_center.y * local_center.y + local_center.z * local_center.z;
+        real byy = local_center.x * local_center.x + local_center.z * local_center.z;
+        real bzz = local_center.x * local_center.x + local_center.y * local_center.y;
+        real bxy = local_center.x * local_center.y;
+        real bxz = local_center.x * local_center.z;
+        real byz = local_center.y * local_center.z;
 
-        b3Vector3r col1(bxx, -bxy, -bxz);
-        b3Vector3r col2(-bxy, byy, -byz);
-        b3Vector3r col3(-bxz, -byz, bzz);
+        b3Vec3r col1(bxx, -bxy, -bxz);
+        b3Vec3r col2(-bxy, byy, -byz);
+        b3Vec3r col3(-bxz, -byz, bzz);
         b3Matrix3r bias_center(col1, col2, col3);
 
         m_inertia -= m_mass * bias_center;

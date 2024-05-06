@@ -4,7 +4,7 @@
 
 
 #include "common/b3_allocator.hpp"
-#include "math/b3_quaternion.hpp"
+#include "math/b3_quat.hpp"
 #include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_body_def.hpp"
 
@@ -37,20 +37,20 @@ class b3Body {
     ///////////////// Kinematic Properties /////////////////
 
     // CoM
-    b3Vector3r m_local_center = b3Vector3r::zero();
+    b3Vec3r m_local_center = b3Vec3r::zero();
 
     // the quaternion of the body
     b3Quaternionr m_q;
 
     // the position of the body
-    b3Vector3r m_p;
+    b3Vec3r m_p;
 
     // the linear velocity of the body
-    b3Vector3r m_v;
+    b3Vec3r m_v;
 
     // the angular velocity of the body
     // in form of angle axis
-    b3Vector3r m_w;
+    b3Vec3r m_w;
 
 
     ////////////////// Dynamic Properties //////////////////
@@ -67,11 +67,11 @@ class b3Body {
 
     b3Matrix3r m_inv_inertia = b3Matrix3r::zero();
 
-    b3Vector3r m_force = b3Vector3r::zero();
+    b3Vec3r m_force = b3Vec3r::zero();
 
-    b3Vector3r m_gravity = b3Vector3r::zero();
+    b3Vec3r m_gravity = b3Vec3r::zero();
 
-    b3Vector3r m_torque;
+    b3Vec3r m_torque;
 
     ///////////////// Collision Properties /////////////////
 
@@ -121,27 +121,27 @@ public:
         return m_type;
     }
 
-    inline b3Vector3r get_force() const {
+    inline b3Vec3r get_force() const {
         return m_force;
     }
 
-    inline b3Vector3r get_gravity() const {
+    inline b3Vec3r get_gravity() const {
         return m_gravity * m_mass;
     }
 
-    inline b3Vector3r get_torque() const {
+    inline b3Vec3r get_torque() const {
         return m_torque;
     }
 
-    void apply_force(b3Vector3r& force) {
+    void apply_force(b3Vec3r& force) {
         m_force = force;
     }
 
-    void apply_gravity(b3Vector3r& gravity) {
+    void apply_gravity(b3Vec3r& gravity) {
         m_gravity = gravity;
     }
 
-    void apply_torque(b3Vector3r& torque) {
+    void apply_torque(b3Vec3r& torque) {
         m_torque = torque;
     }
 
@@ -149,11 +149,11 @@ public:
         return m_contact_list;
     }
 
-    b3Fixture* get_fixture() const {
+    b3Fixture* get_fixture_list() const {
         return m_fixture_list;
     }
 
-    b3Vector3r get_position() const {
+    b3Vec3r get_position() const {
         return m_p;
     }
 
@@ -165,23 +165,23 @@ public:
         m_q = q;
     }
 
-    void set_position(const b3Vector3r& p) {
+    void set_position(const b3Vec3r& p) {
         m_p = p;
     }
 
-    b3Vector3r get_linear_velocity() const {
+    b3Vec3r get_linear_velocity() const {
         return m_v;
     }
 
-    b3Vector3r get_angular_velocity() const {
+    b3Vec3r get_angular_velocity() const {
         return m_w;
     }
 
-    void set_linear_velocity(b3Vector3r& v) {
+    void set_linear_velocity(b3Vec3r& v) {
         m_v = v;
     }
 
-    void set_angular_velocity(b3Vector3r& w) {
+    void set_angular_velocity(b3Vec3r& w) {
         m_w = w;
     }
 
@@ -205,7 +205,7 @@ public:
         return m_inertia;
     }
 
-    b3Vector3r get_local_center() const {
+    b3Vec3r get_local_center() const {
         return m_local_center;
     }
 

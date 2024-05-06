@@ -3,14 +3,26 @@
 
 #include "common/b3_time_step.hpp"
 
+#include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
+#include "solver/b3_solver.hpp"
+#include "common/b3_draw.hpp"
 
-#include "solver/b3_solver_factory.hpp"
+#include "geometry/b3_cube_shape.hpp"
+#include "geometry/b3_plane_shape.hpp"
+#include "geometry/b3_sphere_shape.hpp"
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
 {
+    m_contact_manager.set_block_allocator(&m_block_allocator);
+}
+
+
+b3World::b3World(const b3Vec3r &gravity):b3World()
+{
+    m_gravity = gravity;
     m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
@@ -69,8 +81,10 @@ void b3World::clear()
     }
 }
 
+
 void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations)
 {
+
     // when new fixtures were added, we need to find the new contacts.
     if (m_new_contacts) {
         m_contact_manager.find_new_contact();
@@ -82,7 +96,7 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
     step.m_velocity_iterations = velocity_iterations;
     step.m_position_iterations = position_iterations;
     step.m_integral_method = e_implicit;
-    step.m_inv_dt = dt > 0.0 ? 1.0 / dt : 0.0;
+    step.m_inv_dt = dt > 0.0 ? real(1.0) / dt : real(0.0);
 
     // update contacts, aabb updates, when aabb not overlapping, delete the contact,
     // otherwise, update the contact manifold.
@@ -152,11 +166,9 @@ void b3World::solve(b3TimeStep &step)
 	        }
         }
 
-//        b3SISolver solver(&m_block_allocator, island, &step);
-//        solver.solve();
-        b3Solver* solver = b3SolverFactory::get_solver(m_solver_type);
-        solver->init(&m_block_allocator, island, &step);
-        solver->solve();
+        // solve the constraints
+        b3Solver solver(&m_block_allocator, island, &step);
+        solver.solve();
 
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {
@@ -168,7 +180,6 @@ void b3World::solve(b3TimeStep &step)
         }
         // clear all bodies and contacts count, so we can reuse the island for the next island.
         island->clear();
-        solver->clear();
     }
 
     // Free the stack and island memory.
@@ -191,4 +202,59 @@ void b3World::solve(b3TimeStep &step)
     // Look for new contacts
     m_contact_manager.find_new_contact();
 }
+
+
+void b3World::debug_draw() {
+
+    if (m_debug_draw == nullptr) {
+        return;
+    }
+
+    uint32 flags = m_debug_draw->get_flags();
+
+    if (flags & b3Draw::e_shape_bit) {
+        for (b3Body *body = m_body_list; body; body = body->next()) {
+
+            b3Transform xf(body->get_position(), body->get_quaternion());
+
+            for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
+                draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
+            }
+        }
+    }
+}
+
+void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Color &color) {
+
+    switch (fixture->get_shape_type()) {
+        case b3ShapeType::e_cube: {
+            b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
+            b3Vec3r vertices[8];
+            b3Vec3r normals[6];
+            for (int32 i = 0; i < 8; ++i) {
+                vertices[i] = xf.transform(cube->m_vertices[i]);
+            }
+
+            for (int32 i = 0; i < 6; ++i) {
+                normals[i] = xf.rotate(cube->m_normals[i]);
+            }
+
+            m_debug_draw->draw_box(cube->m_edges, cube->m_faces, normals, vertices, color);
+            break;
+        }
+        case b3ShapeType::e_plane: {
+            b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
+            m_debug_draw->draw_plane(xf, plane->m_half_width, plane->m_half_length, color);
+        }
+
+        case b3ShapeType::e_sphere: {
+            b3SphereShape* sphere = (b3SphereShape*)fixture->get_shape();
+            m_debug_draw->draw_sphere(xf, sphere->get_radius(), color);
+        }
+        default:
+            break;
+    }
+}
+
+
 

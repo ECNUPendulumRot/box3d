@@ -15,18 +15,20 @@ struct b3EdgeIndex {
 };
 
 
-union b3FaceIndex {
+struct b3FaceIndex {
 
-    int32 e[4];
+    union {
+        int32 e[4];
 
-    struct {
-        int32 e1;
+        struct {
+            int32 e1;
 
-        int32 e2;
+            int32 e2;
 
-        int32 e3;
+            int32 e3;
 
-        int32 e4;
+            int32 e4;
+        };
     };
 
 };
@@ -36,19 +38,19 @@ class b3CubeShape : public b3Shape {
 
 public:
 
-    b3Vector3r m_centroid;
+    b3Vec3r m_centroid;
 
-    b3Vector3r m_vertices[8];
+    b3Vec3r m_vertices[8];
 
-    b3Vector3r m_normals[6];
+    b3Vec3r m_normals[6];
 
     b3EdgeIndex m_edges[12];
 
     b3FaceIndex m_faces[6];
 
-    b3Vector3r m_xyz;
+    b3Vec3r m_xyz;
 
-    b3Vector3r m_h_xyz;
+    b3Vec3r m_h_xyz;
 
     b3CubeShape();
 

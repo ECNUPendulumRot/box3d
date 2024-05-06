@@ -3,7 +3,7 @@
 #define BOX3D_B3_AABB_HPP
 
 #include "common/b3_types.hpp"
-
+#include "math/b3_vec3.hpp"
 
 class b3AABB {
 
@@ -15,33 +15,33 @@ class b3AABB {
     /**
      * The lower bound of the AABB.
      */
-    b3Vector3r m_min;
+    b3Vec3r m_min;
 
     /**
      * The upper bound of the AABB.
      */
-    b3Vector3r m_max;
+    b3Vec3r m_max;
 
 public:
 
     b3AABB() = default;
 
-    b3AABB(const b3Vector3r& lower_bound, const b3Vector3r& upper_bound);
+    b3AABB(const b3Vec3r& lower_bound, const b3Vec3r& upper_bound);
 
     /**
      * @brief Get the center coordinate of the AABB.
      * @return The center coordinate of the AABB.
      */
-    inline b3Vector3r center() const {
+    inline b3Vec3r center() const {
 
         return real(0.5) * (m_max - m_min);
     }
 
-    inline b3Vector3r min() const {
+    inline b3Vec3r min() const {
         return m_min;
     }
 
-    inline b3Vector3r max() const {
+    inline b3Vec3r max() const {
         return m_max;
     }
 
@@ -51,9 +51,9 @@ public:
      */
     inline real get_surface_area(){
 
-        real f1 =  (m_max.m_x - m_min.m_x) * (m_max.m_y - m_min.m_y);
-        real f2 =  (m_max.m_x - m_min.m_x) * (m_max.m_z - m_min.m_z);
-        real f3 =  (m_max.m_y - m_min.m_y) * (m_max.m_z - m_min.m_z);
+        real f1 = (m_max.x - m_min.x) * (m_max.y - m_min.y);
+        real f2 = (m_max.x - m_min.x) * (m_max.z - m_min.z);
+        real f3 = (m_max.y - m_min.y) * (m_max.z - m_min.z);
         return real(2.0) * (f1 + f2 + f3);
     }
 
@@ -73,13 +73,13 @@ public:
 
         bool result = true;
 
-        result = result && m_min.m_x <= other.m_min.m_x;
-        result = result && m_min.m_y <= other.m_min.m_y;
-        result = result && m_min.m_z <= other.m_min.m_z;
+        result = result && m_min.x <= other.m_min.x;
+        result = result && m_min.y <= other.m_min.y;
+        result = result && m_min.z <= other.m_min.z;
 
-        result = result && m_max.m_x >= other.m_max.m_x;
-        result = result && m_max.m_y >= other.m_max.m_y;
-        result = result && m_max.m_z >= other.m_max.m_z;
+        result = result && m_max.x >= other.m_max.x;
+        result = result && m_max.y >= other.m_max.y;
+        result = result && m_max.z >= other.m_max.z;
 
         return result;
     }

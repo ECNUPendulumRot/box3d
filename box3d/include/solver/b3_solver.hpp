@@ -3,7 +3,7 @@
 #define BOX3D_B3_SOLVER_HPP
 
 #include "dynamics/b3_transform.hpp"
-#include "math/b3_quaternion.hpp"
+#include "math/b3_quat.hpp"
 #include "solver/b3_contact_constraint.hpp"
 #include "common/b3_time_step.hpp"
 
@@ -25,8 +25,6 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
-void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2);
-
 
 class b3Solver {
 
@@ -37,13 +35,13 @@ protected:
 
     int32 m_body_count;
 
-    b3Vector3r* m_ps = nullptr;
+    b3Vec3r* m_ps = nullptr;
 
     b3Quaternionr* m_qs = nullptr;
 
-    b3Vector3r* m_vs = nullptr;
+    b3Vec3r* m_vs = nullptr;
 
-    b3Vector3r* m_ws = nullptr;
+    b3Vec3r* m_ws = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
@@ -64,18 +62,17 @@ public:
 
     b3Solver() = default;
 
-    //b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    virtual void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    /**
-     * @breif solver all constraints in the island.
-     */
-    virtual int solve() {
-        return 0;
-    };
+    void solve_velocity_constraints(bool is_collision);
 
-    virtual ~b3Solver();
+    void init_velocity_constraints();
+
+    int solve();
+
+    ~b3Solver();
 
     void clear();
 };

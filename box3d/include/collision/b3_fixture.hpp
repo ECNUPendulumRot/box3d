@@ -110,6 +110,10 @@ public:
         return m_body;
     }
 
+    b3Fixture* get_next() const {
+        return m_next;
+    }
+
     b3Shape* get_shape() const {
         return m_shape;
     }

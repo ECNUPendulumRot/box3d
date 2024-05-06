@@ -10,14 +10,14 @@
 static real transform_to_axis(
     const b3CubeShape &box,
     const b3Transformr &xf,
-    const b3Vector3r &axis)
+    const b3Vec3r &axis)
 {
     const b3Matrix3r &R = xf.m_r_t;
-    const b3Vector3r &half_xyz = box.m_h_xyz;
+    const b3Vec3r &half_xyz = box.m_h_xyz;
 
-    return half_xyz.x() * b3_abs(axis.dot(R.col(0))) +
-           half_xyz.y() * b3_abs(axis.dot(R.col(1))) +
-           half_xyz.z() * b3_abs(axis.dot(R.col(2)));
+    return half_xyz.x * b3_abs(axis.dot(R.col(0))) +
+           half_xyz.y * b3_abs(axis.dot(R.col(1))) +
+           half_xyz.z * b3_abs(axis.dot(R.col(2)));
 }
 
 
@@ -27,13 +27,13 @@ static real transform_to_axis(
 static void overlap_on_axis(
     const b3CubeShape &cube_A, const b3Transformr &xf_A,
     const b3CubeShape &cube_B, const b3Transformr &xf_B,
-    const b3Vector3r &axis, real &penetration)
+    const b3Vec3r &axis, real &penetration)
 {
     // project two objects onto the axis.
     real project_A = transform_to_axis(cube_A, xf_A, axis);
     real project_B = transform_to_axis(cube_B, xf_B, axis);
 
-    b3Vector3r to_center = xf_B.position() - xf_A.position();
+    b3Vec3r to_center = xf_B.position() - xf_A.position();
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
@@ -45,14 +45,14 @@ static void overlap_on_axis(
 static void overlap_on_axis_absolute(
     const b3CubeShape& cube_A, const b3Transformr& xf_A,
     const b3CubeShape& cube_B, const b3Transformr& xf_B,
-    const b3Vector3r& axis, real &penetration)
+    const b3Vec3r& axis, real &penetration)
 {
     // project two objects onto the axis.
     real project_A = transform_to_axis(cube_A, xf_A, axis);
     real project_B = transform_to_axis(cube_B, xf_B, axis);
 
 
-    b3Vector3r to_center = xf_B.position() - xf_A.position();
+    b3Vec3r to_center = xf_B.position() - xf_A.position();
 
     // set the penetration of current axis and return whether overlapped.
     // penetration is a value that is smaller than zero
@@ -74,7 +74,7 @@ static real face_separation(
 
     for (int32 i = 0; i < 6; ++i) {
         // get the separation normal of cube_A in the world frame.
-        const b3Vector3r &n = R_a * cube_A->m_normals[i];
+        const b3Vec3r &n = R_a * cube_A->m_normals[i];
 
         real penetration = 0.0;
         // calculate the penetration of cube_B from cube_A
@@ -104,11 +104,11 @@ static real edge_separation(
 
     for (int32 i = 0; i < 3; i++) {
 
-        const b3Vector3r& axis_A = R_a.col(i);
+        const b3Vec3r& axis_A = R_a.col(i);
 
         for (int32 j = 0; j < 3; j++){
-            const b3Vector3r& axis_B = R_b.col(j);
-            const b3Vector3r& separation_axis = axis_B.cross(axis_A).normalized();
+            const b3Vec3r& axis_B = R_b.col(j);
+            const b3Vec3r& separation_axis = axis_B.cross(axis_A).normalized();
             real penetration;
             overlap_on_axis_absolute(*cube_A, xf_A, *cube_B, xf_B, separation_axis, penetration);
 
@@ -132,12 +132,12 @@ static int32 b3_find_incident_face(
     const b3CubeShape *cube1, const b3Transformr &xf1, int32 face1,
     const b3CubeShape *cube2, const b3Transformr &xf2)
 {
-    const b3Vector3r *normals1 = cube1->m_normals;
+    const b3Vec3r *normals1 = cube1->m_normals;
 
     int32 count2 = 6;
 
-    const b3Vector3r *normals2 = cube2->m_normals;
-    const b3Vector3r *vertices2 = cube2->m_vertices;
+    const b3Vec3r *normals2 = cube2->m_normals;
+    const b3Vec3r *vertices2 = cube2->m_vertices;
     const b3EdgeIndex *edges2 = cube2->m_edges;
     const b3FaceIndex *faces2 = cube2->m_faces;
 
@@ -145,7 +145,7 @@ static int32 b3_find_incident_face(
 
     // the normal of face1 in cube2
     // In this way, we do not need to compute normals of cube2 into world frame
-    b3Vector3r normal1 = xf2.m_r_t.transpose() * (xf1.m_r_t * normals1[face1]);
+    b3Vec3r normal1 = xf2.m_r_t.transpose() * (xf1.m_r_t * normals1[face1]);
 
     // find the incident face on cube2
     // the incident face is the mose anti-parallel face of cube2 to face1
@@ -178,7 +178,7 @@ static int32 b3_find_incident_face(
 static int32 b3_clip_segment_to_face(
     b3ClipVertex *v_out, int32 &v_out_count,
     const b3ClipVertex *v_in, const int32 &v_in_count,
-    const b3Vector3r &n, real offset,
+    const b3Vec3r &n, real offset,
     int32 edge_index_clip, int32 incident_face_index)
 {
     // calculate all the distances from the vertices to the plane
@@ -204,8 +204,8 @@ static int32 b3_clip_segment_to_face(
 
 	    // get the clipped vertex on this edge at early
 	    real alpha = dist_v1 / (dist_v1 - dist_v2);
-	    const b3Vector3r &v1 = v_in[i].v;
-	    const b3Vector3r &v2 = v_in[next_i].v;
+	    const b3Vec3r &v1 = v_in[i].v;
+	    const b3Vec3r &v2 = v_in[next_i].v;
 
 	    // check whether the edge needs to be clipped
 	    // only if the sign of two points on the edge is different needs to be clipped
@@ -289,7 +289,7 @@ static void create_face_contact(
     int32 incident_face_index = b3_find_incident_face(incident_vertices, cube1, xf1, face1, cube2, xf2);
 
     // normal of the reference face in cube1 in world frame.
-    const b3Vector3r &n = xf1.m_r_t * cube1->m_normals[face1];
+    const b3Vec3r &n = xf1.m_r_t * cube1->m_normals[face1];
 
     const b3EdgeIndex *edges1 = cube1->m_edges;
     const b3FaceIndex &faces1 = cube1->m_faces[face1];
@@ -303,22 +303,22 @@ static void create_face_contact(
     // the equation of the reference plane is:
     // n \dot (x, y, z)^T - n \dot c1 = 0
     // the n \dot c1 part is called front offset
-    const b3Vector3r &v1 = xf1.transform(cube1->m_vertices[edges1[faces1.e1].v1]);
-    const b3Vector3r &v2 = xf1.transform(cube1->m_vertices[edges1[faces1.e2].v1]);
-    const b3Vector3r &v3 = xf1.transform(cube1->m_vertices[edges1[faces1.e3].v1]);
-    const b3Vector3r &v4 = xf1.transform(cube1->m_vertices[edges1[faces1.e4].v1]);
+    const b3Vec3r &v1 = xf1.transform(cube1->m_vertices[edges1[faces1.e1].v1]);
+    const b3Vec3r &v2 = xf1.transform(cube1->m_vertices[edges1[faces1.e2].v1]);
+    const b3Vec3r &v3 = xf1.transform(cube1->m_vertices[edges1[faces1.e3].v1]);
+    const b3Vec3r &v4 = xf1.transform(cube1->m_vertices[edges1[faces1.e4].v1]);
 
-    b3Vector3r face_centroid = (v1 + v2 + v3 + v4) / real(4.0);
+    b3Vec3r face_centroid = (v1 + v2 + v3 + v4) / real(4.0);
 
-    b3Vector3r tangent1 = (v2 - v1).normalized();
-    b3Vector3r tangent2 = (v3 - v2).normalized();
-    b3Vector3r tangent3 = (v4 - v3).normalized();
-    b3Vector3r tangent4 = (v1 - v4).normalized();
+    b3Vec3r tangent1 = (v2 - v1).normalized();
+    b3Vec3r tangent2 = (v3 - v2).normalized();
+    b3Vec3r tangent3 = (v4 - v3).normalized();
+    b3Vec3r tangent4 = (v1 - v4).normalized();
 
-    b3Vector3r nc1 = tangent1.cross(n);
-    b3Vector3r nc2 = tangent2.cross(n);
-    b3Vector3r nc3 = tangent3.cross(n);
-    b3Vector3r nc4 = tangent4.cross(n);
+    b3Vec3r nc1 = tangent1.cross(n);
+    b3Vec3r nc2 = tangent2.cross(n);
+    b3Vec3r nc3 = tangent3.cross(n);
+    b3Vec3r nc4 = tangent4.cross(n);
 
     double side_offset1 = nc1.dot(v1);
     double side_offset2 = nc2.dot(v2);
@@ -353,7 +353,7 @@ static void create_face_contact(
 
         if (separation <= total_radius) {
             b3ManifoldPoint *cp = manifold->m_points + point_count;
-            b3Vector3r& v = clip_points4[i].v;
+            b3Vec3r& v = clip_points4[i].v;
             // The point of manifold is the mid point
             v = v + (face_centroid - v).dot(n) / real(2.0) * n;
             cp->m_local_point = clip_points4[i].v;
@@ -367,18 +367,18 @@ static void create_face_contact(
 
 
 real line_segement_separation(
-    const b3Vector3r& v1_a, const b3Vector3r& v2_a,
-    const b3Vector3r& v1_b, const b3Vector3r& v2_b,
-    b3Vector3r& normal, b3Vector3r& point, b3Vector3r& local_point)
+    const b3Vec3r& v1_a, const b3Vec3r& v2_a,
+    const b3Vec3r& v1_b, const b3Vec3r& v2_b,
+    b3Vec3r& normal, b3Vec3r& point, b3Vec3r& local_point)
 {
-    const b3Vector3r& d_A = v2_a - v1_a;
-    const b3Vector3r& d_B = v2_b - v1_b;
+    const b3Vec3r& d_A = v2_a - v1_a;
+    const b3Vec3r& d_B = v2_b - v1_b;
 
     real a = d_A.dot(d_A);
     real b = d_A.dot(d_B);
     real c = d_B.dot(d_B);
 
-    const b3Vector3r& r = v1_b - v1_a;
+    const b3Vec3r& r = v1_b - v1_a;
     real e = r.dot(d_A);
     real f = r.dot(d_B);
 
@@ -396,8 +396,8 @@ real line_segement_separation(
         return -b3_real_max;
     }
 
-    b3Vector3r c_A = v1_a + t * d_A;
-    b3Vector3r c_B = v1_b + s * d_B;
+    b3Vec3r c_A = v1_a + t * d_A;
+    b3Vec3r c_B = v1_b + s * d_B;
 
     normal = (c_B - c_A).normalized();
     point = (c_A + c_B) / real(2.0);
@@ -420,16 +420,16 @@ void create_edge_contact(
 
     const b3Matrix3r& I = b3Matrix3r::identity();
 
-    const b3Vector3r& axis_A = I.col(axis_index_A);
-    const b3Vector3r& axis_B = I.col(axis_index_B);
+    const b3Vec3r& axis_A = I.col(axis_index_A);
+    const b3Vec3r& axis_B = I.col(axis_index_B);
 
     // to find edge-edge contact, we should test all edges pairs of two cubes.
     for (int32 i = 0; i < 12; i++) {
 
         // get the normal of edge on sphere_A in the world frame.
-        const b3Vector3r& v1_a = cube_A->m_vertices[cube_A->m_edges[i].v1];
-        const b3Vector3r& v2_a = cube_A->m_vertices[cube_A->m_edges[i].v2];
-        const b3Vector3r& e_n_a = (v2_a - v1_a);
+        const b3Vec3r& v1_a = cube_A->m_vertices[cube_A->m_edges[i].v1];
+        const b3Vec3r& v2_a = cube_A->m_vertices[cube_A->m_edges[i].v2];
+        const b3Vec3r& e_n_a = (v2_a - v1_a);
 
         if (b3_close_to_zero(e_n_a.dot(axis_A))) {
             continue;
@@ -438,20 +438,20 @@ void create_edge_contact(
         for (int32 j = 0; j < 12; j++) {
 
             // get the normal of edge on cube_B in the world frame.
-            const b3Vector3r& v1_b = cube_B->m_vertices[cube_B->m_edges[j].v1];
-            const b3Vector3r& v2_b = cube_B->m_vertices[cube_B->m_edges[j].v2];
-            const b3Vector3r& e_n_b = (v2_b - v1_b);
+            const b3Vec3r& v1_b = cube_B->m_vertices[cube_B->m_edges[j].v1];
+            const b3Vec3r& v2_b = cube_B->m_vertices[cube_B->m_edges[j].v2];
+            const b3Vec3r& e_n_b = (v2_b - v1_b);
 
             if (b3_close_to_zero(e_n_b.dot(axis_B))) {
                 continue;
             }
 
-            const b3Vector3r& v1_a_t = xf_A.transform(v1_a);
-            const b3Vector3r& v2_a_t = xf_A.transform(v2_a);
-            const b3Vector3r& v1_b_t = xf_B.transform(v1_b);
-            const b3Vector3r& v2_b_t = xf_B.transform(v2_b);
+            const b3Vec3r& v1_a_t = xf_A.transform(v1_a);
+            const b3Vec3r& v2_a_t = xf_A.transform(v2_a);
+            const b3Vec3r& v1_b_t = xf_B.transform(v1_b);
+            const b3Vec3r& v2_b_t = xf_B.transform(v2_b);
 
-            b3Vector3r normal, point, local_point;
+            b3Vec3r normal, point, local_point;
             real penetration = line_segement_separation(v1_a_t, v2_a_t, v1_b_t, v2_b_t, normal, point, local_point);
 
             real diff = b3_abs(separation - penetration);

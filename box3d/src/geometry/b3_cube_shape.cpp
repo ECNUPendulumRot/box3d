@@ -70,16 +70,16 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 childIndex) const {
     b3_NOT_USED(childIndex);
 
-    b3Vector3r min = xf.transform(m_vertices[0]);
-    b3Vector3r max = min;
+    b3Vec3r min = xf.transform(m_vertices[0]);
+    b3Vec3r max = min;
 
     for (int32 i = 1; i < 8; ++i) {
-  	    b3Vector3r v = xf.transform(m_vertices[i]);
+  	    b3Vec3r v = xf.transform(m_vertices[i]);
   	    min = b3_min_coeff(min, v);
   	    max = b3_max_coeff(max, v);
     }
 
-    b3Vector3r r(m_radius, m_radius, m_radius);
+    b3Vec3r r(m_radius, m_radius, m_radius);
     aabb->m_min = min - r;
     aabb->m_max = max + r;
 }
@@ -88,13 +88,13 @@ void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 chi
 void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real density) const {
     mass_data.m_center = m_centroid;
 
-    mass_data.m_volume = m_xyz.x() * m_xyz.y() * m_xyz.z();
+    mass_data.m_volume = m_xyz.x * m_xyz.y * m_xyz.z;
 
     mass_data.m_mass = density * mass_data.m_volume;
 
-    real x2 = m_xyz.x() * m_xyz.x();
-    real y2 = m_xyz.y() * m_xyz.y();
-    real z2 = m_xyz.z() * m_xyz.z();
+    real x2 = m_xyz.x * m_xyz.x;
+    real y2 = m_xyz.y * m_xyz.y;
+    real z2 = m_xyz.z * m_xyz.z;
     real ot = 1.0 / 12.0;
 
     real i11 = ot * mass_data.m_mass * (y2 + z2);
@@ -133,11 +133,11 @@ void b3CubeShape::init_view_data() {
 
 void b3CubeShape::setup_view_data(const b3Transformr &xf) {
     int index = 0;
-    for (const b3Vector3r &vertex : m_vertices) {
-  	    b3Vector3r v = xf.transform(vertex);
-  	    m_view_data.m_V[index++] = v.x();
-  	    m_view_data.m_V[index++] = v.y();
-  	    m_view_data.m_V[index++] = v.z();
+    for (const b3Vec3r &vertex : m_vertices) {
+  	    b3Vec3r v = xf.transform(vertex);
+  	    m_view_data.m_V[index++] = v.x;
+  	    m_view_data.m_V[index++] = v.y;
+  	    m_view_data.m_V[index++] = v.z;
     }
 }
 
