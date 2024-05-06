@@ -19,6 +19,9 @@ struct Settings {
         m_single_step = false;
     }
 
+    void save() const;
+    void load();
+
     int m_window_width;
     int m_window_height;
 
