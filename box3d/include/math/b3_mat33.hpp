@@ -149,9 +149,9 @@ public:
 
 //////////////////////////////////////////////////////
 
-using b3Matrix3d = b3Mat33<double>;
-using b3Matrix3f = b3Mat33<float>;
-using b3Matrix3r = b3Mat33<real>;
+using b3Mat33d = b3Mat33<double>;
+using b3Mat33f = b3Mat33<float>;
+using b3Mat33r = b3Mat33<real>;
 
 //////////////////////////////////////////////////////
 

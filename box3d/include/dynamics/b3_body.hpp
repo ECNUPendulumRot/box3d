@@ -63,9 +63,9 @@ class b3Body {
 
     real m_inv_mass = 0.0;
 
-    b3Matrix3r m_inertia = b3Matrix3r::zero();
+    b3Mat33r m_inertia = b3Mat33r::zero();
 
-    b3Matrix3r m_inv_inertia = b3Matrix3r::zero();
+    b3Mat33r m_inv_inertia = b3Mat33r::zero();
 
     b3Vec3r m_force = b3Vec3r::zero();
 
@@ -197,11 +197,11 @@ public:
         return m_mass;
     }
 
-    b3Matrix3r get_inv_inertia() const {
+    b3Mat33r get_inv_inertia() const {
         return m_inv_inertia;
     }
 
-    b3Matrix3r get_inertia() const {
+    b3Mat33r get_inertia() const {
         return m_inertia;
     }
 

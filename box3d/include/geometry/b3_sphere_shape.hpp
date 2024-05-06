@@ -10,7 +10,7 @@ struct b3SphereConfig {
 
     int m_segments;
 
-    b3Matrix3r m_rot_y, m_rot_z;
+    b3Mat33r m_rot_y, m_rot_z;
 
     int m_vertices_count;
     int m_faces_count;

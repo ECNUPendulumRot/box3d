@@ -54,7 +54,7 @@ void b3PlaneShape::compute_mass_properties(b3MassProperty &mass_data, real densi
     mass_data.m_center = b3Vec3r::zero();
     mass_data.m_volume = 0;
     mass_data.m_mass = 0;
-    mass_data.m_Inertia = b3Matrix3r::zero();
+    mass_data.m_Inertia = b3Mat33r::zero();
 }
 
 b3Shape* b3PlaneShape::clone() const

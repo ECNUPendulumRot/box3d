@@ -45,12 +45,12 @@ b3SphereConfig::b3SphereConfig()
     b3Vec3r rot_col_1(cos_inc, 0, -sin_inc);
     b3Vec3r rot_col_2(0, 1, 0);
     b3Vec3r rot_col_3(sin_inc, 0, cos_inc);
-    m_rot_y = b3Matrix3r(rot_col_1, rot_col_2, rot_col_3);
+    m_rot_y = b3Mat33r(rot_col_1, rot_col_2, rot_col_3);
 
     rot_col_1 = { cos_inc, sin_inc, 0 };
     rot_col_2 = { -sin_inc, cos_inc, 0 };
     rot_col_3 = { 0, 0, 1 };
-    m_rot_z = b3Matrix3r(rot_col_1, rot_col_2, rot_col_3);
+    m_rot_z = b3Mat33r(rot_col_1, rot_col_2, rot_col_3);
 
     // the sphere is divided into two points on the end of sphere
     // and %m_segments - 1% rings.
@@ -104,7 +104,7 @@ void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, real dens
 
     real ixx = real(0.4) * mass_data.m_mass * m_radius * m_radius;
 
-    mass_data.m_Inertia = b3Matrix3r::zero();
+    mass_data.m_Inertia = b3Mat33r::zero();
     mass_data.m_Inertia(0, 0) = ixx;
     mass_data.m_Inertia(1, 1) = ixx;
     mass_data.m_Inertia(2, 2) = ixx;
@@ -214,8 +214,8 @@ void b3SphereShape::init_view_data()
     mem = m_block_allocator->allocate(sizeof(b3Vec3r) * m_config.m_vertices_count);
     m_vertices = new (mem) b3Vec3r[m_config.m_vertices_count];
 
-    const b3Matrix3r &rot_y = m_config.m_rot_y;
-    const b3Matrix3r &rot_z = m_config.m_rot_z;
+    const b3Mat33r &rot_y = m_config.m_rot_y;
+    const b3Mat33r &rot_z = m_config.m_rot_z;
 
     b3Vec3r v1(0, 0, 1);
     b3Vec3r v2;

@@ -12,7 +12,7 @@ static real transform_to_axis(
     const b3Transformr &xf,
     const b3Vec3r &axis)
 {
-    const b3Matrix3r &R = xf.m_r_t;
+    const b3Mat33r &R = xf.m_r_t;
     const b3Vec3r &half_xyz = box.m_h_xyz;
 
     return half_xyz.x * b3_abs(axis.dot(R.col(0))) +
@@ -70,7 +70,7 @@ static real face_separation(
     real max_penetration = -b3_real_max;
     int32 best_index;
 
-    b3Matrix3r R_a = xf_A.rotation_matrix();
+    b3Mat33r R_a = xf_A.rotation_matrix();
 
     for (int32 i = 0; i < 6; ++i) {
         // get the separation normal of cube_A in the world frame.
@@ -99,8 +99,8 @@ static real edge_separation(
     int32 best_axis_index_a;
     int32 best_axis_index_b;
 
-    b3Matrix3r R_a = xf_A.rotation_matrix();
-    b3Matrix3r R_b = xf_B.rotation_matrix();
+    b3Mat33r R_a = xf_A.rotation_matrix();
+    b3Mat33r R_b = xf_B.rotation_matrix();
 
     for (int32 i = 0; i < 3; i++) {
 
@@ -418,7 +418,7 @@ void create_edge_contact(
     int32 best_edge_index_a, best_edge_index_b;
     real max_diff = b3_real_max;
 
-    const b3Matrix3r& I = b3Matrix3r::identity();
+    const b3Mat33r& I = b3Mat33r::identity();
 
     const b3Vec3r& axis_A = I.col(axis_index_A);
     const b3Vec3r& axis_B = I.col(axis_index_B);

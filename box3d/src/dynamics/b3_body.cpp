@@ -13,7 +13,7 @@
 #include "geometry/b3_plane_shape.hpp"
 
 
-b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Matrix3r::zero())
+b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::zero())
 {
     m_type = body_def.m_type;
     m_p = body_def.m_init_p;
@@ -64,8 +64,8 @@ void b3Body::reset_mass_data()
 {
     m_mass = 0.0;
     m_inv_mass = 0.0;
-    m_inertia = b3Matrix3r::zero();
-    m_inv_inertia = b3Matrix3r::zero();
+    m_inertia = b3Mat33r::zero();
+    m_inv_inertia = b3Mat33r::zero();
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
@@ -101,7 +101,7 @@ void b3Body::reset_mass_data()
         b3Vec3r col1(bxx, -bxy, -bxz);
         b3Vec3r col2(-bxy, byy, -byz);
         b3Vec3r col3(-bxz, -byz, bzz);
-        b3Matrix3r bias_center(col1, col2, col3);
+        b3Mat33r bias_center(col1, col2, col3);
 
         m_inertia -= m_mass * bias_center;
 
@@ -110,8 +110,8 @@ void b3Body::reset_mass_data()
         m_inv_inertia = m_inertia.inverse();
 
     } else {
-        m_inv_inertia = b3Matrix3r::zero();
-        m_inv_inertia = b3Matrix3r::zero();
+        m_inv_inertia = b3Mat33r::zero();
+        m_inv_inertia = b3Mat33r::zero();
     }
 
     // TODO: check whether m_sweep is needed

@@ -28,10 +28,10 @@ struct b3ContactVelocityConstraint {
     real m_inv_mass_b;
     real m_mass_a;
     real m_mass_b;
-    b3Matrix3r m_I_a;
-    b3Matrix3r m_I_b;
-    b3Matrix3r m_inv_I_a;
-    b3Matrix3r m_inv_I_b;
+    b3Mat33r m_I_a;
+    b3Mat33r m_I_b;
+    b3Mat33r m_inv_I_a;
+    b3Mat33r m_inv_I_b;
 
     int32 m_point_count;
     int32 m_contact_index;
@@ -68,10 +68,10 @@ struct b3FrictionConstraint {
     real m_mass_b;
     real m_inv_mass_a;
     real m_inv_mass_b;
-    b3Matrix3r m_I_a;
-    b3Matrix3r m_I_b;
-    b3Matrix3r m_inv_I_a;
-    b3Matrix3r m_inv_I_b;
+    b3Mat33r m_I_a;
+    b3Mat33r m_I_b;
+    b3Mat33r m_inv_I_a;
+    b3Mat33r m_inv_I_b;
     b3Vec3r m_normal;
     int m_point_count;
     b3Vec3r m_ra;

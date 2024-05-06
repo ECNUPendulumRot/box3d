@@ -93,7 +93,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_mass_a = body_a->get_mass();
         vc->m_inv_mass_a = body_a->get_inv_mass();
 
-        const b3Matrix3r& R_a = body_a->get_quaternion().rotation_matrix();
+        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
 
         vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
         vc->m_inv_I_a = R_a * body_a->get_inv_inertia() * R_a.transpose();
@@ -103,7 +103,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_mass_b = body_b->get_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
 
-        const b3Matrix3r& R_b = body_b->get_quaternion().rotation_matrix();
+        const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
 
         vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
         vc->m_inv_I_b = R_b * body_b->get_inv_inertia() * R_b.transpose();

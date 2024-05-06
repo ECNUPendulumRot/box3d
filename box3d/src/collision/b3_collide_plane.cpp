@@ -10,7 +10,7 @@
 // the axis is in the world frame
 static real transform_to_axis(const b3CubeShape& box, const b3Transformr& xf, const b3Vec3r& axis)
 {
-    const b3Matrix3r& R = xf.m_r_t;
+    const b3Mat33r& R = xf.m_r_t;
     const b3Vec3r& half_xyz = box.m_h_xyz;
 
     return half_xyz.x * b3_abs(axis.dot(R.col(0))) + half_xyz.y * b3_abs(axis.dot(R.col(1))) + half_xyz.z * b3_abs(axis.dot(R.col(2)));

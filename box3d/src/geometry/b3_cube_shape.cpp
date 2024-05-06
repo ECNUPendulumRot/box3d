@@ -101,7 +101,7 @@ void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real densit
     real i22 = ot * mass_data.m_mass * (x2 + z2);
     real i33 = ot * mass_data.m_mass * (x2 + y2);
 
-    mass_data.m_Inertia = b3Matrix3r::zero();
+    mass_data.m_Inertia = b3Mat33r::zero();
     mass_data.m_Inertia(0, 0) = i11;
     mass_data.m_Inertia(1, 1) = i22;
     mass_data.m_Inertia(2, 2) = i33;
