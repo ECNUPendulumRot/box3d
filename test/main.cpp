@@ -225,6 +225,7 @@ int main(int argc, char *argv[]) {
     g_camera.m_width = s_settings.m_window_width;
     g_camera.m_height = s_settings.m_window_height;
 
+    s_settings.load();
     sort_tests();
 
     // init glfw
@@ -335,4 +336,5 @@ int main(int argc, char *argv[]) {
     ImGui_ImplGlfw_Shutdown();
     glfwTerminate();
 
+    s_settings.save();
 }
