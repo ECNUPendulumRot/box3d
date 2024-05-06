@@ -238,7 +238,14 @@ int main(int argc, char *argv[]) {
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 
     glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+
+    std::chrono::duration<double> frame_time(0.0);
+    std::chrono::duration<double> sleep_adjust(0.0);
+
     while (!glfwWindowShouldClose(g_main_window)) {
+
+        std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+
 
         glfwGetWindowSize(g_main_window, &g_camera.m_width, &g_camera.m_height);
 
@@ -277,6 +284,18 @@ int main(int argc, char *argv[]) {
 
         glfwPollEvents();
 
+        // Throttle to cap at 60Hz. This adaptive using a sleep adjustment. This could be improved by
+        // using mm_pause or equivalent for the last millisecond.
+        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+        std::chrono::duration<double> target(1.0 / 60.0);
+        std::chrono::duration<double> timeUsed = t2 - t1;
+        std::chrono::duration<double> sleep_time = target - timeUsed + sleep_adjust;
+        if (sleep_time > std::chrono::duration<double>(0)) {
+            std::this_thread::sleep_for(sleep_time);
+        }
+        std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
+        frame_time = t3 - t1;
+        sleep_adjust = 0.9 * sleep_adjust + 0.1 * (target - frame_time);
     }
 
     ImGui_ImplOpenGL3_Shutdown();
