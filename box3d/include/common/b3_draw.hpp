@@ -5,8 +5,17 @@
 #include "math/b3_vec3.hpp"
 #include "dynamics/b3_transform.hpp"
 
+
+/////////// Forward Delaration ///////////
+
 struct b3EdgeIndex;
 struct b3FaceIndex;
+struct b3CubeShape;
+struct b3PlaneShape;
+struct b3SphereShape;
+
+//////////////////////////////////////////
+
 
 struct b3Color {
 
@@ -38,8 +47,8 @@ public:
     virtual ~b3Draw() = default;
 
     enum {
-        e_shape_bit		     = 0x0001,	///< draw shapes
-        e_joint_bit		     = 0x0002,	///< draw joint connections
+        e_shape_bit		     = 0x0001,	///< draw shape faces
+        e_frame_only_bit     = 0x0002,	///< draw frame instead of faces
         e_aabb_bit		     = 0x0004,	///< draw axis aligned bounding boxes
         e_pair_bit		     = 0x0008,	///< draw broad-phase pairs
         e_center_of_mass_bit = 0x0010	///< draw center of mass frame
@@ -61,12 +70,13 @@ public:
         m_draw_flags &= ~flags;
     }
 
-    virtual void draw_box(const b3EdgeIndex* edge_index, const b3FaceIndex* face_index,
-                          const b3Vec3r* n, const b3Vec3r* v, const b3Color& color) = 0;
+    virtual void draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color) = 0;
 
-    virtual void draw_plane(const b3Transformr& xf, const real& hf_w, const real& hf_l, const b3Color& color) = 0;
+    virtual void draw_plane(const b3PlaneShape* plane, const b3Transformr& xf, const b3Color& color) = 0;
 
-    virtual void draw_sphere(const b3Transformr& xf, const real& radius, const b3Color& color) = 0;
+    virtual void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) = 0;
+
+    virtual void draw_segment(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) = 0;
 
 protected:
 

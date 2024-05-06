@@ -55,7 +55,6 @@ public:
 
         for (int32 i = 0; i < 3; i++) {
             for (int32 j = 0; j < 3; j++) {
-                if (i == j) continue;
                 m.m_ts[i][j] = m_ts[j][i];
             }
         }
@@ -159,6 +158,11 @@ using b3Mat33r = b3Mat33<real>;
 template <typename T>
 inline b3Mat33<T> operator*(const b3Mat33<T>& M, const T& s) {
     return b3Mat33(M.col(0) * s, M.col(1) * s, M.col(2) * s);
+}
+
+template <typename T>
+inline b3Mat33<T> operator+(const b3Mat33<T>& M, const b3Mat33<T>& N) {
+    return b3Mat33(M.col(0) + N.col(0), M.col(1) + N.col(1), M.col(2) + N.col(2));
 }
 
 template <typename T>

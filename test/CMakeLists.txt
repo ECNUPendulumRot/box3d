@@ -19,6 +19,9 @@ set (TESTBED_SOURCE_FILES
         src/camera.cpp
         src/test_sphere_drop.cpp
         src/test_box_stack.cpp
+        include/gl_render_lines.hpp
+        src/gl_render_lines.cpp
+        settings.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})
@@ -26,4 +29,4 @@ add_executable(testbed ${TESTBED_SOURCE_FILES})
 target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(testbed PUBLIC box3d glfw imgui glad spdlog::spdlog)
+target_link_libraries(testbed PUBLIC box3d glfw imgui glad sajson spdlog::spdlog)

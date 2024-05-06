@@ -65,6 +65,13 @@ static inline bool compare_tests(const TestEntry& a, const TestEntry& b)
 }
 
 
+static void restart_test()
+{
+    delete s_test;
+    s_test = g_test_entries[s_settings.m_test_index].create_fcn();
+}
+
+
 static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action, int32 mods) {
 
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
@@ -183,6 +190,32 @@ void update_ui() {
 
     ImGui::End();
 
+    /////////////////// Option List ///////////////////
+
+    ImGui::SetNextWindowPos({g_camera.m_width - menuWidth - 10.0f, 10.0f});
+    ImGui::SetNextWindowSize({menuWidth, g_camera.m_height - 20.0f});
+    ImGui::Begin("Tools", &g_debug_draw.m_show_ui, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+    ImGui::SliderFloat("Hertz", &s_settings.m_hertz, 5.0f, 144.0f, "%.0f hz");
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Shapes", &s_settings.m_draw_shapes);
+    ImGui::Checkbox("Frame Only", &s_settings.m_draw_frame_only);
+
+    ImVec2 button_sz = ImVec2(-1, 0);
+
+    if (ImGui::Button("Pause (P)", button_sz)) {
+        s_settings.m_pause = !s_settings.m_pause;
+    }
+    if (ImGui::Button("Single Step (O)", button_sz)) {
+        s_settings.m_single_step = !s_settings.m_single_step;
+    }
+    if (ImGui::Button("Restart (R)", button_sz)) {
+        restart_test();
+    }
+    ImGui::End();
+
 }
 
 
@@ -192,6 +225,7 @@ int main(int argc, char *argv[]) {
     g_camera.m_width = s_settings.m_window_width;
     g_camera.m_height = s_settings.m_window_height;
 
+    s_settings.load();
     sort_tests();
 
     // init glfw
@@ -302,4 +336,5 @@ int main(int argc, char *argv[]) {
     ImGui_ImplGlfw_Shutdown();
     glfwTerminate();
 
+    s_settings.save();
 }

@@ -224,37 +224,31 @@ void b3World::debug_draw() {
     }
 }
 
+
 void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Color &color) {
 
     switch (fixture->get_shape_type()) {
         case b3ShapeType::e_cube: {
             b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
-            b3Vec3r vertices[8];
-            b3Vec3r normals[6];
-            for (int32 i = 0; i < 8; ++i) {
-                vertices[i] = xf.transform(cube->m_vertices[i]);
-            }
-
-            for (int32 i = 0; i < 6; ++i) {
-                normals[i] = xf.rotate(cube->m_normals[i]);
-            }
-
-            m_debug_draw->draw_box(cube->m_edges, cube->m_faces, normals, vertices, color);
+            m_debug_draw->draw_box(cube, xf, color);
             break;
         }
         case b3ShapeType::e_plane: {
             b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
-            m_debug_draw->draw_plane(xf, plane->m_half_width, plane->m_half_length, color);
+            m_debug_draw->draw_plane(plane, xf, color);
+            break;
         }
 
         case b3ShapeType::e_sphere: {
             b3SphereShape* sphere = (b3SphereShape*)fixture->get_shape();
-            m_debug_draw->draw_sphere(xf, sphere->get_radius(), color);
+            m_debug_draw->draw_sphere(sphere, xf, color);
+            break;
         }
         default:
             break;
     }
 }
+
 
 
 
