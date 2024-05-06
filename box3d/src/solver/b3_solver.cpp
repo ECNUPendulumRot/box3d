@@ -9,6 +9,7 @@
 #include "common/b3_block_allocator.hpp"
 #include "collision/b3_fixture.hpp"
 
+void lemke(b3ContactVelocityConstraint* cp);
 
 b3Solver::b3Solver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
@@ -214,7 +215,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         b3Vec3r v_b = m_vs[vc->m_index_b];
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
-        if (true) {
+        if (vc->m_point_count == 1) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -225,7 +226,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
                 real lambda = 0;
                 // TODO:
                 if(is_collision) {
-                    lambda = vcp->m_normal_mass * (rhs + vcp->m_rhs_restitution_velocity);
+                    lambda = vcp->m_normal_mass * (rhs + vcp->m_bias_velocity);
                     real new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, (real)0.0);
                     lambda = new_impulse - vcp->m_normal_collision_impulse;
                     vcp->m_normal_collision_impulse = new_impulse;
@@ -246,12 +247,9 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             }
 
         } else {
-            // vn = A * x + b
-            // A = J * M_inv * JT
-            // b = vn0 - v_bias
 
+            lemke(vc);
         }
-
 
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;
@@ -298,8 +296,8 @@ void b3Solver::init_velocity_constraints()
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv
             real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
-            // m_rhs_restitution_velocity is eJv
-            vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
+            // m_bias_velocity is eJv
+            vcp->m_bias_velocity = -vc->m_restitution * v_rel;
 
             vcp->m_normal_collision_impulse = 0.0;
             vcp->m_normal_contact_impulse = 0.0;
@@ -314,4 +312,23 @@ void b3Solver::init_velocity_constraints()
     }
 }
 
+
+void lemke(b3ContactVelocityConstraint* cp, b3BlockAllocator *block_allocator) {
+    // this is a Linear Complementary Problem with max size of 16
+    // vn = A * x + b, vn >= 0, xn >= 0, vni * xni = 0
+    // A = J * M_inv * JT
+    // b = vn0 - v_bias
+    const int32& size = cp->m_point_count;
+    real* vn = (real*)block_allocator->allocate(size * sizeof(real));
+    real* x = (real*)block_allocator->allocate(size * sizeof(real));
+    real* b = (real*)block_allocator->allocate(size * sizeof(real));
+
+    int32* pivots = (int32*)block_allocator->allocate(2 * size * sizeof(int32));
+
+    real M_inv[12][12];
+    real* JWJ_left_raw = (real*)block_allocator->allocate(size * 12 * sizeof(real));
+    int* JWJ_left = (int*)block_allocator->allocate(size * sizeof(int));
+    real* JWJ_right = (real*)block_allocator->allocate(size * sizeof(real));
+
+}
 

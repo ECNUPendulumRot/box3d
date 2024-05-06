@@ -75,6 +75,7 @@ public:
     ~b3Solver();
 
     void clear();
+
 };
 
 

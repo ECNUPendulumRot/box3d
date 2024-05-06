@@ -198,7 +198,7 @@ inline b3Vec3<T> operator*(b3Mat33<T> M, const b3Vec3<T>& v) {
 
 template <typename T>
 inline b3Vec3<T> operator*(const b3Vec3<T>& v, b3Mat33<T> M) {
-    return M * v;
+    return b3Vec3<T>(v.dot(M.col(0)), v.dot(M.col(1)), v.dot(M.col(2)));
 }
 
 #endif //BOX3D_B3_MAT33_HPP

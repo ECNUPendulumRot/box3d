@@ -3,7 +3,7 @@
 
 class TestBoxStack: public Test {
 
-    static constexpr int32 box_count = 5;
+    static constexpr int32 box_count = 2;
     const real box_hf_size = 1.0f;
 
     b3Body* m_bodys[box_count];

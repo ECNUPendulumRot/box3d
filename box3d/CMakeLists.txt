@@ -49,6 +49,8 @@ set(B3D_HEADER_FILES
 
         include/math/b3_quat.hpp
         include/common/b3_draw.hpp
+        include/math/b3_vec12.hpp
+        include/math/b3_mat1212.hpp
 
 )
 

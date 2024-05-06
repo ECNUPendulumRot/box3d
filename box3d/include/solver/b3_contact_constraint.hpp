@@ -14,7 +14,7 @@ struct b3VelocityConstraintPoint {
     real m_normal_mass = 0;
     real m_tanget_mass = 0;
     // double m_velocity_bias = 0;
-    real m_rhs_restitution_velocity = 0;
+    real m_bias_velocity = 0;
     real m_rhs_penetration = 0;
 };
 
