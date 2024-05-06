@@ -11,7 +11,7 @@
 #include "settings.hpp"
 #include "test.hpp"
 
-GLFWwindow *g_mainWindow = nullptr;
+GLFWwindow *g_main_window = nullptr;
 static Settings s_settings;
 static int32 s_test_selection = 0;
 static Test* s_test = nullptr;
@@ -22,6 +22,7 @@ static bool s_left_mouse_down = false;
 
 static b3Vec3f s_click_point_ws = b3Vec3f::zero();
 static b3Vec2f s_click_ss = {0, 0};
+
 
 static void resize_window_callback(GLFWwindow *, int width, int height) {
     g_camera.m_width = width;
@@ -207,30 +208,30 @@ int main(int argc, char *argv[]) {
     // Title
     char buffer[128];
     sprintf(buffer, "Box3D Testbed");
-    g_mainWindow = glfwCreateWindow(g_camera.m_width, g_camera.m_height, buffer, NULL, NULL);
+    g_main_window = glfwCreateWindow(g_camera.m_width, g_camera.m_height, buffer, NULL, NULL);
 
-    if (g_mainWindow == NULL) {
-        fprintf(stderr, "Failed to open GLFW g_mainWindow.\n");
+    if (g_main_window == NULL) {
+        fprintf(stderr, "Failed to open GLFW g_main_window.\n");
         glfwTerminate();
         return -1;
     }
 
-    glfwGetWindowContentScale(g_mainWindow, &s_display_scale, &s_display_scale);
+    glfwGetWindowContentScale(g_main_window, &s_display_scale, &s_display_scale);
 
-    glfwMakeContextCurrent(g_mainWindow);
+    glfwMakeContextCurrent(g_main_window);
 
     // If do not write these three lines, glViewPort will be wrong
     int version = gladLoadGL(glfwGetProcAddress);
     spdlog::info("GL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
     spdlog::info("OpenGL {}, GLSL {}", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-    glfwSetWindowSizeCallback(g_mainWindow, resize_window_callback);
-    glfwSetMouseButtonCallback(g_mainWindow, mouse_button_callback);
-    glfwSetCursorPosCallback(g_mainWindow, mouse_motion_call_back);
-    glfwSetScrollCallback(g_mainWindow, scroll_callback);
+    glfwSetWindowSizeCallback(g_main_window, resize_window_callback);
+    glfwSetMouseButtonCallback(g_main_window, mouse_button_callback);
+    glfwSetCursorPosCallback(g_main_window, mouse_motion_call_back);
+    glfwSetScrollCallback(g_main_window, scroll_callback);
     g_debug_draw.create();
 
-    create_ui(g_mainWindow, nullptr);
+    create_ui(g_main_window, nullptr);
 
     // load first test
     s_settings.m_test_index = b3_clamp(s_settings.m_test_index, 0, g_test_count - 1);
@@ -238,12 +239,12 @@ int main(int argc, char *argv[]) {
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 
     glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-    while (!glfwWindowShouldClose(g_mainWindow)) {
+    while (!glfwWindowShouldClose(g_main_window)) {
 
-        glfwGetWindowSize(g_mainWindow, &g_camera.m_width, &g_camera.m_height);
+        glfwGetWindowSize(g_main_window, &g_camera.m_width, &g_camera.m_height);
 
         int bufferWidth, bufferHeight;
-        glfwGetFramebufferSize(g_mainWindow, &bufferWidth, &bufferHeight);
+        glfwGetFramebufferSize(g_main_window, &bufferWidth, &bufferHeight);
         glViewport(0, 0, bufferWidth, bufferHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -266,8 +267,15 @@ int main(int argc, char *argv[]) {
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(g_main_window);
 
-        glfwSwapBuffers(g_mainWindow);
+        if (s_test_selection != s_settings.m_test_index) {
+            s_settings.m_test_index = s_test_selection;
+            delete s_test;
+            s_test = g_test_entries[s_settings.m_test_index].create_fcn();
+            g_camera.reset_view();
+        }
+
         glfwPollEvents();
 
     }

@@ -376,8 +376,8 @@ void DebugDraw::draw_sphere(const b3Transformr &xf, const real &radius, const b3
     // vertex normal
     float nx, ny, nz, lengthInv = 1.0f / radius;
 
-    int32 sector_count = 10;
-    int32 stack_count = 10;
+    const int32 sector_count = 20;
+    const int32 stack_count = 20;
 
     b3Vec3r vertices[(sector_count + 1) * (stack_count + 1)];
     b3Vec3r normals[(sector_count + 1) * (stack_count + 1)];
@@ -391,6 +391,7 @@ void DebugDraw::draw_sphere(const b3Transformr &xf, const real &radius, const b3
     for (int32 i = 0; i <= stack_count; ++i) {
         stack_angle = b3_pi / 2.0f - i * stack_step;
         xy = radius * cosf(stack_angle);
+
         z = radius * sinf(stack_angle);
 
         for (int32 j = 0; j <= sector_count; ++j) {
@@ -415,15 +416,15 @@ void DebugDraw::draw_sphere(const b3Transformr &xf, const real &radius, const b3
 
         for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
             if (i != 0) {
-                m_triangles->vertex(vertices[k1], normals[k1], color);
-                m_triangles->vertex(vertices[k2], normals[k2], color);
-                m_triangles->vertex(vertices[k1 + 1], normals[k1 + 1], color);
+                m_triangles->vertex(xf.transform(vertices[k1]), xf.transform(normals[k1]), color);
+                m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
+                m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
             }
 
             if (i != (stack_count - 1)) {
-                m_triangles->vertex(vertices[k1 + 1], normals[k1 + 1], color);
-                m_triangles->vertex(vertices[k2], normals[k2], color);
-                m_triangles->vertex(vertices[k2 + 1], normals[k2 + 1], color);
+                m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
+                m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
+                m_triangles->vertex(xf.transform(vertices[k2 + 1]), xf.transform(normals[k2 + 1]), color);
             }
         }
 
