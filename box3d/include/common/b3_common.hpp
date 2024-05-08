@@ -9,6 +9,7 @@
 
 #include "common/b3_types.hpp"
 
+
 #define b3_assert(A) assert(A)
 
 #define b3_pi 3.14159265359

@@ -8,6 +8,7 @@
 #include "math/b3_math_op.hpp"
 #include "math/b3_min_max.hpp"
 #include "common/b3_common.hpp"
+#include <memory>
 
 
 template <typename T>
@@ -126,6 +127,10 @@ struct b3Vec12 {
     inline T* data() {
         return m_ts;
     }
+
+    void set_segment(const b3Vec3<T>& b, const int32 I) {
+        memcpy(m_ts + I, b.m_ts, sizeof(T) * 3);
+    }
 };
 
 
@@ -158,7 +163,11 @@ inline b3Vec12<T> operator-(const b3Vec12<T>& v) {
 
 template <typename T, typename U>
 inline b3Vec12<T> operator*(U s, const b3Vec12<T>& v) {
-    return b3Vec3<T>(s * v.x, s * v.y, s * v.z);
+    b3Vec12<T> result;
+    for (int i = 0; i < 12; ++i) {
+        result.m_ts[i] = s * v.m_ts[i];
+    }
+    return result;
 }
 
 

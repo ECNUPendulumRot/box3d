@@ -8,7 +8,7 @@
 struct b3VelocityConstraintPoint {
     b3Vec3r m_ra;
     b3Vec3r m_rb;
-    real m_normal_collision_impulse = 0;
+    real m_normal_impulse = 0;
     real m_normal_contact_impulse = 0;
     real m_tangent_impulse = 0;
     real m_normal_mass = 0;
@@ -16,6 +16,7 @@ struct b3VelocityConstraintPoint {
     // double m_velocity_bias = 0;
     real m_bias_velocity = 0;
     real m_rhs_penetration = 0;
+    real m_vn = 0;
 };
 
 
@@ -43,17 +44,12 @@ struct b3ContactVelocityConstraint {
     real m_normal_collision_impulse = 0;
     real m_normal_contact_impulse = 0;
 
-    b3Vec3r m_ra;
-    b3Vec3r m_rb;
-
     real m_friction;
 
-    // b3Vec3r m_world_center_a;
-    // b3Vec3r m_world_center_b;
-
+    real** m_JWJT = nullptr;
+    real* m_mem_JWJT = nullptr;
 
 	// b2Mat22 normalMass;
-	// b2Mat22 K;
 
 	// float friction;
 	// float threshold;

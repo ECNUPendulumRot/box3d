@@ -43,8 +43,8 @@ public:
     inline b3Mat1212<T> transpose() const {
         b3Mat1212<T> m;
 
-        for (int32 i = 0; i < 3; i++) {
-            for (int32 j = 0; j < 3; j++) {
+        for (int32 i = 0; i < 12; i++) {
+            for (int32 j = 0; j < 12; j++) {
                 m.m_ts[i][j] = m_ts[j][i];
             }
         }
@@ -52,19 +52,28 @@ public:
     }
 
     inline void set_zero() {
-        m_ts = {T(0)};
+        memset(m_ts, 0, sizeof(T) * 144);
     }
 
     inline void set_identity() {
-        memset(m_ts, 0, sizeof(T) * 9);
+        memset(m_ts, 0, sizeof(T) * 144);
         m_ts[0][0] = T(1);
         m_ts[1][1] = T(1);
         m_ts[2][2] = T(1);
     }
 
     inline T& operator()(const int i, const int j) {
-        b3_assert(0 <= i && i < 3 && 0 <= j && j < 3);
+        b3_assert(0 <= i && i < 12 && 0 <= j && j < 12);
         return m_ts[j][i];
+    }
+
+    inline void set_block(const b3Mat33<T>& M, const int& i, const int& j) {
+        b3_assert(0 <= i && i <= 9 && 0 <= j && j <= 9);
+        for (int k = 0; k < 3; ++k) {
+            for (int l = 0; l < 3; ++l) {
+                m_ts[j + l][i + k] = M.get(k, l);
+            }
+        }
     }
 
 };
@@ -101,7 +110,7 @@ template <typename T>
 inline b3Vec12<T> operator*(b3Mat1212<T> M, const b3Vec12<T>& v) {
     b3Vec12<T> result;
     for (int i = 0; i < 12; ++i) {
-        result[i] = M.col(i).dot(v);
+        result += M.col(i) * v[i];
     }
     return result;
 }
@@ -111,10 +120,7 @@ template <typename T>
 inline b3Vec12<T> operator*(const b3Vec12<T>& v, b3Mat1212<T> M) {
     b3Vec12<T> result;
     for (int i = 0; i < 12; ++i) {
-        result[i] = T(0);
-        for (int j = 0; j < 12; ++j) {
-            result[i] += M(j, i) * v[j];
-        }
+        result[i] = v.dot(M.col(i));
     }
     return result;
 }

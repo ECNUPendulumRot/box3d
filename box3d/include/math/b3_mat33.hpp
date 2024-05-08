@@ -133,6 +133,10 @@ public:
         return m_ts[j][i];
     }
 
+    inline T get(int32 i ,int32 j) const {
+        return m_ts[j][i];
+    }
+
     static constexpr b3Mat33 identity() {
         return b3Mat33(b3Vec3<T>(T(1), T(0), T(0)),
                        b3Vec3<T>(T(0), T(1), T(0)),
