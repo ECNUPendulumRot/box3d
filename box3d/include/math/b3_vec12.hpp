@@ -5,9 +5,11 @@
 
 #include <initializer_list>
 
+#include "math/b3_vec3.hpp"
 #include "math/b3_math_op.hpp"
 #include "math/b3_min_max.hpp"
 #include "common/b3_common.hpp"
+
 #include <memory>
 
 

@@ -14,7 +14,7 @@ void b3_collide_spheres(
 {
     
     manifold->m_point_count = 0;
-    // the center of sphere A and sphere B in world frame.
+    // the center of sphere m_ and sphere B in world frame.
     b3Vec3r ca = xf_a.transform(sphere_a->get_centroid());
     b3Vec3r cb = xf_b.transform(sphere_b->get_centroid());
 

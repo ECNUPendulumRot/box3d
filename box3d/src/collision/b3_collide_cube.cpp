@@ -260,7 +260,7 @@ static void create_face_contact(
     int32 face1;
 
     if (separation_B > separation_A + k_tol) {
-        // we will separate A from B
+        // we will separate m_ from B
         cube1 = cube_B;
         cube2 = cube_A;
         xf1 = xf_B;
@@ -269,7 +269,7 @@ static void create_face_contact(
         manifold->m_type = b3Manifold::e_face_B;
         manifold->m_penetration = separation_B;
     } else {
-        // we will separate B from A
+        // we will separate B from m_
         cube1 = cube_A;
         cube2 = cube_B;
         xf1 = xf_A;

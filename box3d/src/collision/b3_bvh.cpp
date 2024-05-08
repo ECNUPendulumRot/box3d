@@ -192,7 +192,7 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
 
     int32 sibling = f_index;
 
-    // create A new parent for the sibling and the insertion leaf
+    // create m_ new parent for the sibling and the insertion leaf
     int32 old_parent = m_nodes[sibling].m_parent;
     int32 new_parent = assign_node();
     m_nodes[new_parent].m_parent = old_parent;
@@ -328,7 +328,7 @@ int32 b3DynamicTree::balance(int32 i_A)
     if (p_A->is_leaf() || p_A->m_height < 2)
 	    return i_A;
 
-    //              A
+    //              m_
     //            /   \
     //           B     C
 	//          / \   / \

@@ -51,6 +51,7 @@ set(B3D_HEADER_FILES
         include/common/b3_draw.hpp
         include/math/b3_vec12.hpp
         include/math/b3_mat1212.hpp
+        include/solver/b3_lemke.hpp
 
 )
 
@@ -86,6 +87,7 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
         src/common/b3_draw.cpp
+        src/solver/b3_lemke.cpp
 
 )
 

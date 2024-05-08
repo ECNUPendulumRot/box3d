@@ -2,10 +2,14 @@
 #ifndef BOX3D_B3_CONTACT_CONSTRAINT_HPP
 #define BOX3D_B3_CONTACT_CONSTRAINT_HPP
 
-#include <common/b3_types.hpp>
+
+#include "common/b3_types.hpp"
+#include "math/b3_mat33.hpp"
+#include "math/b3_mat1212.hpp"
 
 
 struct b3VelocityConstraintPoint {
+
     b3Vec3r m_ra;
     b3Vec3r m_rb;
     real m_normal_impulse = 0;
@@ -21,6 +25,7 @@ struct b3VelocityConstraintPoint {
 
 
 struct b3ContactVelocityConstraint {
+
     b3VelocityConstraintPoint m_points[8];
     b3Vec3r m_normal;
     int32 m_index_a;

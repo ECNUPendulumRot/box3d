@@ -222,7 +222,7 @@ private:
 
     /**
      * @brief Balance the dynamic tree.
-     * @param i_A: The index of the node A.
+     * @param i_A: The index of the node m_.
      * @return The index of the root of this balanced subtree.
      */
     int32 balance(int32 i_A);
