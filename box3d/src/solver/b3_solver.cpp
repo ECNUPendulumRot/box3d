@@ -528,7 +528,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
                 b3VelocityConstraintPoint* vcp = vc->m_points + i;
                 b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
 
-                b[i] = dv.dot(normal);
+                b[i] = dv.dot(normal) - vcp->m_bias_velocity;
 
                 for (int32 j = 0; j < size; j++)
                     b[i] -= JWJT[i][j] * a[j];
