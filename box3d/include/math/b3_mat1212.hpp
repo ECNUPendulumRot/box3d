@@ -28,7 +28,7 @@ public:
 
     inline b3Vec12<T> col(const int i) const {
         b3Vec12<T> col;
-        memset(col.m_ts, &m_ts[i], sizeof(T) * 12);
+        memcpy(col.m_ts, &m_ts[i], sizeof(T) * 12);
         return col;
     }
 

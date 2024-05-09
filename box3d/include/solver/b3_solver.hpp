@@ -50,6 +50,8 @@ class b3Solver {
 
     b3Body** m_bodies;
 
+    uint8* m_delayed;
+
 public:
 
     b3Solver() = default;
@@ -65,8 +67,6 @@ public:
     int solve();
 
     void write_states_back();
-
-    void clear();
 
     ~b3Solver();
 

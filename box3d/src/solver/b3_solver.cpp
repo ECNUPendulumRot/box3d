@@ -13,6 +13,8 @@
 #include "solver/b3_contact_constraint.hpp"
 #include "solver/b3_lemke.hpp"
 
+#include "spdlog/spdlog.h"
+
 
 b3Solver::b3Solver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
@@ -59,6 +61,10 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
     m_ws = new (memory) b3Vec3r;
 
+    memory = m_block_allocator->allocate(m_body_count * sizeof(uint8));
+    m_delayed = new (memory) uint8;
+    memset(m_delayed, 0, m_body_count * sizeof(uint8));
+
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
         m_ps[i] = b->get_position();
@@ -73,13 +79,13 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
         b3Contact* contact = m_contacts[i];
 
-        b3Fixture *fixture_a = contact->get_fixture_a();
-        b3Fixture *fixture_b = contact->get_fixture_b();
+        b3Fixture* fixture_a = contact->get_fixture_a();
+        b3Fixture* fixture_b = contact->get_fixture_b();
 
-        b3Body *body_a = fixture_a->get_body();
-        b3Body *body_b = fixture_b->get_body();
+        b3Body* body_a = fixture_a->get_body();
+        b3Body* body_b = fixture_b->get_body();
 
-        b3Manifold *manifold = contact->get_manifold();
+        b3Manifold* manifold = contact->get_manifold();
 
         int32 point_count = manifold->m_point_count;
 
@@ -145,37 +151,8 @@ void b3Solver::write_states_back()
 }
 
 
-b3Solver::~b3Solver()
-{
-    clear();
-}
-
-
-void b3Solver::clear()
-{
-
-    m_timestep = nullptr;
-    m_contacts = nullptr;
-
-    for (int32 i = 0; i < m_contact_count; ++i) {
-        const int32& point_count = m_velocity_constraints[i].m_point_count;
-        m_block_allocator->free(m_velocity_constraints[i].m_JWJT, point_count * sizeof(real*));
-        m_block_allocator->free(m_velocity_constraints[i].m_mem_JWJT, point_count * point_count * sizeof(real));
-    }
-
-    m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
-    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
-
-    m_block_allocator = nullptr;
-}
-
-
 int b3Solver::solve()
 {
-
     init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
@@ -184,7 +161,9 @@ int b3Solver::solve()
 
     // velocity update
     for(int32 i = 0; i < m_body_count; ++i) {
-        b3Body *b = m_bodies[i];
+
+        b3Body* b = m_bodies[i];
+
         b3Vec3r v = m_vs[i];
         b3Vec3r w = m_ws[i];
 
@@ -263,7 +242,7 @@ void b3Solver::init_velocity_constraints()
             b3Vec12r* J = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
             b3Vec12r* JW = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
             vc->m_mem_JWJT = (real*)m_block_allocator->allocate(point_count * point_count * sizeof(real));
-            vc->m_JWJT = (real**)m_block_allocator->allocate(point_count * sizeof(real**));
+            vc->m_JWJT = (real**)m_block_allocator->allocate(point_count * sizeof(real*));
 
             // calculate JWJT
             b3Mat1212r W;
@@ -301,7 +280,6 @@ void b3Solver::init_velocity_constraints()
             m_block_allocator->free(J, point_count * sizeof(b3Vec12r));
             m_block_allocator->free(JW, point_count * sizeof(b3Vec12r));
         }
-        // TODO: if we have more than one contact point, then prepare the block solver.
     }
 }
 
@@ -320,7 +298,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
         //if (true) {
-        if (vc->m_point_count == 1 || is_collision) {
+        if (vc->m_point_count == 1 || !is_collision) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -359,7 +337,8 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             // vn = m_ * x + b'
             // b' = b - m_ * a
 
-            b3Lemke lemke(m_block_allocator, vc, b3Lemke::e_lemke_null_option);
+            b3Lemke lemke(m_block_allocator, vc, is_collision * b3Lemke::e_lemke_restitution);
+
             bool early_quit = lemke.initialize_problem(v_a, w_a, v_b, w_b);
             if (early_quit) {
                 continue;
@@ -367,6 +346,9 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
 
             lemke.solve();
 
+            spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
+            spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
+            lemke.print_vx();
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
                 b3Vec3r impulse = lemke.get_normal_impulse(j) * vc->m_normal;
@@ -377,12 +359,38 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
 
                 vcp->m_normal_impulse = lemke.get_normal_impulse(j);
             }
+            spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
+            spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
         }
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
     }
+}
+
+
+
+b3Solver::~b3Solver()
+{
+    m_timestep = nullptr;
+    m_contacts = nullptr;
+
+    for (int32 i = 0; i < m_contact_count; ++i) {
+        const int32& point_count = m_velocity_constraints[i].m_point_count;
+        if (point_count > 1) {
+            m_block_allocator->free(m_velocity_constraints[i].m_JWJT, point_count * sizeof(real*));
+            m_block_allocator->free(m_velocity_constraints[i].m_mem_JWJT, point_count * point_count * sizeof(real));
+        }
+    }
+
+    m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
+    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
+    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
+    m_block_allocator->free(m_delayed, m_body_count * sizeof(uint8));
+    m_block_allocator = nullptr;
 }
 
 

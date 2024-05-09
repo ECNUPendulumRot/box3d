@@ -78,7 +78,7 @@ static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action
 
     double xd, yd;
     glfwGetCursorPos(window, &xd, &yd);
-    spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
+    // spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
 
     if (action == GLFW_PRESS) {
         s_click_ss = { float(xd), float(yd)};

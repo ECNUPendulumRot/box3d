@@ -7,6 +7,12 @@
 #include "common/b3_block_allocator.hpp"
 #include "math/b3_mat1212.hpp"
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <sstream>
+
+static auto logger = spdlog::stdout_color_mt("lemke-logger");
+
 
 struct b3LexicoInv {
 
@@ -45,34 +51,46 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
 
     // set up tableau pointer
     real* mem_tableau = (real*)m_block_allocator->allocate(m_size * (2 * m_size + 1) * sizeof(real));
+    b3_assert(mem_tableau != nullptr);
     memset(mem_tableau, 0, m_size * (2 * m_size + 1) * sizeof(real));
     m_tableau = (real**)m_block_allocator->allocate(m_size * sizeof(real**));
+    b3_assert(m_tableau != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
         m_tableau[i] = &mem_tableau[i * (2 * m_size + 1)];
     }
 
     // set up inverse identity pointer
     real* mem_I = (real*)m_block_allocator->allocate(m_size * m_size * sizeof(real));
+    b3_assert(mem_I != nullptr);
+
     memset(mem_I, 0, m_size * m_size * sizeof(real));
     m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real**));
+    b3_assert(m_I_inv != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
         m_I_inv[i] = &mem_I[i * m_size];
     }
 
     // set up b vector
     m_b = (real*)m_block_allocator->allocate(m_size * sizeof(real));
+    b3_assert(m_b != nullptr);
 
     // set up pivot vector
     m_pivot = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
+    b3_assert(m_pivot != nullptr);
+
     for (int32 i = 0; i < m_size; i++) {
         m_pivot[i] = i;
     }
 
     m_vx = (real*)m_block_allocator->allocate(2 * m_size * sizeof(real));
+    b3_assert(m_vx != nullptr);
+
     memset(m_vx, 0, 2 * m_size * sizeof(real));
 
     // initialize b vector, and early quit
     real* a = (real*)m_block_allocator->allocate(m_size * sizeof(real));
+    b3_assert(a != nullptr);
+
     for (int32 i = 0; i < m_size; i++) {
         a[i] = m_vc->m_points[i].m_normal_impulse;
     }
@@ -152,18 +170,8 @@ void b3Lemke::solve()
     // copy the results
     for (int i = 0; i < m_size; i++)
         m_vx[m_pivot[i]] = m_b[i];
-}
 
-
-b3Lemke::~b3Lemke()
-{
-    m_block_allocator->free(m_b, m_size * sizeof(real));
-    m_block_allocator->free(m_pivot, 2 * m_size * sizeof(int32) + 1);
-    m_block_allocator->free(&m_tableau[0], m_size * (2 * m_size + 1) * sizeof(real));
-    m_block_allocator->free(m_tableau, m_size * sizeof(real**));
-    m_block_allocator->free(&m_I_inv[0], m_size * m_size * sizeof(real));
-    m_block_allocator->free(m_I_inv, m_size * sizeof(real**));
-    m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
+    print_vx();
 }
 
 
@@ -205,10 +213,33 @@ void b3Lemke::eliminate(const int32 &i, const int32 &j)
 
 
 void b3Lemke::reset_identity() {
-    real* start = m_I_inv[0];
-    memset(start, 0, m_size * m_size * sizeof(real));
+    memset(m_I_inv[0], 0, m_size * m_size * sizeof(real));
     for (int32 i = 0; i < m_size; ++i) {
         m_I_inv[i][i] = 1;
     }
+}
+
+void b3Lemke::print_vx() {
+
+    auto logger = spdlog::get("lemke-logger");
+    logger->set_pattern("%v");
+    std::ostringstream oss;
+    for (int i = 0; i < 2 * m_size; i++) {
+        oss << m_vx[i] << " ";
+    }
+    spdlog::info("Lemke VX Vector: \n {}", oss.str());
+
+}
+
+
+b3Lemke::~b3Lemke()
+{
+    m_block_allocator->free(m_b, m_size * sizeof(real));
+    m_block_allocator->free(m_pivot, 2 * m_size * sizeof(int32) + 1);
+    m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 1) * sizeof(real));
+    m_block_allocator->free(m_tableau, m_size * sizeof(real**));
+    m_block_allocator->free(m_I_inv[0], m_size * m_size * sizeof(real));
+    m_block_allocator->free(m_I_inv, m_size * sizeof(real**));
+    m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
 }
 

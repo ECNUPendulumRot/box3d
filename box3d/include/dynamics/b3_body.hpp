@@ -185,27 +185,27 @@ public:
         m_w = w;
     }
 
-    int32 get_island_index() const {
+    const int32& get_island_index() const {
         return m_island_index;
     }
 
-    real get_inv_mass() const {
+    const real& get_inv_mass() const {
         return m_inv_mass;
     }
 
-    real get_mass() const {
+    const real& get_mass() const {
         return m_mass;
     }
 
-    b3Mat33r get_inv_inertia() const {
+    const b3Mat33r& get_inv_inertia() const {
         return m_inv_inertia;
     }
 
-    b3Mat33r get_inertia() const {
+    const b3Mat33r& get_inertia() const {
         return m_inertia;
     }
 
-    b3Vec3r get_local_center() const {
+    const b3Vec3r& get_local_center() const {
         return m_local_center;
     }
 

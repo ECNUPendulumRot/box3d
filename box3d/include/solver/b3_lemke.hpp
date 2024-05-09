@@ -57,6 +57,8 @@ public:
         return m_vx[m_size + index];
     }
 
+    void print_vx();
+
     ~b3Lemke();
 
 private:
@@ -64,6 +66,9 @@ private:
     void eliminate(const int32& i, const int32& j);
 
     void reset_identity();
+
+
+
 };
 
 
