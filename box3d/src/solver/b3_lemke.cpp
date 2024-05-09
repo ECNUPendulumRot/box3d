@@ -95,19 +95,27 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
         a[i] = m_vc->m_points[i].m_normal_impulse;
     }
 
-    print_vec(a, m_size, "a vector");
+
     print_matrix((const real**)m_vc->m_JWJT, m_size, m_size, "JWJT matrix");
-    //bool all_positive = true;
+    print_vec(a, m_size, "a vector");
     for (int32 i = 0; i < m_size; i++) {
         b3VelocityConstraintPoint* vcp = m_vc->m_points + i;
         b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
         m_b[i] = dv.dot(normal) - vcp->m_bias_velocity;
+    }
+
+
+    print_vec(m_b, m_size, "b vector");
+
+    //bool all_positive = true;
+    for (int32 i = 0; i < m_size; i++) {
         for (int32 j = 0; j < m_size; j++)
             m_b[i] -= m_vc->m_JWJT[i][j] * a[j];
         //all_positive = all_positive && m_b[i] >= 0;
     }
 
-    print_vec(m_b, m_size, "b vector");
+    print_vec(m_b, m_size, "b vector after incremental");
+
     m_block_allocator->free(a, m_size * sizeof(real));
 
     //if (all_positive)
