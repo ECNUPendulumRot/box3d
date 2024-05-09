@@ -96,7 +96,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_friction = contact->get_friction();
         vc->m_contact_index = i;
         vc->m_point_count = point_count;
-
+        vc->m_restitution_threshold = contact->get_restitution_threshold();
         vc->m_normal = manifold->m_local_normal;
 
         vc->m_index_a = body_a->get_island_index();
@@ -153,11 +153,14 @@ void b3Solver::write_states_back()
 
 int b3Solver::solve()
 {
-    init_velocity_constraints();
 
-    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints(true);
-    }
+//    init_velocity_constraints();
+//
+//
+//    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+//        spdlog::info("////////////// Velocity Iteration: {} //////////////", i);
+//        solve_velocity_constraints(true);
+//    }
 
     // velocity update
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -174,8 +177,13 @@ int b3Solver::solve()
         m_ws[i] = w;
     }
 
+
+    init_velocity_constraints();
+
+
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        solve_velocity_constraints(false);
+        //spdlog::info("////////////// Velocity Iteration: {} //////////////", i);
+        solve_velocity_constraints();
     }
 
     for (int32 i = 0; i < m_body_count; ++i) {
@@ -224,7 +232,10 @@ void b3Solver::init_velocity_constraints()
             // ===> JM_invJ^T * lambda = -eJv - Jv
             real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             // m_bias_velocity is eJv
-            vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+            if (v_rel < -vc->m_restitution_threshold) {
+                vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+            }
+
             vcp->m_vn = v_rel;
             vcp->m_normal_impulse = 0.0;
             vcp->m_normal_contact_impulse = 0.0;
@@ -284,9 +295,10 @@ void b3Solver::init_velocity_constraints()
 }
 
 
-void b3Solver::solve_velocity_constraints(bool is_collision)
+void b3Solver::solve_velocity_constraints()
 {
     for (int32 i = 0; i < m_contact_count; ++i) {
+        // spdlog::info("////////////// Contact Iteration: {} //////////////", i);
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
         const b3Vec3r& normal = vc->m_normal;
@@ -298,7 +310,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
         //if (true) {
-        if (vc->m_point_count == 1 || !is_collision) {
+        if (vc->m_point_count == 1) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -337,25 +349,28 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             // vn = m_ * x + b'
             // b' = b - m_ * a
 
-            b3Lemke lemke(m_block_allocator, vc, is_collision * b3Lemke::e_lemke_restitution);
+            b3Lemke lemke(m_block_allocator, vc);
 
             bool early_quit = lemke.initialize_problem(v_a, w_a, v_b, w_b);
+
             if (early_quit) {
                 continue;
             }
 
             lemke.solve();
 
-            spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
-            spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
+            // spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
+            // spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
             lemke.print_vx();
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
                 b3Vec3r impulse = lemke.get_normal_impulse(j) * vc->m_normal;
-                v_a = v_a - vc->m_inv_mass_a * impulse;
-                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
-                v_b = v_b + vc->m_inv_mass_b * impulse;
-                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
+                b3Vec3r inc_impulse = impulse - vcp->m_normal_impulse * vc->m_normal;
+                spdlog::info("inc_impulse: ({}, {}, {:.10f})", inc_impulse.x, inc_impulse.y, inc_impulse.z);
+                v_a = v_a - vc->m_inv_mass_a * inc_impulse;
+                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(inc_impulse);
+                v_b = v_b + vc->m_inv_mass_b * inc_impulse;
+                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(inc_impulse);
 
                 vcp->m_normal_impulse = lemke.get_normal_impulse(j);
             }
@@ -370,12 +385,8 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
 }
 
 
-
 b3Solver::~b3Solver()
 {
-    m_timestep = nullptr;
-    m_contacts = nullptr;
-
     for (int32 i = 0; i < m_contact_count; ++i) {
         const int32& point_count = m_velocity_constraints[i].m_point_count;
         if (point_count > 1) {
@@ -390,7 +401,6 @@ b3Solver::~b3Solver()
     m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_delayed, m_body_count * sizeof(uint8));
-    m_block_allocator = nullptr;
 }
 
 

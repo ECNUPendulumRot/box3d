@@ -43,7 +43,7 @@ struct b3ContactVelocityConstraint {
     int32 m_contact_index;
 
     real m_restitution;
-
+    real m_restitution_threshold;
     real m_penetration;
     // TODO
     real m_normal_collision_impulse = 0;

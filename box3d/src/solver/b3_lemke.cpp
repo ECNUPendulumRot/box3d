@@ -95,19 +95,23 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
         a[i] = m_vc->m_points[i].m_normal_impulse;
     }
 
-    bool all_positive = true;
-
+    print_vec(a, m_size, "a vector");
+    print_matrix((const real**)m_vc->m_JWJT, m_size, m_size, "JWJT matrix");
+    //bool all_positive = true;
     for (int32 i = 0; i < m_size; i++) {
         b3VelocityConstraintPoint* vcp = m_vc->m_points + i;
         b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-        m_b[i] = dv.dot(normal) - vcp->m_bias_velocity * (m_flags & e_lemke_restitution);
+        m_b[i] = dv.dot(normal) - vcp->m_bias_velocity;
         for (int32 j = 0; j < m_size; j++)
             m_b[i] -= m_vc->m_JWJT[i][j] * a[j];
-        all_positive = all_positive && m_b[i] >= 0;
+        //all_positive = all_positive && m_b[i] >= 0;
     }
 
-    if (all_positive)
-        return true;
+    print_vec(m_b, m_size, "b vector");
+    m_block_allocator->free(a, m_size * sizeof(real));
+
+    //if (all_positive)
+    //    return true;
 
     // Initialize the tableau
     for (int32 i = 0; i < m_size; i++) {
@@ -170,8 +174,6 @@ void b3Lemke::solve()
     // copy the results
     for (int i = 0; i < m_size; i++)
         m_vx[m_pivot[i]] = m_b[i];
-
-    print_vx();
 }
 
 
@@ -235,11 +237,39 @@ void b3Lemke::print_vx() {
 b3Lemke::~b3Lemke()
 {
     m_block_allocator->free(m_b, m_size * sizeof(real));
-    m_block_allocator->free(m_pivot, 2 * m_size * sizeof(int32));
+    m_block_allocator->free(m_pivot, m_size * sizeof(int32));
+    m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
+
     m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 1) * sizeof(real));
     m_block_allocator->free(m_tableau, m_size * sizeof(real*));
     m_block_allocator->free(m_I_inv[0], m_size * m_size * sizeof(real));
     m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
-    m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
+}
+
+
+void b3Lemke::print_vec(const real *vec, const int32 &size, const char* s) {
+
+    auto logger = spdlog::get("lemke-logger");
+    logger->set_pattern("%v");
+    std::ostringstream oss;
+    for (int i = 0; i < size; i++) {
+        oss << vec[i] << " ";
+    }
+    spdlog::info("vector: {} \n {}", s, oss.str());
+}
+
+void b3Lemke::print_matrix(const real **matrix, const int32 &rows, const int32 &cols, const char *s) {
+
+        auto logger = spdlog::get("lemke-logger");
+        logger->set_pattern("%v");
+        std::ostringstream oss;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                oss << matrix[i][j] << " ";
+            }
+            oss << "\n";
+        }
+        spdlog::info("matrix: {} \n {}", s, oss.str());
+
 }
 

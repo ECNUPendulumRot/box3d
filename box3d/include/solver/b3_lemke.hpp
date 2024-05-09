@@ -37,16 +37,10 @@ class b3Lemke {
 
 public:
 
-    enum {
-        e_lemke_null_option = 0x0000,
-        e_lemke_restitution = 0x0001
-    };
-
-    b3Lemke(b3BlockAllocator* allocator, b3ContactVelocityConstraint* vc, uint32 flags) {
+    b3Lemke(b3BlockAllocator* allocator, b3ContactVelocityConstraint* vc) {
         m_block_allocator = allocator;
         m_vc = vc;
         m_size = m_vc->m_point_count;
-        m_flags = flags;
     }
 
     bool initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b);
@@ -67,8 +61,9 @@ private:
 
     void reset_identity();
 
+    void print_vec(const real* vec, const int32& size, const char* s);
 
-
+    void print_matrix(const real** matrix, const int32& rows, const int32& cols, const char* s);
 };
 
 

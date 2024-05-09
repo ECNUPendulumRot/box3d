@@ -60,7 +60,7 @@ public:
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    void solve_velocity_constraints(bool is_collision);
+    void solve_velocity_constraints();
 
     void init_velocity_constraints();
 

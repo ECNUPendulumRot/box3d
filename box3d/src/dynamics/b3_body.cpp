@@ -53,6 +53,8 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
   	    reset_mass_data();
     }
 
+
+
     // After create a new fixture, may cause new contacts in the scene
     m_world->awake_contact_check();
 
