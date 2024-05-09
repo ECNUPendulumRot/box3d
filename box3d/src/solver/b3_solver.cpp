@@ -153,7 +153,7 @@ void b3Solver::write_states_back()
 
 int b3Solver::solve()
 {
-
+    spdlog::info("////////////// Solve //////////////");
 //    init_velocity_constraints();
 //
 //
@@ -232,16 +232,15 @@ void b3Solver::init_velocity_constraints()
             // ===> JM_invJ^T * lambda = -eJv - Jv
             real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             // m_bias_velocity is eJv
+            vcp->m_bias_velocity = 0.0;
             if (v_rel < -vc->m_restitution_threshold) {
                 vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+                int32 k = 0;
             }
 
-            vcp->m_vn = v_rel;
             vcp->m_normal_impulse = 0.0;
             vcp->m_normal_contact_impulse = 0.0;
             vcp->m_tangent_impulse = 0.0;
-
-
         }
         vc->m_normal_contact_impulse = 0.0;
         vc->m_normal_collision_impulse = 0.0;

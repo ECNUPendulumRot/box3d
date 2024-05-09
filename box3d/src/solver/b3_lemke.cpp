@@ -102,6 +102,7 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
         b3VelocityConstraintPoint* vcp = m_vc->m_points + i;
         b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
         m_b[i] = dv.dot(normal) - vcp->m_bias_velocity;
+        spdlog::info("b vector {}: {}", i, m_b[i]);
     }
 
 
@@ -110,7 +111,7 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
     //bool all_positive = true;
     for (int32 i = 0; i < m_size; i++) {
         for (int32 j = 0; j < m_size; j++)
-            m_b[i] -= m_vc->m_JWJT[i][j] * a[j];
+            m_b[i] += m_vc->m_JWJT[i][j] * a[j];
         //all_positive = all_positive && m_b[i] >= 0;
     }
 
