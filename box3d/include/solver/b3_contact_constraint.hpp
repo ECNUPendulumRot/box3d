@@ -52,7 +52,6 @@ struct b3ContactVelocityConstraint {
     real m_friction;
 
     real** m_JWJT = nullptr;
-    real* m_mem_JWJT = nullptr;
 
 	// b2Mat22 normalMass;
 

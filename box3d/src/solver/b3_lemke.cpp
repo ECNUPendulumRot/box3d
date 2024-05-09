@@ -53,7 +53,7 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
     real* mem_tableau = (real*)m_block_allocator->allocate(m_size * (2 * m_size + 1) * sizeof(real));
     b3_assert(mem_tableau != nullptr);
     memset(mem_tableau, 0, m_size * (2 * m_size + 1) * sizeof(real));
-    m_tableau = (real**)m_block_allocator->allocate(m_size * sizeof(real**));
+    m_tableau = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
     b3_assert(m_tableau != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
         m_tableau[i] = &mem_tableau[i * (2 * m_size + 1)];
@@ -64,7 +64,7 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
     b3_assert(mem_I != nullptr);
 
     memset(mem_I, 0, m_size * m_size * sizeof(real));
-    m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real**));
+    m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
     b3_assert(m_I_inv != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
         m_I_inv[i] = &mem_I[i * m_size];
@@ -235,11 +235,11 @@ void b3Lemke::print_vx() {
 b3Lemke::~b3Lemke()
 {
     m_block_allocator->free(m_b, m_size * sizeof(real));
-    m_block_allocator->free(m_pivot, 2 * m_size * sizeof(int32) + 1);
+    m_block_allocator->free(m_pivot, 2 * m_size * sizeof(int32));
     m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 1) * sizeof(real));
-    m_block_allocator->free(m_tableau, m_size * sizeof(real**));
+    m_block_allocator->free(m_tableau, m_size * sizeof(real*));
     m_block_allocator->free(m_I_inv[0], m_size * m_size * sizeof(real));
-    m_block_allocator->free(m_I_inv, m_size * sizeof(real**));
+    m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
     m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
 }
 

@@ -241,7 +241,7 @@ void b3Solver::init_velocity_constraints()
 
             b3Vec12r* J = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
             b3Vec12r* JW = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
-            vc->m_mem_JWJT = (real*)m_block_allocator->allocate(point_count * point_count * sizeof(real));
+            real* mem_JWJT = (real*)m_block_allocator->allocate(point_count * point_count * sizeof(real));
             vc->m_JWJT = (real**)m_block_allocator->allocate(point_count * sizeof(real*));
 
             // calculate JWJT
@@ -253,7 +253,7 @@ void b3Solver::init_velocity_constraints()
             W.set_block(vc->m_inv_I_b, 9, 9);
 
             for (int32 i = 0; i < point_count; ++i) {
-                vc->m_JWJT[i] = &vc->m_mem_JWJT[i * point_count];
+                vc->m_JWJT[i] = &mem_JWJT[i * point_count];
             }
 
             for (int32 i = 0; i < point_count; i++) {
@@ -379,8 +379,8 @@ b3Solver::~b3Solver()
     for (int32 i = 0; i < m_contact_count; ++i) {
         const int32& point_count = m_velocity_constraints[i].m_point_count;
         if (point_count > 1) {
+            m_block_allocator->free(m_velocity_constraints[i].m_JWJT[0], point_count * point_count * sizeof(real));
             m_block_allocator->free(m_velocity_constraints[i].m_JWJT, point_count * sizeof(real*));
-            m_block_allocator->free(m_velocity_constraints[i].m_mem_JWJT, point_count * point_count * sizeof(real));
         }
     }
 
