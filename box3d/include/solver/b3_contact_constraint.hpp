@@ -2,7 +2,10 @@
 #ifndef BOX3D_B3_CONTACT_CONSTRAINT_HPP
 #define BOX3D_B3_CONTACT_CONSTRAINT_HPP
 
-#include <common/b3_types.hpp>
+#include "common/b3_types.hpp"
+#include "common/b3_common.hpp"
+#include "math/b3_vec3.hpp"
+#include "math/b3_mat33.hpp"
 
 
 struct b3VelocityConstraintPoint {
@@ -15,6 +18,8 @@ struct b3VelocityConstraintPoint {
     real m_tanget_mass = 0;
     // double m_velocity_bias = 0;
     real m_rhs_restitution_velocity = 0;
+    //used to get trend
+    real m_relative_velocity = 0;
     real m_rhs_penetration = 0;
 };
 

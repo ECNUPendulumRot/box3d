@@ -18,6 +18,10 @@ set (TESTBED_SOURCE_FILES
         src/gl_render_triangles.cpp
         src/camera.cpp
         src/test_sphere_drop.cpp
+        src/test_newtons_cradle.cpp
+        src/test_symmetry_collision.cpp
+        src/test_sphere_billiards.cpp
+        src/test_sphere_one_hit_tow.cpp
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp
         settings.cpp
