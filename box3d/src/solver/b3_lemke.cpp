@@ -85,11 +85,11 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
     }
 
     // set up pivot vector
-    m_pivot = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
-    b3_assert(m_pivot != nullptr);
+    m_basis = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
+    b3_assert(m_basis != nullptr);
 
     for (int32 i = 0; i < m_size; i++) {
-        m_pivot[i] = i;
+        m_basis[i] = i;
     }
 
     // set up result vector
@@ -138,7 +138,16 @@ void b3Lemke::solve()
 
         int32 pivot_col_index_old = m_pivot_col_index;
 
-        
+        // find the new column index
+        if (m_basis[m_pivot_row_index] < m_size) {
+            m_pivot_col_index = m_basis[m_pivot_row_index] + m_size;
+        } else {
+            m_pivot_col_index = m_basis[m_pivot_row_index] - m_size;
+        }
+
+        m_basis[m_pivot_row_index] = pivot_col_index_old;
+        bool is_ray_termination = false;
+
 
 //        // if z0 is drop out, the algorithm stopped
 //        if (drop_out == 2 * m_size)
@@ -161,8 +170,8 @@ void b3Lemke::solve()
 //        reset_identity();
 //
 //        // swap the basic variables
-//        drop_out = m_pivot[lexico_min_index];
-//        m_pivot[lexico_min_index] = bring_in;
+//        drop_out = m_basis[lexico_min_index];
+//        m_basis[lexico_min_index] = bring_in;
 //
 //        eliminate(lexico_min_index,  bring_in);
 //
@@ -171,7 +180,7 @@ void b3Lemke::solve()
 
 //    // copy the results
 //    for (int i = 0; i < m_size; i++)
-//        m_vx[m_pivot[i]] = m_b[i];
+//        m_vx[m_basis[i]] = m_b[i];
 }
 
 
@@ -226,7 +235,7 @@ void b3Lemke::print_vx() {
 
 b3Lemke::~b3Lemke()
 {
-    m_block_allocator->free(m_pivot, m_size * sizeof(int32));
+    m_block_allocator->free(m_basis, m_size * sizeof(int32));
     m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
 
     m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 2) * sizeof(real));
@@ -260,6 +269,19 @@ void b3Lemke::print_matrix(const real **matrix, const int32 &rows, const int32 &
         }
         spdlog::info("matrix: {} \n{}", s, oss.str());
 
+}
+
+int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int& z0Row, bool& is_ray_termination)
+{
+    is_ray_termination = false;
+    int32* active_rows = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
+
+    bool first_row = true;
+    real current_min = 0.0;
+
+    for (int32 row = 0; row < m_size; row++) {
+        const real denom = m_tableau[row][pivot_col_index];
+    }
 }
 
 
