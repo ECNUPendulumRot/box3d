@@ -9,6 +9,7 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <iomanip>
 #include <sstream>
 
 static auto logger = spdlog::stdout_color_mt("lemke-logger");
@@ -44,35 +45,44 @@ struct b3LexicoInv {
 
 int32 b3LexicoInv::size = 0;
 
+b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
+                 b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b) {
+    m_block_allocator = allocator;
+    m_vc = vc;
+    m_size = m_vc->m_point_count;
 
-bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b)
-{
     const b3Vec3r& normal = m_vc->m_normal;
 
-    // set up tableau pointer
-    real* mem_tableau = (real*)m_block_allocator->allocate(m_size * (2 * m_size + 1) * sizeof(real));
-    b3_assert(mem_tableau != nullptr);
-    memset(mem_tableau, 0, m_size * (2 * m_size + 1) * sizeof(real));
+    // set up tableau
     m_tableau = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
     b3_assert(m_tableau != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
-        m_tableau[i] = &mem_tableau[i * (2 * m_size + 1)];
+        m_tableau[i] = (real*)m_block_allocator->allocate((2 * m_size + 2) * sizeof(real));
+        memset(m_tableau[i], 0, (2 * m_size + 2) * sizeof(real));
+
+        m_tableau[i][i] = 1.0; // set the identity matrix
+        // set the -M matrix
+        for (int32 j = 0; j < m_size; ++j) {
+            m_tableau[i][m_size + j] = -m_vc->m_JWJT[i][j];
+        }
+        m_tableau[i][2 * m_size] = -1.0; // set the -e0 column
+
+        // set the b column
+        b3VelocityConstraintPoint* vcp = m_vc->m_points + i;
+        b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+        m_tableau[i][2 * m_size + 1] = dv.dot(normal) - vcp->m_bias_velocity;
+        for (int32 j = 0; j < m_size; j++)
+            m_tableau[i][2 * m_size + 1] -= m_vc->m_JWJT[i][j] * vcp->m_normal_impulse;
     }
 
-    // set up inverse identity pointer
-    real* mem_I = (real*)m_block_allocator->allocate(m_size * m_size * sizeof(real));
-    b3_assert(mem_I != nullptr);
+    print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
-    memset(mem_I, 0, m_size * m_size * sizeof(real));
+
     m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
     b3_assert(m_I_inv != nullptr);
     for (int32 i = 0; i < m_size; ++i) {
-        m_I_inv[i] = &mem_I[i * m_size];
+        m_I_inv[i] = (real*)m_block_allocator->allocate(m_size * sizeof(real));
     }
-
-    // set up b vector
-    m_b = (real*)m_block_allocator->allocate(m_size * sizeof(real));
-    b3_assert(m_b != nullptr);
 
     // set up pivot vector
     m_pivot = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
@@ -82,107 +92,86 @@ bool b3Lemke::initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec
         m_pivot[i] = i;
     }
 
+    // set up result vector
     m_vx = (real*)m_block_allocator->allocate(2 * m_size * sizeof(real));
     b3_assert(m_vx != nullptr);
-
     memset(m_vx, 0, 2 * m_size * sizeof(real));
+}
 
-    // initialize b vector, and early quit
-    real* a = (real*)m_block_allocator->allocate(m_size * sizeof(real));
-    b3_assert(a != nullptr);
 
+
+bool b3Lemke::initialize_problem()
+{
+    // find the first row with the smallest b value
+    // the z0 will be under this row
+    real min_value = b3_real_max;
+    bool all_positive = true;
+    m_pivot_row_index = -1;
     for (int32 i = 0; i < m_size; i++) {
-        a[i] = m_vc->m_points[i].m_normal_impulse;
-    }
-
-
-    print_matrix((const real**)m_vc->m_JWJT, m_size, m_size, "JWJT matrix");
-    print_vec(a, m_size, "a vector");
-    for (int32 i = 0; i < m_size; i++) {
-        b3VelocityConstraintPoint* vcp = m_vc->m_points + i;
-        b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-        m_b[i] = dv.dot(normal) - vcp->m_bias_velocity;
-        spdlog::info("b vector {}: {}", i, m_b[i]);
-    }
-
-
-    print_vec(m_b, m_size, "b vector");
-
-    //bool all_positive = true;
-    for (int32 i = 0; i < m_size; i++) {
-        for (int32 j = 0; j < m_size; j++)
-            m_b[i] += m_vc->m_JWJT[i][j] * a[j];
-        //all_positive = all_positive && m_b[i] >= 0;
-    }
-
-    print_vec(m_b, m_size, "b vector after incremental");
-
-    m_block_allocator->free(a, m_size * sizeof(real));
-
-    //if (all_positive)
-    //    return true;
-
-    // Initialize the tableau
-    for (int32 i = 0; i < m_size; i++) {
-        m_tableau[i][i] = 1;
-        m_tableau[i][2 * m_size] = -1;   ///< -e0 column
-        for (int32 j = 0; j < m_size; j++) {
-            m_tableau[i][m_size + j] = m_vc->m_JWJT[i][j];
+        real v = m_tableau[i][2 * m_size + 1];
+        if (v < min_value) {
+            min_value = v;
+            m_pivot_row_index = i;
+        }
+        if (v < 0) {
+            all_positive = false;
         }
     }
-    return false;
+
+    // the first pivot column is the z0 column
+    m_pivot_col_index = 2 * m_size;
+    m_z_index = m_pivot_row_index;
+
+    return all_positive;
 }
 
 
 void b3Lemke::solve()
 {
     // initialize
-    int32 iteration = 0;
-    auto min_it = std::min_element(m_b, m_b + m_size);
-    int32 min_index = std::distance(m_b, min_it);
+    int32 max_iteration = 100;
 
-    b3_assert(0 <= min_index && min_index < m_size);
+    for (int32 i = 0; i < max_iteration; i++) {
+        eliminate(m_pivot_row_index, m_pivot_col_index);
 
-    eliminate(min_index, 2 * m_size);
+        print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
-    reset_identity();                ///< set first iteration of I_inv to Identity
-    int32 drop_out = min_index;      ///< the first one to drop out is in v vector
-    m_pivot[min_index] = 2 * m_size; ///< In this position is z0, the index of z0 is 2 * size
+        int32 pivot_col_index_old = m_pivot_col_index;
 
-    for (;;) {
+        
 
-        // if z0 is drop out, the algorithm stopped
-        if (drop_out == 2 * m_size)
-            break;
-
-        int32 bring_in = drop_out % m_size + m_size * (drop_out < m_size);
-        b3LexicoInv::size = m_size;
-
-        b3LexicoInv lexico_min{m_b[0], m_I_inv[0], m_tableau[0][bring_in]};
-
-        int32 lexico_min_index = 0;
-        for (int32 i = 1; i < m_size; i++) {
-            b3LexicoInv lexico_cur{m_b[i], m_I_inv[i], m_tableau[i][bring_in]};
-            if (lexico_cur < lexico_min) {
-                lexico_min = lexico_cur;
-                lexico_min_index = i;
-            }
-        }
-
-        reset_identity();
-
-        // swap the basic variables
-        drop_out = m_pivot[lexico_min_index];
-        m_pivot[lexico_min_index] = bring_in;
-
-        eliminate(lexico_min_index,  bring_in);
-
-        iteration++;
+//        // if z0 is drop out, the algorithm stopped
+//        if (drop_out == 2 * m_size)
+//            break;
+//
+//        int32 bring_in = drop_out % m_size + m_size * (drop_out < m_size);
+//        b3LexicoInv::size = m_size;
+//
+//        b3LexicoInv lexico_min{m_b[0], m_I_inv[0], m_tableau[0][bring_in]};
+//
+//        int32 lexico_min_index = 0;
+//        for (int32 i = 1; i < m_size; i++) {
+//            b3LexicoInv lexico_cur{m_b[i], m_I_inv[i], m_tableau[i][bring_in]};
+//            if (lexico_cur < lexico_min) {
+//                lexico_min = lexico_cur;
+//                lexico_min_index = i;
+//            }
+//        }
+//
+//        reset_identity();
+//
+//        // swap the basic variables
+//        drop_out = m_pivot[lexico_min_index];
+//        m_pivot[lexico_min_index] = bring_in;
+//
+//        eliminate(lexico_min_index,  bring_in);
+//
+//        iteration++;
     }
 
-    // copy the results
-    for (int i = 0; i < m_size; i++)
-        m_vx[m_pivot[i]] = m_b[i];
+//    // copy the results
+//    for (int i = 0; i < m_size; i++)
+//        m_vx[m_pivot[i]] = m_b[i];
 }
 
 
@@ -192,18 +181,15 @@ void b3Lemke::solve()
 void b3Lemke::eliminate(const int32 &i, const int32 &j)
 {
     b3_assert(0 <= i && i < m_size);
-    b3_assert(0 <= j && j < 2 * m_size + 1);
+    b3_assert(0 <= j && j < 2 * m_size + 2);
+
     real pivot_value = m_tableau[i][j];
 
     real ratio = real(1.0) / pivot_value;
 
-    // normalize the pivot value to 1
-    // and normalize the pivot row
-    m_b[i] *= ratio;
-    for (int32 k = 0; k < 2 * m_size + 1; ++k) {
+    // normalize the pivot row
+    for (int32 k = 0; k < 2 * m_size + 2; ++k) {
         m_tableau[i][k] *= ratio;
-        if (k < m_size)
-            m_I_inv[i][k] *= ratio;
     }
 
     for (int32 k = 0; k < m_size; k++) {
@@ -211,13 +197,8 @@ void b3Lemke::eliminate(const int32 &i, const int32 &j)
         if (k == i) continue;
 
         real factor = m_tableau[k][j];
-        m_b[k] -= factor * m_b[i];
-        for (int32 l = 0; l < 2 * m_size + 1; ++l) {
+        for (int32 l = 0; l < 2 * m_size + 2; ++l) {
             m_tableau[k][l] -= factor * m_tableau[i][l];
-            if (l < m_size) {
-                m_I_inv[k][l] -= factor * m_I_inv[i][l];
-            }
-
         }
     }
 }
@@ -245,11 +226,10 @@ void b3Lemke::print_vx() {
 
 b3Lemke::~b3Lemke()
 {
-    m_block_allocator->free(m_b, m_size * sizeof(real));
     m_block_allocator->free(m_pivot, m_size * sizeof(int32));
     m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
 
-    m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 1) * sizeof(real));
+    m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 2) * sizeof(real));
     m_block_allocator->free(m_tableau, m_size * sizeof(real*));
     m_block_allocator->free(m_I_inv[0], m_size * m_size * sizeof(real));
     m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
@@ -274,11 +254,12 @@ void b3Lemke::print_matrix(const real **matrix, const int32 &rows, const int32 &
         std::ostringstream oss;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                oss << matrix[i][j] << " ";
+                oss << std::fixed << std::setfill(' ') <<  std::setw(9) << matrix[i][j] << " ";
             }
             oss << "\n";
         }
-        spdlog::info("matrix: {} \n {}", s, oss.str());
+        spdlog::info("matrix: {} \n{}", s, oss.str());
 
 }
+
 

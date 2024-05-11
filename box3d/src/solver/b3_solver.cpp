@@ -283,7 +283,7 @@ void b3Solver::init_velocity_constraints()
 
             for (int32 i = 0; i < point_count; ++i) {
                 for (int32 j = 0; j < point_count; ++j) {
-                    vc->m_JWJT[i][j] = -JW[i].dot(J[j]);
+                    vc->m_JWJT[i][j] = JW[i].dot(J[j]);
                 }
             }
 
@@ -348,9 +348,9 @@ void b3Solver::solve_velocity_constraints()
             // vn = m_ * x + b'
             // b' = b - m_ * a
 
-            b3Lemke lemke(m_block_allocator, vc);
+            b3Lemke lemke(m_block_allocator, vc, v_a, w_a, v_b, w_b);
 
-            bool early_quit = lemke.initialize_problem(v_a, w_a, v_b, w_b);
+            bool early_quit = lemke.initialize_problem();
 
             if (early_quit) {
                 continue;

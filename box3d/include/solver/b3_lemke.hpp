@@ -29,21 +29,20 @@ class b3Lemke {
 
     int32* m_pivot = nullptr;
 
-    real* m_b = nullptr;
-
     real* m_vx = nullptr;
 
-    uint32 m_flags = 0;
+    int32 m_z_index = -1;
+
+    int32 m_pivot_row_index = -1;
+
+    int32 m_pivot_col_index = -1;
 
 public:
 
-    b3Lemke(b3BlockAllocator* allocator, b3ContactVelocityConstraint* vc) {
-        m_block_allocator = allocator;
-        m_vc = vc;
-        m_size = m_vc->m_point_count;
-    }
+    b3Lemke(b3BlockAllocator* allocator, b3ContactVelocityConstraint* vc,
+            b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b);
 
-    bool initialize_problem(b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b);
+    bool initialize_problem();
 
     void solve();
 
