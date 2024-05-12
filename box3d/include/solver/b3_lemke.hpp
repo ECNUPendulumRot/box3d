@@ -58,13 +58,14 @@ private:
 
     void eliminate(const int32& i, const int32& j);
 
-    void reset_identity();
-
     void print_vec(const real* vec, const int32& size, const char* s);
 
     void print_matrix(const real** matrix, const int32& rows, const int32& cols, const char* s);
 
     int32 find_lexicographic_minimum(const int& pivot_col_index, const int& z0Row, bool& is_ray_termination);
+
+    bool valid_basis();
+
 };
 
 

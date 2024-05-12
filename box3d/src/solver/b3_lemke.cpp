@@ -15,36 +15,6 @@
 static auto logger = spdlog::stdout_color_mt("lemke-logger");
 
 
-struct b3LexicoInv {
-
-    real b_value = 0.0;
-    real* inv_row = nullptr;
-    real piv_value = 0.0;
-    static int32 size;
-
-    bool operator<(const b3LexicoInv& other) const {
-        if (this->piv_value <= 0)
-            return false;
-        if (other.piv_value <= 0)
-            return true;
-
-        if (this->b_value / this->piv_value < other.b_value / other.piv_value) {
-            return true;
-        }
-
-        for (int32 i = 0; i < size; ++i) {
-            if (this->inv_row[i] / this->piv_value < other.inv_row[i] / other.piv_value) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-};
-
-
-int32 b3LexicoInv::size = 0;
-
 b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
                  b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b) {
     m_block_allocator = allocator;
@@ -72,7 +42,7 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
         b3Vec3 dv = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
         m_tableau[i][2 * m_size + 1] = dv.dot(normal) - vcp->m_bias_velocity;
         for (int32 j = 0; j < m_size; j++)
-            m_tableau[i][2 * m_size + 1] -= m_vc->m_JWJT[i][j] * vcp->m_normal_impulse;
+            m_tableau[i][2 * m_size + 1] -= m_vc->m_JWJT[i][j] * (m_vc->m_points + j)->m_normal_impulse;
     }
 
     print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
@@ -134,8 +104,6 @@ void b3Lemke::solve()
     for (int32 i = 0; i < max_iteration; i++) {
         eliminate(m_pivot_row_index, m_pivot_col_index);
 
-        print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
-
         int32 pivot_col_index_old = m_pivot_col_index;
 
         // find the new column index
@@ -147,40 +115,26 @@ void b3Lemke::solve()
 
         m_basis[m_pivot_row_index] = pivot_col_index_old;
         bool is_ray_termination = false;
+        m_pivot_row_index = find_lexicographic_minimum(m_pivot_col_index, m_z_index, is_ray_termination);
+        if (is_ray_termination)
+            break;
 
-
-//        // if z0 is drop out, the algorithm stopped
-//        if (drop_out == 2 * m_size)
-//            break;
-//
-//        int32 bring_in = drop_out % m_size + m_size * (drop_out < m_size);
-//        b3LexicoInv::size = m_size;
-//
-//        b3LexicoInv lexico_min{m_b[0], m_I_inv[0], m_tableau[0][bring_in]};
-//
-//        int32 lexico_min_index = 0;
-//        for (int32 i = 1; i < m_size; i++) {
-//            b3LexicoInv lexico_cur{m_b[i], m_I_inv[i], m_tableau[i][bring_in]};
-//            if (lexico_cur < lexico_min) {
-//                lexico_min = lexico_cur;
-//                lexico_min_index = i;
-//            }
-//        }
-//
-//        reset_identity();
-//
-//        // swap the basic variables
-//        drop_out = m_basis[lexico_min_index];
-//        m_basis[lexico_min_index] = bring_in;
-//
-//        eliminate(lexico_min_index,  bring_in);
-//
-//        iteration++;
+        if (m_z_index == m_pivot_row_index) {
+            eliminate(m_pivot_row_index, m_pivot_col_index);
+            m_basis[m_pivot_row_index] = m_pivot_col_index;
+        }
     }
 
-//    // copy the results
-//    for (int i = 0; i < m_size; i++)
-//        m_vx[m_basis[i]] = m_b[i];
+    if (!valid_basis()) {
+        spdlog::error("Lemke solver failed to find a valid basis: Ray- Termination!");
+        return;
+    }
+
+    print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
+
+    for (int32 i = 0; i < m_size; i++) {
+        m_vx[i + m_size] = m_tableau[i][2 * m_size + 1];
+    }
 }
 
 
@@ -212,13 +166,6 @@ void b3Lemke::eliminate(const int32 &i, const int32 &j)
     }
 }
 
-
-void b3Lemke::reset_identity() {
-    memset(m_I_inv[0], 0, m_size * m_size * sizeof(real));
-    for (int32 i = 0; i < m_size; ++i) {
-        m_I_inv[i][i] = 1;
-    }
-}
 
 void b3Lemke::print_vx() {
 
@@ -279,9 +226,92 @@ int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int&
     bool first_row = true;
     real current_min = 0.0;
 
+    int32 active_rows_count = 0;
+
     for (int32 row = 0; row < m_size; row++) {
         const real denom = m_tableau[row][pivot_col_index];
+        if (denom > b3_real_epsilon) {
+            const real q = m_tableau[row][2 * m_size + 1] / denom;
+            if (first_row) {
+                current_min = q;
+                active_rows[0] = row;
+                active_rows_count++;
+                first_row = false;
+            } else if (b3_abs(current_min - q) < b3_real_epsilon) {
+                active_rows[active_rows_count++] = row;
+            } else if (current_min > q) {
+                current_min = q;
+                active_rows_count = 1;
+                active_rows[0] = row;
+            }
+        }
+
     }
+
+    if (active_rows_count == 0) {
+        is_ray_termination = true;
+        return 0;
+    } else if (active_rows_count == 1) {
+        return active_rows[0];
+    }
+
+    for (int i = 0; i < active_rows_count; i++) {
+        if (active_rows[i] == z0Row) {
+            return z0Row;
+        }
+    }
+
+    for (int32 col = 0; col < m_size; col++) {
+        int32* active_rows_copy = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
+        for (int i = 0; i < active_rows_count; i++) {
+            active_rows_copy[i] = active_rows[i];
+        }
+
+        int32 active_rows_copy_count = active_rows_count;
+        active_rows_count = 0;
+        first_row = true;
+        for (int32 i = 0; i < active_rows_copy_count; i++) {
+            const int32 row = active_rows_copy[i]; // get the active row index
+            const real denom = m_tableau[row][pivot_col_index]; // get the pivot value in this row
+            const real ratio = m_tableau[row][col] / denom; // get the ratio of the pivot value and the value in the column
+            if (first_row) {
+                current_min = ratio;
+                active_rows[0] = row;
+                active_rows_count++;
+                first_row = false;
+            } else if (b3_abs(current_min - ratio) < b3_real_epsilon) {
+                active_rows[row] = row;
+                active_rows_count++;
+            } else if (current_min > ratio) {
+                current_min = ratio;
+                active_rows_count = 1;
+                active_rows[0] = row;
+            }
+        }
+
+        if (active_rows_count == 1) {
+            return active_rows[0];
+        }
+        m_block_allocator->free(active_rows_copy, m_size * sizeof(int32));
+    }
+
+    m_block_allocator->free(active_rows, m_size * sizeof(int32));
+
+    is_ray_termination = true;
+    return 0;
+}
+
+
+bool b3Lemke::valid_basis()
+{
+    bool valid = true;
+    for (int32 i = 0; i < m_size; i++) {
+        if (m_basis[i] >= 2 * m_size) {
+            valid = false;
+            break;
+        }
+    }
+    return valid;
 }
 
 

@@ -342,11 +342,11 @@ void b3Solver::solve_velocity_constraints()
             // x = a + d
             // x: new total impulse
             // d: incremental impulse
-            // vn = m_ * d + b
-            //    = m_ * (x - a) + b
-            //    = m_ * x + b - m_ * a
-            // vn = m_ * x + b'
-            // b' = b - m_ * a
+            // vn = M * d + b
+            //    = M * (x - a) + b
+            //    = M * x + b - M * a
+            // vn = M * x + b'
+            // b' = b - M * a
 
             b3Lemke lemke(m_block_allocator, vc, v_a, w_a, v_b, w_b);
 
