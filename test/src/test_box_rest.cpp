@@ -12,7 +12,7 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 4);
+            b3Vec3r p(0, 0, 3);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
@@ -23,7 +23,7 @@ public:
             b3Body* cube = m_world->create_body(body_def);
 
             b3CubeShape cube_shape;
-            cube_shape.set_as_box(2.0, 2.0, 2.0);
+            cube_shape.set_as_box(1.0, 1.0, 1.0);
 
             b3FixtureDef box_fd;
             box_fd.m_shape = &cube_shape;

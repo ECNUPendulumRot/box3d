@@ -45,6 +45,8 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
             m_tableau[i][2 * m_size + 1] -= m_vc->m_JWJT[i][j] * (m_vc->m_points + j)->m_normal_impulse;
     }
 
+    spdlog::info("inv mass of A: {}", m_vc->m_inv_mass_a);
+    spdlog::info("inv mass of B: {}", m_vc->m_inv_mass_b);
     print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
 

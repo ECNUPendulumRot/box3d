@@ -22,6 +22,7 @@ set (TESTBED_SOURCE_FILES
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp
         settings.cpp
+        src/test_box_collide.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

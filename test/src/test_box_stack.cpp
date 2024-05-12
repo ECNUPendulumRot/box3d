@@ -23,7 +23,7 @@ public:
 //            else
                 body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 1 + i * box_hf_size * 2.0f);
+            b3Vec3r p(0, 0, 1 + 1 * box_hf_size * 2.0f - i * box_hf_size * 2.0f);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
