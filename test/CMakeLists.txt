@@ -22,6 +22,7 @@ set (TESTBED_SOURCE_FILES
         src/test_symmetry_collision.cpp
         src/test_sphere_billiards.cpp
         src/test_sphere_one_hit_tow.cpp
+        src/test_two_hit_line.cpp
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp
         settings.cpp

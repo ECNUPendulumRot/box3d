@@ -281,6 +281,11 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                 w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
                 v_b = v_b + vc->m_inv_mass_b * impulse;
                 w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
+                if (rhs != 0.0f) {
+                    //delete these seems have no effect to solver?why?
+                    v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+                    vcp->m_relative_velocity = -v_rel.dot(vc->m_normal);
+                }
             }
 
         } else {
