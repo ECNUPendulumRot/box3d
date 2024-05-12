@@ -17,7 +17,11 @@ public:
 
         for (int32 i = 0; i < box_count; ++i) {
             b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_dynamic_body;
+//            if (i == 0) {
+//                body_def.m_type = b3BodyType::b3_static_body;
+//            }
+//            else
+                body_def.m_type = b3BodyType::b3_dynamic_body;
 
             b3Vec3r p(0, 0, 1 + i * box_hf_size * 2.0f);
             b3Vec3r q(0, 0, 0);

@@ -231,8 +231,8 @@ void DebugDraw::draw_plane(const b3PlaneShape* plane, const b3Transformr &xf, co
     b3Vec3r d_w = {plane->m_half_width, 0.0f, 0.0f};
     b3Vec3r d_l = {0.0f, plane->m_half_length, 0.0f};
 
-    d_w = xf.transform(d_w);
-    d_l = xf.transform(d_l);
+    d_w = xf.rotate(d_w);
+    d_l = xf.rotate(d_l);
 
     lf = lf - d_w - d_l;
 

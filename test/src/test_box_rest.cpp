@@ -12,7 +12,7 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 2);
+            b3Vec3r p(0, 0, 4);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
@@ -65,7 +65,9 @@ public:
 
         b3BodyDef ground_bd;
         ground_bd.m_type = b3BodyType::b3_static_body;
-
+        b3Vec3r p(0, 0, 2);
+        b3Vec3r q(0, 0, 0);
+        ground_bd.set_init_pose(p, q);
         b3Body* ground_body = m_world->create_body(ground_bd);
 
         b3PlaneShape ground_shape;
