@@ -364,7 +364,9 @@ void b3Solver::solve_velocity_constraints()
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
                 b3Vec3r impulse = lemke.get_normal_impulse(j) * vc->m_normal;
+                //spdlog::info("lemke impulse: ({}, {}, {:.10f})", impulse.x, impulse.y, impulse.z);
                 b3Vec3r inc_impulse = impulse - vcp->m_normal_impulse * vc->m_normal;
+                //spdlog::info("stored impulse: (0, 0, {:.10f})", vcp->m_normal_contact_impulse);
                 spdlog::info("inc_impulse: ({}, {}, {:.10f})", inc_impulse.x, inc_impulse.y, inc_impulse.z);
                 v_a = v_a - vc->m_inv_mass_a * inc_impulse;
                 w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(inc_impulse);
