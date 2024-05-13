@@ -67,7 +67,7 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
     // set up result vector
     m_x = (real*)m_block_allocator->allocate(m_size * sizeof(real));
     b3_assert(m_x != nullptr);
-    memset(m_x, 0, 2 * m_size * sizeof(real));
+    memset(m_x, 0, m_size * sizeof(real));
 }
 
 
