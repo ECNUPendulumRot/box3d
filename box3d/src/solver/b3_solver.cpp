@@ -153,7 +153,7 @@ void b3Solver::write_states_back()
 
 int b3Solver::solve()
 {
-    spdlog::info("////////////// Solve //////////////");
+    spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
 //    init_velocity_constraints();
 //
 //
@@ -296,6 +296,7 @@ void b3Solver::init_velocity_constraints()
 
 void b3Solver::solve_velocity_constraints()
 {
+    spdlog::info("|||||||||||||||||| Solve Velocity Constraints ||||||||||||||||||");
     for (int32 i = 0; i < m_contact_count; ++i) {
         // spdlog::info("////////////// Contact Iteration: {} //////////////", i);
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
@@ -365,7 +366,9 @@ void b3Solver::solve_velocity_constraints()
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
                 b3Vec3r impulse = lemke.get_normal_impulse(j) * vc->m_normal;
                 //spdlog::info("lemke impulse: ({}, {}, {:.10f})", impulse.x, impulse.y, impulse.z);
-                b3Vec3r inc_impulse = impulse - vcp->m_normal_impulse * vc->m_normal;
+                b3Vec3r normal_impulse = vcp->m_normal_impulse * vc->m_normal;
+                b3Vec3r inc_impulse = impulse - normal_impulse;
+                inc_impulse.round_to_zero();
                 //spdlog::info("stored impulse: (0, 0, {:.10f})", vcp->m_normal_contact_impulse);
                 spdlog::info("inc_impulse: ({}, {}, {:.10f})", inc_impulse.x, inc_impulse.y, inc_impulse.z);
                 v_a = v_a - vc->m_inv_mass_a * inc_impulse;
@@ -376,7 +379,9 @@ void b3Solver::solve_velocity_constraints()
                 vcp->m_normal_impulse = lemke.get_normal_impulse(j);
             }
             spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
+            spdlog::info("w_a: ({:.10f}, {:.10f}, {:.10f})", w_a.x, w_a.y, w_a.z);
             spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
+            spdlog::info("w_b: ({:.10f}, {:.10f}, {:.10f})", w_b.x, w_b.y, w_b.z);
         }
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;

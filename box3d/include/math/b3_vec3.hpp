@@ -136,6 +136,12 @@ struct b3Vec3 {
     inline T* data() {
         return m_ts;
     }
+
+    inline void round_to_zero() {
+        x = b3_round_to_zero(x);
+        y = b3_round_to_zero(y);
+        z = b3_round_to_zero(z);
+    }
 };
 
 

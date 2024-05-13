@@ -4,6 +4,7 @@
 
 
 #include <cmath>
+#include "common/b3_common.hpp"
 
 
 template <typename T>
@@ -36,5 +37,8 @@ inline T b3_cos(T x) {
         return cosf(x);
 }
 
+inline real b3_round_to_zero(real x) {
+    return b3_abs(x) < b3_real_epsilon ? real(0) : x;
+}
 
 #endif //BOX3D_B3_MATH_OP_HPP

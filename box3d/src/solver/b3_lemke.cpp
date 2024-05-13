@@ -88,7 +88,7 @@ bool b3Lemke::initialize_problem()
             all_positive = false;
         }
     }
-    spdlog::info("pivot row index: {}", m_pivot_row_index);
+    // spdlog::info("pivot row index: {}", m_pivot_row_index);
     // the first pivot column is the z0 column
     m_pivot_col_index = 2 * m_size;
     m_z_index = m_pivot_row_index;
@@ -99,6 +99,7 @@ bool b3Lemke::initialize_problem()
 
 void b3Lemke::solve()
 {
+    spdlog::info("---------- Lemke Solver Start! ----------");
     // initialize
     int32 max_iteration = 100;
 
@@ -106,8 +107,8 @@ void b3Lemke::solve()
 
         eliminate(m_pivot_row_index, m_pivot_col_index);
 
-        spdlog::info("Lemke Iteration: {}", i);
-        print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
+//        spdlog::info("Lemke Iteration: {}", i);
+//        print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
         int32 pivot_col_index_old = m_pivot_col_index;
 
@@ -121,9 +122,9 @@ void b3Lemke::solve()
         m_basis[m_pivot_row_index] = pivot_col_index_old;
         bool is_ray_termination = false;
         m_pivot_row_index = find_lexicographic_minimum(m_pivot_col_index, m_z_index, is_ray_termination);
-        spdlog::info("pivot row index: {}", m_pivot_row_index);
-        spdlog::info("pivot col index: {}", m_pivot_col_index);
-        spdlog::info("is ray termination?: {}", is_ray_termination);
+//        spdlog::info("pivot row index: {}", m_pivot_row_index);
+//        spdlog::info("pivot col index: {}", m_pivot_col_index);
+//        spdlog::info("is ray termination?: {}", is_ray_termination);
         if (is_ray_termination)
             break;
 
@@ -139,11 +140,13 @@ void b3Lemke::solve()
         return;
     }
 
-    print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
+    //print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
     for (int32 i = 0; i < m_size; i++) {
-        m_vx[i + m_size] = m_tableau[i][2 * m_size + 1];
+        m_vx[m_basis[i]] = m_tableau[i][2 * m_size + 1];
     }
+
+    spdlog::info("---------- Lemke Solver Ended... ----------");
 }
 
 
