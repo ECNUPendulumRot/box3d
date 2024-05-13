@@ -49,7 +49,7 @@ union b3ContactID {
 
 struct b3ClipVertex {
 
-    b3Vector3r v;
+    b3Vec3r v;
 
     b3ContactID id;
 
@@ -59,7 +59,7 @@ struct b3ClipVertex {
 // TODO: check to delete this struct.
 struct b3ManifoldPoint {
 
-    b3Vector3r m_local_point;		///< usage depends on manifold type
+    b3Vec3r m_local_point;		///< usage depends on manifold type
 
     float m_normal_impulse;	///< the non-penetration impulse
 
@@ -84,9 +84,9 @@ struct b3Manifold {
 
     b3ManifoldPoint m_points[8];	///< the points of contact
 
-    b3Vector3r m_local_normal;								///< not use for Type::e_points
+    b3Vec3r m_local_normal;								///< not use for Type::e_points
 
-    b3Vector3r m_local_point;								///< usage depends on manifold type
+    b3Vec3r m_local_point;								///< usage depends on manifold type
 
     // TODO: this maybe not useful, check to delete it.
     Type m_type;

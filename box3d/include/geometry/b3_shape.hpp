@@ -23,11 +23,10 @@ class b3BlockAllocator;
 
 enum b3ShapeType {
     e_type_not_defined = -1,
-    e_mesh       = 0,
-    e_cube       = 1,
-    e_sphere     = 2,
-    e_plane      = 3,
-    e_type_count = 4
+    e_cube       = 0,
+    e_sphere     = 1,
+    e_plane      = 2,
+    e_type_count = 3
 };
 
 
@@ -61,10 +60,10 @@ struct b3ViewData {
         int fv2;
     } FaceIndice;
 
-    inline void set_vertex_row(int vertex_index, const b3Vector3r& vertex) const {
-        *(m_V + 3 * vertex_index)     = vertex.m_x;
-        *(m_V + 3 * vertex_index + 1) = vertex.m_y;
-        *(m_V + 3 * vertex_index + 2) = vertex.m_z;
+    inline void set_vertex_row(int vertex_index, const b3Vec3r& vertex) const {
+        *(m_V + 3 * vertex_index)     = vertex.x;
+        *(m_V + 3 * vertex_index + 1) = vertex.y;
+        *(m_V + 3 * vertex_index + 2) = vertex.z;
     }
 
     inline void set_face_row(int face_index, const FaceIndice& face) const {
@@ -112,7 +111,7 @@ protected:
     /**
      * @brief This is used for gui
      */
-    b3Vector3r m_color = b3Vector3r::zero();
+    b3Vec3r m_color = b3Vec3r::zero();
 
 public:
 
@@ -177,7 +176,7 @@ public:
         m_next = next;
     }
 
-    virtual double get_radius() const {
+    virtual real get_radius() const {
         return m_radius;
     }
 
@@ -185,11 +184,11 @@ public:
         return m_body;
     }
 
-    void set_color(const b3Vector3r& color) {
+    void set_color(const b3Vec3r& color) {
         m_color = color;
     }
 
-    b3Vector3r get_color() const {
+    b3Vec3r get_color() const {
         return m_color;
     }
 };

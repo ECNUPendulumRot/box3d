@@ -29,9 +29,13 @@ struct b3BodyDef {
 
     b3BodyType m_type = b3BodyType::b3_type_not_defined;
 
-    b3Transformr m_init_pose = b3Transformr::zero();
+    b3Vec3r m_init_p = b3Vec3r ::zero();
 
-    b3Transformr m_init_velocity = b3Transformr::zero();
+    b3Quaternionr m_init_q;
+
+    b3Vec3r m_init_v = b3Vec3r ::zero();
+
+    b3Vec3r m_init_w = b3Vec3r ::zero();
 
     real m_density = 1.0;
 
@@ -47,17 +51,14 @@ public:
         return m_type;
     }
 
-    inline void set_initial_status(const b3Transformr& pose, const b3Transformr& velocity) {
-        m_init_pose = pose;
-        m_init_velocity = velocity;
+    inline void set_init_pose(const b3Vec3r& position, const b3Vec3r& aa) {
+        m_init_p = position;
+        m_init_q = b3_aa_to_quaternion(aa);
     }
 
-    inline b3Transformr get_initial_pose() const {
-        return m_init_pose;
-    }
-
-    inline b3Transformr get_initial_velocity() const {
-        return m_init_velocity;
+    inline void set_init_velocity(const b3Vec3r& v, const b3Vec3r& w) {
+        m_init_v = v;
+        m_init_w = w;
     }
 
     inline real get_density() const {

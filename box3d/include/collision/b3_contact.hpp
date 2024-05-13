@@ -35,15 +35,20 @@ struct b3ContactEdge {
 };
 
 // Friction mixing law. The idea is to allow either fixture to drive the friction to zero.
-inline double b3_mix_friction(double friction1, double friction2) {
+inline real b3_mix_friction(real friction1, real friction2) {
     return b3_sqrt(friction1 * friction2);
 }
 
-// Restitution mixing law. The idea is to allow for anythings to bounce off an inelastic surface.
-inline double b3_mix_restitution(double restitution1, double restitution2) {
+// Restitution mixing law. The idea is to allow for anything to bounce off an inelastic surface.
+inline real b3_mix_restitution(real restitution1, real restitution2) {
     return restitution1 > restitution2 ? restitution1 : restitution2;
 }
 
+// Restitution mixing law. This picks the lowest value.
+inline float b3_mix_restitution_threshold(float threshold1, float threshold2)
+{
+    return threshold1 < threshold2 ? threshold1 : threshold2;
+}
 
 typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
                                       b3Fixture* fixture_B, int32 index_B,
@@ -86,9 +91,9 @@ protected:
 
 
     ////////// Coefficients related to the material of the object ///////////
-    double m_restitution;
-    double m_friction;
-
+    real m_restitution;
+    real m_friction;
+    real m_restitution_threshold;
     uint32 m_flags = 0;
 
 public:
@@ -171,11 +176,15 @@ public:
         return &m_manifold;
     }
 
-    double get_restitution() const {
+    real get_restitution() const {
         return m_restitution;
     }
 
-    double get_friction() const {
+    real get_restitution_threshold() const {
+        return m_restitution_threshold;
+    }
+
+    real get_friction() const {
         return m_friction;
     }
 

@@ -2,9 +2,10 @@
 #ifndef BOX3D_B3_SOLVER_HPP
 #define BOX3D_B3_SOLVER_HPP
 
-#include "dynamics/b3_transform.hpp"
 
-#include "solver/b3_contact_constraint.hpp"
+#include "dynamics/b3_transform.hpp"
+#include "math/b3_quat.hpp"
+
 
 /////////// Forward Delaration ///////////
 
@@ -24,21 +25,22 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
-void b3_get_two_tangent_bases(const b3Vector3r& normal, b3Vector3r& t1, b3Vector3r& t2);
-
 
 class b3Solver {
 
-protected:
-
     b3Contact** m_contacts = nullptr;
+
     int32 m_contact_count;
 
     int32 m_body_count;
-    b3Transformr* m_positions = nullptr;
-    b3Transformr* m_velocities = nullptr;
-    //used in verlet integration, store the velocity with out force applied
-    b3Transformr* m_velocities_w_f = nullptr;
+
+    b3Vec3r* m_ps = nullptr;
+
+    b3Quaternionr* m_qs = nullptr;
+
+    b3Vec3r* m_vs = nullptr;
+
+    b3Vec3r* m_ws = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
@@ -48,24 +50,26 @@ protected:
 
     b3Body** m_bodies;
 
-    /**
-     * @brief write the velocity and position back to bodies.
-     */
-    void write_states_back();
+    uint8* m_delayed;
 
 public:
 
-    b3Solver() = delete;
+    b3Solver() = default;
 
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    /**
-     * @breif solver all constraints in the island.
-     */
-    virtual int solve(int type) = 0;
+    void solve_velocity_constraints();
 
-    virtual ~b3Solver();
+    void init_velocity_constraints();
+
+    int solve();
+
+    void write_states_back();
+
+    ~b3Solver();
+
 };
 
 

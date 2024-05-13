@@ -1,7 +1,5 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
 
-include(spdlog)
-
 set(B3D_HEADER_FILES
         include/box3d.hpp
 
@@ -39,17 +37,21 @@ set(B3D_HEADER_FILES
 
         include/utils/b3_timer.hpp
 
-        include/math/b3_matrix_operation.hpp
-        include/math/b3_vector.hpp
+        include/math/b3_vec3.hpp
+        include/math/b3_vec2.hpp
         include/math/b3_min_max.hpp
-        include/math/b3_math.hpp
+        include/math/b3_math_op.hpp
 
 
         include/solver/b3_solver.hpp
-        #include/solver/b3_solver_verlet.hpp
-        include/solver/b3_si_solver.hpp
         include/solver/b3_contact_constraint.hpp
         include/collision/b3_plane_cube_contact.hpp
+
+        include/math/b3_quat.hpp
+        include/common/b3_draw.hpp
+        include/math/b3_vec12.hpp
+        include/math/b3_mat1212.hpp
+        include/solver/b3_lemke.hpp
 
 )
 
@@ -82,11 +84,10 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
-        #src/solver/b3_solver_verlet.cpp
-        src/solver/b3_si_solver.cpp
-        #src/solver/b3_si_solver_verlet.cpp
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
+        src/common/b3_draw.cpp
+        src/solver/b3_lemke.cpp
 
 )
 

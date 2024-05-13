@@ -1,74 +1,33 @@
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/extern/cmake")
-
-
-
-include(libigl)
-igl_include(glfw)
-igl_include(imgui)
-
-include(spdlog)
 ###################### b3simapp ######################
 
-set(TEST_HEADER_FILES
-        include/sim_app.hpp
-        include/scene_test.hpp
-        include/gui/gui_viewer.hpp
-        include/gui/test_menu.hpp
-        include/unit_test.hpp
+set (TESTBED_SOURCE_FILES
+        main.cpp
+        imgui_impl_glfw.cpp
+        imgui_impl_glfw.h
+        imgui_impl_opengl3.cpp
+        imgui_impl_opengl3.h
+        draw.hpp
+        draw.cpp
+        settings.hpp
         include/test.hpp
-        include/auxiliary_shape.hpp
-        include/gui/mesh_menu.hpp
-        include/gui/imgui_ext.hpp
-        include/gui/title_bar.hpp
-
-)
-
-set(TEST_SOURCE_FILES
-        test_app.cpp
-        src/sim_app.cpp
-        src/gui_viewer.cpp
-        src/scene_test_sphere_stack.cpp
-        src/unit_test_box_collide.cpp
-        src/unit_test_dynamic_tree.cpp
+        include/gl_render_triangles.hpp
+        include/gl_common.hpp
+        include/camera.hpp
         src/test.cpp
-        src/unit_test_sphere_view.cpp
-        src/scene_test_sphere_cube_collide.cpp
-        src/imgui_ext.cpp
-        src/scene_test_plane_sphere_collide.cpp
-        src/scene_test_box_rest.cpp
-        src/scene_test_dropping.cpp
+        src/test_box_rest.cpp
+        src/gl_render_triangles.cpp
+        src/camera.cpp
+        src/test_sphere_drop.cpp
+        src/test_box_stack.cpp
+        include/gl_render_lines.hpp
+        src/gl_render_lines.cpp
+        settings.cpp
+        src/test_box_collide.cpp
 )
 
-add_executable(
-    test_app
-    ${TEST_HEADER_FILES}
-    ${TEST_SOURCE_FILES}
-)
+add_executable(testbed ${TESTBED_SOURCE_FILES})
 
-add_executable(
-    test_all_class_size
-    test_all_class_size.cpp
-)
+target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_executable(
-    test_sphere_manifold
-    unit_test/test_sphere_manifold.cpp
-)
-
-target_include_directories(test_app
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-
-target_link_libraries(test_app
-    PUBLIC box3d igl::glfw spdlog::spdlog igl::imgui
-)
-
-target_link_libraries(
-    test_all_class_size
-    PUBLIC box3d
-)
-
-target_link_libraries(
-    test_sphere_manifold
-    PUBLIC box3d igl::glfw
-)
+target_link_libraries(testbed PUBLIC box3d glfw imgui glad sajson spdlog::spdlog)

@@ -24,6 +24,8 @@ struct b3FixtureDef {
 
     real m_density = 1.0;
 
+    real m_restitution_threshold = 1.0 * b3_length_units_per_meter;
+
     /**
      * @brief The shape of the fixture.
      * This shape must be allocated by the user.
@@ -82,6 +84,8 @@ class b3Fixture {
 
     real m_restitution = 0.0;
 
+    real m_restitution_threshold = 1.0 * b3_length_units_per_meter;
+
     real m_friction = 0.0;
 
     real m_density = 0.0;
@@ -110,6 +114,10 @@ public:
         return m_body;
     }
 
+    b3Fixture* get_next() const {
+        return m_next;
+    }
+
     b3Shape* get_shape() const {
         return m_shape;
     }
@@ -133,6 +141,10 @@ public:
 
     real get_restitution() const {
         return m_restitution;
+    }
+
+    real get_restitution_threshold() const {
+        return m_restitution_threshold;
     }
 
 private:

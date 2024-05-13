@@ -7,13 +7,14 @@
 #include <cfloat>
 #include <cmath>
 
+#include "common/b3_types.hpp"
+
 
 #define b3_assert(A) assert(A)
 
-
 #define b3_pi 3.14159265359
 
-#define b3_close_to_zero 1e-5
+#define b3_close_to_zero_epsilon 1e-5
 
 #define b3_NOT_USED(x) ((void)(x))
 
@@ -48,6 +49,14 @@ struct b3RealLimits<double> {
 constexpr auto b3_real_max = b3RealLimits<real>::Max;
 constexpr auto b3_real_min = b3RealLimits<real>::Min;
 constexpr auto b3_real_epsilon = b3RealLimits<real>::Epsilon;
+
+inline bool b3_is_zero(real x) {
+    return fabs(x) < b3_real_epsilon;
+}
+
+inline bool b3_close_to_zero(real x) {
+    return fabs(x) < b3_close_to_zero_epsilon;
+}
 
 
 #endif //BOX3D_B3_COMMON_HPP
