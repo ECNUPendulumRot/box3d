@@ -16,7 +16,8 @@ static auto logger = spdlog::stdout_color_mt("lemke-logger");
 
 
 b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
-                 b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b) {
+                 b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b)
+{
     m_block_allocator = allocator;
     m_vc = vc;
     m_size = m_vc->m_point_count;
@@ -46,7 +47,7 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
             m_tableau[i][2 * m_size + 1] -= m_vc->m_JWJT[i][j] * (m_vc->m_points + j)->m_normal_impulse;
     }
 
-    print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
+    //print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
 
     m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
@@ -64,9 +65,9 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
     }
 
     // set up result vector
-    m_vx = (real*)m_block_allocator->allocate(2 * m_size * sizeof(real));
-    b3_assert(m_vx != nullptr);
-    memset(m_vx, 0, 2 * m_size * sizeof(real));
+    m_x = (real*)m_block_allocator->allocate(m_size * sizeof(real));
+    b3_assert(m_x != nullptr);
+    memset(m_x, 0, 2 * m_size * sizeof(real));
 }
 
 
@@ -143,7 +144,7 @@ void b3Lemke::solve()
     //print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
     for (int32 i = 0; i < m_size; i++) {
-        m_vx[m_basis[i]] = m_tableau[i][2 * m_size + 1];
+        m_x[m_basis[i] - m_size] = m_tableau[i][2 * m_size + 1];
     }
 
     spdlog::info("---------- Lemke Solver Ended... ----------");
@@ -185,22 +186,10 @@ void b3Lemke::print_vx() {
     logger->set_pattern("%v");
     std::ostringstream oss;
     for (int i = 0; i < 2 * m_size; i++) {
-        oss << m_vx[i] << " ";
+        oss << m_x[i] << " ";
     }
     spdlog::info("Lemke VX Vector: \n {}", oss.str());
 
-}
-
-
-b3Lemke::~b3Lemke()
-{
-    m_block_allocator->free(m_basis, m_size * sizeof(int32));
-    m_block_allocator->free(m_vx, 2 * m_size * sizeof(real));
-
-    m_block_allocator->free(m_tableau[0], m_size * (2 * m_size + 2) * sizeof(real));
-    m_block_allocator->free(m_tableau, m_size * sizeof(real*));
-    m_block_allocator->free(m_I_inv[0], m_size * m_size * sizeof(real));
-    m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
 }
 
 
@@ -301,6 +290,7 @@ int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int&
         }
 
         if (active_rows_count == 1) {
+            m_block_allocator->free(active_rows_copy, m_size * sizeof(int32));
             return active_rows[0];
         }
         m_block_allocator->free(active_rows_copy, m_size * sizeof(int32));
@@ -323,6 +313,24 @@ bool b3Lemke::valid_basis()
         }
     }
     return valid;
+}
+
+
+
+b3Lemke::~b3Lemke()
+{
+    m_block_allocator->free(m_basis, m_size * sizeof(int32));
+    m_block_allocator->free(m_x, m_size * sizeof(real));
+
+    for (int32 i = 0; i < m_size; i++) {
+        m_block_allocator->free(m_tableau[i], (2 * m_size + 2) * sizeof(real));
+    }
+    m_block_allocator->free(m_tableau, m_size * sizeof(real*));
+
+    for (int32 i = 0; i < m_size; i++) {
+        m_block_allocator->free(m_I_inv[i], m_size * sizeof(real));
+    }
+    m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
 }
 
 

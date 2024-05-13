@@ -359,29 +359,28 @@ void b3Solver::solve_velocity_constraints()
 
             lemke.solve();
 
-            // spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
-            // spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
             lemke.print_vx();
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
-                b3Vec3r impulse = lemke.get_normal_impulse(j) * vc->m_normal;
-                //spdlog::info("lemke impulse: ({}, {}, {:.10f})", impulse.x, impulse.y, impulse.z);
-                b3Vec3r normal_impulse = vcp->m_normal_impulse * vc->m_normal;
-                b3Vec3r inc_impulse = impulse - normal_impulse;
-                inc_impulse.round_to_zero();
-                //spdlog::info("stored impulse: (0, 0, {:.10f})", vcp->m_normal_contact_impulse);
-                spdlog::info("inc_impulse: ({}, {}, {:.10f})", inc_impulse.x, inc_impulse.y, inc_impulse.z);
-                v_a = v_a - vc->m_inv_mass_a * inc_impulse;
-                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(inc_impulse);
-                v_b = v_b + vc->m_inv_mass_b * inc_impulse;
-                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(inc_impulse);
+                real inc_impulse = lemke.get_normal_impulse(j) - vcp->m_normal_impulse;
+                b3_round_to_zero(inc_impulse);
 
-                vcp->m_normal_impulse = lemke.get_normal_impulse(j);
+                b3Vec3r inc_impulse_v = inc_impulse * normal;
+                //spdlog::info("stored impulse: (0, 0, {:.10f})", vcp->m_normal_contact_impulse);
+//                spdlog::info("inc_impulse value: {}", inc_impulse);
+//                spdlog::info("normal: ({:.10f}, {:.10f}, {:.10f})", normal.x, normal.y, normal.z);
+//                spdlog::info("inc_impulse: ({}, {}, {:.10f})", inc_impulse_v.x, inc_impulse_v.y, inc_impulse_v.z);
+                v_a = v_a - vc->m_inv_mass_a * inc_impulse_v;
+                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(inc_impulse_v);
+                v_b = v_b + vc->m_inv_mass_b * inc_impulse_v;
+                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(inc_impulse_v);
+
+                vcp->m_normal_impulse = vcp->m_normal_impulse + inc_impulse;
             }
-            spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
-            spdlog::info("w_a: ({:.10f}, {:.10f}, {:.10f})", w_a.x, w_a.y, w_a.z);
-            spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
-            spdlog::info("w_b: ({:.10f}, {:.10f}, {:.10f})", w_b.x, w_b.y, w_b.z);
+//            spdlog::info("v_a: ({}, {}, {:.10f})", v_a.x, v_a.y, v_a.z);
+//            spdlog::info("w_a: ({:.10f}, {:.10f}, {:.10f})", w_a.x, w_a.y, w_a.z);
+//            spdlog::info("v_b: ({}, {}, {:.10f})", v_b.x, v_b.y, v_b.z);
+//            spdlog::info("w_b: ({:.10f}, {:.10f}, {:.10f})", w_b.x, w_b.y, w_b.z);
         }
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;

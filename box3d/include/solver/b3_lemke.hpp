@@ -29,7 +29,7 @@ class b3Lemke {
 
     int32* m_basis = nullptr;
 
-    real* m_vx = nullptr;
+    real* m_x = nullptr;
 
     int32 m_z_index = -1;
 
@@ -47,7 +47,7 @@ public:
     void solve();
 
     inline real get_normal_impulse(const int32& index) const {
-        return m_vx[m_size + index];
+        return m_x[index];
     }
 
     void print_vx();
