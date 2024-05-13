@@ -10,10 +10,10 @@ public:
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
-            b3Vec3r p(0, 0, 20);
+            b3Vec3r p(0, 0, 5);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 3, 0);
-            b3Vec3r w(0, 0, 0);
+            b3Vec3r w(2, 3, 6);
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
@@ -46,7 +46,7 @@ public:
             b3Body* ground_body2 = m_world->create_body(body_def);
 
             b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(50, 10);
+            ground_shape.set_as_plane(20, 6);
 
             b3FixtureDef ground_fd;
             ground_fd.m_shape = &ground_shape;

@@ -130,9 +130,10 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
         vc->m_is_sphere[0] = (fixture_a->get_shape_type() == b3ShapeType::e_sphere);
         vc->m_is_sphere[1] = (fixture_b->get_shape_type() == b3ShapeType::e_sphere);
-        vc->m_radius[0] = (real)0.1 * fixture_a->get_shape()->get_radius();
+        //TODO: make 0.1 become a member of the sphere class.
+        vc->m_radius[0] = (real)0.2 * fixture_a->get_shape()->get_radius();
         vc->m_inv_radius[0] = (real)1.0 / vc->m_radius[0];
-        vc->m_radius[1] = (real)0.1 * fixture_b->get_shape()->get_radius();
+        vc->m_radius[1] = (real)0.2 * fixture_b->get_shape()->get_radius();
         vc->m_inv_radius[1] = (real)1.0 / vc->m_radius[1];
 
         vc->m_inv_I_ab = (vc->m_inv_I_a + vc->m_inv_I_b).inverse();
@@ -169,7 +170,8 @@ void b3Solver::write_states_back()
 
     for(int32 i = 0; i < m_body_count; i++) {
         if(m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
-            spdlog::log(spdlog::level::info, "velocity: {}, {}, {}, {}, {}, {}",
+            spdlog::log(spdlog::level::info, "count: {}, velocity: {}, {}, {}, {}, {}, {}",
+                        m_contact_count,
                         m_bodies[i]->get_linear_velocity().x,
                         m_bodies[i]->get_linear_velocity().y,
                         m_bodies[i]->get_linear_velocity().z,
@@ -207,8 +209,8 @@ int b3Solver::solve() {
         // Pade approximation:
         // v2 = v1 * 1 / (1 + c * dt)
         // TODO: make this params become class members.
-        v *= 1.0f / (1.0f + m_timestep->m_dt * 0.1);
-        w *= 1.0f / (1.0f + m_timestep->m_dt * 0.1);
+//        v *= 1.0f / (1.0f + m_timestep->m_dt * 0.1);
+//        w *= 1.0f / (1.0f + m_timestep->m_dt * 0.1);
 
         m_vs[i] = v;
         m_ws[i] = w;
@@ -283,7 +285,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
 
             // TODO: if we enable this ?
-            // TODO: Borrowed from《 Nonconvex Rigid Bodies with Stacking 》
+            // TODO: Borrowed from《Nonconvex Rigid Bodies with Stacking》
             real w_rel = (w_b - w_a).dot(vc->m_normal);
             b3Vec3r lambda_torque = vc->m_inv_I_ab * vc->m_normal * (vc->m_target_normal_angular_velocity - w_rel);
             w_b = w_b + vc->m_inv_I_b * lambda_torque;
@@ -320,7 +322,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
 
-        solve_sphere_angular_velocity(vc);
+        // solve_sphere_angular_velocity(vc);
     }
 }
 
@@ -448,7 +450,8 @@ void b3Solver::init_velocity_constraints()
         b3Vec3r w_b = m_ws[index_b];
 
         b3Vec3r w_rel = w_b - w_a;
-        vc->m_target_normal_angular_velocity = vc->m_restitution * w_rel.dot(vc->m_normal);
+        vc->m_target_normal_angular_velocity = w_rel.dot(vc->m_normal);
+        vc->m_target_normal_angular_velocity -= m_timestep->m_dt * (1 - vc->m_restitution) * vc->m_target_normal_angular_velocity;
 
         for (int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -470,6 +473,7 @@ void b3Solver::init_velocity_constraints()
             b3Vec3r rb_t1 = vcp->m_rb.cross(vc->m_tangent1);
             effective_mass = vc->m_inv_mass_a + vc->m_inv_mass_b + (ra_t1 * vc->m_inv_I_a).dot(ra_t1)
                              + (rb_t1 * vc->m_inv_I_b).dot(rb_t1);
+
             vcp->m_tangent1_mass = effective_mass > 0 ? static_cast<real>(1) / effective_mass : 0;
 
             b3Vec3r ra_t2 = vcp->m_ra.cross(vc->m_tangent2);
@@ -478,6 +482,8 @@ void b3Solver::init_velocity_constraints()
                              + (rb_t2 * vc->m_inv_I_b).dot(rb_t2);
             vcp->m_tangent2_mass = effective_mass > 0 ? static_cast<real>(1) / effective_mass : 0;
 
+            real y = (vc->m_inv_I_b * vcp->m_rb.cross(vc->m_tangent2)).cross(vcp->m_rb).dot(vc->m_tangent2);
+            real y_copy = (rb_t2 * vc->m_inv_I_b).dot(rb_t2);
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv

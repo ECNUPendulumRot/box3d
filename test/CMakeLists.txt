@@ -21,6 +21,8 @@ set (TESTBED_SOURCE_FILES
         src/test_sphere_friction.cpp
         src/test_sphere_drop_with_angular_velocity.cpp
         src/test_sphere_collide_plane.cpp
+        src/test_sphere_slope.cpp
+        src/test_sphere_rotating.cpp
 
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp

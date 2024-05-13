@@ -12,10 +12,10 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 5);
+            b3Vec3r p(0, 0, 1);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 5, 0);
-            b3Vec3r w(5, 0, 0);
+            b3Vec3r v(0, 0, 0);
+            b3Vec3r w(10, 10, 10);
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
@@ -26,7 +26,7 @@ public:
             shape.set_as_sphere(1);
 
             b3FixtureDef sphere_fd;
-            sphere_fd.m_restitution = 0.5;
+            sphere_fd.m_restitution = 0.9;
             sphere_fd.m_friction = 0.4;
             sphere_fd.m_density = 1.0;
             sphere_fd.m_shape = &shape;
@@ -40,7 +40,7 @@ public:
             b3Body* ground_body = m_world->create_body(ground_def);
 
             b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(200, 200);
+            ground_shape.set_as_plane(20000, 20000);
 
             b3FixtureDef ground_fd;
             ground_fd.m_restitution = 0;
