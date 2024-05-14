@@ -254,6 +254,8 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                             rhs = 0.0;
                             rhs_restitution_velocity = 0.0;
                             vcp->m_relative_velocity = 0.0f;
+                            //change to situation 3
+                            vcp->m_rhs_restitution_velocity = 0.0f;
                         }
                     } else {
                         //3

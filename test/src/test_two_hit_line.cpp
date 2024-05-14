@@ -28,7 +28,7 @@ public:
 
         b3Vec3r p(-2, -2, 0.5);
         b3Vec3r q(0, 0, 0);
-        b3Vec3r v(1, 1, 0);
+        b3Vec3r v(2, 2, 0);
         b3Vec3r w(0, 0, 0);
 
         body_def.set_init_pose(p, q);
@@ -37,7 +37,7 @@ public:
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
         p = { 2, -2, 0.5 };
-        v = { -1, 1, 0 };
+        v = { -2, 2, 0 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
