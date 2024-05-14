@@ -6,7 +6,7 @@
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
 #include "solver/b3_solver_zhb.hpp"
-
+//#include "solver/b3_solver.hpp"
 #include "common/b3_draw.hpp"
 
 #include "geometry/b3_cube_shape.hpp"

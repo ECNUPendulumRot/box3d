@@ -7,7 +7,7 @@ public:
     TestTwoHitLine() {
 
         m_world->set_gravity(b3Vec3r(0, 0, 0));
-        int num_of_spheres = 4;
+        int num_of_spheres = 3;
         // create a dynamic body
         b3Transformr pose, velocity;
 
@@ -53,12 +53,12 @@ public:
             body_def.set_init_velocity(v, w);
             m_world->create_body(body_def)->create_fixture(fixture_def);
         }
-        p = { 0.5 * 1.414, x + num_of_spheres - 3 + 0.5 * 1.414, 0.5 };
+        p = { 0.6 , x + num_of_spheres - 3 + 0.7, 0.5 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
-        p = { -0.5 * 1.414, x + num_of_spheres - 3 + 0.5 * 1.414, 0.5 };
+        p = { -0.6 , x + num_of_spheres - 3 + 0.7, 0.5 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
         m_world->create_body(body_def)->create_fixture(fixture_def);
