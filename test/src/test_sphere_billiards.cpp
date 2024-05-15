@@ -35,7 +35,7 @@ public:
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
         real x = 4;
-        int32 layer = 2;
+        int32 layer = 3;
 
         v = { 0, 0, 0 };
 
@@ -46,11 +46,11 @@ public:
             x++;
             if (i % 2 == 0) {
                 for (int j = 1; j < i; j *= 2) {
-                    p = { j * 0.5, x, 0.5 };
+                    p = { j - 0.5, x, 0.5 };
                     body_def.set_init_pose(p, q);
                     body_def.set_init_velocity(v, w);
                     m_world->create_body(body_def)->create_fixture(fixture_def);
-                    p = { -j * 0.5, x, 0.5 };
+                    p = { -j + 0.5, x, 0.5 };
                     body_def.set_init_pose(p, q);
                     body_def.set_init_velocity(v, w);
                     m_world->create_body(body_def)->create_fixture(fixture_def);

@@ -200,7 +200,7 @@ int b3SolverZHB::solve() {
 
 
 void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
-    real tolerance = 0.1f;
+    real tolerance = 0.01f;
     for (int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
