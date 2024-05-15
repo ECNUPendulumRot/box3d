@@ -35,7 +35,7 @@ public:
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
         real x = 4;
-        int32 layer = 3;
+        int32 layer = 2;
 
         v = { 0, 0, 0 };
 

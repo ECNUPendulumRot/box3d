@@ -29,6 +29,9 @@ public:
 
     virtual void step(Settings& settings);
 
+    virtual void Keyboard(int key) { ((void)(key)); }
+    virtual void KeyboardUP(int key) { ((void)(key)); }
+
 };
 
 

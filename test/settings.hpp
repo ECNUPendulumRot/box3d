@@ -26,7 +26,7 @@ struct Settings {
     int m_window_height;
 
     int m_test_index = 0;
-
+    int m_velocity_iteration = 8;
     bool m_draw_shapes = true;
     bool m_draw_frame_only = false;
     bool m_pause = false;

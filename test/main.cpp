@@ -71,6 +71,34 @@ static void restart_test()
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    if (ImGui::GetIO().WantCaptureKeyboard) {
+        return;
+    }
+
+    if (action == GLFW_PRESS) {
+        switch (key) {
+        case GLFW_KEY_P:
+            //Pause
+            s_settings.m_pause = !s_settings.m_pause;
+            break;
+        case GLFW_KEY_O:
+            s_settings.m_single_step = !s_settings.m_single_step;
+            break;
+        case GLFW_KEY_R:
+            restart_test();
+            break;
+
+        default:
+            if (s_test) {
+                s_test->Keyboard(key);
+            }
+        }
+    } else if (action == GLFW_RELEASE) {
+        s_test->KeyboardUP(key);
+    }
+}
 
 static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action, int32 mods) {
 
@@ -196,6 +224,7 @@ void update_ui() {
     ImGui::SetNextWindowSize({menuWidth, g_camera.m_height - 20.0f});
     ImGui::Begin("Tools", &g_debug_draw.m_show_ui, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
+    ImGui::SliderInt("Velocity Iteration", &s_settings.m_velocity_iteration, 0, 100);
     ImGui::SliderFloat("Hertz", &s_settings.m_hertz, 5.0f, 144.0f, "%.0f hz");
 
     ImGui::Separator();
@@ -260,6 +289,7 @@ int main(int argc, char *argv[]) {
 
     glfwSetWindowSizeCallback(g_main_window, resize_window_callback);
     glfwSetMouseButtonCallback(g_main_window, mouse_button_callback);
+    glfwSetKeyCallback(g_main_window, key_callback);
     glfwSetCursorPosCallback(g_main_window, mouse_motion_call_back);
     glfwSetScrollCallback(g_main_window, scroll_callback);
     g_debug_draw.create();
