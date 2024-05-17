@@ -65,13 +65,16 @@ Install CMake
 
 ### Building on Windows
 
-- CLion and Visual Studio
-- CLion setting: add visual studio toolchain 
-- set cmake toolchain to visual studio
+下载代码，命令行命令
+```
+git clone https://github.com/ECNUPendulumRot/box3d.git
+```
+使用Visual Studio 2022打开该文件夹，在VS中打开CMakeLists.txt文件。
+然后在启动项处选择该文档，运行即可。
 
 ### Building on Ubuntu
-````
+```
 mkdir build && cd build
 cmake ..
 make
-````
+```
