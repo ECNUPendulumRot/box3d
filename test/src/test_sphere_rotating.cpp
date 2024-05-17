@@ -17,7 +17,7 @@ public:
             b3Body* body = m_world->create_body(body_def);
 
             b3SphereShape sphere_shape;
-            sphere_shape.set_as_sphere(10);
+            sphere_shape.set_as_sphere(1);
 
             b3FixtureDef fixture_def;
             fixture_def.m_shape = &sphere_shape;
@@ -30,7 +30,7 @@ public:
 
         {
             b3BodyDef body_def;
-            b3Vec3r p(0, 0, 11);
+            b3Vec3r p(0, 0, 1.2);
             b3Vec3r q(0, 0, 0);
             body_def.set_init_pose(p, q);
             body_def.m_type = b3BodyType::b3_dynamic_body;
@@ -38,7 +38,7 @@ public:
             b3Body* body = m_world->create_body(body_def);
 
             b3SphereShape sphere_shape;
-            sphere_shape.set_as_sphere(1);
+            sphere_shape.set_as_sphere(0.2);
 
             b3FixtureDef fixture_def;
             fixture_def.m_shape = &sphere_shape;

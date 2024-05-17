@@ -27,7 +27,7 @@ void Test::step(Settings &settings) {
 
     g_debug_draw.set_flags(flags);
 
-    m_world->step(time_step, 32, 32);
+    m_world->step(time_step, 100, 32);
 
     m_world->debug_draw();
 

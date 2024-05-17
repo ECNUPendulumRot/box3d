@@ -9,6 +9,8 @@
 #include "common/b3_block_allocator.hpp"
 #include "collision/b3_fixture.hpp"
 
+#include "common/b3_draw.hpp"
+
 #include "spdlog/spdlog.h"
 //////////////////////////////////////////
 // In the tangent plane, t1 and t2 are counterclockwise
@@ -128,12 +130,13 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
         vc->m_penetration = manifold->m_penetration;
 
-        vc->m_is_sphere[0] = (fixture_a->get_shape_type() == b3ShapeType::e_sphere);
-        vc->m_is_sphere[1] = (fixture_b->get_shape_type() == b3ShapeType::e_sphere);
-        //TODO: make 0.1 become a member of the sphere class.
-        vc->m_radius[0] = (real)0.2 * fixture_a->get_shape()->get_radius();
+        vc->m_is_sphere[0] = (body_a->get_type() == b3BodyType::b3_dynamic_body && fixture_a->get_shape_type() == b3ShapeType::e_sphere);
+        vc->m_is_sphere[1] = (body_b->get_type() == b3BodyType::b3_dynamic_body && fixture_b->get_shape_type() == b3ShapeType::e_sphere);
+        //TODO: make param become a member of the sphere class.
+        real param = 0.1;
+        vc->m_radius[0] = param * fixture_a->get_shape()->get_radius();
         vc->m_inv_radius[0] = (real)1.0 / vc->m_radius[0];
-        vc->m_radius[1] = (real)0.2 * fixture_b->get_shape()->get_radius();
+        vc->m_radius[1] = param * fixture_b->get_shape()->get_radius();
         vc->m_inv_radius[1] = (real)1.0 / vc->m_radius[1];
 
         vc->m_inv_I_ab = (vc->m_inv_I_a + vc->m_inv_I_b).inverse();
@@ -155,6 +158,23 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         }
     }
 
+}
+
+
+void b3Solver::draw_contact_points(b3Draw* draw)
+{
+    for(int32 i = 0; i < m_contact_count; i++) {
+        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+        b3Body* body = m_bodies[vc->m_index_a];
+        b3Transformr transform;
+        transform.set_position(body->get_position());
+        transform.set_euler_angles(body->get_quaternion().rotation_matrix().to_euler_angles());
+
+        for(int j = 0; j < vc->m_point_count; j++) {
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
+            b3Vec3r point = transform.transform(vcp->m_ra);
+        }
+    }
 }
 
 
@@ -322,7 +342,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
 
-        // solve_sphere_angular_velocity(vc);
+        solve_sphere_angular_velocity(vc);
     }
 }
 

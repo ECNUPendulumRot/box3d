@@ -86,7 +86,7 @@ public:
         m_gravity = gravity;
     }
 
-    b3Vec3r gravity() {
+    b3Vec3r get_gravity() const {
         return m_gravity;
     }
 
@@ -130,6 +130,8 @@ private:
     // void solve(double delta_t);
 
     void solve(b3TimeStep& step);
+
+public:
 
     void draw_shape(b3Fixture* fixture, const b3Transformr& xf, const b3Color& color);
 };

@@ -24,6 +24,16 @@ b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::ze
 }
 
 
+void b3Body::set_gravity_scale(real scale)
+{
+    m_gravity_scale = scale;
+}
+
+b3Vec3r b3Body::get_gravity() const {
+    return m_gravity_scale * m_world->get_gravity() * m_mass;
+}
+
+
 b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
 {
     b3_assert(m_world != nullptr);

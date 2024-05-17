@@ -101,6 +101,14 @@ public:
         return m_11 + m_22 + m_33;
     }
 
+    inline b3Vec3<T> to_euler_angles() const {
+        b3Vec3<T> angles;
+        angles.x = atan2(-m_23, m_33);
+        angles.y = atan2(m_13, sqrt(m_11 * m_11 + m_12 * m_12));
+        angles.z = atan2(-m_12, m_11);
+        return angles;
+    }
+
     static b3Mat33<T> skew_symmetric(const b3Vec3<T>& v) {
         return b3Mat33<T>(b3Vec3<T>(T(0), v.z, -v.y),
                           b3Vec3<T>(-v.z, T(0), v.x),

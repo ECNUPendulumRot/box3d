@@ -42,7 +42,7 @@ b3Body *b3World::create_body(const b3BodyDef &def)
     auto *body = new (mem) b3Body(def);
 
     body->set_world(this);
-    body->apply_gravity(m_gravity);
+    body->set_gravity_scale(1.0);
 
     // add to the double linked list
     body->m_prev = nullptr;
@@ -169,6 +169,7 @@ void b3World::solve(b3TimeStep &step)
         // solve the constraints
         b3Solver solver;
         solver.init(&m_block_allocator, island, &step);
+        solver.draw_contact_points(m_debug_draw);
         solver.solve();
 
         // Post solve cleanup.

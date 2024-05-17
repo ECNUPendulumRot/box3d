@@ -69,7 +69,7 @@ class b3Body {
 
     b3Vec3r m_force = b3Vec3r::zero();
 
-    b3Vec3r m_gravity = b3Vec3r::zero();
+    real m_gravity_scale = 1.0;
 
     b3Vec3r m_torque;
 
@@ -125,9 +125,9 @@ public:
         return m_force;
     }
 
-    inline b3Vec3r get_gravity() const {
-        return m_gravity * m_mass;
-    }
+    void set_gravity_scale(real scale);
+
+    b3Vec3r get_gravity() const;
 
     inline b3Vec3r get_torque() const {
         return m_torque;
@@ -137,9 +137,6 @@ public:
         m_force = force;
     }
 
-    void apply_gravity(b3Vec3r& gravity) {
-        m_gravity = gravity;
-    }
 
     void apply_torque(b3Vec3r& torque) {
         m_torque = torque;

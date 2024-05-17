@@ -68,6 +68,7 @@ set(B3D_SOURCE_FILES
         src/collision/b3_collide_plane.cpp
         src/collision/b3_cube_sphere_contact.cpp
         src/collision/b3_plane_sphere_contact.cpp
+        src/collision/b3_collide_cube_bullet.cpp
 
         src/common/b3_block_allocator.cpp
 
