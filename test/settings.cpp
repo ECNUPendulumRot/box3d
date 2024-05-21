@@ -48,7 +48,7 @@ void Settings::save() const
     fprintf(file, "  \"hertz\": %.9g,\n", m_hertz);
     fprintf(file, "  \"velocity_iteration\": %d,\n", m_velocity_iteration);
     fprintf(file, "  \"draw_shapes\": %s,\n", m_draw_shapes ? "true" : "false");
-    fprintf(file, "  \"draw_frame_only\": %s\n", m_draw_frame_only ? "true" : "false");
+    fprintf(file, "  \"draw_frame_only\": %s,\n", m_draw_frame_only ? "true" : "false");
     fprintf(file, "  \"draw_contact_points\": %s\n", m_draw_contact_points ? "true" : "false");
     fprintf(file, "}\n");
     fclose(file);
