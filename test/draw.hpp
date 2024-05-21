@@ -40,7 +40,7 @@ public:
 
     void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) override;
 
-    void draw_segment(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) override;
+    void draw_point(const b3Vec3r& p, float size, const b3Color& color) override;
 
     void flush();
 
@@ -50,8 +50,8 @@ public:
 
 extern Camera g_camera;
 extern DebugDraw g_debug_draw;
-extern b3Vec3r g_light_color;
-extern b3Vec3r g_light_position;
+extern b3Vec3f g_light_color;
+extern b3Vec3f g_light_position;
 
 
 #endif //BOX3D_DRAW_HPP

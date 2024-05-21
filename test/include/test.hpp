@@ -15,11 +15,29 @@ struct Settings;
 class Test;
 
 
-class Test {
+struct ContactPoint
+{
+    b3Fixture* fixtureA;
+    b3Fixture* fixtureB;
+    b3Vec3r normal;
+    b3Vec3r position;
+    float normalImpulse;
+    float tangentImpulse;
+    float separation;
+};
+
+
+const int32 k_max_contact_points = 2048;
+
+
+class Test: public b3ContactListener {
 
 protected:
 
     b3World* m_world;
+
+    ContactPoint m_points[k_max_contact_points];
+    int32 m_point_count = 0;
 
 public:
 
@@ -29,8 +47,7 @@ public:
 
     virtual void step(Settings& settings);
 
-    virtual void Keyboard(int key) { ((void)(key)); }
-    virtual void KeyboardUP(int key) { ((void)(key)); }
+    virtual void pre_solve(b3Contact* contact, const b3Manifold* old_manifold);
 
 };
 

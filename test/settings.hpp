@@ -29,6 +29,7 @@ struct Settings {
     int m_velocity_iteration = 8;
     bool m_draw_shapes = true;
     bool m_draw_frame_only = false;
+    bool m_draw_contact_points = false;
     bool m_pause = false;
     bool m_single_step = false;
     float m_hertz;

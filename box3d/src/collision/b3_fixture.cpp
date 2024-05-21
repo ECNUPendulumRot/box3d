@@ -13,6 +13,7 @@ void b3Fixture::create_fixture(
     m_restitution = f_def.get_restitution();
     m_friction = f_def.get_friction();
     m_density = f_def.get_density();
+    m_restitution_threshold = f_def.m_restitution_threshold;
     m_body = body;
 
     f_def.get_shape()->set_block_allocator(block_allocator);

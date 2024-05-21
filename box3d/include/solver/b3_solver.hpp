@@ -2,10 +2,10 @@
 #ifndef BOX3D_B3_SOLVER_HPP
 #define BOX3D_B3_SOLVER_HPP
 
+
 #include "dynamics/b3_transform.hpp"
 #include "math/b3_quat.hpp"
-#include "solver/b3_contact_constraint.hpp"
-#include "common/b3_time_step.hpp"
+
 
 /////////// Forward Delaration ///////////
 
@@ -28,9 +28,8 @@ class b3BlockAllocator;
 
 class b3Solver {
 
-protected:
-
     b3Contact** m_contacts = nullptr;
+
     int32 m_contact_count;
 
     int32 m_body_count;
@@ -51,12 +50,7 @@ protected:
 
     b3Body** m_bodies;
 
-    b3IntegralMethod m_method;
-
-    /**
-     * @brief write the velocity and position back to bodies.
-     */
-    void write_states_back();
+    uint8* m_delayed;
 
 public:
 
@@ -66,15 +60,16 @@ public:
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
-    void solve_velocity_constraints(bool is_collision);
+    void solve_velocity_constraints();
 
     void init_velocity_constraints();
 
     int solve();
 
+    void write_states_back();
+
     ~b3Solver();
 
-    void clear();
 };
 
 

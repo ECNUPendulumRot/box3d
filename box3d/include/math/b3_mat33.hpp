@@ -133,6 +133,10 @@ public:
         return m_ts[j][i];
     }
 
+    inline T get(int32 i ,int32 j) const {
+        return m_ts[j][i];
+    }
+
     static constexpr b3Mat33 identity() {
         return b3Mat33(b3Vec3<T>(T(1), T(0), T(0)),
                        b3Vec3<T>(T(0), T(1), T(0)),
@@ -198,7 +202,7 @@ inline b3Vec3<T> operator*(b3Mat33<T> M, const b3Vec3<T>& v) {
 
 template <typename T>
 inline b3Vec3<T> operator*(const b3Vec3<T>& v, b3Mat33<T> M) {
-    return M * v;
+    return b3Vec3<T>(v.dot(M.col(0)), v.dot(M.col(1)), v.dot(M.col(2)));
 }
 
 #endif //BOX3D_B3_MAT33_HPP

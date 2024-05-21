@@ -125,6 +125,10 @@ public:
 
     void debug_draw();
 
+    void set_contact_listener(b3ContactListener* listener) {
+        m_contact_manager.m_contact_listener = listener;
+    }
+
 private:
 
     // void solve(double delta_t);

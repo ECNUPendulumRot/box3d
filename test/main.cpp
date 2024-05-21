@@ -71,34 +71,6 @@ static void restart_test()
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    if (ImGui::GetIO().WantCaptureKeyboard) {
-        return;
-    }
-
-    if (action == GLFW_PRESS) {
-        switch (key) {
-        case GLFW_KEY_P:
-            //Pause
-            s_settings.m_pause = !s_settings.m_pause;
-            break;
-        case GLFW_KEY_O:
-            s_settings.m_single_step = !s_settings.m_single_step;
-            break;
-        case GLFW_KEY_R:
-            restart_test();
-            break;
-
-        default:
-            if (s_test) {
-                s_test->Keyboard(key);
-            }
-        }
-    } else if (action == GLFW_RELEASE) {
-        s_test->KeyboardUP(key);
-    }
-}
 
 static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action, int32 mods) {
 
@@ -106,7 +78,7 @@ static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action
 
     double xd, yd;
     glfwGetCursorPos(window, &xd, &yd);
-    spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
+    // spdlog::info("mouse button callback: {}, {}, {}", xd, yd, button);
 
     if (action == GLFW_PRESS) {
         s_click_ss = { float(xd), float(yd)};
@@ -231,6 +203,7 @@ void update_ui() {
 
     ImGui::Checkbox("Shapes", &s_settings.m_draw_shapes);
     ImGui::Checkbox("Frame Only", &s_settings.m_draw_frame_only);
+    ImGui::Checkbox("Contact Points", &s_settings.m_draw_contact_points);
 
     ImVec2 button_sz = ImVec2(-1, 0);
 
@@ -289,7 +262,6 @@ int main(int argc, char *argv[]) {
 
     glfwSetWindowSizeCallback(g_main_window, resize_window_callback);
     glfwSetMouseButtonCallback(g_main_window, mouse_button_callback);
-    glfwSetKeyCallback(g_main_window, key_callback);
     glfwSetCursorPosCallback(g_main_window, mouse_motion_call_back);
     glfwSetScrollCallback(g_main_window, scroll_callback);
     g_debug_draw.create();

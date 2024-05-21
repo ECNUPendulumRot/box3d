@@ -2,29 +2,29 @@
 #ifndef BOX3D_B3_CONTACT_CONSTRAINT_HPP
 #define BOX3D_B3_CONTACT_CONSTRAINT_HPP
 
+
 #include "common/b3_types.hpp"
-#include "common/b3_common.hpp"
-#include "math/b3_vec3.hpp"
 #include "math/b3_mat33.hpp"
+#include "math/b3_mat1212.hpp"
 
 
 struct b3VelocityConstraintPoint {
+
     b3Vec3r m_ra;
     b3Vec3r m_rb;
-    real m_normal_collision_impulse = 0;
+    real m_normal_impulse = 0;
     real m_normal_contact_impulse = 0;
     real m_tangent_impulse = 0;
     real m_normal_mass = 0;
     real m_tanget_mass = 0;
     // double m_velocity_bias = 0;
-    real m_rhs_restitution_velocity = 0;
-    //used to get trend
-    real m_relative_velocity = 0;
+    real m_bias_velocity = 0;
     real m_rhs_penetration = 0;
 };
 
 
 struct b3ContactVelocityConstraint {
+
     b3VelocityConstraintPoint m_points[8];
     b3Vec3r m_normal;
     int32 m_index_a;
@@ -42,23 +42,17 @@ struct b3ContactVelocityConstraint {
     int32 m_contact_index;
 
     real m_restitution;
-
+    real m_restitution_threshold;
     real m_penetration;
     // TODO
     real m_normal_collision_impulse = 0;
     real m_normal_contact_impulse = 0;
 
-    b3Vec3r m_ra;
-    b3Vec3r m_rb;
-
     real m_friction;
 
-    // b3Vec3r m_world_center_a;
-    // b3Vec3r m_world_center_b;
-
+    real** m_JWJT = nullptr;
 
 	// b2Mat22 normalMass;
-	// b2Mat22 K;
 
 	// float friction;
 	// float threshold;

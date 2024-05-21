@@ -1,13 +1,15 @@
 
 #include "collision/b3_contact.hpp"
 #include "collision/b3_fixture.hpp"
-#include "dynamics/b3_body.hpp"
-
 #include "collision/b3_sphere_contact.hpp"
 #include "collision/b3_cube_contact.hpp"
 #include "collision/b3_cube_sphere_contact.hpp"
 #include "collision/b3_plane_sphere_contact.hpp"
 #include "collision/b3_plane_cube_contact.hpp"
+
+#include "dynamics/b3_body.hpp"
+
+#include "common/b3_world_callback.hpp"
 
 
 b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
@@ -44,6 +46,7 @@ b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_
 
     m_restitution = b3_mix_restitution(m_fixture_a->get_restitution(), m_fixture_b->get_restitution());
     m_friction = b3_mix_friction(m_fixture_a->get_friction(), m_fixture_b->get_friction());
+    m_restitution_threshold = b3_mix_restitution_threshold(m_fixture_a->get_restitution_threshold(), m_fixture_b->get_restitution_threshold());
 }
 
 
@@ -121,11 +124,11 @@ void b3Contact::destroy(b3Contact *contact, b3BlockAllocator *block_allocator)
 
 
 // Update the contact manifold and touching status.
-void b3Contact::update()
+void b3Contact::update(b3ContactListener* listener)
 {
     // TODO: add warm start, reuse normal and tangent impulse
     // b3Manifold old_manifold = m_manifold
-
+    bool touching = false;
     b3Body *body_a = m_fixture_a->get_body();
     b3Body *body_b = m_fixture_b->get_body();
 
@@ -135,11 +138,16 @@ void b3Contact::update()
     // TODO: add sensor ?
     // generate the manifold between the two shapes
     evaluate(&m_manifold, xf_a, xf_b);
+    touching = m_manifold.m_point_count > 0;
 
-    if (m_manifold.m_point_count > 0) {
+    if (touching) {
   	    m_flags |= e_touching_flag;
     } else {
   	    m_flags &= ~e_touching_flag;
+    }
+
+    if (touching && listener) {
+        listener->pre_solve(this, &m_manifold);
     }
 }
 

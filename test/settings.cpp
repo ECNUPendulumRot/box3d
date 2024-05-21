@@ -46,8 +46,10 @@ void Settings::save() const
     fprintf(file, "  \"window_width\": %d,\n", m_window_width);
     fprintf(file, "  \"window_height\": %d,\n", m_window_height);
     fprintf(file, "  \"hertz\": %.9g,\n", m_hertz);
+    fprintf(file, "  \"velocity_iteration\": %d,\n", m_velocity_iteration);
     fprintf(file, "  \"draw_shapes\": %s,\n", m_draw_shapes ? "true" : "false");
     fprintf(file, "  \"draw_frame_only\": %s\n", m_draw_frame_only ? "true" : "false");
+    fprintf(file, "  \"draw_contact_points\": %s\n", m_draw_contact_points ? "true" : "false");
     fprintf(file, "}\n");
     fclose(file);
 }
@@ -105,6 +107,14 @@ void Settings::load() {
             continue;
         }
 
+        if (strncmp(field_name.data(), "velocity_iteration", field_name.length()) == 0)
+        {
+            if (field_value.get_type() == sajson::TYPE_INTEGER) {
+                m_velocity_iteration = field_value.get_integer_value();
+            }
+            continue;
+        }
+
         if (strncmp(field_name.data(), "draw_shapes", field_name.length()) == 0)
         {
             if (field_value.get_type() == sajson::TYPE_FALSE) {
@@ -122,6 +132,16 @@ void Settings::load() {
             }
             else if (field_value.get_type() == sajson::TYPE_TRUE) {
                 m_draw_frame_only = true;
+            }
+            continue;
+        }
+
+        if (strncmp(field_name.data(), "draw_contact_points", field_name.length()) == 0) {
+            if (field_value.get_type() == sajson::TYPE_FALSE) {
+                m_draw_contact_points = false;
+            }
+            else if (field_value.get_type() == sajson::TYPE_TRUE) {
+                m_draw_contact_points = true;
             }
             continue;
         }

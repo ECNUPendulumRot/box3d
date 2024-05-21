@@ -9,23 +9,26 @@ set (TESTBED_SOURCE_FILES
         draw.hpp
         draw.cpp
         settings.hpp
-        include/test.hpp
-        include/gl_render_triangles.hpp
-        include/gl_common.hpp
         include/camera.hpp
+        include/gl_common.hpp
+        include/test.hpp
+        include/gl_render_lines.hpp
+        include/gl_render_triangles.hpp
+
+        settings.cpp
+        src/camera.cpp
+        src/gl_render_lines.cpp
+        src/gl_render_points.cpp
+        src/gl_render_triangles.cpp
+
         src/test.cpp
         src/test_box_rest.cpp
-        src/gl_render_triangles.cpp
-        src/camera.cpp
+
         src/test_sphere_drop.cpp
-        src/test_newtons_cradle.cpp
-        src/test_symmetry_collision.cpp
+        src/test_box_stack.cpp
         src/test_sphere_billiards.cpp
         src/test_sphere_one_hit_tow.cpp
         src/test_two_hit_line.cpp
-        include/gl_render_lines.hpp
-        src/gl_render_lines.cpp
-        settings.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

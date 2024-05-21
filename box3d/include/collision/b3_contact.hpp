@@ -10,10 +10,9 @@
 /////////// Forward Delaration ///////////
 
 class b3Body;
-
 class b3Contact;
-
 class b3Fixture;
+class b3ContactListener;
 
 //////////////////////////////////////////
 
@@ -44,6 +43,11 @@ inline real b3_mix_restitution(real restitution1, real restitution2) {
     return restitution1 > restitution2 ? restitution1 : restitution2;
 }
 
+// Restitution mixing law. This picks the lowest value.
+inline float b3_mix_restitution_threshold(float threshold1, float threshold2)
+{
+    return threshold1 < threshold2 ? threshold1 : threshold2;
+}
 
 typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
                                       b3Fixture* fixture_B, int32 index_B,
@@ -88,7 +92,7 @@ protected:
     ////////// Coefficients related to the material of the object ///////////
     real m_restitution;
     real m_friction;
-
+    real m_restitution_threshold;
     uint32 m_flags = 0;
 
 public:
@@ -175,6 +179,10 @@ public:
         return m_restitution;
     }
 
+    real get_restitution_threshold() const {
+        return m_restitution_threshold;
+    }
+
     real get_friction() const {
         return m_friction;
     }
@@ -195,7 +203,8 @@ protected:
 
     static void destroy(b3Contact* contact, b3BlockAllocator* block_allocator);
 
-    void update();
+    void update(b3ContactListener* listener);
+
 };
 
 
