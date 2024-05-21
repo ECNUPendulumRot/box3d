@@ -258,6 +258,7 @@ static void create_face_contact(
     const b3CubeShape *cube2;
     b3Transformr xf1, xf2;
     int32 face1;
+    real flip = 1.0;
 
     if (separation_B > separation_A + k_tol) {
         // we will separate A from B
@@ -268,6 +269,7 @@ static void create_face_contact(
         face1 = face_index_B;
         manifold->m_type = b3Manifold::e_face_B;
         manifold->m_penetration = separation_B;
+        flip = -1.0;
     } else {
         // we will separate B from A
         cube1 = cube_A;
@@ -345,7 +347,7 @@ static void create_face_contact(
     // for complicated polygon, the np maybe invalid, but for box, there is no such problem
 
     int32 point_count = 0;
-    manifold->m_local_normal = n;
+    manifold->m_local_normal = flip * n;
     manifold->m_local_point = face_centroid;
 
     for (int32 i = 0; i < np; ++i) {
