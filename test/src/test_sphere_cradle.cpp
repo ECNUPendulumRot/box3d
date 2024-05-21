@@ -5,6 +5,11 @@ class SphereCradleTest : public Test {
 
     int sphere_count = 2;
 
+    // has init velocity sphere body.
+    b3Body* m_dynamic_sphere;
+
+    b3Body* m_bodies[2048];
+
 public:
 
     SphereCradleTest() {
@@ -47,9 +52,9 @@ public:
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
-            b3Body* dynamic_sphere = m_world->create_body(body_def);
+            m_dynamic_sphere = m_world->create_body(body_def);
 
-            dynamic_sphere->create_fixture(fixture_def);
+            m_dynamic_sphere->create_fixture(fixture_def);
 
             v.set_zero();
             body_def.set_init_velocity(v, w);
@@ -57,8 +62,8 @@ public:
                 b3Vec3r position(0, 3 + 2 * i, 1);
                 body_def.set_init_pose(position, q);
 
-                b3Body* body = m_world->create_body(body_def);
-                body->create_fixture(fixture_def);
+                m_bodies[i] = m_world->create_body(body_def);
+                m_bodies[i]->create_fixture(fixture_def);
             }
         }
 
