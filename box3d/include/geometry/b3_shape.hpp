@@ -30,54 +30,6 @@ enum b3ShapeType {
 };
 
 
-struct b3ViewData {
-
-    /**
-     * @brief Vertices of the mesh
-     * @details Each row is vertex's x, y, z coordinates
-     */
-    double* m_V = nullptr;
-    int m_vertex_count = 0;
-
-    /**
-     * @brief Edges of the mesh
-     * @details Each row is an edge with 2 indexes to vertex
-     */
-    int* m_E = nullptr;
-    int m_edge_count = 0;
-
-
-    /**
-     * @brief Faces of the mesh
-     * @details Each row is a face with 3 indexes to vertex
-     */
-    int* m_F = nullptr;
-    int m_face_count = 0;
-
-    typedef  struct {
-        int fv0;
-        int fv1;
-        int fv2;
-    } FaceIndice;
-
-    inline void set_vertex_row(int vertex_index, const b3Vec3r& vertex) const {
-        *(m_V + 3 * vertex_index)     = vertex.x;
-        *(m_V + 3 * vertex_index + 1) = vertex.y;
-        *(m_V + 3 * vertex_index + 2) = vertex.z;
-    }
-
-    inline void set_face_row(int face_index, const FaceIndice& face) const {
-        *(m_F + 3 * face_index)     = face.fv0;
-        *(m_F + 3 * face_index + 1) = face.fv1;
-        *(m_F + 3 * face_index + 2) = face.fv2;
-    }
-
-    bool is_empty() const {
-        return m_vertex_count == 0 || m_face_count == 0;
-    }
-};
-
-
 class b3Shape {
 
 protected:
@@ -101,11 +53,6 @@ protected:
      */
     b3Body* m_body = nullptr;
 
-    /**
-     * @brief This is used for gui
-     */
-    b3ViewData m_view_data;
-
     b3BlockAllocator* m_block_allocator = nullptr;
 
     /**
@@ -115,7 +62,7 @@ protected:
 
 public:
 
-    virtual ~b3Shape();
+    virtual ~b3Shape() = default;
 
     virtual int32 get_child_count() const {
         return 0;
@@ -131,26 +78,6 @@ public:
         b3_NOT_USED(mass_data);
         b3_NOT_USED(density);
     };
-
-    b3ViewData get_view_data(const b3Transformr& xf) {
-        if(m_view_data.is_empty()) {
-            // allocate memory ti store vertices, edges and faces
-            init_view_data();
-        }
-
-        // object maybe has velocity, we need recalculate vertices positions.
-        setup_view_data(xf);
-
-        return m_view_data;
-    }
-
-    virtual void init_view_data() {
-
-    }
-
-    virtual void setup_view_data(const b3Transformr& xf) {
-        b3_NOT_USED(xf);
-    }
 
     virtual b3Shape* clone() const {
         return nullptr;

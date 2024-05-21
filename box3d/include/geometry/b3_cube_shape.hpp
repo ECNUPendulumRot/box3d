@@ -68,14 +68,9 @@ public:
         return 1;
     }
 
-
     void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 childIndex) const override;
 
     void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
-
-    void init_view_data() override;
-
-    void setup_view_data(const b3Transformr& xf) override;
 
     b3Shape* clone() const override;
 

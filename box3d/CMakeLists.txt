@@ -81,7 +81,6 @@ set(B3D_SOURCE_FILES
 
         src/geometry/b3_shape.cpp
         src/geometry/b3_cube_shape.cpp
-        src/geometry/b3_sphere_shape.cpp
         src/geometry/b3_plane_shape.cpp
 
         src/solver/b3_solver.cpp
@@ -89,6 +88,7 @@ set(B3D_SOURCE_FILES
         src/collision/b3_plane_cube_contact.cpp
         src/common/b3_draw.cpp
         src/solver/b3_lemke.cpp
+        src/geometry/b3_sphere_shape.cpp
 
 )
 

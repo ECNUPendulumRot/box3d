@@ -6,52 +6,13 @@
 #include "geometry/b3_shape.hpp"
 
 
-struct b3SphereConfig {
-
-    int m_segments;
-
-    b3Mat33r m_rot_y, m_rot_z;
-
-    int m_vertices_count;
-    int m_faces_count;
-
-    // size = count * 3;
-    int m_vertices_size;
-    int m_faces_size;
-
-    int m_ring_points_count;
-
-    b3SphereConfig();
-
-};
-
-
 class b3SphereShape : public b3Shape {
 
     b3Vec3r m_centroid;
 
-    b3Vec3r* m_vertices;
-
-    // control generate sphere view data
-    static const b3SphereConfig m_config;
-
-    /**
-     * when the first get view data, we need generate all vertices of sphere.
-     * after first, we only need to move the vertices of sphere.
-     * because the rotation is not effect to the sphere.
-     */
-    bool m_first_setup_view;
-
-    /**
-     * This is used to move vertices of sphere.
-     */
-    b3Vec3r m_old_center;
-
 public:
 
     b3SphereShape();
-
-    ~b3SphereShape();
 
     int32 get_child_count() const override {
         return 1;
@@ -76,10 +37,6 @@ public:
     real get_radius() const override {
         return m_radius;
     }
-
-    void init_view_data() override;
-
-    void setup_view_data(const b3Transformr& xf) override;
 };
 
 
