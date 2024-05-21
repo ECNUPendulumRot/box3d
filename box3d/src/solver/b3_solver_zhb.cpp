@@ -108,8 +108,6 @@ void b3SolverZHB::init(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
         vc->m_penetration = manifold->m_penetration;
 
-        vc->m_ra = b3Vec3r::zero();
-        vc->m_rb = b3Vec3r::zero();
         // the center of body in the world frame
 
         b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
@@ -218,7 +216,7 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                 b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
                 real rhs = -v_rel.dot(vc->m_normal);
 
-                real rhs_restitution_velocity = vcp->m_rhs_restitution_velocity;
+                real rhs_restitution_velocity = vcp->m_bias_velocity;
 
                 //there are four situations of constrains
                 //1.init constrain violate,now legal
@@ -230,7 +228,7 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                         //4
                         if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
                             //if rhs is converged,change it to situation 2
-                            vcp->m_rhs_restitution_velocity = rhs * vc->m_restitution;
+                            vcp->m_bias_velocity = rhs * vc->m_restitution;
                             vcp->m_relative_velocity = rhs;
                             rhs_restitution_velocity = 0;
                             rhs = 0.0;
@@ -255,7 +253,7 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                             rhs_restitution_velocity = 0.0;
                             vcp->m_relative_velocity = 0.0f;
                             //change to situation 3
-                            vcp->m_rhs_restitution_velocity = 0.0f;
+                            vcp->m_bias_velocity = 0.0f;
                         }
                     } else {
                         //3
@@ -269,9 +267,9 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                 // TODO:
                 if (is_collision) {
                     lambda = vcp->m_normal_mass * (rhs + rhs_restitution_velocity);
-                    real new_impulse = b3_max(vcp->m_normal_collision_impulse + lambda, (real)0.0);
-                    lambda = new_impulse - vcp->m_normal_collision_impulse;
-                    vcp->m_normal_collision_impulse = new_impulse;
+                    real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
+                    lambda = new_impulse - vcp->m_normal_impulse;
+                    vcp->m_normal_impulse = new_impulse;
                 } else {
                     lambda = vcp->m_normal_mass * rhs;
                     real new_impulse = b3_max(vcp->m_normal_contact_impulse + lambda, (real)0.0);
@@ -324,11 +322,6 @@ void b3SolverZHB::init_velocity_constraints() {
         for (int j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
-            // vcp->m_ra(b) is a contact point(from the center of body)
-            // vc->m_ra(b) is the average of all contact points
-            vc->m_ra += vcp->m_ra;
-            vc->m_rb += vcp->m_rb;
-
             b3Vec3r ra_n = vcp->m_ra.cross(vc->m_normal);
             b3Vec3r rb_n = vcp->m_rb.cross(vc->m_normal);
 
@@ -346,16 +339,14 @@ void b3SolverZHB::init_velocity_constraints() {
             // ===> JM_invJ^T * lambda = -eJv - Jv
             real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
             // m_rhs_restitution_velocity is eJv
-            vcp->m_rhs_restitution_velocity = -vc->m_restitution * v_rel;
+            vcp->m_bias_velocity = -vc->m_restitution * v_rel;
 
-            vcp->m_normal_collision_impulse = 0.0;
+            vcp->m_normal_impulse = 0.0;
             vcp->m_normal_contact_impulse = 0.0;
             vcp->m_tangent_impulse = 0.0;
         }
         vc->m_normal_contact_impulse = 0.0;
         vc->m_normal_collision_impulse = 0.0;
-        vc->m_ra /= vc->m_point_count;
-        vc->m_rb /= vc->m_point_count;
 
         // TODO: if we have more than one contact point, then prepare the block solver.
     }

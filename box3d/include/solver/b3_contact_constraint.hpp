@@ -20,6 +20,7 @@ struct b3VelocityConstraintPoint {
     // double m_velocity_bias = 0;
     real m_bias_velocity = 0;
     real m_rhs_penetration = 0;
+    real m_relative_velocity = 0;
 };
 
 
