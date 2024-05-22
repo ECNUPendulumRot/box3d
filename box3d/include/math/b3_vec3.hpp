@@ -144,6 +144,7 @@ struct b3Vec3 {
 using b3Vec3d = b3Vec3<double>;
 using b3Vec3f = b3Vec3<float>;
 using b3Vec3r = b3Vec3<real>;
+using b3Vec3i = b3Vec3<int32>;
 
 //////////////////////////////////////////////////////
 

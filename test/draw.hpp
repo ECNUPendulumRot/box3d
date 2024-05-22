@@ -21,6 +21,8 @@ class DebugDraw : public b3Draw {
 
     int32 m_plane_segment = 4;
 
+    int32 m_start_index = 0;
+
 public:
 
     bool m_show_ui = true;

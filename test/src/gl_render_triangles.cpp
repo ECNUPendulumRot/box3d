@@ -79,15 +79,15 @@ void gl_render_triangles::create() {
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[0]);
     glVertexAttribPointer(m_vertex_attribute, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_render_buffer_v), m_render_buffer_v, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[1]);
     glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_colors), m_colors, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_render_colors), m_render_colors, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[2]);
     glVertexAttribPointer(m_normal_attribute, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_normals), m_normals, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_render_normals), m_render_normals, GL_DYNAMIC_DRAW);
 
     check_gl_error();
 
@@ -95,7 +95,8 @@ void gl_render_triangles::create() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    m_count = 0;
+    m_v_count = 0;
+    m_f_count = 0;
 }
 
 void gl_render_triangles::destroy() {
@@ -112,20 +113,41 @@ void gl_render_triangles::destroy() {
     }
 }
 
-void gl_render_triangles::vertex(const b3Vec3f &v, const b3Vec3f &n, const b3Color &c) {
 
-    if (m_count == e_maxVertices)
+void gl_render_triangles::vertex(const b3Vec3f &v) {
+
+    if (m_v_count == e_maxVertices)
         flush();
 
-    m_vertices[m_count] = v;
-    m_colors[m_count] = c;
-    m_normals[m_count] = n;
-    ++m_count;
+    m_vertices[m_v_count] = v;
+
+    ++m_v_count;
 }
+
+
+void gl_render_triangles::face(const b3Vec3i &f, const b3Vec3f n[3], const b3Color &c) {
+
+    m_faces[m_f_count] = f;
+
+    m_render_normals[3 * m_f_count] = n[0];
+    m_render_normals[3 * m_f_count + 1] = n[1];
+    m_render_normals[3 * m_f_count + 2] = n[2];
+
+    m_render_buffer_v[3 * m_f_count] = m_vertices[f.x];
+    m_render_buffer_v[3 * m_f_count + 1] = m_vertices[f.y];
+    m_render_buffer_v[3 * m_f_count + 2] = m_vertices[f.z];
+
+    m_render_colors[3 * m_f_count] = c;
+    m_render_colors[3 * m_f_count + 1] = c;
+    m_render_colors[3 * m_f_count + 2] = c;
+
+    ++m_f_count;
+}
+
 
 void gl_render_triangles::flush() {
 
-    if (m_count == 0)
+    if (m_v_count == 0)
         return;
 
     glUseProgram(m_program_id);
@@ -150,20 +172,20 @@ void gl_render_triangles::flush() {
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * m_f_count * sizeof(b3Vec3r), m_render_buffer_v);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[1]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Color), m_colors);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * m_f_count * sizeof(b3Color), m_render_colors);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_ids[2]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b3Vec3r), m_normals);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * m_f_count * sizeof(b3Vec3r), m_render_normals);
 
     glEnable(GL_POLYGON_SMOOTH);
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
-    glDrawArrays(GL_TRIANGLES, 0, m_count);
+    glDrawArrays(GL_TRIANGLES, 0, 3 * m_f_count);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_POLYGON_SMOOTH);
 
@@ -173,5 +195,8 @@ void gl_render_triangles::flush() {
     glBindVertexArray(0);
     glUseProgram(0);
 
-    m_count = 0;
+    m_v_count = 0;
+    m_f_count = 0;
 }
+
+

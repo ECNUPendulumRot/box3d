@@ -31,6 +31,8 @@ set (TESTBED_SOURCE_FILES
         src/test_two_hit_line.cpp
         src/test_sphere_extended_bernoulli.cpp
         src/test_sphere_cradle.cpp
+        include/animation_generator.hpp
+        src/animation_generator.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

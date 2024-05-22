@@ -1,6 +1,9 @@
 
 #include "test.hpp"
 #include "settings.hpp"
+#include "include/animation_generator.hpp"
+#include "include/gl_render_triangles.hpp"
+
 
 Test::Test() {
     b3Vec3r gravity(0.0, 0.0, -10.0);
@@ -36,8 +39,11 @@ void Test::step(Settings &settings) {
 
     m_world->debug_draw();
 
-    g_debug_draw.flush();
+    if (settings.m_generate_obj) {
+        g_animation_generator.save_to_obj(g_debug_draw.m_triangles, "obj_file_");
+    }
 
+    g_debug_draw.flush();
     if (settings.m_draw_contact_points) {
         for (int32 i = 0; i < m_point_count; ++i) {
             ContactPoint* cp = m_points + i;

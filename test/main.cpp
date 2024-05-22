@@ -10,6 +10,8 @@
 #include "draw.hpp"
 #include "settings.hpp"
 #include "test.hpp"
+#include "include/animation_generator.hpp"
+
 
 GLFWwindow *g_main_window = nullptr;
 static Settings s_settings;
@@ -209,13 +211,20 @@ void update_ui() {
 
     if (ImGui::Button("Pause (P)", button_sz)) {
         s_settings.m_pause = !s_settings.m_pause;
+        s_settings.m_generate_obj = false;
     }
     if (ImGui::Button("Single Step (O)", button_sz)) {
         s_settings.m_single_step = !s_settings.m_single_step;
     }
     if (ImGui::Button("Restart (R)", button_sz)) {
         restart_test();
+        s_settings.m_generate_obj = false;
     }
+    if (ImGui::Button("Generate OBJ Series", button_sz)) {
+        restart_test();
+        s_settings.m_generate_obj = true;
+    }
+
     ImGui::End();
 
 }
@@ -313,6 +322,7 @@ int main(int argc, char *argv[]) {
 
         if (s_test_selection != s_settings.m_test_index) {
             s_settings.m_test_index = s_test_selection;
+            s_settings.m_generate_obj = false;
             delete s_test;
             s_test = g_test_entries[s_settings.m_test_index].create_fcn();
             g_camera.reset_view();

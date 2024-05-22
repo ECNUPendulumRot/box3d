@@ -280,7 +280,7 @@ void b3_collide_cube_and_sphere(
     } else if (feature.m_count == 2) {
         // the closest feature is an edge of this cube
         edge_separation(manifold, feature.m_axis, sphere_c_local, total_radius, cube_a, xf_a);
-    } else { // feature.m_count == 3
+    } else { // feature.m_v_count == 3
         // the closest feature is a vector of this cube
         vertex_separation(manifold, feature.m_axis, sphere_c_local, total_radius, cube_a, xf_a);
     }

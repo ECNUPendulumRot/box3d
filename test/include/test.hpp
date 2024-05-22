@@ -13,7 +13,7 @@
 
 struct Settings;
 class Test;
-
+struct AnimationGenerator;
 
 struct ContactPoint
 {
@@ -69,6 +69,6 @@ int register_test(const char* category, const char* name, TestCreateFcn* fcn);
 
 extern TestEntry g_test_entries[MAX_TEST];
 extern int g_test_count;
-
+extern AnimationGenerator g_animation_generator;
 
 #endif //BOX3D_TEST_HPP

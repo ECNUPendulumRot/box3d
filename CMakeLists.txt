@@ -12,5 +12,4 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/extern/glad)
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/glfw)
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/imgui)
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/sajson)
-
 add_subdirectory(test)
