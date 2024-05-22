@@ -9,13 +9,16 @@ CAMERA_POSITION = [15, 15, 25]
 CAMERA_LOOK_AT = [-5, -5, 0]
 CAMERA_UP = [0, 0, 1]
 
+MAIN_AREA_LIGHT_POSITION = [-10, 10, 10]
+MAIN_AREA_LIGHT_LOOK_AT = [0, 0, 0]
+
 
 # setup camera
-def camera_rotation():
-    f = np.array(CAMERA_POSITION) - np.array(CAMERA_LOOK_AT)
+def rotation(position, look_at, up):
+    f = np.array(position) - np.array(look_at)
     f = f / np.linalg.norm(f) # normalized
 
-    r = np.cross(CAMERA_UP, f)
+    r = np.cross(up, f)
 
     u = np.cross(f, r)
 
@@ -24,8 +27,6 @@ def camera_rotation():
         [u[0], u[1], u[2]],
         [f[0], f[1], f[2]]
     ]).transpose()
-
-    print(R)
 
     sy = np.sqrt(R[0, 0] * R[0, 0] +  R[1, 0] * R[1, 0])
     
@@ -53,7 +54,6 @@ def load_objs(scene):
 
     return obj_list
 
-bpy.ops.object.camera_add
 current_scene = bpy.context.scene
 
 # Delete all objects in the scene
@@ -96,9 +96,59 @@ for obj in obj_list:
 
 current_scene.frame_set(START_FRAME)
 
+#############################################################################
+
 # add camera
-rotation = camera_rotation()
-print(rotation)
-bpy.ops.object.camera_add(location=CAMERA_POSITION, rotation=rotation)
+camera_rotation = rotation(CAMERA_POSITION, CAMERA_LOOK_AT, CAMERA_UP)
+
+bpy.ops.object.camera_add(location=CAMERA_POSITION, rotation=camera_rotation)
 camera_object = bpy.context.object
 bpy.context.scene.camera = camera_object
+
+#############################################################################
+
+# add world light
+world = bpy.context.scene.world
+world.use_nodes = True
+nodes = world.node_tree.nodes
+links = world.node_tree.links
+# clear current nodes
+nodes.clear()
+
+# add background node
+bg_node = nodes.new(type='ShaderNodeBackground')
+# add environment texture node
+env_texture_node = nodes.new(type='ShaderNodeTexEnvironment')
+env_texture_node.location = -300, 0
+
+# setup background light
+script_path = os.path.abspath(__file__)
+script_dir = os.path.dirname(script_path)
+hdri_image_path = os.path.join(script_dir, "background.jpg")
+env_texture_node.image = bpy.data.images.load(hdri_image_path)
+
+# add output node
+output_node = nodes.new(type='ShaderNodeOutputWorld')
+output_node.location = 200, 0
+
+links.new(env_texture_node.outputs['Color'], bg_node.inputs['Color'])
+links.new(bg_node.outputs['Background'], output_node.inputs['Surface'])
+
+# set transparant 
+current_scene.render.film_transparent = True
+
+#############################################################################
+
+# add main area light
+bpy.ops.object.light_add(type='AREA', location=MAIN_AREA_LIGHT_POSITION)
+
+main_al_rotation = bpy.context.object
+main_al_rotation.data.size = 5
+main_al_rotation.data.energy = 1000
+main_al_rotation.rotation_euler = rotation(MAIN_AREA_LIGHT_POSITION, MAIN_AREA_LIGHT_LOOK_AT, [0, 0, 1])
+
+#############################################################################
+
+current_scene.render.engine = 'CYCLES'
+current_scene.cycles.device = 'GPU'
+current_scene.cycles.samples = 2048
