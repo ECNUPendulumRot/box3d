@@ -23,10 +23,18 @@ struct b3Quat {
     }
 
     explicit b3Quat(const b3Vec3<T>& v) {
-        m_w = T(0);
-        m_x = v.x;
-        m_y = v.y;
-        m_z = v.z;
+        // v = [x, y, z]
+        // roll, pitch, yaw
+        T sin_roll_half = sin(v.x * 0.5);
+        T cos_roll_half = cos(v.x * 0.5);
+        T sin_pitch_half = sin(v.y * 0.5);
+        T cos_pitch_half = cos(v.y * 0.5);
+        T sin_yaw_half = sin(v.z * 0.5);
+        T cos_yaw_half = cos(v.z * 0.5);
+        m_w = T(cos_roll_half * cos_pitch_half * cos_yaw_half + sin_roll_half * sin_pitch_half * sin_yaw_half);
+        m_x = T(sin_roll_half * cos_pitch_half * cos_yaw_half - cos_roll_half * sin_pitch_half * sin_yaw_half);
+        m_y = T(cos_roll_half * sin_pitch_half * cos_yaw_half + sin_roll_half * cos_pitch_half * sin_yaw_half);
+        m_z = T(cos_roll_half * cos_pitch_half * sin_yaw_half - sin_roll_half * sin_pitch_half * cos_yaw_half);
     }
 
     b3Quat(const b3Quat& other) {

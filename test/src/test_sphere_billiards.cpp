@@ -20,7 +20,7 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, -10, 1);
+            b3Vec3r p(0, -3, 1);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 5, 0);
             b3Vec3r w(0, 0, 0);
@@ -50,7 +50,7 @@ public:
 
             b3Vec3r q(0, 0, 0);
             for(int i = 0; i < layer; i++) {
-                b3Vec3r left_position(i, i * y_distance, 1);
+                b3Vec3r left_position(i, 3 + i * y_distance, 1);
                 for(int j = 0; j <= i; j++) {
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);
