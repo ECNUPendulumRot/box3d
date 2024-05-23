@@ -33,6 +33,8 @@ set (TESTBED_SOURCE_FILES
         src/test_sphere_cradle.cpp
         include/animation_generator.hpp
         src/animation_generator.cpp
+        include/gl_render_object.hpp
+        src/gl_render_object.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

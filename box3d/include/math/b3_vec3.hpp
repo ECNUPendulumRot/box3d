@@ -30,7 +30,7 @@ struct b3Vec3 {
         z = other.z;
     }
 
-    inline b3Vec3& operator=(std::initializer_list<double> list) {
+    inline b3Vec3& operator=(std::initializer_list<T> list) {
         b3_assert(list.size() == 3);
         auto it = list.begin();
         x = *it++;

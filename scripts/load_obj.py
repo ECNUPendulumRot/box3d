@@ -2,7 +2,7 @@ import bpy
 import os
 import numpy as np
 
-OBJ_DIR = os.path.join("F:\\", "box3d", "build-debug", "test", "obj_files")
+OBJ_DIR = os.path.join("E:\\", "box3d", "build-debug", "test", "obj_files")
 START_FRAME = 1
 
 CAMERA_POSITION = [15, 15, 25]
