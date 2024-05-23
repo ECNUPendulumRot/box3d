@@ -3,6 +3,21 @@ import os
 import numpy as np
 import json
 
+
+# SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
+SCENE_FILE = os.path.join("E:\\", "box2d", "build-debug", "bin", "scene.json")
+
+START_FRAME = 1
+
+CAMERA_ORTHOGONAL = True
+CAMERA_POSITION = [15, 15, 25]
+CAMERA_LOOK_AT = [-5, -5, 0]
+CAMERA_UP = [0, 0, 1]
+
+MAIN_AREA_LIGHT_POSITION = [-10, 10, 10]
+MAIN_AREA_LIGHT_LOOK_AT = [0, 0, 0]
+
+
 def rotation(position, look_at, up):
     f = np.array(position) - np.array(look_at)
     f = f / np.linalg.norm(f) # normalized
@@ -32,15 +47,6 @@ def rotation(position, look_at, up):
 
     return [x, y, z]
 
-SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
-START_FRAME = 1
-
-CAMERA_POSITION = [15, 15, 25]
-CAMERA_LOOK_AT = [-5, -5, 0]
-CAMERA_UP = [0, 0, 1]
-
-MAIN_AREA_LIGHT_POSITION = [-10, 10, 10]
-MAIN_AREA_LIGHT_LOOK_AT = [0, 0, 0]
 
 with open(SCENE_FILE, 'r') as f:
     scene = json.load(f)
@@ -86,10 +92,26 @@ for blender_frame, engine_frame in enumerate(frames, start=START_FRAME):
 
 ################################ add camera ################################
 
-camera_rotation = rotation(CAMERA_POSITION, CAMERA_LOOK_AT, CAMERA_UP)
+if CAMERA_ORTHOGONAL:
+    camera_rotation = [0, 0, 0]
+else:
+    camera_rotation = rotation(CAMERA_POSITION, CAMERA_LOOK_AT, CAMERA_UP)
 
 bpy.ops.object.camera_add(location=CAMERA_POSITION, rotation=camera_rotation)
 camera_object = bpy.context.object
+
+if CAMERA_ORTHOGONAL:
+    camera_object.data.type = 'ORTHO'
+    camera_object.data.ortho_scale = 100
+    camera_rotation = [0, 0, 0]
+    camera_position = [0, 10, 30]
+else:
+    camera_rotation = rotation(CAMERA_POSITION, CAMERA_LOOK_AT, CAMERA_UP)
+    camera_position = CAMERA_POSITION
+
+camera_object.rotation_euler = camera_rotation
+camera_object.location = camera_position
+
 bpy.context.scene.camera = camera_object
 
 ############################# add world light #############################
