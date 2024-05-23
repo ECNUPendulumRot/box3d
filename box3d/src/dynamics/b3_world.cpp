@@ -171,7 +171,7 @@ void b3World::solve(b3TimeStep &step)
         // solve the constraints
         // b3Solver solver(&m_block_allocator, island, &step);
         b3SolverZHB solver(&m_block_allocator, island, &step);
-        solver.solve();
+        solver.solve(m_allow_sleep);
 
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {

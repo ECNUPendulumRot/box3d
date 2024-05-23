@@ -70,7 +70,7 @@ public:
 
     void init_velocity_constraints();
 
-    int solve();
+    int solve(bool allow_sleep);
 
     ~b3SolverZHB();
 

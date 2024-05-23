@@ -25,6 +25,12 @@
 
 #define b3_aabb_extension (0.1 * b3_length_units_per_meter)
 
+// A body cannot sleep if its linear velocity is above this tolerance.
+#define b3_linear_sleep_tolerance		(0.01 * b3_length_units_per_meter)
+
+// A body cannot sleep if its angular velocity is above this tolerance.
+#define b3_angular_sleep_tolerance	(2.0 / 180.0 * b3_pi)
+
 
 using real = float;
 

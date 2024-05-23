@@ -159,7 +159,8 @@ void b3SolverZHB::clear() {
     m_block_allocator = nullptr;
 }
 
-int b3SolverZHB::solve() {
+
+int b3SolverZHB::solve(bool allow_sleep) {
     init_velocity_constraints();
 
     // collision
@@ -188,6 +189,28 @@ int b3SolverZHB::solve() {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
         m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quaternionr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
+    }
+
+    // TODO: adjust sleeping strategy
+    if (allow_sleep) {
+        const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
+        const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
+
+        for (int32 i = 0; i < m_body_count; ++i) {
+            b3Body* b = m_bodies[i];
+            if (b->get_type() == b3BodyType::b3_static_body) {
+                continue;
+            }
+
+            b3Vec3r lin_vel = m_vs[i];
+            b3Vec3r ang_vel = m_ws[i];
+
+            if (lin_vel.dot(lin_vel) < lin_tor_sqr && ang_vel.dot(ang_vel) < ang_tor_sqr) {
+                b->set_awake(false);
+            } else {
+                b->set_awake(true);
+            }
+        }
     }
 
     // copy state buffers back to the bodies.

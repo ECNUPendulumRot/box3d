@@ -34,7 +34,7 @@ struct Settings {
     bool m_single_step = false;
     bool m_generate_json = false;
     bool m_output_bodies_info = false;
-    bool m_enable_utils = false;
+    bool m_enable_sleep = true;
     float m_hertz;
 };
 

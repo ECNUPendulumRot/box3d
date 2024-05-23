@@ -64,7 +64,7 @@ public:
 
     void init_velocity_constraints();
 
-    int solve();
+    int solve(bool allow_sleep);
 
     void write_states_back();
 

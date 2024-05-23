@@ -94,11 +94,14 @@ class b3Body {
 
     uint32 m_flags = 0;
 
+    real m_sleep_time = 0.0;
+
 public:
 
     enum Flag {
-        // This is used to generate islands.
-        e_island_flag = 1
+        e_island_flag = 0x0001,
+        e_awake_flag = 0x0002,
+        e_auto_sleep_flag = 0x0004,
     };
 
 
@@ -239,6 +242,21 @@ public:
 
     inline void set_island_index(int32 index) {
         m_island_index = index;
+    }
+
+    inline void set_awake(bool flag) {
+        if (m_type == b3BodyType::b3_static_body) {
+            return;
+        }
+        if (flag) {
+            m_flags |= e_awake_flag;
+            m_sleep_time = 0.0f;
+        } else {
+            m_flags &= ~e_awake_flag;
+            m_sleep_time = 0.0;
+            m_v = b3Vec3r::zero();
+            m_w = b3Vec3r::zero();
+        }
     }
 
     /**

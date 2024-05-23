@@ -408,13 +408,16 @@ real line_segement_separation(
 }
 
 
-void create_edge_contact(
+bool create_edge_contact(
     b3Manifold* manifold,
     const b3CubeShape* cube_A, const b3Transformr& xf_A,
     const b3CubeShape* cube_B, const b3Transformr& xf_B,
     const int32& axis_index_A, const int32& axis_index_B,
     const real &separation)
 {
+    if (b3_abs(separation - 0.015) < 0.001) {
+        int32 i = 0;
+    }
 
     real max_penetration = -b3_real_max;
     int32 best_edge_index_a, best_edge_index_b;
@@ -468,6 +471,10 @@ void create_edge_contact(
         }
     }
 
+    if (max_diff == b3_real_max) {
+        return false;
+    }
+
     b3ContactID id;
     id.cf.type = b3ContactFeature::e_e_e;
     id.cf.index_1 = (uint8)best_edge_index_a;
@@ -478,6 +485,8 @@ void create_edge_contact(
     manifold->m_point_count = 1;
     manifold->m_points[0].id = id;
     manifold->m_penetration = max_penetration;
+
+    return true;
 }
 
 
@@ -517,11 +526,12 @@ void b3_collide_cube(
     bool face_contact_A = (separation_A + tol) >= separation_edge;
     bool face_contact_B = (separation_B + tol) >= separation_edge;
 
-    if (face_contact_A || face_contact_B) {
+    bool edge_succeed = true;
+    if (!face_contact_A && !face_contact_B) {
+        edge_succeed = create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B, separation_edge);
+    } else if (edge_succeed == false || face_contact_A || face_contact_B) {
         create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);
-    } else {
-        create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B, separation_edge);
     }
 }
 

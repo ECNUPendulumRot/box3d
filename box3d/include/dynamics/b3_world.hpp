@@ -48,6 +48,8 @@ class b3World {
 
     bool m_new_contacts = false;
 
+    bool m_allow_sleep = false;
+
     b3Draw* m_debug_draw;
 
 public:
@@ -127,6 +129,20 @@ public:
 
     void set_contact_listener(b3ContactListener* listener) {
         m_contact_manager.m_contact_listener = listener;
+    }
+
+    inline void set_allow_sleeping(bool flag) {
+
+        if (flag == m_allow_sleep) {
+            return;
+        }
+
+        m_allow_sleep = flag;
+        if (m_allow_sleep == false) {
+            for (b3Body* b = m_body_list; b; b = b->m_next) {
+                b->set_awake(true);
+            }
+        }
     }
 
 private:
