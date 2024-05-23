@@ -3,7 +3,7 @@
 #include "settings.hpp"
 #include "include/animation_generator.hpp"
 #include "include/gl_render_triangles.hpp"
-
+#include "body_info_generator.hpp"
 
 Test::Test() {
     b3Vec3r gravity(0.0, 0.0, -10.0);
@@ -11,6 +11,8 @@ Test::Test() {
 
     m_world->set_debug_draw(&g_debug_draw);
     m_world->set_contact_listener(this);
+
+    m_body_info_generator = new BodyInfoGenerator();
 }
 
 
@@ -41,6 +43,10 @@ void Test::step(Settings &settings) {
 
     if (settings.m_generate_obj) {
         g_animation_generator.save_to_obj(g_debug_draw.m_triangles, "obj_file_");
+    }
+
+    if (settings.m_output_bodies_info) {
+        m_body_info_generator->save_body_info(m_bodies, m_names, m_body_count);
     }
 
     g_debug_draw.flush();

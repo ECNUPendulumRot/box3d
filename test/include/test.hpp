@@ -14,6 +14,7 @@
 struct Settings;
 class Test;
 struct AnimationGenerator;
+class BodyInfoGenerator;
 
 struct ContactPoint
 {
@@ -38,6 +39,12 @@ protected:
 
     ContactPoint m_points[k_max_contact_points];
     int32 m_point_count = 0;
+
+    BodyInfoGenerator* m_body_info_generator;
+
+    b3Body* m_bodies[1024];
+    std::string m_names[1024];
+    int m_body_count = 0;
 
 public:
 

@@ -225,6 +225,11 @@ void update_ui() {
         s_settings.m_generate_obj = true;
     }
 
+    if (ImGui::Button("Output bodies info", button_sz)) {
+        restart_test();
+        s_settings.m_output_bodies_info = true;
+    }
+
     ImGui::End();
 
 }
