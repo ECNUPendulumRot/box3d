@@ -9,6 +9,7 @@ class TestBilliards :public Test {
     b3Body* m_bodies[2048];
 
 public:
+
     TestBilliards() {
 
         m_world->set_gravity(b3Vec3r(0, 0, 0));
@@ -36,7 +37,10 @@ public:
             fixture_def.m_shape = &sphere_shape;
             fixture_def.m_density = 1.0;
 
-            m_dynamic_sphere->create_fixture(fixture_def);
+            b3Fixture* f = m_dynamic_sphere->create_fixture(fixture_def);
+
+            add_obs_fixture(f, "dynamic_sphere");
+
         }
 
         {

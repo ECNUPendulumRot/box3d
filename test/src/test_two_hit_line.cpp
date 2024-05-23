@@ -53,12 +53,12 @@ public:
             body_def.set_init_velocity(v, w);
             m_world->create_body(body_def)->create_fixture(fixture_def);
         }
-        p = { 0.6 , x + num_of_spheres - 3 + 0.7, 0.5 };
+        p = { 0.6 , x + num_of_spheres - 3 + 0.7f, 0.5 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
-        p = { -0.6 , x + num_of_spheres - 3 + 0.7, 0.5 };
+        p = { -0.6 , x + num_of_spheres - 3 + 0.7f, 0.5 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
         m_world->create_body(body_def)->create_fixture(fixture_def);

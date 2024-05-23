@@ -32,7 +32,7 @@ struct Settings {
     bool m_draw_contact_points = false;
     bool m_pause = false;
     bool m_single_step = false;
-    bool m_generate_obj = false;
+    bool m_generate_json = false;
     float m_hertz;
 };
 

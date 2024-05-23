@@ -39,8 +39,8 @@ public:
         real x = 2;
 
         for (int32 i = 0; i < num_of_spheres - 1; i++) {
-            p = { 0, x * (i + 1) + i * 2.0, 0.5 };
-            v = { 0, -15.0 * i, 0 };
+            p = { 0, x * (i + 1) + i * 2.0f, 0.5 };
+            v = { 0, -15.0f * i, 0 };
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
             m_world->create_body(body_def)->create_fixture(fixture_def);

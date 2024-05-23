@@ -10,7 +10,6 @@
 #include "draw.hpp"
 #include "settings.hpp"
 #include "test.hpp"
-#include "include/animation_generator.hpp"
 
 
 GLFWwindow *g_main_window = nullptr;
@@ -211,18 +210,18 @@ void update_ui() {
 
     if (ImGui::Button("Pause (P)", button_sz)) {
         s_settings.m_pause = !s_settings.m_pause;
-        s_settings.m_generate_obj = false;
+        s_settings.m_generate_json = false;
     }
     if (ImGui::Button("Single Step (O)", button_sz)) {
         s_settings.m_single_step = !s_settings.m_single_step;
     }
     if (ImGui::Button("Restart (R)", button_sz)) {
         restart_test();
-        s_settings.m_generate_obj = false;
+        s_settings.m_generate_json = false;
     }
-    if (ImGui::Button("Generate OBJ Series", button_sz)) {
+    if (ImGui::Button("Generate Frame JSONs", button_sz)) {
         restart_test();
-        s_settings.m_generate_obj = true;
+        s_settings.m_generate_json = true;
     }
 
     ImGui::End();
@@ -322,7 +321,7 @@ int main(int argc, char *argv[]) {
 
         if (s_test_selection != s_settings.m_test_index) {
             s_settings.m_test_index = s_test_selection;
-            s_settings.m_generate_obj = false;
+            s_settings.m_generate_json = false;
             delete s_test;
             s_test = g_test_entries[s_settings.m_test_index].create_fcn();
             g_camera.reset_view();
@@ -342,6 +341,19 @@ int main(int argc, char *argv[]) {
         std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
         frame_time = t3 - t1;
         sleep_adjust = 0.9 * sleep_adjust + 0.1 * (target - frame_time);
+    }
+
+
+    nlohmann::json json;
+    json["meta"] = s_test->m_meta_json;
+    json["frames"] = s_test->m_frame_json;
+
+    std::ofstream file("scene.json");
+    if (file.is_open()) {
+        file << json.dump(4);
+        file.close();
+    } else {
+        spdlog::error("Failed to open file");
     }
 
     ImGui_ImplOpenGL3_Shutdown();

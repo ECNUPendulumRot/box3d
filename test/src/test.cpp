@@ -1,7 +1,6 @@
 
 #include "test.hpp"
 #include "settings.hpp"
-#include "include/animation_generator.hpp"
 #include "include/gl_render_triangles.hpp"
 
 
@@ -11,6 +10,11 @@ Test::Test() {
 
     m_world->set_debug_draw(&g_debug_draw);
     m_world->set_contact_listener(this);
+
+    m_meta_json.clear();
+    m_frame_json.clear();
+    m_meta_json = nlohmann::json::array();
+    m_frame_json = nlohmann::json::array();
 }
 
 
@@ -39,8 +43,8 @@ void Test::step(Settings &settings) {
 
     m_world->debug_draw();
 
-    if (settings.m_generate_obj) {
-        g_animation_generator.save_to_obj(g_debug_draw.m_triangles, "obj_file_");
+    if (settings.m_generate_json) {
+        record_frame();
     }
 
     g_debug_draw.flush();
