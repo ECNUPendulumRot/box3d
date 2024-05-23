@@ -5,15 +5,11 @@ class SphereCradleTest : public Test {
 
     int sphere_count = 2;
 
-    // has init velocity sphere body.
-    b3Body* m_dynamic_sphere;
-
-    b3Body* m_bodies[2048];
-
 public:
 
     SphereCradleTest() {
         m_world->set_gravity(b3Vec3r::zero());
+        m_body_count = sphere_count + 1; // 1 dynamic body
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_static_body;
@@ -52,21 +48,23 @@ public:
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
-            m_dynamic_sphere = m_world->create_body(body_def);
+            m_bodies[0] = m_world->create_body(body_def);
 
-            m_dynamic_sphere->create_fixture(fixture_def);
+            m_bodies[0]->create_fixture(fixture_def);
+            m_names[0] = "init_velocity_sphere";
 
             v.set_zero();
             body_def.set_init_velocity(v, w);
-            for(int i = 0; i < sphere_count; i++) {
-                b3Vec3r position(0, 3 + 2 * i, 1);
+            for(int i = 1; i <= sphere_count; i++) {
+                b3Vec3r position(0, 1 + 2 * i, 1);
                 body_def.set_init_pose(position, q);
 
                 m_bodies[i] = m_world->create_body(body_def);
                 m_bodies[i]->create_fixture(fixture_def);
+
+                m_names[i] = "sphere_" + std::to_string(i);
             }
         }
-
     }
 
     static Test* create() {

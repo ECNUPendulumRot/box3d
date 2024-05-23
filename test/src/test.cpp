@@ -2,7 +2,7 @@
 #include "test.hpp"
 #include "settings.hpp"
 #include "include/gl_render_triangles.hpp"
-
+#include "body_info_generator.hpp"
 
 Test::Test() {
     b3Vec3r gravity(0.0, 0.0, -10.0);
@@ -15,6 +15,8 @@ Test::Test() {
     m_frame_json.clear();
     m_meta_json = nlohmann::json::array();
     m_frame_json = nlohmann::json::array();
+
+    m_body_info_generator = new BodyInfoGenerator();
 }
 
 
@@ -45,6 +47,10 @@ void Test::step(Settings &settings) {
 
     if (settings.m_generate_json) {
         record_frame();
+    }
+
+    if (settings.m_output_bodies_info) {
+        m_body_info_generator->save_body_info(m_bodies, m_names, m_body_count);
     }
 
     g_debug_draw.flush();

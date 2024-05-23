@@ -2,17 +2,16 @@
 
 class TestExtendedBernoulli :public Test {
 
-    int32 half_sphere_count = 2;
+    int32 sphere_count = 4;
 
     real radius = 0.5;
-
-    b3Body* bodies[2048];
 
 public:
 
     TestExtendedBernoulli() {
 
         m_world->set_gravity(b3Vec3r(0, 0, 0));
+        m_body_count = sphere_count + 1; // 1 dynamic body
 
         // create a dynamic body
         b3Transformr pose, velocity;
@@ -39,21 +38,24 @@ public:
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_world->create_body(body_def)->create_fixture(fixture_def);
+        m_bodies[0] = m_world->create_body(body_def);
+        m_bodies[0]->create_fixture(fixture_def);
+        m_names[0] = "init_velocity_sphere";
 
         v = { 0, 0, 0 };
 
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        for (int i = 0; i < half_sphere_count; i++) {
-            p = {0, radius + i * 2 * radius, 0.5};
+        p = {0, -radius * sphere_count + radius, 0.5};
+        for (int i = 1; i <= sphere_count; i++) {
             body_def.set_init_pose(p, q);
-            m_world->create_body(body_def)->create_fixture(fixture_def);
+            m_bodies[i] = m_world->create_body(body_def);
+            m_bodies[i]->create_fixture(fixture_def);
 
-            p = {0, -radius - i * 2 * radius, 0.5};
-            body_def.set_init_pose(p, q);
-            m_world->create_body(body_def)->create_fixture(fixture_def);
+            m_names[i] = "sphere_" + std::to_string(i);
+
+            p.y += 2 * radius;
         }
 
         // create a ground

@@ -4,10 +4,6 @@ class TestBilliards :public Test {
 
     int layer = 4;
 
-    b3Body* m_dynamic_sphere = nullptr;
-
-    b3Body* m_bodies[2048];
-
 public:
 
     TestBilliards() {
@@ -32,13 +28,14 @@ public:
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
 
-            m_dynamic_sphere = m_world->create_body(body_def);
+            m_bodies[0] = m_world->create_body(body_def);
 
             fixture_def.m_shape = &sphere_shape;
             fixture_def.m_density = 1.0;
 
-            b3Fixture* f = m_dynamic_sphere->create_fixture(fixture_def);
+            b3Fixture* f = m_bodies[0]->create_fixture(fixture_def);
 
+            m_names[0] = "init_velocity_sphere";
             add_obs_fixture(f, "dynamic_sphere");
 
         }
@@ -47,7 +44,7 @@ public:
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            int index = 0;
+            int index = 1;
 
             real y_distance = sqrtf(3.0);
             b3Vec3r x_offset(-2, 0, 0);
@@ -61,9 +58,12 @@ public:
 
                     m_bodies[index] = m_world->create_body(body_def);
                     m_bodies[index]->create_fixture(fixture_def);
+
+                    m_names[index] = "sphere_" + std::to_string(index);
                     index++;
                 }
             }
+            m_body_count = index;
         }
 
         {
