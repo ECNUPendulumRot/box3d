@@ -28,16 +28,15 @@ public:
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
 
-            m_bodies[0] = m_world->create_body(body_def);
+            b3Body* b = m_world->create_body(body_def);
 
             fixture_def.m_shape = &sphere_shape;
             fixture_def.m_density = 1.0;
 
-            b3Fixture* f = m_bodies[0]->create_fixture(fixture_def);
+            b3Fixture* f = b->create_fixture(fixture_def);
 
-            m_names[0] = "init_velocity_sphere";
-            add_obs_fixture(f, "dynamic_sphere");
-
+            utils.track_body(b, "init_velocity_sphere");
+            utils.track_fixture(f, "init_velocity_sphere");
         }
 
         {
@@ -56,14 +55,14 @@ public:
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);
 
-                    m_bodies[index] = m_world->create_body(body_def);
-                    m_bodies[index]->create_fixture(fixture_def);
+                    b3Body* b = m_world->create_body(body_def);
+                    b3Fixture* f = b->create_fixture(fixture_def);
 
-                    m_names[index] = "sphere_" + std::to_string(index);
+                    utils.track_body(b, ("sphere_" + std::to_string(index)).c_str());
+                    utils.track_fixture(f, ("sphere_" + std::to_string(index)).c_str());
                     index++;
                 }
             }
-            m_body_count = index;
         }
 
         {
@@ -77,7 +76,11 @@ public:
 
             fixture_def.m_shape = &ground_shape;
             fixture_def.m_density = 0;
-            ground_body->create_fixture(fixture_def);
+            b3Fixture* fg = ground_body->create_fixture(fixture_def);
+
+            utils.track_body(ground_body, "ground");
+            utils.track_fixture(fg, "ground");
+
         }
     }
 

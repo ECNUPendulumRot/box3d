@@ -1,15 +1,12 @@
 
 #include <spdlog/spdlog.h>
 
-#include "imgui/imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "box3d.hpp"
 
 #include "draw.hpp"
 #include "settings.hpp"
 #include "test.hpp"
+#include "imgui_ext.hpp"
 
 
 GLFWwindow *g_main_window = nullptr;
@@ -17,7 +14,6 @@ static Settings s_settings;
 static int32 s_test_selection = 0;
 static Test* s_test = nullptr;
 static float s_display_scale = 1.0f;
-
 static bool s_mid_mouse_down = false;
 static bool s_left_mouse_down = false;
 
@@ -219,14 +215,13 @@ void update_ui() {
         restart_test();
         s_settings.m_generate_json = false;
     }
-    if (ImGui::Button("Generate Frame JSONs", button_sz)) {
+
+    if (ToggleButton("Record Frame to JSON", &s_settings.m_generate_json)) {
         restart_test();
-        s_settings.m_generate_json = true;
     }
 
-    if (ImGui::Button("Output bodies info", button_sz)) {
+    if (ToggleButton("Record Body Info to CSV", &s_settings.m_output_bodies_info)) {
         restart_test();
-        s_settings.m_output_bodies_info = true;
     }
 
     ImGui::End();
@@ -346,19 +341,6 @@ int main(int argc, char *argv[]) {
         std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
         frame_time = t3 - t1;
         sleep_adjust = 0.9 * sleep_adjust + 0.1 * (target - frame_time);
-    }
-
-
-    nlohmann::json json;
-    json["meta"] = s_test->m_meta_json;
-    json["frames"] = s_test->m_frame_json;
-
-    std::ofstream file("scene.json");
-    if (file.is_open()) {
-        file << json.dump(4);
-        file.close();
-    } else {
-        spdlog::error("Failed to open file");
     }
 
     ImGui_ImplOpenGL3_Shutdown();

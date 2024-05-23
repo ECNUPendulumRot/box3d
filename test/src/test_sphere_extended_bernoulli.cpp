@@ -11,7 +11,6 @@ public:
     TestExtendedBernoulli() {
 
         m_world->set_gravity(b3Vec3r(0, 0, 0));
-        m_body_count = sphere_count + 1; // 1 dynamic body
 
         // create a dynamic body
         b3Transformr pose, velocity;
@@ -38,9 +37,11 @@ public:
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_bodies[0] = m_world->create_body(body_def);
-        m_bodies[0]->create_fixture(fixture_def);
-        m_names[0] = "init_velocity_sphere";
+        b3Body* b = m_world->create_body(body_def);
+        utils.track_body(b, "init_velocity_sphere");
+
+        b3Fixture* f = b->create_fixture(fixture_def);
+        utils.track_fixture(f, "init_velocity_sphere");
 
         v = { 0, 0, 0 };
 
@@ -50,11 +51,11 @@ public:
         p = {0, -radius * sphere_count + radius, 0.5};
         for (int i = 1; i <= sphere_count; i++) {
             body_def.set_init_pose(p, q);
-            m_bodies[i] = m_world->create_body(body_def);
-            m_bodies[i]->create_fixture(fixture_def);
+            b3Body* bi  = m_world->create_body(body_def);
+            b3Fixture* fi = bi->create_fixture(fixture_def);
 
-            m_names[i] = "sphere_" + std::to_string(i);
-
+            utils.track_body(bi, ("sphere_" + std::to_string(i)).c_str());
+            utils.track_fixture(fi, ("sphere_" + std::to_string(i)).c_str());
             p.y += 2 * radius;
         }
 
@@ -71,8 +72,10 @@ public:
         fixture_def.m_shape = &ground_shape;
         fixture_def.m_density = 0;
 
-        ground_body->create_fixture(fixture_def);
+        b3Fixture* fg = ground_body->create_fixture(fixture_def);
 
+        utils.track_body(ground_body, "ground");
+        utils.track_fixture(fg, "ground");
     }
 
     static Test* create() {

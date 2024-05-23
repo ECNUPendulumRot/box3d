@@ -1,22 +1,18 @@
 
 #include "test.hpp"
 #include "settings.hpp"
+#include "utils.hpp"
 #include "include/gl_render_triangles.hpp"
-#include "body_info_generator.hpp"
 
-Test::Test() {
+
+Test::Test()
+{
     b3Vec3r gravity(0.0, 0.0, -10.0);
     m_world = new b3World(gravity);
 
     m_world->set_debug_draw(&g_debug_draw);
     m_world->set_contact_listener(this);
 
-    m_meta_json.clear();
-    m_frame_json.clear();
-    m_meta_json = nlohmann::json::array();
-    m_frame_json = nlohmann::json::array();
-
-    m_body_info_generator = new BodyInfoGenerator();
 }
 
 
@@ -46,11 +42,11 @@ void Test::step(Settings &settings) {
     m_world->debug_draw();
 
     if (settings.m_generate_json) {
-        record_frame();
+        utils.record_frame();
     }
 
     if (settings.m_output_bodies_info) {
-        m_body_info_generator->save_body_info(m_bodies, m_names, m_body_count);
+        utils.save_body_info();
     }
 
     g_debug_draw.flush();
@@ -76,8 +72,6 @@ void Test::pre_solve(b3Contact *contact, const b3Manifold *old_manifold)
     b3Fixture* fixture_a = contact->get_fixture_a();
     b3Fixture* fixture_b = contact->get_fixture_b();
 
-    spdlog::info("PreSolve: fixture A: {}, fixture B: {}", (int)fixture_a->get_shape()->get_type(), (int)fixture_b->get_shape()->get_type());
-    spdlog::info("Penetration Depth: {}", manifold->m_penetration);
     for (int32 i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
         ContactPoint* cp = m_points + m_point_count;
         cp->fixtureA = fixture_a;

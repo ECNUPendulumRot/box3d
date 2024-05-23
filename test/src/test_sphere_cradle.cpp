@@ -8,8 +8,8 @@ class SphereCradleTest : public Test {
 public:
 
     SphereCradleTest() {
+
         m_world->set_gravity(b3Vec3r::zero());
-        m_body_count = sphere_count + 1; // 1 dynamic body
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_static_body;
@@ -24,7 +24,10 @@ public:
             fixture_def.m_friction = 0.0;
 
             b3Body* ground = m_world->create_body(body_def);
-            ground->create_fixture(fixture_def);
+            b3Fixture* fg = ground->create_fixture(fixture_def);
+
+            utils.track_body(ground, "ground");
+            utils.track_fixture(fg, "ground");
         }
         {
             b3BodyDef body_def;
@@ -48,10 +51,13 @@ public:
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
-            m_bodies[0] = m_world->create_body(body_def);
 
-            m_bodies[0]->create_fixture(fixture_def);
-            m_names[0] = "init_velocity_sphere";
+            b3Body* b = m_world->create_body(body_def);
+            utils.track_body(b, "init_velocity_sphere");
+
+            b3Fixture* f = b->create_fixture(fixture_def);
+            utils.track_fixture(f, "init_velocity_sphere");
+
 
             v.set_zero();
             body_def.set_init_velocity(v, w);
@@ -59,10 +65,12 @@ public:
                 b3Vec3r position(0, 1 + 2 * i, 1);
                 body_def.set_init_pose(position, q);
 
-                m_bodies[i] = m_world->create_body(body_def);
-                m_bodies[i]->create_fixture(fixture_def);
+                b3Body* bi  = m_world->create_body(body_def);
+                b3Fixture* fi = bi->create_fixture(fixture_def);
 
-                m_names[i] = "sphere_" + std::to_string(i);
+                utils.track_body(bi, ("sphere_" + std::to_string(i)).c_str());
+                utils.track_fixture(fi, ("sphere_" + std::to_string(i)).c_str());
+
             }
         }
     }
