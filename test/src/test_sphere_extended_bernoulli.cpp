@@ -4,8 +4,6 @@ class TestExtendedBernoulli :public Test {
 
     int32 sphere_count = 4;
 
-    real radius = 0.5;
-
 public:
 
     TestExtendedBernoulli() {
@@ -20,7 +18,7 @@ public:
 
         // create a sphere shape
         b3SphereShape sphere_shape;
-        sphere_shape.set_as_sphere(radius);
+        sphere_shape.set_as_sphere(1);
 
         // create a fixture definition
         b3FixtureDef fixture_def;
@@ -29,7 +27,7 @@ public:
         fixture_def.m_restitution = 1.0;
         fixture_def.m_density = 1.0;
 
-        b3Vec3r p(2, 0, 0.5);
+        b3Vec3r p(0, -3, 1);
         b3Vec3r q(0, 0, 0);
         b3Vec3r v(0, 0, 0);
         b3Vec3r w(0, 0, 0);
@@ -48,7 +46,7 @@ public:
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        p = {0, -radius * sphere_count + radius, 0.5};
+        p = {-sphere_count + 1.0f, 3, 1};
         for (int i = 1; i <= sphere_count; i++) {
             body_def.set_init_pose(p, q);
             b3Body* bi  = m_world->create_body(body_def);
@@ -56,7 +54,7 @@ public:
 
             utils.track_body(bi, ("sphere_" + std::to_string(i)).c_str());
             utils.track_fixture(fi, ("sphere_" + std::to_string(i)).c_str());
-            p.y += 2 * radius;
+            p.x += 2;
         }
 
         // create a ground
