@@ -3,7 +3,7 @@
 
 class SphereCradleTest : public Test {
 
-    int sphere_count = 2;
+    int sphere_count = 8;
 
 public:
 
@@ -35,7 +35,7 @@ public:
 
             b3Vec3r p(0, -3, 1);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
+            b3Vec3r v(0, 5, 0);
             b3Vec3r w(0, 0, 0);
 
             // create a sphere shape

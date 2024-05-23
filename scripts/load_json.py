@@ -4,17 +4,18 @@ import numpy as np
 import json
 
 
-# SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
-SCENE_FILE = os.path.join("E:\\", "box2d", "build-debug", "bin", "scene.json")
-
+#SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
+#SCENE_FILE = os.path.join("E:\\", "box2d", "build-debug", "bin", "scene.json")
+SCENE_FILE = os.path.join("E:\\","bullet3", "build","examples","ExampleBrowser","JsonInfo", "scene.json")
 START_FRAME = 1
 
-CAMERA_ORTHOGONAL = True
+CAMERA_ORTHOGONAL = False
+CAMERA_ORTHOGONAL_POSITION = [-4, 15, 30]
 CAMERA_POSITION = [15, 15, 25]
 CAMERA_LOOK_AT = [-5, -5, 0]
 CAMERA_UP = [0, 0, 1]
 
-MAIN_AREA_LIGHT_POSITION = [-10, 10, 10]
+MAIN_AREA_LIGHT_POSITION = [-30, 30, 60]
 MAIN_AREA_LIGHT_LOOK_AT = [0, 0, 0]
 
 
@@ -83,12 +84,20 @@ for fixture in meta:
 
 for blender_frame, engine_frame in enumerate(frames, start=START_FRAME):
     for obj_name, pose in engine_frame.items():
-        obj = bpy.data.objects[obj_name]
+        obj = bpy.context.scene.objects[obj_name]
 
         obj.location = pose['position']
         obj.rotation_quaternion  = pose['quaternion']
         obj.keyframe_insert(data_path="location", frame=blender_frame)
         obj.keyframe_insert(data_path="rotation_quaternion", frame=blender_frame)
+
+
+if CAMERA_ORTHOGONAL:
+    bpy.ops.mesh.primitive_plane_add(size=1.0)
+    plane = bpy.context.object
+    plane.location = (0, 0, 0)
+    plane.scale = (100, 100, 1)
+    plane.name = "background"
 
 ################################ add camera ################################
 
@@ -104,7 +113,7 @@ if CAMERA_ORTHOGONAL:
     camera_object.data.type = 'ORTHO'
     camera_object.data.ortho_scale = 100
     camera_rotation = [0, 0, 0]
-    camera_position = [0, 10, 30]
+    camera_position = CAMERA_ORTHOGONAL_POSITION
 else:
     camera_rotation = rotation(CAMERA_POSITION, CAMERA_LOOK_AT, CAMERA_UP)
     camera_position = CAMERA_POSITION
@@ -117,6 +126,11 @@ bpy.context.scene.camera = camera_object
 ############################# add world light #############################
 
 world = bpy.context.scene.world
+if world == None:
+    world = bpy.data.worlds.new(name="NewWorld")
+    bpy.context.scene.world = world
+
+
 world.use_nodes = True
 nodes = world.node_tree.nodes
 links = world.node_tree.links
@@ -147,12 +161,20 @@ current_scene.render.film_transparent = True
 
 ########################### add main area light ###########################
 
-bpy.ops.object.light_add(type='AREA', location=MAIN_AREA_LIGHT_POSITION)
 
-main_al_rotation = bpy.context.object
-main_al_rotation.data.size = 5
-main_al_rotation.data.energy = 1000
-main_al_rotation.rotation_euler = rotation(MAIN_AREA_LIGHT_POSITION, MAIN_AREA_LIGHT_LOOK_AT, [0, 0, 1])
+if CAMERA_ORTHOGONAL:
+    bpy.ops.object.light_add(type='SUN', location=(0, 0, 10))
+    sun_light = bpy.context.object
+    sun_light.name = "SunLight"
+    sun_light.data.energy = 5.0
+    sun_light.rotation_euler = [0, 0, 0]
+    sun_light.location = CAMERA_ORTHOGONAL_POSITION
+else:
+    bpy.ops.object.light_add(type='AREA', location=MAIN_AREA_LIGHT_POSITION)
+    main_al = bpy.context.object
+    main_al.rotation_euler = rotation(MAIN_AREA_LIGHT_POSITION, MAIN_AREA_LIGHT_LOOK_AT, [0, 0, 1])
+    main_al.data.size = 10
+    main_al.data.energy = 50000
 
 #############################################################################
 
