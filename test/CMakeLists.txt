@@ -36,6 +36,8 @@ set (TESTBED_SOURCE_FILES
         utils.hpp
         utils.cpp
         include/imgui_ext.hpp
+        src/test_wall_break.cpp
+        src/test_cube_propagation.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

@@ -85,7 +85,7 @@ void Utils::track_fixture(b3Fixture *fixture, const char *name)
 
     json fixture_json;
 
-    fixture_json["name"] = name;
+    fixture_json["name"] = std::string(name) + "_box3d";
     b3Shape* shape = fixture->get_shape();
     switch (shape->get_type()) {
         case b3ShapeType::e_sphere: {
@@ -103,7 +103,7 @@ void Utils::track_fixture(b3Fixture *fixture, const char *name)
         case b3ShapeType::e_plane: {
             b3PlaneShape* plane = (b3PlaneShape*)shape;
             fixture_json["type"] = "plane";
-            std::array<float, 2> lw = {plane->m_half_length, plane->m_half_width};
+            std::array<float, 2> lw = {2 * plane->m_half_width, 2 * plane->m_half_length};
             fixture_json["hf"] = lw;
             break;
         }
