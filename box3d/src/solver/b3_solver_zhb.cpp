@@ -251,7 +251,7 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                         //4
                         if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
                             //if rhs is converged,change it to situation 2
-                            vcp->m_bias_velocity = rhs * vc->m_restitution;
+                            //vcp->m_bias_velocity = rhs * vc->m_restitution;
                             vcp->m_relative_velocity = rhs;
                             rhs_restitution_velocity = 0;
                             rhs = 0.0;
@@ -276,7 +276,7 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                             rhs_restitution_velocity = 0.0;
                             vcp->m_relative_velocity = 0.0f;
                             //change to situation 3
-                            vcp->m_bias_velocity = 0.0f;
+                            //vcp->m_bias_velocity = 0.0f;
                         }
                     } else {
                         //3
