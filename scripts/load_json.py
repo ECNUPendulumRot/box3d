@@ -4,9 +4,9 @@ import numpy as np
 import json
 
 
-SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
+#SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
 #SCENE_FILE = os.path.join("E:\\", "box2d", "build-debug", "bin", "scene.json")
-#SCENE_FILE = os.path.join("E:\\","bullet3", "build","examples","ExampleBrowser","JsonInfo", "scene.json")
+SCENE_FILE = os.path.join("E:\\","bullet3", "build","examples","ExampleBrowser","JsonInfo", "scene.json")
 START_FRAME = 1
 
 CAMERA_ORTHOGONAL = False
