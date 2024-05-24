@@ -103,7 +103,7 @@ void Utils::track_fixture(b3Fixture *fixture, const char *name)
         case b3ShapeType::e_plane: {
             b3PlaneShape* plane = (b3PlaneShape*)shape;
             fixture_json["type"] = "plane";
-            std::array<float, 2> lw = {2 * plane->m_half_width, 2 * plane->m_half_length};
+            std::array<float, 2> lw = {plane->m_half_width, plane->m_half_length};
             fixture_json["hf"] = lw;
             break;
         }

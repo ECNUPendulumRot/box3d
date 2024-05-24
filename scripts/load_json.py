@@ -4,9 +4,9 @@ import numpy as np
 import json
 
 
-#SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
+SCENE_FILE = os.path.join("E:\\", "box3d", "build-debug", "test", "scene.json")
 #SCENE_FILE = os.path.join("E:\\", "box2d", "build-debug", "bin", "scene.json")
-SCENE_FILE = os.path.join("E:\\","bullet3", "build","examples","ExampleBrowser","JsonInfo", "scene.json")
+#SCENE_FILE = os.path.join("E:\\","bullet3", "build","examples","ExampleBrowser","JsonInfo", "scene.json")
 START_FRAME = 1
 
 CAMERA_ORTHOGONAL = False
@@ -72,12 +72,12 @@ for fixture in meta:
     if fixture['type'] == 'cube':
         bpy.ops.mesh.primitive_cube_add(size=1.0)
         cube = bpy.context.object
-        cube.scale = (fixture['hf'][0], fixture['hf'][1], fixture['hf'][2])
+        cube.scale = (2 * fixture['hf'][0], 2 * fixture['hf'][1], 2 * fixture['hf'][2])
         cube.name = fixture['name']
     if fixture['type'] == 'plane':
         bpy.ops.mesh.primitive_plane_add(size=1.0)
         plane = bpy.context.object
-        plane.scale = (fixture['hf'][0], fixture['hf'][1], 1)
+        plane.scale = (2 * fixture['hf'][0], 2 * fixture['hf'][1], 1)
         plane.name = fixture['name']
     bpy.ops.object.shade_smooth()
 
@@ -85,10 +85,11 @@ for fixture in meta:
 for blender_frame, engine_frame in enumerate(frames, start=START_FRAME):
     for obj_name, pose in engine_frame.items():
         obj = bpy.context.scene.objects[obj_name]
-
+        obj.rotation_mode = 'QUATERNION'
         obj.location = pose['position']
-        obj.rotation_quaternion  = pose['quaternion']
         obj.keyframe_insert(data_path="location", frame=blender_frame)
+
+        obj.rotation_quaternion  = pose['quaternion']
         obj.keyframe_insert(data_path="rotation_quaternion", frame=blender_frame)
 
 

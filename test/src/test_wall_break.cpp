@@ -38,12 +38,13 @@ public:
         sphere_fd.m_density = 1.0;
 
         b3Body *sphere = m_world->create_body(body_def);
-        sphere->create_fixture(sphere_fd);
-
+        b3Fixture* fs = sphere->create_fixture(sphere_fd);
+        utils.track_fixture(fs, "hitting_sphere");
 
         int32 scale = 1;
         real x_pos = 0;
         x_pos += box_hf_size;
+        int32 index = 0;
         for (int32 k = 0; k < 3; k++) {
             for (int32 i = 0; i < box_count; i++) {
                 for (int32 j = 0; j < box_count / 2; j++) {
@@ -67,13 +68,15 @@ public:
                     box_fd.m_density = 1.0;
 
                     b3Body *cube_r = m_world->create_body(body_def);
-                    cube_r->create_fixture(box_fd);
+                    b3Fixture* fr = cube_r->create_fixture(box_fd);
+                    utils.track_fixture(fr, ("cube" + std::to_string(index++)).c_str());
 
                     p = {x_pos, -(scale * box_hf_size + j * scale * box_hf_size * 2.0f), box_hf_size * scale + i * box_hf_size * scale * 2.0f};
                     body_def.set_init_pose(p, q);
                     body_def.set_init_velocity(v, w);
                     b3Body *cube_l = m_world->create_body(body_def);
-                    cube_l->create_fixture(box_fd);
+                    b3Fixture* fl = cube_l->create_fixture(box_fd);
+                    utils.track_fixture(fl, ("cube" + std::to_string(index++)).c_str());
                 }
             }
             scale *= 2;
@@ -98,8 +101,8 @@ public:
         ground_fd.m_restitution = 0.2;
         ground_fd.m_density = 0.0;
 
-        ground_body->create_fixture(ground_fd);
-
+        b3Fixture* fg = ground_body->create_fixture(ground_fd);
+        utils.track_fixture(fg, "ground");
     }
 
 
