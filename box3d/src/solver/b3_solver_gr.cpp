@@ -323,7 +323,7 @@ void b3SolverGR::find_violated_constraints() {
                     real v_rel_in = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
                     vcp->m_bias_velocity = - vc->m_restitution * v_rel_in;
                 }
-                continue;
+                break;
             }
         }
     }
@@ -335,12 +335,13 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
 
     find_violated_constraints();
 
-    int32 iteration_max = 50;
+   // int32 iteration_max = 50;
 
-    int32 iteration = 0;
+    int32 iteration = 1;
 
-    while (m_violated_count != 0 && iteration++ < iteration_max) {
-
+    while (m_violated_count != 0 && iteration++) {
+        spdlog::info("Iteration: {0}", iteration);
+        spdlog::info("Violated count: {0}", m_violated_count);
         for (int32 it = 0; it < velocity_iterations; it++) {
             for (int32 i = 0; i < m_violated_count; i++) {
                 b3ContactVelocityConstraint* vc = m_violated_constraints[i];
