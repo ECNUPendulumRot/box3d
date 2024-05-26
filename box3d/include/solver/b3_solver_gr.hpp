@@ -54,8 +54,6 @@ class b3SolverGR {
 
     b3Body** m_bodies;
 
-    uint8* m_delayed;
-
 public:
 
     b3SolverGR() = default;
