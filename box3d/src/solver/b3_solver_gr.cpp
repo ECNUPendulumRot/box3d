@@ -78,7 +78,6 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
         m_ws[i] = b->get_angular_velocity();
     }
 
-    m_constraint_count = 0;
     ////////////////////////// Initialize Contact Constraints //////////////////////////
 
     for(int32 i = 0; i < m_contact_count; ++i) {
@@ -135,7 +134,6 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
         b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
 
         for (int32 j = 0; j < point_count; j++) {
-            m_constraint_count++;
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
             b3ManifoldPoint* manifold_point = manifold->m_points + j;
 

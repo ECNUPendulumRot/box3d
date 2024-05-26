@@ -31,8 +31,6 @@ class b3SolverGR {
 
     int32 m_contact_count;
 
-    int32 m_constraint_count = 0;
-
     int32 m_body_count;
 
     b3Vec3r* m_ps = nullptr;

@@ -122,7 +122,7 @@ void b3World::solve(b3TimeStep &step)
     }
 
     void *mem = m_block_allocator.allocate(sizeof(b3Island));
-    b3Island *island = new (mem) b3Island(&m_block_allocator, m_body_count,
+    b3Island island(&m_block_allocator, m_body_count,
                                         m_contact_manager.get_contact_count());
 
     // build all islands
@@ -141,7 +141,7 @@ void b3World::solve(b3TimeStep &step)
         while (stack_count > 0) {
             b3Body *b = stack[--stack_count];
 
-            island->add_body(b);
+            island.add_body(b);
 
             // search all contact connected to this body
             for (b3ContactEdge *ce = b->get_contact_list(); ce; ce = ce->m_next) {
@@ -155,7 +155,7 @@ void b3World::solve(b3TimeStep &step)
                     continue;
                 }
 
-                island->add_contact(contact);
+                island.add_contact(contact);
                 contact->set_flag(b3Contact::e_island_flag);
 
                 b3Body *other = ce->m_other;
@@ -172,24 +172,23 @@ void b3World::solve(b3TimeStep &step)
 
         // solve the constraints
         // b3Solver solver(&m_block_allocator, island, &step);
-        b3SolverGR solver(&m_block_allocator, island, &step);
+        b3SolverGR solver(&m_block_allocator, &island, &step);
         solver.solve(m_allow_sleep);
         // Post solve cleanup.
 
-        for(int32 i = 0; i < island->get_body_count(); ++i) {
+        for(int32 i = 0; i < island.get_body_count(); ++i) {
             // Allow static bodies to participate in other islands
-            b3Body* body = island->get_body(i);
+            b3Body* body = island.get_body(i);
             if(body->m_type == b3BodyType::b3_static_body) {
                 body->m_flags &= ~b3Body::e_island_flag;
             }
         }
         // clear all bodies and contacts count, so we can reuse the island for the next island.
-        island->clear();
+        island.clear();
     }
 
     // Free the stack and island memory.
     m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
-    m_block_allocator.free(island, sizeof(b3Island));
 
     // TODO: synchronize ?
     for (b3Body *b = m_body_list; b; b = b->m_next) {
