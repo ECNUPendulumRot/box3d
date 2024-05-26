@@ -19,7 +19,7 @@ public:
 
             b3Vec3r p(0, -4, box_hf_size);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 4, 0);
+            b3Vec3r v(0, 2, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);

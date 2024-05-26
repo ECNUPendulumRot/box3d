@@ -2,7 +2,7 @@
 
 class TestBilliards :public Test {
 
-    int layer = 2;
+    int layer = 3;
 
 public:
 
@@ -12,7 +12,7 @@ public:
 
         b3FixtureDef fixture_def;
         fixture_def.m_friction = 0;
-        fixture_def.m_restitution = 1.0;
+        fixture_def.m_restitution = 0.0;
 
         b3SphereShape sphere_shape;
         sphere_shape.set_as_sphere(1);

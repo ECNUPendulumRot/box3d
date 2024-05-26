@@ -3,7 +3,7 @@
 
 class SphereCradleTest : public Test {
 
-    int sphere_count = 8;
+    int sphere_count = 3;
 
 public:
 
