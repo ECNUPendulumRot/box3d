@@ -69,7 +69,7 @@ public:
             b3Body* cube = m_bodys[i];
             b3Vec3r v = cube->get_linear_velocity();
             b3Vec3r w = cube->get_angular_velocity();
-            spdlog::info("cube[{}] v = ({}, {}, {}), w = ({}, {}, {})\n", i, v.x, v.y, v.z, w.x, w.y, w.z);
+            // spdlog::info("cube[{}] v = ({}, {}, {}), w = ({}, {}, {})\n", i, v.x, v.y, v.z, w.x, w.y, w.z);
         }
 
     }

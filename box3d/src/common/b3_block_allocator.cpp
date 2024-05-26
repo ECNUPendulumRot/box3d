@@ -7,6 +7,8 @@
 #include "common/b3_allocator.hpp"
 #include "common/b3_common.hpp"
 
+#include "spdlog/spdlog.h"
+
 //TODO: this const value need modify
 
 static const int32 b3_chunk_size = 16 * 1024;
@@ -104,9 +106,15 @@ void* b3BlockAllocator::allocate(int32 size)
     int32 index = b3_size_map.m_values[size];
     b3_assert(index >= 0 && index < b3_block_size_count);
 
+    static int count[b3_block_size_count] = {0};
+    count[index]++;
+
     if (m_free_lists[index]) {
         b3Block *block = m_free_lists[index];
         m_free_lists[index] = block->m_next;
+
+        spdlog::info("{}   {} allocate at {}", index, count[index], (void*)block);
+
         return block;
     } else {
         if (m_chunk_count == m_chunk_space) {
@@ -143,6 +151,8 @@ void* b3BlockAllocator::allocate(int32 size)
         m_free_lists[index] = chunk->m_blocks->m_next;
         ++m_chunk_count;
 
+        spdlog::info("{}   {} allocate at {}", index, count[index], (void*)chunk->m_blocks);
+
         return chunk->m_blocks;
     }
 }
@@ -164,6 +174,11 @@ void b3BlockAllocator::free(void* p, int32 size)
     b3_assert(index >= 0 && index < b3_block_size_count);
 
     b3Block *block = (b3Block *)p;
+
+    static int count[b3_block_size_count] = {0};
+    count[index]++;
+    spdlog::info("{}   {} free at {}", index, count[index], p);
+
 
     block->m_next = m_free_lists[index];
     m_free_lists[index] = block;

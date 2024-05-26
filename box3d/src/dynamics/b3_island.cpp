@@ -17,7 +17,7 @@ b3Island::b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32
     m_bodies = new (mem) b3Body *;
 
     mem = block_allocator->allocate(m_contact_capacity * sizeof(b3Contact *));
-    m_contacts = new (mem) b3Contact *;
+    m_contacts = new (mem) b3Contact*;
 }
 
 

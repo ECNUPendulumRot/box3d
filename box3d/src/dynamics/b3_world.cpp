@@ -121,12 +121,12 @@ void b3World::solve(b3TimeStep &step)
 	    contact->unset_flag(b3Contact::e_island_flag);
     }
 
-    void *mem = m_block_allocator.allocate(sizeof(b3Island));
+
     b3Island island(&m_block_allocator, m_body_count,
                                         m_contact_manager.get_contact_count());
 
     // build all islands
-    mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
+    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
     b3Body **stack = new (mem) b3Body *;
     for (b3Body *body = m_body_list; body; body = body->next()) {
         if (body->m_flags & b3Body::e_island_flag) {

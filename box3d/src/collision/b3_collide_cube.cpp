@@ -12,7 +12,7 @@ static real transform_to_axis(
     const b3Transformr &xf,
     const b3Vec3r &axis)
 {
-    const b3Mat33r &R = xf.m_r_t;
+    const b3Mat33r &R = xf.m_r;
     const b3Vec3r &half_xyz = box.m_h_xyz;
 
     return half_xyz.x * b3_abs(axis.dot(R.col(0))) +
@@ -145,7 +145,7 @@ static int32 b3_find_incident_face(
 
     // the normal of face1 in cube2
     // In this way, we do not need to compute normals of cube2 into world frame
-    b3Vec3r normal1 = xf2.m_r_t.transpose() * (xf1.m_r_t * normals1[face1]);
+    b3Vec3r normal1 = xf2.m_r.transpose() * (xf1.m_r * normals1[face1]);
 
     // find the incident face on cube2
     // the incident face is the mose anti-parallel face of cube2 to face1
@@ -291,7 +291,7 @@ static void create_face_contact(
     int32 incident_face_index = b3_find_incident_face(incident_vertices, cube1, xf1, face1, cube2, xf2);
 
     // normal of the reference face in cube1 in world frame.
-    const b3Vec3r &n = xf1.m_r_t * cube1->m_normals[face1];
+    const b3Vec3r &n = xf1.m_r * cube1->m_normals[face1];
 
     const b3EdgeIndex *edges1 = cube1->m_edges;
     const b3FaceIndex &faces1 = cube1->m_faces[face1];
