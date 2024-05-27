@@ -38,6 +38,7 @@ set (TESTBED_SOURCE_FILES
         include/imgui_ext.hpp
         src/test_wall_break.cpp
         src/test_cube_propagation.cpp
+        src/test_wall_rebound.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

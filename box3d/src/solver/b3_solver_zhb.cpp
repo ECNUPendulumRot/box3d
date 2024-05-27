@@ -1,6 +1,6 @@
 
 #include "solver/b3_solver_zhb.hpp"
-
+#include "spdlog/spdlog.h"
 #include "dynamics/b3_island.hpp"
 #include "dynamics/b3_body.hpp"
 #include "collision/b3_collision.hpp"
@@ -54,12 +54,16 @@ void b3SolverZHB::init(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
     m_ws = new (memory) b3Vec3r;
 
+    memory = m_block_allocator->allocate(m_body_count*sizeof(int32));
+    m_wait = new(memory) int32;
+
     for (int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
         m_ps[i] = b->get_position();
         m_qs[i] = b->get_quaternion();
         m_vs[i] = b->get_linear_velocity();
         m_ws[i] = b->get_angular_velocity();
+        m_wait[i] = 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +126,7 @@ void b3SolverZHB::init(b3BlockAllocator* block_allocator, b3Island* island, b3Ti
 
             vcp->m_ra = manifold_point->m_local_point - center_a;
             vcp->m_rb = manifold_point->m_local_point - center_b;
+            vcp->wait = true;
             // vcp->m_rhs_penetration = manifold->m_penetration;
             // TODO: warm start
         }
@@ -155,7 +160,7 @@ void b3SolverZHB::clear() {
     m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
     m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
-
+    m_block_allocator->free(m_wait, m_body_count * sizeof(int32));
     m_block_allocator = nullptr;
 }
 
@@ -221,7 +226,7 @@ int b3SolverZHB::solve(bool allow_sleep) {
 
 
 void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
-    real tolerance = 0.01f;
+    real tolerance = 0.001f;
     for (int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
@@ -252,18 +257,44 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                         if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
                             //if rhs is converged,change it to situation 2
                             //vcp->m_bias_velocity = rhs * vc->m_restitution;
+                            if(!vcp->wait){
+                                vcp->wait = true;
+                                if(m_wait[vc->m_index_a]>0){
+                                    --m_wait[vc->m_index_a];
+                                    spdlog::info("index A={} is free",vc->m_index_a);
+                                }
+                                if(m_wait[vc->m_index_b]>0) {
+                                    --m_wait[vc->m_index_b];
+                                    spdlog::info("index B={} is free",vc->m_index_b);
+                                }
+                            }
+                            if(m_wait[vc->m_index_b] == 0 && m_wait[vc->m_index_a] == 0){
+                                vcp->m_bias_velocity = rhs * vc->m_restitution;
+                            }
                             vcp->m_relative_velocity = rhs;
-                            rhs_restitution_velocity = 0;
+                            rhs_restitution_velocity = 0.0;
                             rhs = 0.0;
+                            //问题全在这部分了，考虑少了一种情况，即多物体撞一个物体的情况
                         } else {
                             //have some problem
+                            //当多个物体撞击一个物体时，
                             vcp->m_relative_velocity = rhs;
                             rhs = 0.0;
                             rhs_restitution_velocity = 0.0;
+                            spdlog::info("index A={} is waiting",vc->m_index_a);
+                            spdlog::info("index B={} is waiting",vc->m_index_b);
+                            if(vcp->wait){
+                                //register a vcp of situation 4 to wait_list
+                                vcp->wait = false;
+                                ++m_wait[vc->m_index_a];
+                                ++m_wait[vc->m_index_b];
+                                spdlog::info("wait is true");
+                            }
+
                         }
                     } else {
                         //2
-
+                        spdlog::info("the current constrain is {} ,{}",vc->m_index_a,vc->m_index_b);
                     }
                 }
 
@@ -272,11 +303,15 @@ void b3SolverZHB::solve_velocity_constraints(bool is_collision) {
                     if (rhs_restitution_velocity > 0) {
                         //1
                         if (abs(vcp->m_relative_velocity - rhs) <= tolerance || rhs == 0.0f) {
+                            vcp->m_relative_velocity = rhs;
+                            //change to situation 3
+                            vcp->m_bias_velocity = rhs;
+                            //不加上这项结果会有问题，因此问题在于考虑转换的条件
                             rhs = 0.0;
                             rhs_restitution_velocity = 0.0;
-                            vcp->m_relative_velocity = 0.0f;
-                            //change to situation 3
-                            //vcp->m_bias_velocity = 0.0f;
+                            spdlog::info("the constrain {} ,{} is real legal",vc->m_index_a,vc->m_index_b);
+                        } else{
+                            spdlog::info("the constrain {} ,{} is fake legal",vc->m_index_a,vc->m_index_b);
                         }
                     } else {
                         //3

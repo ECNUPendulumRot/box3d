@@ -21,6 +21,7 @@ struct b3VelocityConstraintPoint {
     real m_bias_velocity = 0;
     real m_rhs_penetration = 0;
     real m_relative_velocity = 0;
+    bool wait = true;//this value is for situation 4
 };
 
 

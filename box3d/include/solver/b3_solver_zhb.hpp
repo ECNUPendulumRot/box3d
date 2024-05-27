@@ -53,6 +53,8 @@ protected:
 
     b3IntegralMethod m_method;
 
+    int32* m_wait = nullptr;
+
     /**
      * @brief write the velocity and position back to bodies.
      */
