@@ -117,7 +117,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
 
         vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
-        vc->m_inv_I_a = R_a * body_a->get_inv_inertia() * R_a.transpose();
+        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
 
         vc->m_index_b = body_b->get_island_index();
         vc->m_mass_b = body_b->get_mass();
@@ -126,7 +126,7 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
 
         vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
-        vc->m_inv_I_b = R_b * body_b->get_inv_inertia() * R_b.transpose();
+        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
 
         vc->m_penetration = manifold->m_penetration;
 
