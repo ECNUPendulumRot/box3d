@@ -18,7 +18,7 @@ class b3BroadPhase;
 
 struct b3FixtureDef {
 
-    real m_restitution = 0.0;
+    real m_restitution = 0.3;
 
     real m_friction = 0.0;
 

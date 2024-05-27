@@ -342,11 +342,15 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
     while (m_violated_count != 0 && iteration++) {
         spdlog::info("Iteration: {0}", iteration);
         spdlog::info("Violated count: {0}", m_violated_count);
+        for (int32 i = 0; i < m_violated_count; i++) {
+            b3ContactVelocityConstraint* vc = m_violated_constraints[i];
+            spdlog::info("violated pair: {}, {}", vc->m_index_a, vc->m_index_b);
+        }
         for (int32 it = 0; it < velocity_iterations; it++) {
             for (int32 i = 0; i < m_violated_count; i++) {
                 b3ContactVelocityConstraint* vc = m_violated_constraints[i];
-                const b3Vec3r& normal = vc->m_normal;
 
+                const b3Vec3r& normal = vc->m_normal;
                 b3Vec3r v_a = m_vs[vc->m_index_a];
                 b3Vec3r w_a = m_ws[vc->m_index_a];
 
