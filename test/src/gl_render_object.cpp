@@ -4,7 +4,7 @@
 #include "gl_render_triangles.hpp"
 
 
-void GLRenderObject::setup_renderer(const b3CubeShape *cube, const b3Transformr &xf)
+void GLRenderObject::setup_renderer(const b3CubeShape *cube, const b3Transr &xf)
 {
     m_v_count = 8;
     m_t_count = 2 * 6;
@@ -40,7 +40,7 @@ void GLRenderObject::setup_renderer(const b3CubeShape *cube, const b3Transformr 
 }
 
 
-void GLRenderObject::setup_renderer(const b3PlaneShape *plane, const b3Transformr &xf)
+void GLRenderObject::setup_renderer(const b3PlaneShape *plane, const b3Transr &xf)
 {
     m_v_count = 4;
     m_t_count = 2;
@@ -74,7 +74,7 @@ void GLRenderObject::setup_renderer(const b3PlaneShape *plane, const b3Transform
 }
 
 
-void GLRenderObject::setup_renderer(const b3SphereShape *sphere, const b3Transformr &xf)
+void GLRenderObject::setup_renderer(const b3SphereShape *sphere, const b3Transr &xf)
 {
     const int32 sector_count = 20;
     const int32 stack_count = 20;

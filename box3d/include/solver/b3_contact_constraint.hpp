@@ -6,7 +6,7 @@
 #include "common/b3_types.hpp"
 #include "math/b3_mat33.hpp"
 #include "math/b3_mat1212.hpp"
-
+#include "collision/b3_collision.hpp"
 
 struct b3VelocityConstraintPoint {
 
@@ -87,5 +87,23 @@ struct b3FrictionConstraint {
     b3Vec3r m_friction_axis[2];
     real m_friction;
 };
+
+
+struct b3ContactPositionConstraint
+{
+    b3Vec3r m_local_points[8];
+    b3Vec3r m_local_normal;
+    b3Vec3r m_local_point;
+    int32 m_index_a, m_index_b;
+    real m_inv_mass_a, m_inv_mass_b;
+    b3Vec3r m_center_a, m_center_b;
+    b3Mat33r m_inv_I_a, m_inv_I_b;
+
+    real m_radius_a, m_radius_b;
+    int32 m_point_count;
+
+    b3Manifold::Type m_type;
+};
+
 
 #endif // BOX3D_B3_CONTACT_CONSTRAINT_HPP

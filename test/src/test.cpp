@@ -65,8 +65,8 @@ void Test::step(Settings &settings) {
 
 void Test::pre_solve(b3Contact *contact, const b3Manifold *old_manifold)
 {
-    const b3Manifold* manifold = contact->get_manifold();
 
+    b3Manifold* manifold = contact->get_manifold();
     if (manifold->m_point_count == 0) {
         return;
     }
@@ -74,12 +74,15 @@ void Test::pre_solve(b3Contact *contact, const b3Manifold *old_manifold)
     b3Fixture* fixture_a = contact->get_fixture_a();
     b3Fixture* fixture_b = contact->get_fixture_b();
 
+    b3WorldManifold world_manifold;
+    contact->get_world_manifold(&world_manifold);
+
     for (int32 i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
         ContactPoint* cp = m_points + m_point_count;
         cp->fixtureA = fixture_a;
         cp->fixtureB = fixture_b;
-        cp->position = manifold->m_points[i].m_local_point;
-        cp->normal = manifold->m_local_normal;
+        cp->position = world_manifold.points[i];
+        cp->normal = world_manifold.normal;
         ++m_point_count;
     }
 }

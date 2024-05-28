@@ -3,6 +3,7 @@
 #define BOX3D_B3_TIME_STEP_HPP
 
 #include "common/b3_types.hpp"
+#include "common/b3_common.hpp"
 
 enum b3IntegralMethod {
     e_implicit = 0,

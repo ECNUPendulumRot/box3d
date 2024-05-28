@@ -40,7 +40,7 @@ class b3Body {
     b3Vec3r m_local_center = b3Vec3r::zero();
 
     // the quaternion of the body
-    b3Quaternionr m_q;
+    b3Quatr m_q;
 
     // the position of the body
     b3Vec3r m_p;
@@ -160,11 +160,11 @@ public:
         return m_p;
     }
 
-    b3Quaternionr get_quaternion() const {
+    b3Quatr get_quaternion() const {
         return m_q;
     }
 
-    void set_quaternion(const b3Quaternionr& q) {
+    void set_quaternion(const b3Quatr& q) {
         m_q = q;
     }
 
@@ -192,19 +192,19 @@ public:
         return m_island_index;
     }
 
-    real get_inv_mass() const {
+    const real& get_inv_mass() const {
         return m_inv_mass;
     }
 
-    real get_mass() const {
+    const real& get_mass() const {
         return m_mass;
     }
 
-    b3Mat33r get_inv_inertia() const {
+    const b3Mat33r& get_inv_inertia() const {
         return m_inv_inertia;
     }
 
-    b3Mat33r get_inertia() const {
+    const b3Mat33r& get_inertia() const {
         return m_inertia;
     }
 

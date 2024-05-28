@@ -132,8 +132,8 @@ void b3Contact::update(b3ContactListener* listener)
     b3Body *body_a = m_fixture_a->get_body();
     b3Body *body_b = m_fixture_b->get_body();
 
-    b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
-    b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
+    b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
+    b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
 
     // TODO: add sensor ?
     // generate the manifold between the two shapes
@@ -149,6 +149,18 @@ void b3Contact::update(b3ContactListener* listener)
     if (touching && listener) {
         listener->pre_solve(this, &m_manifold);
     }
+}
+
+
+void b3Contact::get_world_manifold(b3WorldManifold *world_manifold) const
+{
+    const b3Body *body_a = m_fixture_a->get_body();
+    const b3Body *body_b = m_fixture_b->get_body();
+
+    b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
+    b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
+
+    world_manifold->initialize(&m_manifold, xf_a, m_fixture_a->get_shape()->get_radius(), xf_b, m_fixture_b->get_shape()->get_radius());
 }
 
 

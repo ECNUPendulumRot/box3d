@@ -151,7 +151,7 @@ private:
 
     void solve(b3TimeStep& step);
 
-    void draw_shape(b3Fixture* fixture, const b3Transformr& xf, const b3Color& color);
+    void draw_shape(b3Fixture* fixture, const b3Transr& xf, const b3Color& color);
 };
 
 

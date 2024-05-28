@@ -22,7 +22,7 @@ void b3PlaneShape::set_as_plane(real length, real width)
 }
 
 
-void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const
+void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transr& xf, int32 child_index) const
 {
     b3_NOT_USED(child_index);
 

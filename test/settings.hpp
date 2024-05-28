@@ -27,6 +27,7 @@ struct Settings {
 
     int m_test_index = 0;
     int m_velocity_iteration = 8;
+    int m_position_iteration = 8;
     bool m_draw_shapes = true;
     bool m_draw_frame_only = false;
     bool m_draw_contact_points = false;

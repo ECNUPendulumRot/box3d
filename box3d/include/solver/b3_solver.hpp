@@ -20,6 +20,7 @@ class b3Body;
 class b3Island;
 
 class b3ContactVelocityConstraint;
+class b3ContactPositionConstraint;
 
 class b3BlockAllocator;
 
@@ -36,7 +37,7 @@ class b3Solver {
 
     b3Vec3r* m_ps = nullptr;
 
-    b3Quaternionr* m_qs = nullptr;
+    b3Quatr* m_qs = nullptr;
 
     b3Vec3r* m_vs = nullptr;
 
@@ -44,13 +45,13 @@ class b3Solver {
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
+    b3ContactPositionConstraint* m_position_constraints = nullptr;
+
     b3TimeStep* m_timestep = nullptr;
 
     b3BlockAllocator* m_block_allocator = nullptr;
 
     b3Body** m_bodies;
-
-    uint8* m_delayed;
 
 public:
 
@@ -59,10 +60,6 @@ public:
     b3Solver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
-
-    void solve_velocity_constraints();
-
-    void init_velocity_constraints();
 
     int solve(bool allow_sleep);
 

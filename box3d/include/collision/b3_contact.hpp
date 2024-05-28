@@ -187,8 +187,10 @@ public:
         return m_friction;
     }
 
+    void get_world_manifold(b3WorldManifold* world_manifold) const;
+
     // generate manifold between two shapes
-    virtual void evaluate(b3Manifold* manifold, const b3Transformr& xfA, const b3Transformr& xfB) = 0;
+    virtual void evaluate(b3Manifold* manifold, const b3Transr& xfA, const b3Transr& xfB) = 0;
 
 protected:
 

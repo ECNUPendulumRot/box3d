@@ -21,6 +21,8 @@
 
 #define b3_linear_slop  (0.005 * b3_length_units_per_meter)
 
+#define b3_max_linear_correction (0.2 * b3_length_units_per_meter)
+
 #define b3_polygon_radius (2.0 * b3_linear_slop)
 
 #define b3_aabb_extension (0.1 * b3_length_units_per_meter)
@@ -31,6 +33,7 @@
 // A body cannot sleep if its angular velocity is above this tolerance.
 #define b3_angular_sleep_tolerance	(2.0 / 180.0 * b3_pi)
 
+#define b3_baumgarte 0.2
 
 using real = float;
 

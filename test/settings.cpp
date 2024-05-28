@@ -47,6 +47,7 @@ void Settings::save() const
     fprintf(file, "  \"window_height\": %d,\n", m_window_height);
     fprintf(file, "  \"hertz\": %.9g,\n", m_hertz);
     fprintf(file, "  \"velocity_iteration\": %d,\n", m_velocity_iteration);
+    fprintf(file, "  \"position_iteration\": %d,\n", m_position_iteration);
     fprintf(file, "  \"enable_sleep\": %s,\n", m_enable_sleep ? "true" : "false");
     fprintf(file, "  \"draw_shapes\": %s,\n", m_draw_shapes ? "true" : "false");
     fprintf(file, "  \"draw_frame_only\": %s,\n", m_draw_frame_only ? "true" : "false");
@@ -112,6 +113,14 @@ void Settings::load() {
         {
             if (field_value.get_type() == sajson::TYPE_INTEGER) {
                 m_velocity_iteration = field_value.get_integer_value();
+            }
+            continue;
+        }
+
+        if (strncmp(field_name.data(), "position_iteration", field_name.length()) == 0)
+        {
+            if (field_value.get_type() == sajson::TYPE_INTEGER) {
+                m_position_iteration = field_value.get_integer_value();
             }
             continue;
         }

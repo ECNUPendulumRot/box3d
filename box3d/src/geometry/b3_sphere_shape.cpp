@@ -26,7 +26,7 @@ void b3SphereShape::set_as_sphere(real radius)
 }
 
 
-void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 child_index) const
+void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transr& xf, int32 child_index) const
 {
     b3_NOT_USED(child_index);
 

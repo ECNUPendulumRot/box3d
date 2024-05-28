@@ -66,7 +66,7 @@ void Utils::save_body_info()
         b3Body* body = m_bodies[i];
 
         b3Vec3r p = body->get_position();
-        b3Quaternionr q = body->get_quaternion();
+        b3Quatr q = body->get_quaternion();
         b3Vec3r v = body->get_linear_velocity();
         b3Vec3r w = body->get_angular_velocity();
 
@@ -132,7 +132,7 @@ void Utils::record_frame()
     json frame_json;
 
     for (int i = 0; i < m_fixture_count; ++i) {
-        b3Quaternionr q = m_fixtures[i]->get_body()->get_quaternion();
+        b3Quatr q = m_fixtures[i]->get_body()->get_quaternion();
         b3Vec3r p = m_fixtures[i]->get_body()->get_position();
         json status_json;
         status_json["position"] = {p.x, p.y, p.z};

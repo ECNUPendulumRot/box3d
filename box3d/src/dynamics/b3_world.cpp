@@ -172,7 +172,7 @@ void b3World::solve(b3TimeStep &step)
 
         // solve the constraints
         // b3Solver solver(&m_block_allocator, island, &step);
-        b3SolverGR solver(&m_block_allocator, &island, &step);
+        b3Solver solver(&m_block_allocator, &island, &step);
         solver.solve(m_allow_sleep);
         // Post solve cleanup.
 
@@ -219,7 +219,7 @@ void b3World::debug_draw() {
     if (flags & b3Draw::e_shape_bit) {
         for (b3Body *body = m_body_list; body; body = body->next()) {
 
-            b3Transform xf(body->get_position(), body->get_quaternion());
+            b3Transr xf(body->get_position(), body->get_quaternion());
 
             for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
                 draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
@@ -229,7 +229,7 @@ void b3World::debug_draw() {
 }
 
 
-void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Color &color) {
+void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &color) {
 
     switch (fixture->get_shape_type()) {
         case b3ShapeType::e_cube: {

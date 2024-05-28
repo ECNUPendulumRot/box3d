@@ -31,7 +31,7 @@ struct b3BodyDef {
 
     b3Vec3r m_init_p = b3Vec3r ::zero();
 
-    b3Quaternionr m_init_q;
+    b3Quatr m_init_q;
 
     b3Vec3r m_init_v = b3Vec3r ::zero();
 

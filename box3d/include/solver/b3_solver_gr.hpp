@@ -35,7 +35,7 @@ class b3SolverGR {
 
     b3Vec3r* m_ps = nullptr;
 
-    b3Quaternionr* m_qs = nullptr;
+    b3Quatr* m_qs = nullptr;
 
     b3Vec3r* m_vs = nullptr;
 

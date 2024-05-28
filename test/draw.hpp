@@ -36,11 +36,11 @@ public:
 
     void create();
 
-    void draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color) override;
+    void draw_box(const b3CubeShape* cube, const b3Transr& xf, const b3Color& color) override;
 
-    void draw_plane(const b3PlaneShape* plane, const b3Transformr& xf, const b3Color& color) override;
+    void draw_plane(const b3PlaneShape* plane, const b3Transr& xf, const b3Color& color) override;
 
-    void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) override;
+    void draw_sphere(const b3SphereShape* sphere, const b3Transr& xf, const b3Color& color) override;
 
     void draw_point(const b3Vec3r& p, float size, const b3Color& color) override;
 

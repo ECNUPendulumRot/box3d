@@ -68,7 +68,7 @@ public:
         return 0;
     };
 
-    virtual void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const {
+    virtual void get_bound_aabb(b3AABB* aabb, const b3Transr& xf, int32 child_index) const {
         b3_NOT_USED(aabb);
         b3_NOT_USED(xf);
         b3_NOT_USED(child_index);

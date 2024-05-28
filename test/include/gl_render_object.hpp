@@ -29,11 +29,11 @@ struct GLRenderObject {
         m_color = color;
     }
 
-    void setup_renderer(const b3CubeShape* cube, const b3Transformr& xf);
+    void setup_renderer(const b3CubeShape* cube, const b3Transr& xf);
 
-    void setup_renderer(const b3PlaneShape* plane, const b3Transformr& xf);
+    void setup_renderer(const b3PlaneShape* plane, const b3Transr& xf);
 
-    void setup_renderer(const b3SphereShape* sphere, const b3Transformr& xf);
+    void setup_renderer(const b3SphereShape* sphere, const b3Transr& xf);
 
     void render_triangles(gl_render_triangles* renderer);
 

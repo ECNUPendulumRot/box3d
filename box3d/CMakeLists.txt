@@ -53,6 +53,7 @@ set(B3D_HEADER_FILES
         include/solver/b3_solver_zhb.hpp
         include/solver/b3_contact_constraint.hpp
         include/solver/b3_solver_gr.hpp
+        include/solver/b3_contact_solver.hpp
 )
 
 
@@ -90,6 +91,8 @@ set(B3D_SOURCE_FILES
         src/solver/b3_solver.cpp
         src/solver/b3_solver_zhb.cpp
         src/solver/b3_solver_gr.cpp
+        src/solver/b3_contact_solver.cpp
+        src/collision/b3_collide.cpp
 )
 
 # add third-party libraries

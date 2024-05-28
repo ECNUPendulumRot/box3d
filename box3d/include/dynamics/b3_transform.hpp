@@ -10,7 +10,7 @@
 
 
 template <typename T>
-struct b3Transform {
+struct b3Trans {
 
 public:
 
@@ -20,14 +20,14 @@ public:
     // The rotation matrix of the pose.
     b3Mat33<T> m_r;
 
-    b3Transform() = default;
+    b3Trans() = default;
 
-    b3Transform(const b3Transform& other) {
+    b3Trans(const b3Trans& other) {
         m_p = other.m_p;
         m_r = other.m_r;
     }
 
-    b3Transform(const b3Vec3<T>& p, const b3Quat<T>& q) {
+    b3Trans(const b3Vec3<T>& p, const b3Quat<T>& q) {
         m_p = p;
         m_r = q.rotation_matrix();
     }
@@ -110,8 +110,8 @@ public:
 //}
 
 
-using b3Transformf = b3Transform<float>;
-using b3Transformd = b3Transform<double>;
-using b3Transformr = b3Transform<real>;
+using b3Transf = b3Trans<float>;
+using b3Transd = b3Trans<double>;
+using b3Transr = b3Trans<real>;
 
 #endif //BOX3D_B3_TRANSFORM_HPP

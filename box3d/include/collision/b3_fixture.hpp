@@ -104,7 +104,7 @@ public:
 
     void create_fixture(b3BlockAllocator* block_allocator,  const b3FixtureDef& f_def, b3Body* body);
 
-    void create_proxy(b3BroadPhase* broad_phase, b3Transformr& m_xf);
+    void create_proxy(b3BroadPhase* broad_phase, b3Transr& m_xf);
 
     inline void get_mass_data(b3MassProperty& mass_data) const {
         m_shape->compute_mass_properties(mass_data, m_density);
@@ -149,7 +149,7 @@ public:
 
 private:
 
-    void synchronize(b3BroadPhase* broad_phase, const b3Transformr& transform1, const b3Transformr& transform2);
+    void synchronize(b3BroadPhase* broad_phase, const b3Transr& transform1, const b3Transr& transform2);
 
 };
 

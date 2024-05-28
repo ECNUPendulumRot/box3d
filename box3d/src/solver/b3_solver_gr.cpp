@@ -61,8 +61,8 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
     m_ps = new (memory) b3Vec3r;
 
-    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Quaternionr));
-    m_qs = new (memory) b3Quaternionr;
+    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Quatr));
+    m_qs = new (memory) b3Quatr;
 
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
     m_vs = new (memory) b3Vec3r;
@@ -127,8 +127,8 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
         // the center of body in the world frame
 
-        b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
-        b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
+        b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
+        b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
 
         b3Vec3r center_a = xf_a.transform(body_a->get_local_center());
         b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
@@ -179,7 +179,7 @@ int b3SolverGR::solve(bool allow_sleep)
 
     for (int32 i = 0; i < m_body_count; ++i) {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
-        m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quaternionr(0, m_ws[i]) * m_qs[i];
+        m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quatr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
     }
 
@@ -402,7 +402,7 @@ b3SolverGR::~b3SolverGR()
     m_block_allocator->free(m_violated_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint*));
     m_block_allocator->free(m_velocity_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint));
     m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
+    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quatr));
     m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
 }

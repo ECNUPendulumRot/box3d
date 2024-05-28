@@ -30,7 +30,7 @@ public:
 
     b3Shape* clone() const override;
 
-    void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const override;
+    void get_bound_aabb(b3AABB* aabb, const b3Transr& xf, int32 child_index) const override;
 
     void compute_mass_properties(b3MassProperty& mass_data, real density) const override;
 

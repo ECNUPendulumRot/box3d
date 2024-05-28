@@ -67,7 +67,7 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 }
 
 
-void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 childIndex) const {
+void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transr &xf, int32 childIndex) const {
     b3_NOT_USED(childIndex);
 
     b3Vec3r min = xf.transform(m_vertices[0]);

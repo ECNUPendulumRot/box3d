@@ -112,13 +112,28 @@ struct b3Quat {
 
     }
 
+    inline b3Quat& operator-= (const b3Quat& q) {
+        m_w -= q.m_w;
+        m_x -= q.m_x;
+        m_y -= q.m_y;
+        m_z -= q.m_z;
+        return *this;
+    }
+
+    inline b3Quat& operator+= (const b3Quat& q) {
+        m_w += q.m_w;
+        m_x += q.m_x;
+        m_y += q.m_y;
+        m_z += q.m_z;
+        return *this;
+    }
 };
 
 //////////////////////////////////////////////////////
 
-using b3Quaterniond = b3Quat<double>;
-using b3Quaternionf = b3Quat<float>;
-using b3Quaternionr = b3Quat<real>;
+using b3Quatd = b3Quat<double>;
+using b3Quatf = b3Quat<float>;
+using b3Quatr = b3Quat<real>;
 
 //////////////////////////////////////////////////////
 

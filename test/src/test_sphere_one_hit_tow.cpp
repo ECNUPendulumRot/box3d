@@ -9,7 +9,7 @@ public:
         m_world->set_gravity(b3Vec3r(0, 0, 0));
         int num_of_spheres = 3;
         // create a dynamic body
-        b3Transformr pose, velocity;
+        b3Transr pose, velocity;
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;

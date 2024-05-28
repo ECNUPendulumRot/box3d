@@ -54,7 +54,7 @@ void DebugDraw::destroy()
 }
 
 
-void DebugDraw::draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color)
+void DebugDraw::draw_box(const b3CubeShape* cube, const b3Transr& xf, const b3Color& color)
 {
     b3Vec3f v[8], n[6];
     for (int32 i = 0; i < 8; ++i) {
@@ -85,7 +85,7 @@ void DebugDraw::draw_box(const b3CubeShape* cube, const b3Transformr& xf, const 
 }
 
 
-void DebugDraw::draw_plane(const b3PlaneShape* plane, const b3Transformr &xf, const b3Color &color)
+void DebugDraw::draw_plane(const b3PlaneShape* plane, const b3Transr &xf, const b3Color &color)
 {
     b3Vec3f lf = xf.position();
     b3Vec3f d_w = {float(plane->m_half_width), 0.0f, 0.0f};
@@ -132,7 +132,7 @@ void DebugDraw::draw_plane(const b3PlaneShape* plane, const b3Transformr &xf, co
 }
 
 
-void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transformr &xf, const b3Color &color)
+void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, const b3Color &color)
 {
     // vertex position
     float x, y, z, xy;
@@ -140,8 +140,8 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transformr &xf,
     // vertex normal
     float nx, ny, nz, lengthInv = 1.0f / radius;
 
-    const int32 sector_count = 20;
-    const int32 stack_count = 20;
+    const int32 sector_count = 16;
+    const int32 stack_count = 16;
 
     b3Vec3r vertices[(sector_count + 1) * (stack_count + 1)];
     b3Vec3r normals[(sector_count + 1) * (stack_count + 1)];
