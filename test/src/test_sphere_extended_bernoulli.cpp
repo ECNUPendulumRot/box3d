@@ -2,7 +2,7 @@
 
 class TestExtendedBernoulli :public Test {
 
-    int32 sphere_count = 2;
+    int32 sphere_count = 8;
 
 public:
 
