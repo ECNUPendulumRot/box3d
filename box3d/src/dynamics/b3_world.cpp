@@ -17,13 +17,18 @@ b3World::b3World():
     m_shape_list(nullptr), m_shape_count(0)
 {
     m_contact_manager.set_block_allocator(&m_block_allocator);
+
+    void* mem = m_block_allocator.allocate(sizeof(b3Dispatcher));
+    m_dispatcher = new (mem) b3Dispatcher(&m_block_allocator);
+    // TODO: maybe not need this
+    m_dispatcher_info.m_time_step = 1.0 / 60;
+    m_dispatcher_info.m_step_count = 0;
 }
 
 
 b3World::b3World(const b3Vec3r &gravity):b3World()
 {
     m_gravity = gravity;
-    m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
 
@@ -100,7 +105,7 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
 
     // update contacts, aabb updates, when aabb not overlapping, delete the contact,
     // otherwise, update the contact manifold.
-    m_contact_manager.collide();
+    m_contact_manager.collide(m_dispatcher, m_dispatcher_info);
 
     // generate islands, and solve them.
     solve(step);

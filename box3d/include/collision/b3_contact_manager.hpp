@@ -15,6 +15,10 @@ class b3Contact;
 
 class b3BlockAllocator;
 
+class b3Dispatcher;
+
+class b3DispatcherInfo;
+
 //////////////////////////////////////////
 
 
@@ -45,7 +49,7 @@ public:
      * if overlapping, will generate manifold.
      * if not overlapping, will destroy the contact.
      */
-    void collide();
+    void collide(b3Dispatcher* dispatcher, const b3DispatcherInfo& dispatch_info);
 
     b3BroadPhase* get_broad_phase() {
         return &m_broad_phase;

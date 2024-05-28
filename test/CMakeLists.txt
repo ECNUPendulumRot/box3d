@@ -24,6 +24,7 @@ set (TESTBED_SOURCE_FILES
         src/test_sphere_slope.cpp
         src/test_sphere_rotating.cpp
         src/test_planet.cpp
+        src/test_new_dispatch.cpp
 
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp

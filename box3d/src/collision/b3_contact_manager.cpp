@@ -7,7 +7,7 @@
 #include "dynamics/b3_body.hpp"
 
 #include "common/b3_block_allocator.hpp"
-
+#include "collision/b3_dispatcher.hpp"
 
 void b3ContactManager::find_new_contact()
 {
@@ -145,12 +145,13 @@ void b3ContactManager::destroy(b3Contact* contact)
   	    body_b->set_contact_list(contact->get_node_b()->m_next);
     }
 
+    contact->destroy_collision_algorithm(m_block_allocator);
     m_block_allocator->free(contact, sizeof(b3Contact));
     --m_contact_count;
 }
 
 
-void b3ContactManager::collide()
+void b3ContactManager::collide(b3Dispatcher* dispatcher, const b3DispatcherInfo& info)
 {
 
     b3Contact *contact = m_contact_list;
@@ -164,7 +165,7 @@ void b3ContactManager::collide()
         bool active_a = body_a->get_type() != b3BodyType::b3_static_body;
         bool active_b = body_b->get_type() != b3BodyType::b3_static_body;
 
-        if (active_a == false && active_b == false) {
+        if (!active_a && !active_b) {
             contact = contact->next();
             continue;
         }
@@ -185,7 +186,7 @@ void b3ContactManager::collide()
 
         // the contact persist
         // TODO: add a contact lisitener: a callback function
-        contact->update();
+        contact->update(dispatcher, info);
         contact = contact->next();
     }
 }

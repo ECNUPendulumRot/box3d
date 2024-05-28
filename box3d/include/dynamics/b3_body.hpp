@@ -101,6 +101,12 @@ public:
         e_island_flag = 1
     };
 
+    enum CollisionFlags {
+        B3_DYNAMIC_OBJECT = 0,
+        B3_STATIC_OBJECT = 1,
+        B3_KINEMATIC_OBJECT = 2,
+        B3_NO_CONTACT_RESPONSE = 4
+    };
 
     /**
      * @brief Construct a new b3Body object

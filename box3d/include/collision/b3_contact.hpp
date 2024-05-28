@@ -15,6 +15,14 @@ class b3Contact;
 
 class b3Fixture;
 
+class b3Dispatcher;
+
+class b3DispatcherInfo;
+
+class b3PersistentManifold;
+
+class b3CollisionAlgorithm;
+
 //////////////////////////////////////////
 
 
@@ -83,6 +91,11 @@ protected:
     static b3ContactRegister s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 
     static bool s_initialized;
+
+    b3PersistentManifold* m_persistent_manifold;
+
+    b3CollisionAlgorithm* m_algorithm;
+    int m_algorithm_size;
 
 
     ////////// Coefficients related to the material of the object ///////////
@@ -179,6 +192,17 @@ public:
         return m_friction;
     }
 
+    b3CollisionAlgorithm* get_algorithm() const {
+        return m_algorithm;
+    }
+
+    void destroy_collision_algorithm(b3BlockAllocator* block_allocator);
+
+    void set_collision_algorithm(b3CollisionAlgorithm* algorithm, int size) {
+        m_algorithm = algorithm;
+        m_algorithm_size = size;
+    }
+
     // generate manifold between two shapes
     virtual void evaluate(b3Manifold* manifold, const b3Transformr& xfA, const b3Transformr& xfB) = 0;
 
@@ -195,7 +219,7 @@ protected:
 
     static void destroy(b3Contact* contact, b3BlockAllocator* block_allocator);
 
-    void update();
+    void update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info);
 };
 
 

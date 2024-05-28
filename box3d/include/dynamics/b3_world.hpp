@@ -16,6 +16,8 @@
 
 #include "common/b3_block_allocator.hpp"
 
+#include "collision/b3_dispatcher.hpp"
+
 struct b3Color;
 struct b3TimeStep;
 class b3Draw;
@@ -49,6 +51,10 @@ class b3World {
     bool m_new_contacts = false;
 
     b3Draw* m_debug_draw;
+
+    b3Dispatcher* m_dispatcher;
+
+    b3DispatcherInfo m_dispatcher_info;
 
 public:
 
@@ -121,6 +127,8 @@ public:
 
     inline void set_debug_draw(b3Draw* draw) {
         m_debug_draw = draw;
+
+        m_dispatcher_info.m_debug_draw = m_debug_draw;
     }
 
     void debug_draw();

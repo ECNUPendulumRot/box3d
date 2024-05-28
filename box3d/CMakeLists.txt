@@ -50,6 +50,16 @@ set(B3D_HEADER_FILES
         include/math/b3_quat.hpp
         include/common/b3_draw.hpp
 
+
+        include/collision/b3_dispatcher.hpp
+        include/collision/b3_persistent_manifold.hpp
+        include/collision/b3_manifold_result.hpp
+        include/collision/b3_persistent_manifold_point.hpp
+        include/collision/b3_collision_config.hpp
+        include/collision/b3_collision_algorithm_create_func.hpp
+        include/collision/algorithm/b3_collision_algorithm.hpp
+        include/collision/algorithm/b3_sphere_sphere_collision_algorithm.hpp
+
 )
 
 set(B3D_SOURCE_FILES
@@ -85,6 +95,12 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_shape.cpp
         src/collision/b3_plane_cube_contact.cpp
         src/common/b3_draw.cpp
+
+        src/collision/b3_collision_config.cpp
+        src/collision/b3_dispatcher.cpp
+        src/collision/b3_manifold_result.cpp
+        src/collision/b3_persistent_manifold.cpp
+        src/collision/algorithm/b3_sphere_sphere_collision_algorithm.cpp
 
 )
 
