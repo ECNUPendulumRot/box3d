@@ -17,8 +17,6 @@
 #include "spdlog/spdlog.h"
 
 
-bool g_block_solve = false;
-
 b3SolverGR::b3SolverGR(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     init(block_allocator, island, step);

@@ -106,8 +106,6 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
 
             pc->m_local_points[j] = manifold_point->m_local_point;
         }
-
-
     }
 }
 
@@ -240,7 +238,6 @@ void b3ContactSolver::solve_velocity_constraints()
         b3Vec3r v_b = m_vs[vc->m_index_b];
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
-        //if (true) {
         if (vc->m_point_count == 1 || !g_block_solve) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
