@@ -70,7 +70,7 @@ public:
         ground_body->create_fixture(fixture_def);
 
         p = { 0, 2.5f, 0 };
-        q={3.14159*0.5,0,0};
+        q = {3.14159 * 0.5, 0, 0};
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
         ground_body = m_world->create_body(body_def);

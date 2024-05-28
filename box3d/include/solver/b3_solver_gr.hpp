@@ -20,6 +20,7 @@ class b3Body;
 class b3Island;
 
 class b3ContactVelocityConstraint;
+class b3ContactPositionConstraint;
 
 class b3BlockAllocator;
 
@@ -42,8 +43,9 @@ class b3SolverGR {
     b3Vec3r* m_ws = nullptr;
 
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
-
+    b3ContactPositionConstraint* m_position_constraints = nullptr;
     b3ContactVelocityConstraint** m_violated_constraints = nullptr;
+
     int32 m_violated_count = 0;
 
     b3TimeStep* m_timestep = nullptr;

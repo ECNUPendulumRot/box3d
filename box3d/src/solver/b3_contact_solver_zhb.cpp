@@ -78,6 +78,7 @@ b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
         b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
 
         //////////////////////////// Position Constraints ////////////////////////////
+
         b3ContactPositionConstraint* pc = m_position_constraints + i;
         pc->m_index_a = vc->m_index_a;
         pc->m_index_b = vc->m_index_b;
@@ -271,7 +272,7 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                         } else{
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
                         }
-                        if(m_wait == 0 && !zero){
+                        if(m_wait == 0){
                             vcp->m_bias_velocity = rhs * vc->m_restitution;
                             spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
                         }

@@ -56,6 +56,7 @@ void b3_collide_plane_and_sphere(
 
     closest_point.x = b3_clamp(closest_point.x, -plane_a->m_half_width, plane_a->m_half_width);
     closest_point.y = b3_clamp(closest_point.y, -plane_a->m_half_length, plane_a->m_half_length);
+    closest_point.z = 0;
 
     b3Vec3r normal = sphere_local_center - closest_point;
     if (normal.length2() > sphere_b->get_radius() * sphere_b->get_radius()) {
