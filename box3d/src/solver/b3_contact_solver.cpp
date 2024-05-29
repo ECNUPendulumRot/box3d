@@ -318,8 +318,7 @@ struct b3PositionSolverManifold {
 
         b3_assert(pc->m_point_count > 0);
 
-        switch (pc->m_type)
-        {
+        switch (pc->m_type) {
             case b3Manifold::e_spheres: {
                 b3Vec3r point_a = xf_a.position();
                 b3Vec3r point_b = xf_b.position();
@@ -341,8 +340,7 @@ struct b3PositionSolverManifold {
             }
             break;
 
-            case b3Manifold::e_face_B:
-            {
+            case b3Manifold::e_face_B: {
                 normal = pc->m_local_normal;
                 b3Vec3r plane_point = pc->m_local_point;
 
