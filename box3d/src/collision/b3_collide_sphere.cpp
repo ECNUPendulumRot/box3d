@@ -13,9 +13,10 @@ void b3_collide_spheres(
 {
     
     manifold->m_point_count = 0;
+
     // the center of sphere A and sphere B in world frame.
-    b3Vec3r ca = xf_a.transform(sphere_a->get_centroid());
-    b3Vec3r cb = xf_b.transform(sphere_b->get_centroid());
+    b3Vec3r ca = xf_a.position();
+    b3Vec3r cb = xf_b.position();
 
     b3Vec3r ab = cb - ca;
 
@@ -28,17 +29,10 @@ void b3_collide_spheres(
     }
 
     manifold->m_point_count = 1;
-
-    // if the vector ab is nearly zero, we select the x-axis as the normal
-    if(ab.is_zero()) {
-        manifold->m_local_normal = b3Vec3r(1.0, 0, 0);
-    } else {
-        manifold->m_local_normal = ab.normalized();
-    }
-
     manifold->m_local_point = sphere_a->get_centroid();
-    manifold->m_points[0].m_local_point = sphere_b->get_centroid();
     manifold->m_type = b3Manifold::e_spheres;
+    manifold->m_local_normal = ab.normalized();
+    manifold->m_points[0].m_local_point = sphere_b->get_centroid();
 }
 
 

@@ -104,7 +104,7 @@ int b3SolverZHB::solve(bool allow_sleep)
     def.block_allocator = m_block_allocator;
 
     b3ContactSolverZHB contact_solver(&def);
-    
+
     contact_solver.init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
