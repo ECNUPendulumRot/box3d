@@ -57,7 +57,7 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
         const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
         vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
         const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
-        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia();
+        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
 
         vc->m_point_count = point_count;
         vc->m_contact_index = i;
