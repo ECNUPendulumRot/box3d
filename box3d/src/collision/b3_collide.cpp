@@ -5,8 +5,8 @@
 void b3WorldManifold::initialize(
         const b3Manifold *manifold,
         const b3Transr &xf_A, real radius_A,
-        const b3Transr &xf_B, real radius_B) {
-
+        const b3Transr &xf_B, real radius_B)
+{
     if (manifold->m_point_count == 0) {
         return;
     }

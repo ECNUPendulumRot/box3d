@@ -41,9 +41,6 @@ void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3Ti
     // after solver all contacts and friction constraints, we copy the results back to bodies.
 
     // The number of velocity constraints is same to the number of contacts.
-    m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactPositionConstraint));
-
     m_body_count = island->get_body_count();
     b3_assert(m_body_count > 0);
 
@@ -60,7 +57,6 @@ void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3Ti
         m_vs[i] = b->get_linear_velocity();
         m_ws[i] = b->get_angular_velocity();
     }
-    ////////////////////////// Initialize Contact Constraints //////////////////////////
 }
 
 

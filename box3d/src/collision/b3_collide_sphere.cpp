@@ -15,10 +15,10 @@ void b3_collide_spheres(
     manifold->m_point_count = 0;
 
     // the center of sphere A and sphere B in world frame.
-    b3Vec3r ca = xf_a.position();
-    b3Vec3r cb = xf_b.position();
+    b3Vec3r p_A = xf_a.position();
+    b3Vec3r p_B = xf_b.position();
 
-    b3Vec3r ab = cb - ca;
+    b3Vec3r ab = p_B - p_A;
 
     real sq_distance = ab.length2();
     real radius = sphere_a->get_radius() + sphere_b->get_radius();
@@ -28,10 +28,11 @@ void b3_collide_spheres(
         return;
     }
 
-    manifold->m_point_count = 1;
-    manifold->m_local_point = sphere_a->get_centroid();
     manifold->m_type = b3Manifold::e_spheres;
+    manifold->m_local_point = sphere_a->get_centroid();
     manifold->m_local_normal = ab.normalized();
+    manifold->m_point_count = 1;
+
     manifold->m_points[0].m_local_point = sphere_b->get_centroid();
 }
 

@@ -114,8 +114,8 @@ void b3Body::reset_mass_data()
         m_inv_inertia = b3Mat33r::zero();
     }
 
-    // TODO: check whether m_sweep is needed
-    // m_local_center = m_xf.transform(local_center);
+    m_local_center = local_center;
+    // TODO: if object added dynamically, the velocity need to be updated
 }
 
 

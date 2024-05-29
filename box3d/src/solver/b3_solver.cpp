@@ -41,9 +41,6 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     // after solver all contacts and friction constraints, we copy the results back to bodies.
 
     // The number of velocity constraints is same to the number of contacts.
-    m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactPositionConstraint));
-
     m_body_count = island->get_body_count();
     b3_assert(m_body_count > 0);
 
@@ -79,18 +76,6 @@ int b3Solver::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
 
-    b3ContactSolverDef def;
-    def.step = *m_timestep;
-    def.contacts = m_contacts;
-    def.count = m_contact_count;
-    def.ps = m_ps;
-    def.qs = m_qs;
-    def.vs = m_vs;
-    def.ws = m_ws;
-    def.block_allocator = m_block_allocator;
-
-    b3ContactSolver contact_solver(&def);
-
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
@@ -105,10 +90,20 @@ int b3Solver::solve(bool allow_sleep)
         m_ws[i] = w;
     }
 
+    b3ContactSolverDef def;
+    def.step = *m_timestep;
+    def.contacts = m_contacts;
+    def.count = m_contact_count;
+    def.ps = m_ps;
+    def.qs = m_qs;
+    def.vs = m_vs;
+    def.ws = m_ws;
+    def.block_allocator = m_block_allocator;
+
+    b3ContactSolver contact_solver(&def);
     contact_solver.init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        //spdlog::info("////////////// Velocity Iteration: {} //////////////", i);
         contact_solver.solve_velocity_constraints();
     }
 
@@ -118,15 +113,6 @@ int b3Solver::solve(bool allow_sleep)
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
         m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quatr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
-    }
-
-    for (int32 i = 0; i < 0; i++) {
-    //for (int32 i = 0; i < m_timestep->m_position_iterations; i++) {
-        bool solved = contact_solver.solve_position_constraints();
-        if (solved) {
-            position_solved = true;
-            break;
-        }
     }
 
     if (allow_sleep) {

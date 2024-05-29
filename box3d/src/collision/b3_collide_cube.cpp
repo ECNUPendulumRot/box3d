@@ -486,7 +486,6 @@ bool create_edge_contact(
     manifold->m_type = b3Manifold::e_edges;
     manifold->m_point_count = 1;
     manifold->m_points[0].id = id;
-    manifold->m_penetration = max_penetration;
 
     return true;
 }

@@ -2,7 +2,7 @@
 
 class TestBilliards :public Test {
 
-    int layer = 5;
+    int layer = 3;
 
 public:
 
@@ -65,23 +65,23 @@ public:
             }
         }
 
-        {
-            // create a ground
-            b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_static_body;
-            b3Body* ground_body = m_world->create_body(body_def);
-
-            b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(100, 100);
-
-            fixture_def.m_shape = &ground_shape;
-            fixture_def.m_density = 0;
-            b3Fixture* fg = ground_body->create_fixture(fixture_def);
-
-            utils.track_body(ground_body, "ground");
-            utils.track_fixture(fg, "ground");
-
-        }
+//        {
+//            // create a ground
+//            b3BodyDef body_def;
+//            body_def.m_type = b3BodyType::b3_static_body;
+//            b3Body* ground_body = m_world->create_body(body_def);
+//
+//            b3PlaneShape ground_shape;
+//            ground_shape.set_as_plane(100, 100);
+//
+//            fixture_def.m_shape = &ground_shape;
+//            fixture_def.m_density = 0;
+//            b3Fixture* fg = ground_body->create_fixture(fixture_def);
+//
+//            utils.track_body(ground_body, "ground");
+//            utils.track_fixture(fg, "ground");
+//
+//        }
     }
 
     static Test* create() {

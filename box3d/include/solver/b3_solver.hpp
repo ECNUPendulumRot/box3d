@@ -43,10 +43,6 @@ class b3Solver {
 
     b3Vec3r* m_ws = nullptr;
 
-    b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
-
-    b3ContactPositionConstraint* m_position_constraints = nullptr;
-
     b3TimeStep* m_timestep = nullptr;
 
     b3BlockAllocator* m_block_allocator = nullptr;

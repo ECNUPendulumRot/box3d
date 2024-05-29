@@ -105,24 +105,19 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
         vc->m_restitution_threshold = contact->get_restitution_threshold();
 
         vc->m_index_a = body_a->get_island_index();
-        vc->m_mass_a = body_a->get_mass();
         vc->m_inv_mass_a = body_a->get_inv_mass();
 
         const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
 
-        vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
         vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
 
         vc->m_index_b = body_b->get_island_index();
 
-        vc->m_mass_b = body_b->get_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
 
         const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
 
-        vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
         vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia();
-        vc->m_penetration = manifold->m_penetration;
         vc->m_contact_index = i;
 
         // the center of body in the world frame
@@ -291,15 +286,8 @@ void b3SolverGR::init_velocity_constraints()
             vcp->m_bias_velocity = 0.0;
             if (v_rel < -vc->m_restitution_threshold) {
                 vcp->m_bias_velocity = -vc->m_restitution * v_rel;
-                int32 k = 0;
             }
-
-            vcp->m_normal_impulse = 0.0;
-            vcp->m_normal_contact_impulse = 0.0;
-            vcp->m_tangent_impulse = 0.0;
         }
-        vc->m_normal_contact_impulse = 0.0;
-        vc->m_normal_collision_impulse = 0.0;
     }
 }
 
