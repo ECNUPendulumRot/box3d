@@ -12,8 +12,9 @@ void b3WorldManifold::initialize(
     }
 
     switch (manifold->m_type) {
-        normal = b3Vec3r(1, 0, 0);
+        
         case b3Manifold::e_spheres: {
+            normal = b3Vec3r(1, 0, 0);
             b3Vec3r point_A = xf_A.transform(manifold->m_local_point);
             b3Vec3r point_B = xf_B.transform(manifold->m_local_point);
 
