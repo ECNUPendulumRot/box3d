@@ -73,32 +73,32 @@ public:
             sphere->create_fixture(box_fd);
         }
 
-        for (int32 i = 0; i < box_count; ++i) {
-            b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_dynamic_body;
-
-            b3Vec3r p(0, 5, 1 + i * box_hf * 2.0f);
-            b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
-            b3Vec3r w(0, 0, 0);
-
-            body_def.set_init_pose(p, q);
-            body_def.set_init_velocity(v, w);
-
-            b3Body* cube = m_world->create_body(body_def);
-
-            b3CubeShape cube_shape;
-            cube_shape.set_as_box(box_hf, box_hf, box_hf);
-
-            b3FixtureDef box_fd;
-            box_fd.m_shape = &cube_shape;
-            box_fd.m_friction = 0.3;
-            box_fd.m_restitution = 1.0;
-            box_fd.m_density = 1.0;
-
-            cube->create_fixture(box_fd);
-            m_boxes[i] = cube;
-        }
+//        for (int32 i = 0; i < box_count; ++i) {
+//            b3BodyDef body_def;
+//            body_def.m_type = b3BodyType::b3_dynamic_body;
+//
+//            b3Vec3r p(0, 5, 1 + i * box_hf * 2.0f);
+//            b3Vec3r q(0, 0, 0);
+//            b3Vec3r v(0, 0, 0);
+//            b3Vec3r w(0, 0, 0);
+//
+//            body_def.set_init_pose(p, q);
+//            body_def.set_init_velocity(v, w);
+//
+//            b3Body* cube = m_world->create_body(body_def);
+//
+//            b3CubeShape cube_shape;
+//            cube_shape.set_as_box(box_hf, box_hf, box_hf);
+//
+//            b3FixtureDef box_fd;
+//            box_fd.m_shape = &cube_shape;
+//            box_fd.m_friction = 0.3;
+//            box_fd.m_restitution = 1.0;
+//            box_fd.m_density = 1.0;
+//
+//            cube->create_fixture(box_fd);
+//            m_boxes[i] = cube;
+//        }
 
         ////////////////////////////////////////////////////
 
