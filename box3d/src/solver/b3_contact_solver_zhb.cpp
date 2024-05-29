@@ -261,12 +261,12 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                     if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
                         //if rhs is converged,change it to situation 2 or 1
                         //vcp->m_bias_velocity = rhs * vc->m_restitution;
-                        bool zero = false;
+                        //bool zero = false;
                         if(!vcp->wait){
 
                             --m_wait;
                             vcp->wait = true;
-                            zero = !(bool)m_wait;
+                            //zero = !(bool)m_wait;
                             spdlog::info("st:4, index A={},B={} is added in wait list,now have {} left",
                                          vc->m_index_a,vc->m_index_b,m_wait);
                         } else{
@@ -300,10 +300,7 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                     //2
                     spdlog::info("st:2, the violating constrain is {} ,{}",vc->m_index_a,vc->m_index_b);
                 }
-            }
-
-            //update the -eJv
-            if (rhs <= 0) {
+            } else {
                 if (rhs_restitution_velocity > 0) {
                     //1
                     if (abs(vcp->m_relative_velocity - rhs) <= tolerance || rhs == 0.0f) {
@@ -320,6 +317,12 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                     }
                 } else {
                     //3
+                    if(!vcp->wait){
+                        vcp->wait = true;
+                        m_wait--;
+                        spdlog::info("st:3, index A={},B={} is kicked in wait list,now have {} left",
+                                     vc->m_index_a,vc->m_index_b,m_wait);
+                    }
                     rhs = 0.0;
                     rhs_restitution_velocity = 0.0;
                 }
