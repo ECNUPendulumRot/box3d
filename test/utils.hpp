@@ -4,7 +4,7 @@
 
 
 #include "box3d.hpp"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <fstream>
 
 
