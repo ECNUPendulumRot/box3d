@@ -79,18 +79,6 @@ int b3SolverZHB::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
 
-    b3ContactSolverDef def;
-    def.step = *m_timestep;
-    def.contacts = m_contacts;
-    def.count = m_contact_count;
-    def.ps = m_ps;
-    def.qs = m_qs;
-    def.vs = m_vs;
-    def.ws = m_ws;
-    def.block_allocator = m_block_allocator;
-
-    b3ContactSolverZHB contact_solver(&def);
-
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
@@ -105,6 +93,18 @@ int b3SolverZHB::solve(bool allow_sleep)
         m_ws[i] = w;
     }
 
+    b3ContactSolverDef def;
+    def.step = *m_timestep;
+    def.contacts = m_contacts;
+    def.count = m_contact_count;
+    def.ps = m_ps;
+    def.qs = m_qs;
+    def.vs = m_vs;
+    def.ws = m_ws;
+    def.block_allocator = m_block_allocator;
+
+    b3ContactSolverZHB contact_solver(&def);
+    
     contact_solver.init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {

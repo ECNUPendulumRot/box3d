@@ -231,7 +231,7 @@ void b3ContactSolverZHB::init_velocity_constraints()
 
 void b3ContactSolverZHB::solve_velocity_constraints()
 {
-    real tolerance = 0.001f;
+    real tolerance = 0.001;
     bool violate = false;
     for (int32 i = 0; i < m_count; ++i) {
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;

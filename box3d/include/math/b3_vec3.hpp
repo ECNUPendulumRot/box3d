@@ -85,8 +85,8 @@ struct b3Vec3 {
 
     inline b3Vec3 cross(const b3Vec3<T>& v) const {
         return b3Vec3(y * v.z - z * v.y,
-                         z * v.x - x * v.z,
-                         x * v.y - y * v.x);
+                      z * v.x - x * v.z,
+                      x * v.y - y * v.x);
     }
 
     inline b3Vec3 cwise_product(const b3Vec3<T>& v) const {

@@ -3,7 +3,6 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_cube_shape.hpp"
 
-#include "math/b3_math_op.hpp"
 
 void b3_collide_spheres(
     b3Manifold* manifold,
@@ -90,7 +89,7 @@ void b3_collide_cube_and_sphere(
         return;
     }
 
-    if (normal.length2() < b3_real_epsilon) {
+    if (normal.length2() < b3_real_epsilon * b3_real_epsilon) {
         find_normal(cube_a, sphere_c_local, normal, closest_point);
     }
 
