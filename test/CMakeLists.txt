@@ -47,4 +47,4 @@ add_executable(testbed ${TESTBED_SOURCE_FILES})
 target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(testbed PUBLIC box3d glfw imgui glad sajson spdlog::spdlog)
+target_link_libraries(testbed PUBLIC box3d glfw imgui glad sajson spdlog::spdlog nlohmann_json::nlohmann_json)
