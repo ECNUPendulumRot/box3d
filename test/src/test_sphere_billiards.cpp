@@ -2,7 +2,7 @@
 
 class TestBilliards :public Test {
 
-    int layer = 3;
+    int layer = 5;
 
 public:
 

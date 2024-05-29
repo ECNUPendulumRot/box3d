@@ -21,7 +21,6 @@ b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
     m_ws = def->ws;
     m_block_allocator = def->block_allocator;
 
-
     m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactVelocityConstraint));
     m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactPositionConstraint));
 
@@ -87,7 +86,9 @@ b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
 
             vcp->m_normal_mass = 0.0;
             vcp->m_bias_velocity = 0.0;
+            vcp->m_normal_impulse = 0.0;
 
+            vcp->m_wait = true;
             pc->m_local_points[j] = manifold_point->m_local_point;
         }
     }
@@ -164,8 +165,6 @@ void b3ContactSolverZHB::init_velocity_constraints()
             if (v_rel < -vc->m_restitution_threshold) {
                 vcp->m_bias_velocity = -vc->m_restitution * v_rel;
             }
-
-            vcp->m_normal_impulse = 0.0;
         }
     }
 }
@@ -175,7 +174,9 @@ void b3ContactSolverZHB::solve_velocity_constraints()
 {
     real tolerance = 0.001;
     bool violate = false;
+
     for (int32 i = 0; i < m_count; ++i) {
+
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
 
         b3Vec3r v_a = m_vs[vc->m_index_a];
@@ -185,11 +186,12 @@ void b3ContactSolverZHB::solve_velocity_constraints()
         b3Vec3r w_b = m_ws[vc->m_index_b];
 
         for (int32 j = 0; j < vc->m_point_count; ++j) {
+
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
             b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
             real rhs = -v_rel.dot(vc->m_normal);
-            if(rhs>0 && !violate) violate = true;
+            if(rhs > 0 && !violate) violate = true;
             real rhs_restitution_velocity = vcp->m_bias_velocity;
 
             //there are four situations of constrains
@@ -204,12 +206,12 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                         //if rhs is converged,change it to situation 2 or 1
                         //vcp->m_bias_velocity = rhs * vc->m_restitution;
                         //bool zero = false;
-                        if(!vcp->wait){
+                        if(!vcp->m_wait){
 
                             --m_wait;
-                            vcp->wait = true;
+                            vcp->m_wait = true;
                             //zero = !(bool)m_wait;
-                            spdlog::info("st:4, index A={},B={} is added in wait list,now have {} left",
+                            spdlog::info("st:4, index A={},B={} is added in m_wait list,now have {} left",
                                          vc->m_index_a,vc->m_index_b,m_wait);
                         } else{
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
@@ -230,11 +232,11 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                         rhs_restitution_velocity = 0.0;
                         spdlog::info("st:4, index A={} is waiting",vc->m_index_a);
                         spdlog::info("st:4, index B={} is waiting",vc->m_index_b);
-                        if(vcp->wait){
+                        if(vcp->m_wait){
                             //register a vcp of situation 4 to wait_list
-                            vcp->wait = false;
+                            vcp->m_wait = false;
                             ++m_wait;
-                            spdlog::info("st:4, wait is true now");
+                            spdlog::info("st:4, m_wait is true now");
                         }
 
                     }
@@ -259,10 +261,10 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                     }
                 } else {
                     //3
-                    if(!vcp->wait){
-                        vcp->wait = true;
+                    if(!vcp->m_wait){
+                        vcp->m_wait = true;
                         m_wait--;
-                        spdlog::info("st:3, index A={},B={} is kicked in wait list,now have {} left",
+                        spdlog::info("st:3, index A={},B={} is kicked in m_wait list,now have {} left",
                                      vc->m_index_a,vc->m_index_b,m_wait);
                     }
                     rhs = 0.0;
@@ -300,58 +302,6 @@ void b3ContactSolverZHB::solve_velocity_constraints()
     }
     if(violate) spdlog::info("Iteration: {0} is over", iteration++);
 }
-
-
-struct b3PositionSolverManifold {
-
-    void initialize(b3ContactPositionConstraint* pc, const b3Transr& xf_a, const b3Transr& xf_b, int32 index) {
-
-        b3_assert(pc->m_point_count > 0);
-
-        switch (pc->m_type)
-        {
-            case b3Manifold::e_spheres: {
-                b3Vec3r point_a = xf_a.position();
-                b3Vec3r point_b = xf_b.position();
-                normal = pc->m_local_normal;
-                point = 0.5 * (point_a + point_b);
-                separation = (point_b - point_a).dot(normal) - pc->m_radius_a - pc->m_radius_b;
-            }
-                break;
-
-            case b3Manifold::e_face_A:
-            {
-                normal = pc->m_local_normal;
-
-                b3Vec3r plane_point = pc->m_local_point;
-
-                b3Vec3 clipPoint = pc->m_local_points[index];
-                separation = (clipPoint - plane_point).dot(normal) - pc->m_radius_a - pc->m_radius_b;
-                point = clipPoint;
-            }
-                break;
-
-            case b3Manifold::e_face_B:
-            {
-                normal = pc->m_local_normal;
-                b3Vec3r plane_point = pc->m_local_point;
-
-                b3Vec3 clipPoint = pc->m_local_points[index];
-                separation = (clipPoint - plane_point).dot(normal) - pc->m_radius_a - pc->m_radius_b;
-                point = clipPoint;
-            }
-                break;
-
-            default:
-                break;
-
-        }
-    }
-
-    b3Vec3r normal;
-    b3Vec3r point;
-    float separation;
-};
 
 
 b3ContactSolverZHB::~b3ContactSolverZHB()
