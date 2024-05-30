@@ -160,11 +160,9 @@ void b3ContactSolverZHB::init_velocity_constraints()
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv
             real v_rel = vc->m_normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
-            // m_bias_velocity is eJv
-            vcp->m_bias_velocity = 0.0;
-            if (v_rel < -vc->m_restitution_threshold) {
-                vcp->m_bias_velocity = -vc->m_restitution * v_rel;
-            }
+            // m_bias_velocity is Jv
+            vcp->m_bias_velocity = -v_rel;
+
         }
     }
 }
@@ -172,7 +170,7 @@ void b3ContactSolverZHB::init_velocity_constraints()
 
 void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
 {
-    real tolerance = 0.0001;
+    real tolerance = 0.0;
 
     for (int32 i = 0; i < m_count; ++i) {
 
@@ -191,7 +189,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
             b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
             real rhs = -v_rel.dot(vc->m_normal);
             if(rhs > 0 && !violate) violate = true;
-            real rhs_restitution_velocity = vcp->m_bias_velocity;
+            real rhs_restitution_velocity = vcp->m_bias_velocity * vc->m_restitution;
 
             //there are four situations of constrains
             //1.init constrain violate,now legal
@@ -199,7 +197,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
             //3.init constrain legal,now legal
             //4.init constrain legal,now violate
             if (rhs > 0) {
-                if (rhs_restitution_velocity <= 0) {
+                if (vcp->m_bias_velocity <= 0) {
                     //4
                     if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
                         //if rhs is converged,change it to situation 2 or 1
@@ -216,7 +214,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
                         }
                         if(m_wait == 0){
-                            vcp->m_bias_velocity = rhs * vc->m_restitution;
+                            vcp->m_bias_velocity = rhs;
                             spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
                         }
                         vcp->m_relative_velocity = rhs;
@@ -248,7 +246,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                     spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
                 }
             } else {
-                if (rhs_restitution_velocity > 0) {
+                if (vcp->m_bias_velocity > 0) {
                     //1
                     if (abs(vcp->m_relative_velocity - rhs) <= tolerance || rhs == 0.0f) {
                         vcp->m_relative_velocity = rhs;
