@@ -2,13 +2,13 @@
 
 class TestBilliards :public Test {
 
-    int layer = 2;
+    int layer = 4;
 
 public:
 
     TestBilliards() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, -10));
+        m_world->set_gravity(b3Vec3r(0, 0, 0));
 
         b3FixtureDef fixture_def;
         fixture_def.m_friction = 0;

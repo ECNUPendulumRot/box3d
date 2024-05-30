@@ -170,10 +170,9 @@ void b3ContactSolverZHB::init_velocity_constraints()
 }
 
 
-void b3ContactSolverZHB::solve_velocity_constraints()
+void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
 {
-    real tolerance = 0.001;
-    bool violate = false;
+    real tolerance = 0.0001;
 
     for (int32 i = 0; i < m_count; ++i) {
 
@@ -242,7 +241,11 @@ void b3ContactSolverZHB::solve_velocity_constraints()
                     }
                 } else {
                     //2
-                    spdlog::info("st:2, the violating constrain is {} ,{}",vc->m_index_a,vc->m_index_b);
+                    if(rhs<1e-8){
+                        violate = false;
+                        //需要直接将速度归零，也就是手动执行冲量计算
+                    }
+                    spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
                 }
             } else {
                 if (rhs_restitution_velocity > 0) {
@@ -277,6 +280,7 @@ void b3ContactSolverZHB::solve_velocity_constraints()
             lambda = vcp->m_normal_mass * (rhs + rhs_restitution_velocity);
             real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
             lambda = new_impulse - vcp->m_normal_impulse;
+            //spdlog::info("lambda = {}",lambda);
             vcp->m_normal_impulse = new_impulse;
 
 

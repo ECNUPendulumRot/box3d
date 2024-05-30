@@ -316,10 +316,9 @@ void b3SolverGR::find_violated_constraints() {
                     b3VelocityConstraintPoint* vcp = vc->m_points + k;
                     real v_rel_in = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
 
-                    vcp->m_bias_velocity = 0;
-                    if (v_rel_in < -vc->m_restitution_threshold) {
-                        vcp->m_bias_velocity = -vc->m_restitution * v_rel;
-                    }
+
+                    vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+
                 }
                 break;
             }

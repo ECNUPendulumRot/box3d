@@ -45,7 +45,7 @@ class b3ContactSolverZHB {
 
     int32 m_wait = 0;
 
-    int32 iteration = 0;
+    int32 iteration = 1;
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
     void init_velocity_constraints();
 
-    void solve_velocity_constraints();
+    void solve_velocity_constraints(bool &violate);
 };
 
 
