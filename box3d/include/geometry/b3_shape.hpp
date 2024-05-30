@@ -32,6 +32,8 @@ enum b3ShapeType {
 
 class b3Shape {
 
+    friend class b3DistanceProxy;
+
 protected:
 
     b3ShapeType m_type = e_type_not_defined;

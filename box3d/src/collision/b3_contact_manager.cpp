@@ -107,45 +107,50 @@ void b3ContactManager::add_pair(b3FixtureProxy *fixture_proxy_a, b3FixtureProxy 
 
 void b3ContactManager::destroy(b3Contact* contact)
 {
+    b3Fixture* fixture_a = contact->get_fixture_a();
+    b3Fixture* fixture_b = contact->get_fixture_b();
+    b3Body* body_a = fixture_a->get_body();
+    b3Body* body_b = fixture_b->get_body();
 
-    if (contact->prev()) {
-        contact->prev()->set_next(contact->next());
+    if (contact->m_prev) {
+        contact->m_prev->m_next = contact->m_next;
     }
 
-    if (contact->next()) {
-  	    contact->next()->set_prev(contact->prev());
+    if (contact->m_next) {
+        contact->m_next->m_prev = contact->m_prev;
     }
 
     if (contact == m_contact_list) {
-  	    m_contact_list = contact->next();
+  	    m_contact_list = contact->m_next;
     }
 
     // remove form body a
     // not use friend class.
-    if (contact->get_node_a()->m_prev) {
-  	    contact->get_node_a()->m_prev->m_next = contact->get_node_a()->m_next;
+    if (contact->m_node_a.m_prev) {
+  	    contact->m_node_a.m_prev->m_next = contact->m_node_a.m_next;
     }
-    if (contact->get_node_a()->m_next) {
-  	    contact->get_node_a()->m_next->m_prev = contact->get_node_a()->m_prev;
+
+    if (contact->m_node_a.m_next) {
+  	    contact->m_node_a.m_next->m_prev = contact->m_node_a.m_prev;
     }
-    b3Body *body_a = contact->get_fixture_a()->get_body();
-    if (contact->get_node_a() == body_a->get_contact_list()) {
-  	    body_a->set_contact_list(contact->get_node_a()->m_next);
+
+    if (&contact->m_node_a == body_a->m_contact_list) {
+  	    body_a->m_contact_list = contact->m_node_a.m_next;
     }
 
     // remove form body b
-    if (contact->get_node_b()->m_prev) {
-  	    contact->get_node_b()->m_prev->m_next = contact->get_node_b()->m_next;
+    if (contact->m_node_b.m_prev) {
+  	    contact->m_node_b.m_prev->m_next = contact->m_node_b.m_next;
     }
-    if (contact->get_node_b()->m_next) {
-  	    contact->get_node_b()->m_next->m_prev = contact->get_node_b()->m_prev;
-    }
-    b3Body *body_b = contact->get_fixture_b()->get_body();
-    if (contact->get_node_b() == body_b->get_contact_list()) {
-  	    body_b->set_contact_list(contact->get_node_b()->m_next);
+    if (contact->m_node_b.m_next) {
+  	    contact->m_node_b.m_next->m_prev = contact->m_node_b.m_prev;
     }
 
-    m_block_allocator->free(contact, sizeof(b3Contact));
+    if (&contact->m_node_b == body_b->m_contact_list) {
+  	    body_b->m_contact_list = contact->m_node_b.m_next;
+    }
+
+    b3Contact::destroy(contact, m_block_allocator);
     --m_contact_count;
 }
 
@@ -156,8 +161,14 @@ void b3ContactManager::collide()
     b3Contact *contact = m_contact_list;
 
     while (contact) {
-	    b3Body *body_a = contact->get_fixture_a()->get_body();
-	    b3Body *body_b = contact->get_fixture_b()->get_body();
+
+        b3Fixture* fixture_a = contact->get_fixture_a();
+        b3Fixture* fixture_b = contact->get_fixture_b();
+        int32 index_a = contact->get_child_index_a();
+        int32 index_b = contact->get_child_index_b();
+
+	    b3Body *body_a = fixture_a->get_body();
+	    b3Body *body_b = fixture_b->get_body();
         // is this pair shouldn't collide,
         // destory this contact
 
@@ -169,12 +180,9 @@ void b3ContactManager::collide()
             continue;
         }
 
-        int32 index_a = contact->get_child_index_a();
-        int32 index_b = contact->get_child_index_b();
-        const b3AABB &aabb_a = contact->get_fixture_a()->get_fixture_proxy(index_a)->m_aabb;
-        const b3AABB &aabb_b = contact->get_fixture_b()->get_fixture_proxy(index_b)->m_aabb;
-
-	    bool overlap = b3AABB::overlapped(aabb_a, aabb_b);
+        int32 proxy_id_a = fixture_a->m_proxies[index_a].m_proxy_id;
+        int32 proxy_id_b = fixture_b->m_proxies[index_b].m_proxy_id;
+	    bool overlap = m_broad_phase.test_overlap(proxy_id_a, proxy_id_b);
 
         if (!overlap) {
             b3Contact *destory_c = contact;
@@ -184,7 +192,6 @@ void b3ContactManager::collide()
         }
 
         // the contact persist
-        // TODO: add a contact lisitener: a callback function
         contact->update(m_contact_listener);
         contact = contact->next();
     }

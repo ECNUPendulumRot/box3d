@@ -53,7 +53,7 @@ public:
 
             b3Vec3r p(0, 0, sphere_hf);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 2, 0);
+            b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);

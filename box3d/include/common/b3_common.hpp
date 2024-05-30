@@ -35,6 +35,8 @@
 
 #define b3_baumgarte 0.2
 
+#define b3_max_sub_steps 8
+
 using real = float;
 
 template<typename T>

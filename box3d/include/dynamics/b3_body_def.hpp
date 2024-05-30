@@ -37,8 +37,6 @@ struct b3BodyDef {
 
     b3Vec3r m_init_w = b3Vec3r::zero();
 
-    real m_density = 1.0;
-
 public:
 
     explicit b3BodyDef(b3BodyType type = b3BodyType::b3_dynamic_body) {
@@ -59,10 +57,6 @@ public:
     inline void set_init_velocity(const b3Vec3r& v, const b3Vec3r& w) {
         m_init_v = v;
         m_init_w = w;
-    }
-
-    inline real get_density() const {
-        return m_density;
     }
 };
 

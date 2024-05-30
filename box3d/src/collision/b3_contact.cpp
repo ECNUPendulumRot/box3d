@@ -107,9 +107,8 @@ void b3Contact::destroy(b3Contact *contact, b3BlockAllocator *block_allocator)
     b3Fixture *fixture_B = contact->get_fixture_b();
 
     if (contact->m_manifold.m_point_count > 0) {
-        // TODO: check this set_awake
-        // fixture_A->get_body()->set_awake(true);
-        // fixture_B->get_body()->set_awake(true);
+        fixture_A->get_body()->set_awake(true);
+        fixture_B->get_body()->set_awake(true);
     }
 
     b3ShapeType type_A = fixture_A->get_shape_type();
@@ -129,6 +128,7 @@ void b3Contact::update(b3ContactListener* listener)
     // TODO: add warm start, reuse normal and tangent impulse
     // b3Manifold old_manifold = m_manifold
     bool touching = false;
+    bool was_touching = (m_flags & e_touching_flag) == e_touching_flag;
     b3Body *body_a = m_fixture_a->get_body();
     b3Body *body_b = m_fixture_b->get_body();
 

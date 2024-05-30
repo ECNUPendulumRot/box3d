@@ -49,6 +49,7 @@ void Settings::save() const
     fprintf(file, "  \"velocity_iteration\": %d,\n", m_velocity_iteration);
     fprintf(file, "  \"position_iteration\": %d,\n", m_position_iteration);
     fprintf(file, "  \"enable_sleep\": %s,\n", m_enable_sleep ? "true" : "false");
+    fprintf(file, "  \"enable_continuous_physics\": %s,\n", m_enable_continuous_physics ? "true" : "false");
     fprintf(file, "  \"draw_shapes\": %s,\n", m_draw_shapes ? "true" : "false");
     fprintf(file, "  \"draw_frame_only\": %s,\n", m_draw_frame_only ? "true" : "false");
     fprintf(file, "  \"draw_contact_points\": %s\n", m_draw_contact_points ? "true" : "false");
@@ -143,6 +144,16 @@ void Settings::load() {
             }
             else if (field_value.get_type() == sajson::TYPE_TRUE) {
                 m_draw_shapes = true;
+            }
+            continue;
+        }
+
+        if (strncmp(field_name.data(), "enable_continuous_physics", field_name.length()) == 0) {
+            if (field_value.get_type() == sajson::TYPE_FALSE) {
+                m_enable_continuous_physics = false;
+            }
+            else if (field_value.get_type() == sajson::TYPE_TRUE) {
+                m_enable_continuous_physics = true;
             }
             continue;
         }

@@ -15,12 +15,21 @@
 
 b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::zero())
 {
+
+    m_flags |= e_awake_flag;
+
     m_type = body_def.m_type;
     m_p = body_def.m_init_p;
     m_q = body_def.m_init_q;
     m_v = body_def.m_init_v;
     m_w = body_def.m_init_w;
-    m_density = body_def.m_density;
+
+    m_local_center = b3Vec3r::zero();
+    m_sweep.p0 = m_p;
+    m_sweep.p = m_p;
+    m_sweep.q0 = m_q;
+    m_sweep.q = m_q;
+    m_sweep.alpha0 = 0.0;
 }
 
 
@@ -66,6 +75,14 @@ void b3Body::reset_mass_data()
     m_inv_mass = 0.0;
     m_inertia = b3Mat33r::zero();
     m_inv_inertia = b3Mat33r::zero();
+    m_local_center = b3Vec3r::zero();
+
+    if (m_type == b3BodyType::b3_static_body || m_type == b3BodyType::b3_kinematic_body) {
+        m_sweep.p0 = m_p;
+        m_sweep.p = m_p;
+        m_sweep.q0 = m_q;
+        return;
+    }
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
@@ -115,6 +132,11 @@ void b3Body::reset_mass_data()
     }
 
     m_local_center = local_center;
+    m_sweep.m_local_center = local_center;
+    // TODO: use transformation instead of directly assign
+    // get the center of mass in sweep
+    b3Transr xf(m_p, m_q);
+    m_sweep.p0 = m_sweep.p = xf.transform(m_local_center);
     // TODO: if object added dynamically, the velocity need to be updated
 }
 
@@ -159,11 +181,25 @@ void b3Body::destroy_fixtures() {
 }
 
 
-real b3Body::kinetic_energy() const {
+void b3Sweep::advance(real alpha)
+{
+    b3_assert(alpha0 < 1.0);
 
-    // kinetic energy = 1/2 * m * v^2 + 1/2 * (I1 * w1^2 + I2 * w2^2 + I3 * w3^2)
-    return real(0.5) * (m_mass * m_v.length2() + (m_w * m_inertia).dot(m_w));
+    real beta = (alpha - alpha0) / (real(1.0) - alpha0);
 
+    p0 += beta * (p - p0);
+    q0 += (beta * (q - q0));
+    q0.normalize();
+    alpha0 = alpha;
 }
 
 
+void b3Sweep::get_transform(b3Transr &xf, real beta) const
+{
+    xf.m_p = (real(1.0) - beta) * p0 + beta * p;
+
+    b3Quatr quat = (real(1.0) - beta) * q0 + beta * q;
+    quat.normalize();
+    xf.set_quaternion(quat);
+    xf.m_p -= xf.rotate(m_local_center);
+}

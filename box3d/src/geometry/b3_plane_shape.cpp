@@ -19,6 +19,10 @@ void b3PlaneShape::set_as_plane(real length, real width)
 {
     m_half_length = length / 2.0;
     m_half_width = width / 2.0;
+    m_vertices[0].set(-m_half_width, -m_half_length, 0);
+    m_vertices[1].set(-m_half_width, m_half_length, 0);
+    m_vertices[2].set(m_half_width, m_half_length, 0);
+    m_vertices[3].set(m_half_width, -m_half_length, 0);
 }
 
 
