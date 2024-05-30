@@ -2,11 +2,12 @@
 #include "test.hpp"
 #include "settings.hpp"
 
-Test::Test() {
+Test::Test() : m_point_count(0) {
     b3Vec3r gravity(0.0, 0.0, -10.0);
     m_world = new b3World(gravity);
 
     m_world->set_debug_draw(&g_debug_draw);
+    m_world->set_contact_listener(this);
 }
 
 
@@ -32,6 +33,48 @@ void Test::step(Settings &settings) {
     m_world->debug_draw();
 
     g_debug_draw.flush();
+
+    if (settings.m_show_contact_points) {
+        for (int i = 0; i < m_point_count; i++) {
+            ContactPoint* cp = m_points + i;
+            b3Vec3r p = cp->position;
+            g_debug_draw.draw_point(p, 10.0f, b3Color(1.0f, 0.f, 0.f));
+        }
+    }
+}
+
+
+void Test::pre_solve(b3Contact *contact, const b3Manifold* old_manifold)
+{
+    b3Manifold* manifold = contact->get_manifold();
+
+    b3PersistentManifold* persistentManifold = contact->get_persistent_manifold();
+
+    if (persistentManifold == nullptr) {
+        return;
+    }
+
+    for (int i = 0; i < persistentManifold->get_contact_point_count() && m_point_count < k_max_contact_points; i++) {
+        b3PersistentManifoldPoint& point = persistentManifold->get_cached_point(i);
+
+        ContactPoint* cp = m_points + m_point_count;
+        cp->position = point.m_position_world_on_A;
+        m_point_count++;
+
+        cp++;
+        cp->position = point.m_position_world_on_B;
+        m_point_count++;
+    }
+
+
+//    for (int i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
+//        ContactPoint* cp = m_points + m_point_count;
+//
+//        cp->position;
+//        cp->normal;
+//
+//        m_point_count++;
+//    }
 }
 
 

@@ -14,12 +14,28 @@
 struct Settings;
 class Test;
 
+struct ContactPoint {
+    b3Fixture* fixtureA;
+    b3Fixture* fixtureB;
+    b3Vec3r normal;
+    b3Vec3r position;
+    float normalImpulse;
+    float tangentImpulse1;
+    float tangentImpulse2;
+    float separation;
+};
 
-class Test {
+const int k_max_contact_points = 2048;
+
+class Test : public b3ContactListener {
 
 protected:
 
     b3World* m_world;
+
+    ContactPoint m_points[k_max_contact_points];
+
+    int m_point_count;
 
 public:
 
@@ -28,6 +44,8 @@ public:
     virtual ~Test() = default;
 
     virtual void step(Settings& settings);
+
+    virtual void pre_solve(b3Contact* contact, const b3Manifold* old_manifold) override;
 
 };
 

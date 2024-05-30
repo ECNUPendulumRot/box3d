@@ -15,6 +15,10 @@ private:
 
     b3CollisionAlgorithmCreateFunc* m_sphere_sphere_cf;
 
+    b3CollisionAlgorithmCreateFunc* m_box_sphere_cf;
+
+    b3CollisionAlgorithmCreateFunc* m_box_box_cf;
+
     void init();
 
 public:

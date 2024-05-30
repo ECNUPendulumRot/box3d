@@ -5,7 +5,7 @@
 
 #include "common/b3_types.hpp"
 #include "collision/b3_broad_phase.hpp"
-
+#include "common/b3_world_callback.hpp"
 
 /////////// Forward Delaration ///////////
 
@@ -31,6 +31,8 @@ class b3ContactManager {
     int32 m_contact_count = 0;
 
     b3BlockAllocator* m_block_allocator = nullptr;
+
+    b3ContactListener* m_contact_listener = nullptr;
 
 public:
 
@@ -66,6 +68,10 @@ public:
     void set_block_allocator(b3BlockAllocator* block_allocator) {
         m_block_allocator = block_allocator;
         m_broad_phase.set_block_allocator(block_allocator);
+    }
+
+    void set_contact_listener(b3ContactListener* listener) {
+        m_contact_listener = listener;
     }
 };
 

@@ -161,23 +161,6 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 }
 
 
-void b3Solver::draw_contact_points(b3Draw* draw)
-{
-    for(int32 i = 0; i < m_contact_count; i++) {
-        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-        b3Body* body = m_bodies[vc->m_index_a];
-        b3Transformr transform;
-        transform.set_position(body->get_position());
-        transform.set_euler_angles(body->get_quaternion().rotation_matrix().to_euler_angles());
-
-        for(int j = 0; j < vc->m_point_count; j++) {
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
-            b3Vec3r point = transform.transform(vcp->m_ra);
-        }
-    }
-}
-
-
 void b3Solver::write_states_back()
 {
     for(int32 i = 0; i < m_body_count; ++i) {

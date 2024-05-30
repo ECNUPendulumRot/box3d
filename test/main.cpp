@@ -202,6 +202,7 @@ void update_ui() {
 
     ImGui::Checkbox("Shapes", &s_settings.m_draw_shapes);
     ImGui::Checkbox("Frame Only", &s_settings.m_draw_frame_only);
+    ImGui::Checkbox("Show Contact Points", &s_settings.m_show_contact_points);
 
     ImVec2 button_sz = ImVec2(-1, 0);
 

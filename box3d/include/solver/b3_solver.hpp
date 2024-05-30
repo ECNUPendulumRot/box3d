@@ -78,8 +78,6 @@ public:
     // TODO: This function is not used now, it's effect not good.
     void correct_penetration();
 
-    void draw_contact_points(b3Draw* draw);
-
     int solve();
 
     ~b3Solver();

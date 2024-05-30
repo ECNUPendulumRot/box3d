@@ -15,6 +15,8 @@
 #include "collision/b3_contact.hpp"
 #include "collision/b3_collision.hpp"
 
+#include "collision/b3_persistent_manifold.hpp"
+
 #include "utils/b3_timer.hpp"
 #include "common/b3_draw.hpp"
 #include "math/b3_vec2.hpp"

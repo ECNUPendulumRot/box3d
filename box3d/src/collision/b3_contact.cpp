@@ -12,6 +12,7 @@
 #include "collision/b3_persistent_manifold.hpp"
 #include "collision/b3_dispatcher.hpp"
 #include "collision/algorithm/b3_collision_algorithm.hpp"
+#include "common/b3_world_callback.hpp"
 
 b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 bool b3Contact::s_initialized = false;
@@ -128,7 +129,7 @@ void b3Contact::destroy(b3Contact *contact, b3BlockAllocator *block_allocator)
 
 
 // Update the contact manifold and touching status.
-void b3Contact::update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info)
+void b3Contact::update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info, b3ContactListener* listener)
 {
     // TODO: add warm start, reuse normal and tangent impulse
     // b3Manifold old_manifold = m_manifold
@@ -147,10 +148,16 @@ void b3Contact::update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info)
     // generate the manifold between the two shapes
     evaluate(&m_manifold, xf_a, xf_b);
 
-    if (m_manifold.m_point_count > 0) {
+    bool touching = m_manifold.m_point_count > 0;
+
+    if (touching) {
   	    m_flags |= e_touching_flag;
     } else {
   	    m_flags &= ~e_touching_flag;
+    }
+
+    if (touching && listener) {
+        listener->pre_solve(this, &m_manifold);
     }
 }
 

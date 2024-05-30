@@ -43,7 +43,8 @@ b3PersistentManifold* b3Dispatcher::get_new_manifold(const b3Body *bodyA, const 
     real contact_breaking_threshold = 0.02;
     real contact_processing_threshold = 9.9e16;
 
-    b3PersistentManifold* manifold = (b3PersistentManifold*)m_block_allocator->allocate(sizeof(b3PersistentManifold));
+    void* mem = m_block_allocator->allocate(sizeof(b3PersistentManifold));
+    b3PersistentManifold* manifold = new (mem) b3PersistentManifold;
 
     b3_assert(manifold != nullptr);
 
@@ -87,7 +88,9 @@ b3CollisionAlgorithm* b3Dispatcher::find_algorithm(
 {
     b3CollisionAlgorithm* algo = nullptr;
     auto s = m_dispatch_contact_points[fixtureA->get_shape()->get_type()][fixtureB->get_shape()->get_type()];
-    s->create_collision_algorithm(this, fixtureA, fixtureB, allocate_size);
+    if (s == nullptr) {
+        return nullptr;
+    }
     // TODO: use query_type to create function pointer
     algo = m_dispatch_contact_points[fixtureA->get_shape()->get_type()][fixtureB->get_shape()->get_type()]->create_collision_algorithm(this, fixtureA, fixtureB, allocate_size);
     return algo;

@@ -48,7 +48,8 @@ class b3PersistentManifold {
 
 public:
 
-    b3PersistentManifold() : m_bodyA(nullptr), m_bodyB(nullptr), m_point_count(0) {}
+    b3PersistentManifold() : m_bodyA(nullptr), m_bodyB(nullptr),
+                             m_point_count(0), m_contact_breaking_threshold(0.02) {}
 
     void set_index(int index) {
         m_index = index;

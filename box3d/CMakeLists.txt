@@ -59,6 +59,9 @@ set(B3D_HEADER_FILES
         include/collision/b3_collision_algorithm_create_func.hpp
         include/collision/algorithm/b3_collision_algorithm.hpp
         include/collision/algorithm/b3_sphere_sphere_collision_algorithm.hpp
+        include/collision/algorithm/b3_box_box_detector.hpp
+        include/collision/algorithm/b3_box_box_collision_algorithm.hpp
+        include/collision/algorithm/b3_sphere_box_collision_algorithm.hpp
 
 )
 
@@ -78,7 +81,6 @@ set(B3D_SOURCE_FILES
         src/collision/b3_collide_plane.cpp
         src/collision/b3_cube_sphere_contact.cpp
         src/collision/b3_plane_sphere_contact.cpp
-        src/collision/b3_collide_cube_bullet.cpp
 
         src/common/b3_block_allocator.cpp
 
@@ -101,7 +103,9 @@ set(B3D_SOURCE_FILES
         src/collision/b3_manifold_result.cpp
         src/collision/b3_persistent_manifold.cpp
         src/collision/algorithm/b3_sphere_sphere_collision_algorithm.cpp
-
+        src/collision/algorithm/b3_box_box_detector.cpp
+        src/collision/algorithm/b3_box_box_collision_algorithm.cpp
+        src/collision/algorithm/b3_sphere_box_collision_algorithm.cpp
 )
 
 # add third-party libraries

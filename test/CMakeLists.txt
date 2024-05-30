@@ -11,11 +11,15 @@ set (TESTBED_SOURCE_FILES
         settings.hpp
         include/test.hpp
         include/gl_render_triangles.hpp
+        include/gl_render_points.hpp
+        include/gl_render_lines.hpp
         include/gl_common.hpp
         include/camera.hpp
         src/test.cpp
         src/test_box_rest.cpp
         src/gl_render_triangles.cpp
+        src/gl_render_points.cpp
+        src/gl_render_lines.cpp
         src/camera.cpp
         src/test_sphere_drop.cpp
         src/test_sphere_friction.cpp
@@ -24,11 +28,15 @@ set (TESTBED_SOURCE_FILES
         src/test_sphere_slope.cpp
         src/test_sphere_rotating.cpp
         src/test_planet.cpp
-        src/test_new_dispatch.cpp
 
         include/gl_render_lines.hpp
         src/gl_render_lines.cpp
         settings.cpp
+
+
+        src/manifold/test_sphere_sphere.cpp
+        src/manifold/test_sphere_box.cpp
+        src/manifold/test_box_box.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

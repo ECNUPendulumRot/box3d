@@ -174,7 +174,6 @@ void b3World::solve(b3TimeStep &step)
         // solve the constraints
         b3Solver solver;
         solver.init(&m_block_allocator, island, &step);
-        solver.draw_contact_points(m_debug_draw);
         solver.solve();
 
         // Post solve cleanup.

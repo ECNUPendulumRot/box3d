@@ -127,11 +127,14 @@ public:
 
     inline void set_debug_draw(b3Draw* draw) {
         m_debug_draw = draw;
-
         m_dispatcher_info.m_debug_draw = m_debug_draw;
     }
 
     void debug_draw();
+
+    void set_contact_listener(b3ContactListener* listener) {
+        m_contact_manager.set_contact_listener(listener);
+    }
 
 private:
 

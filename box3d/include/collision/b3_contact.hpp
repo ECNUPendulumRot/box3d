@@ -23,6 +23,8 @@ class b3PersistentManifold;
 
 class b3CollisionAlgorithm;
 
+class b3ContactListener;
+
 //////////////////////////////////////////
 
 
@@ -184,6 +186,10 @@ public:
         return &m_manifold;
     }
 
+    b3PersistentManifold* get_persistent_manifold() const {
+        return m_persistent_manifold;
+    }
+
     real get_restitution() const {
         return m_restitution;
     }
@@ -219,7 +225,7 @@ protected:
 
     static void destroy(b3Contact* contact, b3BlockAllocator* block_allocator);
 
-    void update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info);
+    void update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info, b3ContactListener* listener);
 };
 
 
