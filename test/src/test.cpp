@@ -2,6 +2,8 @@
 #include "test.hpp"
 #include "settings.hpp"
 
+#include "spdlog/spdlog.h"
+
 Test::Test() : m_point_count(0) {
     b3Vec3r gravity(0.0, 0.0, -10.0);
     m_world = new b3World(gravity);
@@ -28,6 +30,8 @@ void Test::step(Settings &settings) {
 
     g_debug_draw.set_flags(flags);
 
+    m_point_count = 0;
+
     m_world->step(time_step, 100, 32);
 
     m_world->debug_draw();
@@ -35,10 +39,17 @@ void Test::step(Settings &settings) {
     g_debug_draw.flush();
 
     if (settings.m_show_contact_points) {
+        bool is_red = true;
         for (int i = 0; i < m_point_count; i++) {
             ContactPoint* cp = m_points + i;
             b3Vec3r p = cp->position;
-            g_debug_draw.draw_point(p, 10.0f, b3Color(1.0f, 0.f, 0.f));
+
+            if (is_red) {
+                g_debug_draw.draw_point(p, 10.0f, b3Color(1.0f, 0.f, 0.f));
+            } else {
+                g_debug_draw.draw_point(p, 10.0f, b3Color(0.0f, 1.f, 0.f));
+            }
+            is_red = !is_red;
         }
     }
 }
@@ -59,10 +70,16 @@ void Test::pre_solve(b3Contact *contact, const b3Manifold* old_manifold)
 
         ContactPoint* cp = m_points + m_point_count;
         cp->position = point.m_position_world_on_A;
+
+        spdlog::info("fixtureA point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
+
         m_point_count++;
 
         cp++;
         cp->position = point.m_position_world_on_B;
+
+        spdlog::info("fixtureB point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
+
         m_point_count++;
     }
 

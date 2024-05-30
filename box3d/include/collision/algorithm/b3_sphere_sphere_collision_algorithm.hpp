@@ -10,13 +10,9 @@ class b3PersistentManifold;
 
 class b3SphereSphereCollisionAlgorithm : public b3CollisionAlgorithm {
 
-    b3PersistentManifold* m_manifold;
-
 public:
 
-    b3SphereSphereCollisionAlgorithm(b3Dispatcher* dispatcher);
-
-    virtual ~b3SphereSphereCollisionAlgorithm();
+    explicit b3SphereSphereCollisionAlgorithm(b3Dispatcher* dispatcher);
 
     void process_collision(const b3Fixture* fixtureA, const b3Fixture* fixtureB, const b3DispatcherInfo& info, b3PersistentManifold* manifold) override;
 

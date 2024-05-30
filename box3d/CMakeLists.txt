@@ -62,7 +62,8 @@ set(B3D_HEADER_FILES
         include/collision/algorithm/b3_box_box_detector.hpp
         include/collision/algorithm/b3_box_box_collision_algorithm.hpp
         include/collision/algorithm/b3_sphere_box_collision_algorithm.hpp
-
+        include/collision/algorithm/b3_plane_sphere_collision_algorithm.hpp
+        include/collision/algorithm/b3_plane_box_collision_algorithm.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -106,6 +107,8 @@ set(B3D_SOURCE_FILES
         src/collision/algorithm/b3_box_box_detector.cpp
         src/collision/algorithm/b3_box_box_collision_algorithm.cpp
         src/collision/algorithm/b3_sphere_box_collision_algorithm.cpp
+        src/collision/algorithm/b3_plane_sphere_collision_algorithm.cpp
+        src/collision/algorithm/b3_plane_box_collision_algorithm.cpp
 )
 
 # add third-party libraries

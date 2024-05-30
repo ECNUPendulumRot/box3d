@@ -11,14 +11,6 @@
 
 b3BoxBoxCollisionAlgorithm::b3BoxBoxCollisionAlgorithm(b3Dispatcher *dispatcher) : b3CollisionAlgorithm(dispatcher)
 {
-    m_manifold = nullptr;
-}
-
-b3BoxBoxCollisionAlgorithm::~b3BoxBoxCollisionAlgorithm()
-{
-    if (m_manifold) {
-        m_dispatcher->release_manifold(m_manifold);
-    }
 }
 
 
@@ -26,15 +18,10 @@ void b3BoxBoxCollisionAlgorithm::process_collision(
     const b3Fixture *fixtureA, const b3Fixture *fixtureB,
     const b3DispatcherInfo &info, b3PersistentManifold *manifold)
 {
-    if (m_manifold == nullptr) {
-        m_manifold = manifold;
-    }
-
     b3Body* bodyA = fixtureA->get_body();
     b3Body* bodyB = fixtureB->get_body();
 
-    b3ManifoldResult result(bodyA, bodyB);
-    result.set_persistent_manifold(m_manifold);
+    b3ManifoldResult result(bodyA, bodyB, manifold);
 
     b3BoxBoxDetector detector(fixtureA, fixtureB);
     detector.get_closest_points(result);

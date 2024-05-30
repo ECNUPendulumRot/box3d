@@ -14,6 +14,7 @@ private:
 
     b3PersistentManifold* m_manifold;
 
+    // TODO: delete two bodies, use two b3Transformr instead
     const b3Body* m_bodyA;
     const b3Body* m_bodyB;
 
@@ -26,7 +27,7 @@ private:
 
 public:
 
-    b3ManifoldResult(const b3Body* bodyA, const b3Body* bodyB);
+    b3ManifoldResult(const b3Body* bodyA, const b3Body* bodyB, b3PersistentManifold* manifold);
 
     void set_persistent_manifold(b3PersistentManifold* manifold) {
         m_manifold = manifold;

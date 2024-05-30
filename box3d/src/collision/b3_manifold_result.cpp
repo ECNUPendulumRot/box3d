@@ -5,7 +5,8 @@
 #include "dynamics/b3_body.hpp"
 
 
-b3ManifoldResult::b3ManifoldResult(const b3Body *bodyA, const b3Body *bodyB) : m_bodyA(bodyA), m_bodyB(bodyB)
+b3ManifoldResult::b3ManifoldResult(const b3Body *bodyA, const b3Body *bodyB, b3PersistentManifold* manifold)
+    : m_bodyA(bodyA), m_bodyB(bodyB), m_manifold(manifold)
 {
 }
 

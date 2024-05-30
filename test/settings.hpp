@@ -17,7 +17,7 @@ struct Settings {
         m_hertz = 60.0f;
         m_test_index = 0;
         m_single_step = false;
-        m_show_contact_points = false;
+        m_show_contact_points = true;
     }
 
     void save() const;
@@ -32,7 +32,7 @@ struct Settings {
     bool m_draw_frame_only = false;
     bool m_pause = false;
     bool m_single_step = false;
-    bool m_show_contact_points = false;
+    bool m_show_contact_points = true;
     float m_hertz;
 };
 

@@ -16,10 +16,6 @@ public:
 
     b3PlaneShape();
 
-    /**
-     * @param point: a point on this plane
-     * @param normal: the normal of this plane
-    */
     void set_as_plane(real length, real width);
 
     virtual ~b3PlaneShape() = default;

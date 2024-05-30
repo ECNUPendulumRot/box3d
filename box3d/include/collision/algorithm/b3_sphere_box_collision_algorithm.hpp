@@ -12,17 +12,13 @@ class b3CubeShape;
 
 class b3SphereBoxCollisionAlgorithm : public b3CollisionAlgorithm {
 
-    b3PersistentManifold* m_manifold;
-
 public:
 
-    b3SphereBoxCollisionAlgorithm(b3Dispatcher* dispatcher);
+    explicit b3SphereBoxCollisionAlgorithm(b3Dispatcher* dispatcher);
 
     bool get_sphere_distance(const b3CubeShape* shapeA, b3Transformr& xfA, b3Vec3r& point_on_box, b3Vec3r& normal, real& penetration, const b3Vec3r& sphere_center, real sphere_radius);
 
     real find_normal(const b3Vec3r& box_half_xyz, const b3Vec3r& local_sphere_center, b3Vec3r& normal, b3Vec3r& closest_point);
-
-    virtual ~b3SphereBoxCollisionAlgorithm();
 
     void process_collision(const b3Fixture* fixtureA, const b3Fixture* fixtureB, const b3DispatcherInfo& info, b3PersistentManifold* manifold) override;
 

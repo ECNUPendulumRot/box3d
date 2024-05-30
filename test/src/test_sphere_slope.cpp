@@ -32,7 +32,6 @@ public:
 
         b3Transformr ground_transform(p, b3Quaternionr(q));
         p = ground_transform.transform(b3Vec3r(0, 0 , 1));
-        spdlog::info("p: {}, {}, {}", p.x, p.y, p.z);
 
         b3BodyDef body_def;
         body_def.m_type = b3BodyType::b3_dynamic_body;
