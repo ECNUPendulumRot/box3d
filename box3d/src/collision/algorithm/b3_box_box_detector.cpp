@@ -6,8 +6,6 @@
 #include "dynamics/b3_body.hpp"
 #include "collision/b3_manifold_result.hpp"
 
-#include <float.h>
-#include <string.h>
 
 b3BoxBoxDetector::b3BoxBoxDetector(const b3Fixture* fixtureA, const b3Fixture* fixtureB)
     : m_fixtureA(fixtureA), m_fixtureB(fixtureB)
@@ -137,74 +135,72 @@ done:
 // n must be in the range [1..8]. m must be in the range [1..n]. i0 must be
 // in the range [0..n-1].
 
-void cullPoints2(int n, real p[], int m, int i0, int iret[]);
-void cullPoints2(int n, real p[], int m, int i0, int iret[])
+#define MAX_CONTACT_POINT_COUNT 4
+
+void cullPoints2(int n, real p[], int i0, int iret[]);
+void cullPoints2(int n, real p[], int i0, int iret[])
 {
 	// compute the centroid of the polygon in cx,cy
-	int i, j;
-	real a, cx, cy, q;
-	if (n == 1)
-	{
-		cx = p[0];
-		cy = p[1];
-	}
-	else if (n == 2)
-	{
-		cx = real(0.5) * (p[0] + p[2]);
-		cy = real(0.5) * (p[1] + p[3]);
-	}
-	else
-	{
-		a = 0;
-		cx = 0;
-		cy = 0;
-		for (i = 0; i < (n - 1); i++)
-		{
-			q = p[i * 2] * p[i * 2 + 3] - p[i * 2 + 2] * p[i * 2 + 1];
-			a += q;
-			cx += q * (p[i * 2] + p[i * 2 + 2]);
-			cy += q * (p[i * 2 + 1] + p[i * 2 + 3]);
-		}
-		q = p[n * 2 - 2] * p[1] - p[0] * p[n * 2 - 1];
-		if (b3_abs(a + q) > b3_real_epsilon)
-		{
-			a = 1.f / (real(3.0) * (a + q));
-		}
-		else
-		{
-			a = b3_real_max;
-		}
-		cx = a * (cx + q * (p[n * 2 - 2] + p[0]));
-		cy = a * (cy + q * (p[n * 2 - 1] + p[1]));
-	}
+	real total_area = 0;
+    real cx = 0;
+    real cy = 0;
+
+    // Divide the polygon into triangles，
+    // calculate the area and centroid of each triangle
+    // the centroid of a triangle is ( (x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3)
+    for (int i = 0; i < (n - 1); i++) {
+        real area = p[i * 2] * p[i * 2 + 3] - p[i * 2 + 2] * p[i * 2 + 1];
+        total_area += area;
+        cx += area * (p[i * 2] + p[i * 2 + 2]);
+        cy += area * (p[i * 2 + 1] + p[i * 2 + 3]);
+    }
+    real area = p[n * 2 - 2] * p[1] - p[0] * p[n * 2 - 1];
+    cx += area * (p[n * 2 - 2] + p[0]);
+    cy += area * (p[n * 2 - 1] + p[1]);
+    total_area += area;
+    // compute 1 / total_area
+    if (b3_abs(total_area) > b3_real_epsilon) {
+        total_area = 1.f / (real(3.0) * total_area);
+    } else {
+        total_area = b3_real_max;
+    }
+    cx = total_area * cx;
+    cy = total_area * cy;
+
 
 	// compute the angle of each point w.r.t. the centroid
 	real A[8];
-	for (i = 0; i < n; i++) A[i] = atan2f(p[i * 2 + 1] - cy, p[i * 2] - cx);
+	for (int i = 0; i < n; i++) {
+        // tan (theta) = (y - cy) / (x - cx)
+        A[i] = atan2f(p[i * 2 + 1] - cy, p[i * 2] - cx);
+    }
 
 	// search for points that have angles closest to A[i0] + i*(2*pi/m).
 	int avail[8];
-	for (i = 0; i < n; i++) avail[i] = 1;
-	avail[i0] = 0;
+	for (int i = 0; i < n; i++) {
+        avail[i] = 1;
+    }
+    avail[i0] = 0;
 	iret[0] = i0;
 	iret++;
-	for (j = 1; j < m; j++)
-	{
-		a = real(j) * (2 * M__PI / m) + A[i0];
-		if (a > M__PI) a -= 2 * M__PI;
-		real maxdiff = 1e9, diff;
+	for (int j = 1; j < MAX_CONTACT_POINT_COUNT; j++) {
+		real theta = real(j) * (2 * M__PI / MAX_CONTACT_POINT_COUNT) + A[i0];
+		if (theta > M__PI) {
+            theta -= 2 * M__PI;
+        }
+
+		real max_diff = 1e9, diff;
 
 		*iret = i0;  // iret is not allowed to keep this value, but it sometimes does, when diff=#QNAN0
 
-		for (i = 0; i < n; i++)
-		{
-			if (avail[i])
-			{
-				diff = b3_abs(A[i] - a);
-				if (diff > M__PI) diff = 2 * M__PI - diff;
-				if (diff < maxdiff)
-				{
-					maxdiff = diff;
+		for (int i = 0; i < n; i++) {
+			if (avail[i]) {
+				diff = b3_abs(A[i] - theta);
+				if (diff > M__PI) {
+                    diff = 2 * M__PI - diff;
+                }
+                if (diff < max_diff) {
+					max_diff = diff;
 					*iret = i;
 				}
 			}
@@ -214,19 +210,24 @@ void cullPoints2(int n, real p[], int m, int i0, int iret[])
 	}
 }
 
-int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
-             const b3Vec3r& p2, const b3Mat33r& R2, const b3Vec3r& side2,
-			 b3Vec3r& normal, real* depth, int* return_code, int maxc, b3ManifoldResult& output);
+int dBoxBox2(const b3Transformr& xfA, const b3Vec3r& side1,
+             const b3Transformr& xfB, const b3Vec3r& side2,
+			 b3Vec3r& normal, real* depth, b3ManifoldResult& output);
 
-int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
-             const b3Vec3r& p2, const b3Mat33r& R2, const b3Vec3r& side2,
-			 b3Vec3r& normal, real* depth, int* return_code, int maxc, b3ManifoldResult& output)
+int dBoxBox2(const b3Transformr& xfA, const b3Vec3r& side1,
+             const b3Transformr& xfB, const b3Vec3r& side2,
+			 b3Vec3r& normal, real* depth, b3ManifoldResult& output)
 {
 	const real fudge_factor = real(1.05);
 	b3Vec3r p, pp, normalC;
 	real R11, R12, R13, R21, R22, R23, R31, R32, R33,
 		Q11, Q12, Q13, Q21, Q22, Q23, Q31, Q32, Q33, s, s2, l;
 	int i, j, invert_normal, code;
+
+    const b3Mat33r& R1 = xfA.rotation_matrix();
+    const b3Mat33r& R2 = xfB.rotation_matrix();
+    const b3Vec3r& p1 = xfA.position();
+    const b3Vec3r& p2 = xfB.position();
 
 	// get vector from centers of box 1 to box 2, relative to box 1
 	p = p2 - p1;
@@ -389,12 +390,7 @@ int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
 		dLineClosestApproach(pa, ua, pb, ub, &alpha, &beta);
 
         pa += ua * alpha;
-        pb += ub * beta;
-		{
-			b3Vec3r pointInWorld;
-			output.add_contact_point(normal, pa, -*depth);
-			*return_code = code;
-		}
+        output.add_contact_point(normal, pa, -*depth);
 		return 1;
 	}
 
@@ -548,13 +544,9 @@ int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
 			cnum++;
 		}
 	}
-	if (cnum < 1) return 0;  // this should never happen
+    if (cnum < 1) return 0;  // this should never happen
 
-	// we can't generate more contacts than we actually have
-	if (maxc > cnum) maxc = cnum;
-	if (maxc < 1) maxc = 1;
-
-	if (cnum <= maxc) {
+	if (cnum <= 4) {
 		if (code < 4) {
 			// we have less contacts than we need, so we use them all
 			for (j = 0; j < cnum; j++) {
@@ -563,9 +555,7 @@ int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
 					pointInWorld[i] = point[j * 3 + i] + pa[i] + normal[i] * dep[j];
 				output.add_contact_point(normal, pointInWorld, -dep[j]);
 			}
-		}
-		else
-		{
+		} else {
 			// we have less contacts than we need, so we use them all
 			for (j = 0; j < cnum; j++) {
 				b3Vec3r pointInWorld;
@@ -574,40 +564,35 @@ int dBoxBox2(const b3Vec3r& p1, const b3Mat33r& R1, const b3Vec3r& side1,
 				output.add_contact_point(normal, pointInWorld, -dep[j]);
 			}
 		}
-	}
-	else
-	{
+	} else {
 		// we have more contacts than are wanted, some of them must be culled.
 		// find the deepest point, it is always the first contact.
 		int i1 = 0;
-		real maxdepth = dep[0];
+		real max_depth = dep[0];
 		for (i = 1; i < cnum; i++) {
-			if (dep[i] > maxdepth) {
-				maxdepth = dep[i];
+			if (dep[i] > max_depth) {
+				max_depth = dep[i];
 				i1 = i;
 			}
 		}
 
-		int iret[8];
-		cullPoints2(cnum, ret, maxc, i1, iret);
+        // cull to 4 points
+		int iret[MAX_CONTACT_POINT_COUNT];
+		cullPoints2(cnum, ret, i1, iret);
 
-		for (j = 0; j < maxc; j++) {
+		for (j = 0; j < MAX_CONTACT_POINT_COUNT; j++) {
 			b3Vec3r posInWorld;
 			for (i = 0; i < 3; i++)
 				posInWorld[i] = point[iret[j] * 3 + i] + pa[i];
-			if (code < 4)
-			{
+			if (code < 4) {
 				output.add_contact_point(normal, posInWorld + normal * dep[iret[j]], -dep[iret[j]]);
-			}
-			else
-			{
+			} else {
 				output.add_contact_point(normal, posInWorld, -dep[iret[j]]);
 			}
 		}
-		cnum = maxc;
+		cnum = 4;
 	}
 
-	*return_code = code;
 	return cnum;
 }
 
@@ -616,18 +601,17 @@ void b3BoxBoxDetector::get_closest_points(b3ManifoldResult &output)
     b3Body* bodyA = m_fixtureA->get_body();
     b3Body* bodyB = m_fixtureB->get_body();
 
-    b3Mat33r Ra = bodyA->get_quaternion().rotation_matrix();
-    b3Mat33r Rb = bodyB->get_quaternion().rotation_matrix();
+    b3Transformr xfA, xfB;
+    xfA.set(bodyA->get_position(), bodyA->get_quaternion());
+    xfB.set(bodyB->get_position(), bodyB->get_quaternion());
 
 	b3Vec3r normal;
 	real depth;
-	int return_code;
-	int maxc = 4;
 
-    b3CubeShape* boxA = (b3CubeShape*)m_fixtureA->get_shape();
-    b3CubeShape* boxB = (b3CubeShape*)m_fixtureB->get_shape();
+    auto boxA = (b3CubeShape*)m_fixtureA->get_shape();
+    auto boxB = (b3CubeShape*)m_fixtureB->get_shape();
 
-	dBoxBox2(bodyA->get_position(), Ra, boxA->m_xyz,
-			 bodyB->get_position(), Rb, boxB->m_xyz,
-			 normal, &depth, &return_code, maxc, output);
+	dBoxBox2(xfA, boxA->m_xyz,
+			 xfB, boxB->m_xyz,
+			 normal, &depth, output);
 }
