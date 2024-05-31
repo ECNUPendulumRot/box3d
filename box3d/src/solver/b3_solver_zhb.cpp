@@ -41,9 +41,6 @@ void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3Ti
     // after solver all contacts and friction constraints, we copy the results back to bodies.
 
     // The number of velocity constraints is same to the number of contacts.
-    m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactVelocityConstraint));
-    m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_contact_count * sizeof(b3ContactPositionConstraint));
-
     m_body_count = island->get_body_count();
     b3_assert(m_body_count > 0);
 
@@ -60,7 +57,6 @@ void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3Ti
         m_vs[i] = b->get_linear_velocity();
         m_ws[i] = b->get_angular_velocity();
     }
-    ////////////////////////// Initialize Contact Constraints //////////////////////////
 }
 
 
@@ -104,11 +100,18 @@ int b3SolverZHB::solve(bool allow_sleep)
     def.block_allocator = m_block_allocator;
 
     b3ContactSolverZHB contact_solver(&def);
-    
+
     contact_solver.init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        contact_solver.solve_velocity_constraints();
+        if(i) spdlog::info("iteration {} is start",i+1);
+        bool violate = false;
+        //spdlog::info("iteration {} is start",i+1);
+        contact_solver.solve_velocity_constraints(violate);
+        if(!violate) {
+            if(i) spdlog::info("end the solving");
+            break;
+        }
     }
 
     // integrate positions and rotations.

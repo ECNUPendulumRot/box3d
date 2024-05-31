@@ -172,12 +172,16 @@ public:
         m_p = p;
     }
 
-    b3Vec3r get_linear_velocity() const {
+    const b3Vec3r& get_linear_velocity() const {
         return m_v;
     }
 
-    b3Vec3r get_angular_velocity() const {
+    const b3Vec3r& get_angular_velocity() const {
         return m_w;
+    }
+
+    const b3Vec3r& get_local_center() {
+        return m_local_center;
     }
 
     void set_linear_velocity(b3Vec3r& v) {
@@ -188,7 +192,7 @@ public:
         m_w = w;
     }
 
-    int32 get_island_index() const {
+    const int32& get_island_index() const {
         return m_island_index;
     }
 

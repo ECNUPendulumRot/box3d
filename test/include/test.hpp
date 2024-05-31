@@ -10,7 +10,6 @@
 #include "box3d.hpp"
 #include "draw.hpp"
 
-#include "json.hpp"
 #include <fstream>
 #include "utils.hpp"
 

@@ -15,6 +15,7 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
     m_step = def->step;
     m_contacts = def->contacts;
     m_count = def->count;
+
     m_ps = def->ps;
     m_qs = def->qs;
     m_vs = def->vs;
@@ -31,78 +32,62 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
 
         b3Fixture* fixture_a = contact->get_fixture_a();
         b3Fixture* fixture_b = contact->get_fixture_b();
-
+        b3Shape* shape_a = fixture_a->get_shape();
+        b3Shape* shape_b = fixture_b->get_shape();
         b3Body* body_a = fixture_a->get_body();
         b3Body* body_b = fixture_b->get_body();
-
+        real radius_a = shape_a->get_radius();
+        real radius_b = shape_b->get_radius();
         b3Manifold* manifold = contact->get_manifold();
 
         int32 point_count = manifold->m_point_count;
-
         b3_assert(point_count > 0);
+
         //////////////////////////// Velocity Constraints ////////////////////////////
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-        vc->m_restitution = contact->get_restitution();
         vc->m_friction = contact->get_friction();
-        vc->m_contact_index = i;
-        vc->m_point_count = point_count;
+        vc->m_restitution = contact->get_restitution();
         vc->m_restitution_threshold = contact->get_restitution_threshold();
 
         vc->m_index_a = body_a->get_island_index();
-        vc->m_mass_a = body_a->get_mass();
-        vc->m_inv_mass_a = body_a->get_inv_mass();
-
-        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
-
-        vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
-        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
-
         vc->m_index_b = body_b->get_island_index();
-
-        vc->m_mass_b = body_b->get_mass();
+        vc->m_inv_mass_a = body_a->get_inv_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
 
+        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
+        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
         const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
+        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
 
-        vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
-        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia();
-        vc->m_penetration = manifold->m_penetration;
+        vc->m_point_count = point_count;
         vc->m_contact_index = i;
-
-        // the center of body in the world frame
-        b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
-        b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
-
-        b3Vec3r center_a = xf_a.transform(body_a->get_local_center());
-        b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
 
         //////////////////////////// Position Constraints ////////////////////////////
         b3ContactPositionConstraint* pc = m_position_constraints + i;
         pc->m_index_a = vc->m_index_a;
         pc->m_index_b = vc->m_index_b;
-
-        pc->m_inv_mass_a = body_a->get_inv_mass();
-        pc->m_inv_mass_b = body_b->get_inv_mass();
-
-        pc->m_center_a = center_a;
-        pc->m_center_b = center_b;
-
+        pc->m_inv_mass_a = vc->m_inv_mass_a;
+        pc->m_inv_mass_b = vc->m_inv_mass_b;
+        pc->m_local_center_a = body_a->get_local_center();
+        pc->m_local_center_b = body_b->get_local_center();
         pc->m_inv_I_a = vc->m_inv_I_a;
         pc->m_inv_I_b = vc->m_inv_I_b;
         pc->m_local_normal = manifold->m_local_normal;
-        pc->m_point_count = point_count;
         pc->m_local_point = manifold->m_local_point;
+        pc->m_point_count = point_count;
+        pc->m_radius_a = radius_a;
+        pc->m_radius_b = radius_b;
         pc->m_type = manifold->m_type;
-        pc->m_radius_a = fixture_a->get_shape()->get_radius();
-        pc->m_radius_b = fixture_b->get_shape()->get_radius();
 
         for (int32 j = 0; j < point_count; j++) {
 
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
             b3ManifoldPoint* manifold_point = manifold->m_points + j;
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
+            vcp->m_ra.set_zero();
+            vcp->m_rb.set_zero();
 
-            vcp->m_ra = manifold_point->m_local_point - center_a;
-            vcp->m_rb = manifold_point->m_local_point - center_b;
+            vcp->m_normal_mass = 0.0;
+            vcp->m_bias_velocity = 0.0;
 
             pc->m_local_points[j] = manifold_point->m_local_point;
         }
@@ -116,9 +101,20 @@ void b3ContactSolver::init_velocity_constraints()
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         b3ContactPositionConstraint* pc = m_position_constraints + i;
+
+        real radius_a = pc->m_radius_a;
+        real radius_b = pc->m_radius_b;
         b3Manifold* manifold = m_contacts[vc->m_contact_index]->get_manifold();
+
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
+
+        const real& m_a = vc->m_inv_mass_a;
+        const real& m_b = vc->m_inv_mass_b;
+        const b3Mat33r& I_a = vc->m_inv_I_a;
+        const b3Mat33r& I_b = vc->m_inv_I_b;
+        const b3Vec3r& local_center_a = pc->m_local_center_a;
+        const b3Vec3r& local_center_b = pc->m_local_center_b;
 
         b3Vec3r p_a = m_ps[index_a];
         b3Quatr q_a = m_qs[index_a];
@@ -130,11 +126,11 @@ void b3ContactSolver::init_velocity_constraints()
         b3Vec3r v_b = m_vs[index_b];
         b3Vec3r w_b = m_ws[index_b];
 
-        b3Transr xf_a(p_a, q_a);
-        b3Transr xf_b(p_b, q_b);
-
-        real radius_a = pc->m_radius_a;
-        real radius_b = pc->m_radius_b;
+        b3Transr xf_a, xf_b;
+        xf_a.set_quaternion(q_a);
+        xf_b.set_quaternion(q_b);
+        xf_a.set_position(p_a - xf_a.rotate(local_center_a));
+        xf_b.set_position(p_b - xf_b.rotate(local_center_b));
 
         b3WorldManifold world_manifold;
         world_manifold.initialize(manifold, xf_a, radius_a, xf_b, radius_b);
@@ -148,15 +144,15 @@ void b3ContactSolver::init_velocity_constraints()
             vcp->m_ra = world_manifold.points[j] - p_a;
             vcp->m_rb = world_manifold.points[j] - p_b;
 
-            b3Vec3r ra_n = vcp->m_ra.cross(vc->m_normal);
-            b3Vec3r rb_n = vcp->m_rb.cross(vc->m_normal);
+            b3Vec3r rn_a = vcp->m_ra.cross(vc->m_normal);
+            b3Vec3r rn_b = vcp->m_rb.cross(vc->m_normal);
 
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
-            real jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
-                       (ra_n * vc->m_inv_I_a).dot(ra_n) +
-                       (rb_n * vc->m_inv_I_b).dot(rb_n);
+            real jmj = m_a + m_b +
+                       (rn_a * I_a).dot(rn_a) +
+                       (rn_b * I_b).dot(rn_b);
 
             vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
 
@@ -168,15 +164,10 @@ void b3ContactSolver::init_velocity_constraints()
             vcp->m_bias_velocity = 0.0;
             if (v_rel < -vc->m_restitution_threshold) {
                 vcp->m_bias_velocity = -vc->m_restitution * v_rel;
-                int32 k = 0;
             }
 
             vcp->m_normal_impulse = 0.0;
-            vcp->m_normal_contact_impulse = 0.0;
-            vcp->m_tangent_impulse = 0.0;
         }
-        vc->m_normal_contact_impulse = 0.0;
-        vc->m_normal_collision_impulse = 0.0;
 
         if (point_count > 1 && g_block_solve) {
 
@@ -230,15 +221,21 @@ void b3ContactSolver::solve_velocity_constraints()
     for (int32 i = 0; i < m_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
+        const int32& index_a = vc->m_index_a;
+        const int32& index_b = vc->m_index_b;
+        const real& m_a = vc->m_inv_mass_a;
+        const real& m_b = vc->m_inv_mass_b;
+        const b3Mat33r& I_a = vc->m_inv_I_a;
+        const b3Mat33r& I_b = vc->m_inv_I_b;
+        const int32& point_count = vc->m_point_count;
+
+        b3Vec3r v_a = m_vs[index_a];
+        b3Vec3r w_a = m_ws[index_a];
+        b3Vec3r v_b = m_vs[index_b];
+        b3Vec3r w_b = m_ws[index_b];
         const b3Vec3r& normal = vc->m_normal;
 
-        b3Vec3r v_a = m_vs[vc->m_index_a];
-        b3Vec3r w_a = m_ws[vc->m_index_a];
-
-        b3Vec3r v_b = m_vs[vc->m_index_b];
-        b3Vec3r w_b = m_ws[vc->m_index_b];
-
-        if (vc->m_point_count == 1 || !g_block_solve) {
+        if (point_count == 1 || !g_block_solve) {
 
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
@@ -246,23 +243,17 @@ void b3ContactSolver::solve_velocity_constraints()
                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
 
                 real vn = v_rel.dot(normal);
+                real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
 
-                real lambda = 0;
-
-                lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_impulse;
                 vcp->m_normal_impulse = new_impulse;
 
-                // apply normal Impulse
-                // (0,0, -1)
-                // (0,0, -0.666)
                 b3Vec3r impulse = lambda * normal;
-
-                v_a = v_a - vc->m_inv_mass_a * impulse;
-                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
-                v_b = v_b + vc->m_inv_mass_b * impulse;
-                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
+                v_a = v_a - m_a * impulse;
+                w_a = w_a - I_a * vcp->m_ra.cross(impulse);
+                v_b = v_b + m_b * impulse;
+                w_b = w_b + I_b * vcp->m_rb.cross(impulse);
             }
 
         } else {

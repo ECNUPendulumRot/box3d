@@ -46,6 +46,9 @@ public:
         m_r = q.rotation_matrix();
     }
 
+    void set_quaternion(const b3Quat<T>& q) {
+        m_r = q.rotation_matrix();
+    }
 
     inline const b3Mat33<T>& rotation_matrix() const {
         return m_r;

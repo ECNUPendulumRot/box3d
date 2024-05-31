@@ -52,6 +52,7 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
     } else {
         m_velocity_constraints = nullptr;
         m_violated_constraints = nullptr;
+        m_position_constraints = nullptr;
         m_violated_count = 0;
     }
 
@@ -87,83 +88,65 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
 
         b3Fixture* fixture_a = contact->get_fixture_a();
         b3Fixture* fixture_b = contact->get_fixture_b();
-
+        b3Shape* shape_a = fixture_a->get_shape();
+        b3Shape* shape_b = fixture_b->get_shape();
         b3Body* body_a = fixture_a->get_body();
         b3Body* body_b = fixture_b->get_body();
-
+        real radius_a = shape_a->get_radius();
+        real radius_b = shape_b->get_radius();
         b3Manifold* manifold = contact->get_manifold();
 
         int32 point_count = manifold->m_point_count;
-
         b3_assert(point_count > 0);
+
         //////////////////////////// Velocity Constraints ////////////////////////////
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-        vc->m_restitution = contact->get_restitution();
         vc->m_friction = contact->get_friction();
-        vc->m_contact_index = i;
-        vc->m_point_count = point_count;
+        vc->m_restitution = contact->get_restitution();
         vc->m_restitution_threshold = contact->get_restitution_threshold();
 
         vc->m_index_a = body_a->get_island_index();
-        vc->m_mass_a = body_a->get_mass();
-        vc->m_inv_mass_a = body_a->get_inv_mass();
-
-        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
-
-        vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
-        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
-
         vc->m_index_b = body_b->get_island_index();
-
-        vc->m_mass_b = body_b->get_mass();
+        vc->m_inv_mass_a = body_a->get_inv_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
 
+        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
+        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
         const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
+        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
 
-        vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
-        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia();
-        vc->m_penetration = manifold->m_penetration;
+        vc->m_point_count = point_count;
         vc->m_contact_index = i;
-
-        // the center of body in the world frame
-        b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
-        b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
-
-        b3Vec3r center_a = xf_a.transform(body_a->get_local_center());
-        b3Vec3r center_b = xf_b.transform(body_b->get_local_center());
 
         //////////////////////////// Position Constraints ////////////////////////////
         b3ContactPositionConstraint* pc = m_position_constraints + i;
         pc->m_index_a = vc->m_index_a;
         pc->m_index_b = vc->m_index_b;
-
-        pc->m_inv_mass_a = body_a->get_inv_mass();
-        pc->m_inv_mass_b = body_b->get_inv_mass();
-
-        pc->m_center_a = center_a;
-        pc->m_center_b = center_b;
-
+        pc->m_inv_mass_a = vc->m_inv_mass_a;
+        pc->m_inv_mass_b = vc->m_inv_mass_b;
+        pc->m_local_center_a = body_a->get_local_center();
+        pc->m_local_center_b = body_b->get_local_center();
         pc->m_inv_I_a = vc->m_inv_I_a;
         pc->m_inv_I_b = vc->m_inv_I_b;
         pc->m_local_normal = manifold->m_local_normal;
-        pc->m_point_count = point_count;
         pc->m_local_point = manifold->m_local_point;
+        pc->m_point_count = point_count;
+        pc->m_radius_a = radius_a;
+        pc->m_radius_b = radius_b;
         pc->m_type = manifold->m_type;
-        pc->m_radius_a = fixture_a->get_shape()->get_radius();
-        pc->m_radius_b = fixture_b->get_shape()->get_radius();
 
         for (int32 j = 0; j < point_count; j++) {
 
-            b3VelocityConstraintPoint* vcp = vc->m_points + j;
             b3ManifoldPoint* manifold_point = manifold->m_points + j;
+            b3VelocityConstraintPoint* vcp = vc->m_points + j;
+            vcp->m_ra.set_zero();
+            vcp->m_rb.set_zero();
 
-            vcp->m_ra = manifold_point->m_local_point - center_a;
-            vcp->m_rb = manifold_point->m_local_point - center_b;
+            vcp->m_normal_mass = 0.0;
+            vcp->m_bias_velocity = 0.0;
 
             pc->m_local_points[j] = manifold_point->m_local_point;
         }
-
-
     }
 }
 
@@ -238,11 +221,23 @@ int b3SolverGR::solve(bool allow_sleep)
 void b3SolverGR::init_velocity_constraints()
 {
     for(int32 i = 0; i < m_contact_count; ++i) {
+
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         b3ContactPositionConstraint* pc = m_position_constraints + i;
-        b3Manifold* manifold = m_contacts[i]->get_manifold();
+
+        real radius_a = pc->m_radius_a;
+        real radius_b = pc->m_radius_b;
+        b3Manifold* manifold = m_contacts[vc->m_contact_index]->get_manifold();
+
         int32 index_a = vc->m_index_a;
         int32 index_b = vc->m_index_b;
+
+        const real& m_a = vc->m_inv_mass_a;
+        const real& m_b = vc->m_inv_mass_b;
+        const b3Mat33r& I_a = vc->m_inv_I_a;
+        const b3Mat33r& I_b = vc->m_inv_I_b;
+        const b3Vec3r& local_center_a = pc->m_local_center_a;
+        const b3Vec3r& local_center_b = pc->m_local_center_b;
 
         b3Vec3r p_a = m_ps[index_a];
         b3Quatr q_a = m_qs[index_a];
@@ -254,32 +249,33 @@ void b3SolverGR::init_velocity_constraints()
         b3Vec3r v_b = m_vs[index_b];
         b3Vec3r w_b = m_ws[index_b];
 
-        b3Transr xf_a(p_a, q_a);
-        b3Transr xf_b(p_b, q_b);
-
-        real radius_a = pc->m_radius_a;
-        real radius_b = pc->m_radius_b;
+        b3Transr xf_a, xf_b;
+        xf_a.set_quaternion(q_a);
+        xf_b.set_quaternion(q_b);
+        xf_a.set_position(p_a - xf_a.rotate(local_center_a));
+        xf_b.set_position(p_b - xf_b.rotate(local_center_b));
 
         b3WorldManifold world_manifold;
         world_manifold.initialize(manifold, xf_a, radius_a, xf_b, radius_b);
 
         vc->m_normal = world_manifold.normal;
 
-        for (int j = 0; j < vc->m_point_count; ++j) {
+        int32 point_count = vc->m_point_count;
+        for (int32 j = 0; j < point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
 
             vcp->m_ra = world_manifold.points[j] - p_a;
             vcp->m_rb = world_manifold.points[j] - p_b;
 
-            b3Vec3r ra_n = vcp->m_ra.cross(vc->m_normal);
-            b3Vec3r rb_n = vcp->m_rb.cross(vc->m_normal);
+            b3Vec3r rn_a = vcp->m_ra.cross(vc->m_normal);
+            b3Vec3r rn_b = vcp->m_rb.cross(vc->m_normal);
 
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
-            real jmj = vc->m_inv_mass_a + vc->m_inv_mass_b +
-                       (ra_n * vc->m_inv_I_a).dot(ra_n) +
-                       (rb_n * vc->m_inv_I_b).dot(rb_n);
+            real jmj = m_a + m_b +
+                       (rn_a * I_a).dot(rn_a) +
+                       (rn_b * I_b).dot(rn_b);
 
             vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
 
@@ -291,15 +287,10 @@ void b3SolverGR::init_velocity_constraints()
             vcp->m_bias_velocity = 0.0;
             if (v_rel < -vc->m_restitution_threshold) {
                 vcp->m_bias_velocity = -vc->m_restitution * v_rel;
-                int32 k = 0;
             }
 
             vcp->m_normal_impulse = 0.0;
-            vcp->m_normal_contact_impulse = 0.0;
-            vcp->m_tangent_impulse = 0.0;
         }
-        vc->m_normal_contact_impulse = 0.0;
-        vc->m_normal_collision_impulse = 0.0;
     }
 }
 
@@ -324,7 +315,10 @@ void b3SolverGR::find_violated_constraints() {
                 for (int32 k = 0; k < point_count; ++k) {
                     b3VelocityConstraintPoint* vcp = vc->m_points + k;
                     real v_rel_in = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
-                    vcp->m_bias_velocity = - vc->m_restitution * v_rel_in;
+
+
+                    vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+
                 }
                 break;
             }
