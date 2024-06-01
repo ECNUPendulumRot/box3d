@@ -4,7 +4,6 @@
 #include "utils.hpp"
 #include "include/gl_render_triangles.hpp"
 
-
 Test::Test()
 {
     b3Vec3r gravity(0.0, 0.0, -10.0);
@@ -13,6 +12,8 @@ Test::Test()
     m_world->set_debug_draw(&g_debug_draw);
     m_world->set_contact_listener(this);
 
+    print_once = true;
+    count = 0;
 }
 
 
@@ -60,6 +61,36 @@ void Test::step(Settings &settings) {
             g_debug_draw.draw_point(p1, 10.0f, b3Color(1.0f, 0.0f, 0.0f));
         }
     }
+
+    count++;
+    print_first_not_symmetry();
+
+    spdlog::info("====frame {}=====", count);
+}
+
+
+void Test::print_first_not_symmetry()
+{
+
+//    b3Body** bodies = utils.get_bodies();
+//    int index = 2;
+//    // layer
+//    for (int i = 2; i < 10; i++) {
+//        for (int j = 0; j < i / 2; j++) {
+//            b3Body* left_body = bodies[index + j];
+//            b3Body* right_body = bodies[index + i - j - 1];
+//
+//            b3Vec3r left_position = left_body->get_position();
+//            b3Vec3r right_position = right_body->get_position();
+//
+//            real center_x = left_position.x + right_position.x;
+//            if (center_x > 0.01 && print_once) {
+//                spdlog::info("======================not symmetric at frame {}==================", count);
+//                print_once = false;
+//            }
+//        }
+//        index += i;
+//    }
 }
 
 

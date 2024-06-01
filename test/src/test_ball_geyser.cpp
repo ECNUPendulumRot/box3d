@@ -5,7 +5,7 @@ class TestBallGeyser : public Test {
 
     b3Vec3r m_init_velocity{0, 10, 0};
 
-    int layer = 9;
+    int layer = 7;
 
 public:
 

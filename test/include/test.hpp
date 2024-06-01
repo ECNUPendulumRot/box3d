@@ -43,6 +43,9 @@ protected:
 
     Utils utils;
 
+    bool print_once = true;
+    int count = 0;
+
 public:
 
     Test();
@@ -56,6 +59,8 @@ public:
     virtual void step(Settings& settings);
 
     virtual void pre_solve(b3Contact* contact, const b3Manifold* old_manifold);
+
+    void print_first_not_symmetry();
 };
 
 

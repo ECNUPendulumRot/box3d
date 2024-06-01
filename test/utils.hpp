@@ -49,6 +49,10 @@ public:
         file_is_open = false;
     }
 
+    b3Body** get_bodies() {
+        return m_bodies;
+    }
+
 };
 
 
