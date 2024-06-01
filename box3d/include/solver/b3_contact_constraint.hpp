@@ -10,8 +10,10 @@ struct b3VelocityConstraintPoint {
     b3Vec3r m_rb;
     real m_normal_collision_impulse = 0;
     real m_normal_contact_impulse = 0;
-    real m_tangent1_impulse = 0;
-    real m_tangent2_impulse = 0;
+    real m_tangent1_collision_impulse = 0;
+    real m_tangent2_collision_impulse = 0;
+    real m_tangent1_contact_impulse = 0;
+    real m_tangent2_contact_impulse = 0;
     real m_normal_mass = 0;
     real m_tangent1_mass = 0;
     real m_tangent2_mass = 0;
@@ -35,12 +37,8 @@ struct b3ContactVelocityConstraint {
     b3Mat33r m_inv_I_a;
     b3Mat33r m_inv_I_b;
 
-    real m_target_normal_angular_velocity;
-
     int32 m_point_count;
     int32 m_contact_index;
-
-    b3Mat33r m_inv_I_ab;
 
     real m_restitution;
 
@@ -50,11 +48,6 @@ struct b3ContactVelocityConstraint {
     real m_normal_contact_impulse = 0;
 
     real m_friction;
-
-    bool m_is_sphere[2];
-    real m_radius[2];
-    real m_inv_radius[2];
-    real m_use_support_lambda[2][2];
 };
 
 

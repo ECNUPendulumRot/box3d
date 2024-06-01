@@ -100,7 +100,6 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
     step.m_dt = dt;
     step.m_velocity_iterations = velocity_iterations;
     step.m_position_iterations = position_iterations;
-    step.m_integral_method = e_implicit;
     step.m_inv_dt = dt > 0.0 ? real(1.0) / dt : real(0.0);
 
     // update contacts, aabb updates, when aabb not overlapping, delete the contact,

@@ -59,6 +59,7 @@ void b3PlaneSphereCollisionAlgorithm::process_collision(
     real distance = b3_sqrt(distance2) - total_radius;
     // transform normal to world space
     normal = xfA.transform(normal).normalized();
+    closest_point = xfA.transform(closest_point);
 
     b3ManifoldResult result(bodyA, bodyB, manifold);
     result.add_contact_point(normal, closest_point, distance);

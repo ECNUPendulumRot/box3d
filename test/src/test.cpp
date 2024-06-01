@@ -32,7 +32,7 @@ void Test::step(Settings &settings) {
 
     m_point_count = 0;
 
-    m_world->step(time_step, 100, 32);
+    m_world->step(time_step, 8, 32);
 
     m_world->debug_draw();
 
@@ -57,7 +57,16 @@ void Test::step(Settings &settings) {
 
 void Test::pre_solve(b3Contact *contact, const b3Manifold* old_manifold)
 {
-    b3Manifold* manifold = contact->get_manifold();
+//    b3Manifold* manifold = contact->get_manifold();
+//
+//    for (int i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
+//        b3ManifoldPoint& point = manifold->m_points[i];
+//
+//        ContactPoint* cp = m_points + m_point_count;
+//        cp->position = point.m_local_point;
+//
+//        m_point_count++;
+//    }
 
     b3PersistentManifold* persistentManifold = contact->get_persistent_manifold();
 
@@ -71,27 +80,17 @@ void Test::pre_solve(b3Contact *contact, const b3Manifold* old_manifold)
         ContactPoint* cp = m_points + m_point_count;
         cp->position = point.m_position_world_on_A;
 
-        spdlog::info("fixtureA point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
+        // spdlog::info("fixtureA point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
 
         m_point_count++;
 
         cp++;
         cp->position = point.m_position_world_on_B;
 
-        spdlog::info("fixtureB point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
+        // spdlog::info("fixtureB point: ({}, {}, {})", cp->position.x, cp->position.y, cp->position.z);
 
         m_point_count++;
     }
-
-
-//    for (int i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
-//        ContactPoint* cp = m_points + m_point_count;
-//
-//        cp->position;
-//        cp->normal;
-//
-//        m_point_count++;
-//    }
 }
 
 

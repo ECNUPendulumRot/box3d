@@ -46,7 +46,7 @@ public:
             b3Body* ground_body2 = m_world->create_body(body_def);
 
             b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(20, 6);
+            ground_shape.set_as_plane(20, 40);
 
             b3FixtureDef ground_fd;
             ground_fd.m_shape = &ground_shape;

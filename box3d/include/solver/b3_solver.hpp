@@ -45,6 +45,8 @@ protected:
 
     b3Vec3r* m_ws = nullptr;
 
+    b3Vec3r* m_impulses = nullptr;
+
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
     b3TimeStep* m_timestep = nullptr;
@@ -52,9 +54,6 @@ protected:
     b3BlockAllocator* m_block_allocator = nullptr;
 
     b3Body** m_bodies;
-
-    // TODO: not used now
-    b3IntegralMethod m_method;
 
     /**
      * @brief write the velocity and position back to bodies.
@@ -77,6 +76,8 @@ public:
 
     // TODO: This function is not used now, it's effect not good.
     void correct_penetration();
+
+    void solve_missing_angular_dimension();
 
     int solve();
 
