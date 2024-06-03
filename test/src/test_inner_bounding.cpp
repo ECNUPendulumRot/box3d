@@ -2,7 +2,7 @@
 
 class TestInnerBounding :public Test {
 
-    int c_count = 6;
+    int c_count = 8;
 
     real radius = 0.5;
 

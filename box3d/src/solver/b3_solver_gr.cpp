@@ -295,9 +295,11 @@ void b3SolverGR::init_velocity_constraints()
 }
 
 
-void b3SolverGR::find_violated_constraints() {
+bool b3SolverGR::find_violated_constraints() {
 
     m_violated_count = 0;
+
+    real min_rel = b3_real_max;
 
     for (int32 i = 0; i < m_contact_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
@@ -311,6 +313,7 @@ void b3SolverGR::find_violated_constraints() {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
             real v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
             if (v_rel < 0) {
+                min_rel = b3_min(min_rel, v_rel);
                 m_violated_constraints[m_violated_count++] = vc;
                 for (int32 k = 0; k < point_count; ++k) {
                     b3VelocityConstraintPoint* vcp = vc->m_points + k;
@@ -324,15 +327,20 @@ void b3SolverGR::find_violated_constraints() {
             }
         }
     }
+    if (min_rel < -b3_real_epsilon){
+        return true;
+    }
+    else
+        return false;
 }
 
 
 void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
 {
 
-    find_violated_constraints();
-
-   // int32 iteration_max = 50;
+    bool need_solve = find_violated_constraints();
+    if (!need_solve)
+        return;
 
     int32 iteration = 1;
 
@@ -344,6 +352,7 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
             spdlog::info("violated pair: {}, {}", vc->m_index_a, vc->m_index_b);
         }
         for (int32 it = 0; it < velocity_iterations; it++) {
+            real residual = 0;
             for (int32 i = 0; i < m_violated_count; i++) {
                 b3ContactVelocityConstraint* vc = m_violated_constraints[i];
 
@@ -358,7 +367,6 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
                     b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
                     b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
-
                     real vn = v_rel.dot(normal);
 
                     real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
@@ -368,6 +376,8 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
                     vcp->m_normal_impulse = new_impulse;
 
                     b3Vec3r impulse = lambda * normal;
+
+                    residual = b3_max(residual, lambda * lambda);
 
                     v_a = v_a - vc->m_inv_mass_a * impulse;
                     w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
@@ -379,9 +389,15 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
                 m_vs[vc->m_index_b] = v_b;
                 m_ws[vc->m_index_a] = w_a;
                 m_ws[vc->m_index_b] = w_b;
+
+                if (residual <= 0) {
+                    break;
+                }
             }
         }
-        find_violated_constraints();
+        need_solve = find_violated_constraints();
+        if (!need_solve)
+            break;
     }
 }
 

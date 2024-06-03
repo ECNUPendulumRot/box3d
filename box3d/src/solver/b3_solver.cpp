@@ -104,7 +104,10 @@ int b3Solver::solve(bool allow_sleep)
     contact_solver.init_velocity_constraints();
 
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
-        contact_solver.solve_velocity_constraints();
+        bool exit = contact_solver.solve_velocity_constraints();
+        if (exit){
+            break;
+        }
     }
 
     // integrate positions and rotations.

@@ -192,7 +192,7 @@ void update_ui() {
     ImGui::SetNextWindowPos({g_camera.m_width - menuWidth - 10.0f, 10.0f});
     ImGui::SetNextWindowSize({menuWidth, g_camera.m_height - 20.0f});
     ImGui::Begin("Tools", &g_debug_draw.m_show_ui, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-    ImGui::SliderInt("Velocity Iteration", &s_settings.m_velocity_iteration, 0, 100);
+    ImGui::SliderInt("Velocity Iteration", &s_settings.m_velocity_iteration, 0, 10000);
     ImGui::SliderInt("Position Iteration", &s_settings.m_position_iteration, 0, 100);
     ImGui::SliderFloat("Hertz", &s_settings.m_hertz, 5.0f, 144.0f, "%.0f hz");
 

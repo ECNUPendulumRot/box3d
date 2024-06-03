@@ -216,8 +216,9 @@ void b3ContactSolver::init_velocity_constraints()
 }
 
 
-void b3ContactSolver::solve_velocity_constraints()
+bool b3ContactSolver::solve_velocity_constraints()
 {
+    real residual = 0;
     for (int32 i = 0; i < m_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
@@ -247,6 +248,11 @@ void b3ContactSolver::solve_velocity_constraints()
 
                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_impulse;
+
+                residual = b3_max(residual, lambda * lambda);
+
+
+
                 vcp->m_normal_impulse = new_impulse;
 
                 b3Vec3r impulse = lambda * normal;
@@ -300,6 +306,12 @@ void b3ContactSolver::solve_velocity_constraints()
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
     }
+
+    if (residual <= 0) {
+        return true;
+    }
+    return false;
+    
 }
 
 

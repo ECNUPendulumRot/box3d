@@ -52,7 +52,7 @@ public:
 
     void init_velocity_constraints();
 
-    void solve_velocity_constraints();
+    bool solve_velocity_constraints();
 
     bool solve_position_constraints();
 };

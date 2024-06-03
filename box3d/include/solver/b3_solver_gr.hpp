@@ -72,7 +72,7 @@ public:
 
     ~b3SolverGR();
 
-    void find_violated_constraints();
+    bool find_violated_constraints();
 };
 
 
