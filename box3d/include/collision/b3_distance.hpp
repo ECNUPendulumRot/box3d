@@ -13,6 +13,11 @@ struct b3DistanceProxy {
         ;
     }
 
+    inline const b3Vec3r& get_vertex(int32 index) const {
+        b3_assert(0 <= index && index <= m_count);
+        return m_vertices[index];
+    }
+
     void set(const b3Shape* shape, int32 index);
 
     b3Vec3r m_buffer[2];

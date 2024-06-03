@@ -42,5 +42,6 @@ void b3_time_of_impact(b3TOIOutput *output, const b3TOIInput *input)
         distance_input.transform_a = xf_a;
         distance_input.transform_b = xf_b;
         b3DistanceOutput distance_output;
+        b3_distance(&distance_output, &cache, &distance_input);
     }
 }
