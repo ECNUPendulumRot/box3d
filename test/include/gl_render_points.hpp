@@ -22,7 +22,7 @@ struct GLRenderPoints
 
     void flush();
 
-    enum { e_maxVertices = 512 };
+    enum { e_maxVertices = 1 << 15 };
     b3Vec3r m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
     float m_sizes[e_maxVertices];

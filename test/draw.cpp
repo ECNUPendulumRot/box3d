@@ -140,8 +140,8 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
     // vertex normal
     float nx, ny, nz, lengthInv = 1.0f / radius;
 
-    const int32 sector_count = 16;
-    const int32 stack_count = 16;
+    const int32 sector_count = 8;
+    const int32 stack_count = 8;
 
     b3Vec3r vertices[(sector_count + 1) * (stack_count + 1)];
     b3Vec3r normals[(sector_count + 1) * (stack_count + 1)];

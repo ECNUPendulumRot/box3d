@@ -42,6 +42,7 @@ set (TESTBED_SOURCE_FILES
         src/test_position_solver.cpp
 
         src/test_ball_geyser.cpp
+        src/test_inner_bounding.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

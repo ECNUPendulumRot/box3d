@@ -23,7 +23,7 @@ struct gl_render_triangles
 
     void flush();
 
-    enum { e_maxVertices = 1 << 16 };
+    enum { e_maxVertices = 1 << 17 };
 
     b3Vec3r m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
