@@ -43,8 +43,7 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 ch
     }
 
     b3Vec3r r(m_radius, m_radius, m_radius);
-    aabb->m_min = min - r;
-    aabb->m_max = max + r;
+    aabb->set_aabb(min - r, max + r);
 }
 
 

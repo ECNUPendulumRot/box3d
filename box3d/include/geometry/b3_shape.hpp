@@ -26,7 +26,8 @@ enum b3ShapeType {
     e_cube       = 0,
     e_sphere     = 1,
     e_plane      = 2,
-    e_type_count = 3
+    e_cone       = 3,
+    e_type_count = 4
 };
 
 

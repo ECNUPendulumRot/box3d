@@ -7,9 +7,6 @@
 
 class b3AABB {
 
-    friend class b3CubeShape;
-    friend class b3SphereShape;
-    friend class b3PlaneShape;
     friend class b3DynamicTree;
 
     /**
@@ -55,6 +52,11 @@ public:
         real f2 = (m_max.x - m_min.x) * (m_max.z - m_min.z);
         real f3 = (m_max.y - m_min.y) * (m_max.z - m_min.z);
         return real(2.0) * (f1 + f2 + f3);
+    }
+
+    void set_aabb(const b3Vec3r& lower_bound, const b3Vec3r& upper_bound) {
+        m_min = lower_bound;
+        m_max = upper_bound;
     }
 
     /**

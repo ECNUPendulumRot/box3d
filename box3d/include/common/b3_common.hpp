@@ -13,6 +13,8 @@
 
 #define b3_pi 3.14159265359f
 
+#define b3_pi_6 0.5235987667f
+
 #define b3_close_to_zero_epsilon 1e-5
 
 #define b3_NOT_USED(x) ((void)(x))

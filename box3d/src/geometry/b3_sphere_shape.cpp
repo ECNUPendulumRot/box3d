@@ -51,7 +51,6 @@ b3SphereConfig::b3SphereConfig()
 
 b3SphereShape::b3SphereShape()
 {
-    m_radius = 0;
     m_type = e_sphere;
     m_vertices = nullptr;
 }
@@ -72,8 +71,7 @@ void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 c
 
     b3Vec3r radius(m_radius, m_radius, m_radius);
 
-    aabb->m_min = centroid - radius;
-    aabb->m_max = centroid + radius;
+    aabb->set_aabb(centroid - radius, centroid + radius);
 }
 
 
