@@ -11,7 +11,7 @@
 
 #define b3_assert(A) assert(A)
 
-#define b3_pi 3.14159265359
+#define b3_pi 3.14159265359f
 
 #define b3_close_to_zero_epsilon 1e-5
 

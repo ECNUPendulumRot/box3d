@@ -18,12 +18,12 @@ struct GLRenderPoints
 
     void destroy();
 
-    void vertex(const b3Vec3r& v, const b3Color& c, float size);
+    void vertex(const b3Vec3f& v, const b3Color& c, float size);
 
     void flush();
 
     enum { e_maxVertices = 2048 };
-    b3Vec3r m_vertices[e_maxVertices];
+    b3Vec3f m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
     float m_sizes[e_maxVertices];
 

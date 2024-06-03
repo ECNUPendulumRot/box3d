@@ -16,14 +16,14 @@ struct gl_render_triangles
 
     void destroy();
 
-    void vertex(const b3Vec3r& v, const b3Vec3r& n, const b3Color& c);
+    void vertex(const b3Vec3f& v, const b3Vec3f& n, const b3Color& c);
 
     void flush();
 
     enum { e_maxVertices = 1 << 14 };
-    b3Vec3r m_vertices[3 * e_maxVertices];
+    b3Vec3f m_vertices[3 * e_maxVertices];
     b3Color m_colors[4 * e_maxVertices];
-    b3Vec3r m_normals[3 * e_maxVertices];
+    b3Vec3f m_normals[3 * e_maxVertices];
     int32 m_count;
 
     GLuint m_vaoId;
@@ -51,7 +51,7 @@ struct gl_render_triangles
 };
 
 extern Camera g_camera;
-extern b3Vec3r g_light_color;
-extern b3Vec3r g_light_position;
+extern b3Vec3f g_light_color;
+extern b3Vec3f g_light_position;
 
 #endif //BOX3D_GL_RENDER_TRIANGLES_HPP

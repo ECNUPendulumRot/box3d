@@ -75,17 +75,12 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
     m_ws = new (memory) b3Vec3r;
 
-    memory = m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
-    m_impulses = new (memory) b3Vec3r;
-
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
         m_ps[i] = b->get_position();
         m_qs[i] = b->get_quaternion();
         m_vs[i] = b->get_linear_velocity();
         m_ws[i] = b->get_angular_velocity();
-
-        m_impulses[i].set_zero();
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +103,9 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
         vc->m_restitution = contact->get_restitution();
         vc->m_friction = contact->get_friction();
+        vc->m_rolling_friction = contact->get_rolling_friction();
+        vc->m_spinning_friction = contact->get_spinning_friction();
+
         vc->m_contact_index = i;
         vc->m_point_count = point_count;
 
@@ -149,6 +147,8 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
             // vcp->m_rhs_penetration = manifold->m_penetration;
             // TODO: warm start
         }
+
+        vc->init();
     }
 
 }
@@ -156,37 +156,6 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 
 void b3Solver::write_states_back()
 {
-    static int prev_contact_count = 0;
-
-    int temp = prev_contact_count;
-    prev_contact_count = m_contact_count;
-
-    real original_energy = 0;
-    real now_energy = 0;
-    bool print_energy = false;
-    for (int i = 0; i < m_body_count; i++) {
-
-        if (m_bodies[i]->get_type() != b3BodyType::b3_dynamic_body) {
-            continue;
-        }
-
-        print_energy = true;
-
-        b3Vec3r v = m_bodies[i]->get_linear_velocity();
-        b3Vec3r w = m_bodies[i]->get_angular_velocity();
-
-        b3Vec3r new_v = m_vs[i];
-        b3Vec3r new_w = m_ws[i];
-
-        original_energy += v.dot(v) + w.dot(w);
-        now_energy += new_v.dot(new_v) + new_w.dot(new_w);
-
-    }
-
-    if (print_energy && m_contact_count > 0) {
-        spdlog::info("=========contact count {}, origin energy {}, now energy {}", m_contact_count, original_energy, now_energy);
-    }
-
     for(int32 i = 0; i < m_body_count; ++i) {
         b3Body* b = m_bodies[i];
 
@@ -195,10 +164,6 @@ void b3Solver::write_states_back()
         b->set_linear_velocity(m_vs[i]);
         b->set_angular_velocity(m_ws[i]);
         // TODO: if we need SynchronizeTransform() ?
-    }
-
-    if (temp != 2 && prev_contact_count != 2) {
-        return;
     }
 
     for(int32 i = 0; i < m_body_count; i++) {
@@ -261,7 +226,7 @@ int b3Solver::solve() {
         m_qs[i].normalize();
     }
 
-    solve_missing_angular_dimension();
+    correct_penetration();
 
     // copy state buffers back to the bodies.
     write_states_back();
@@ -280,9 +245,6 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
 
         b3Vec3r v_b = m_vs[vc->m_index_b];
         b3Vec3r w_b = m_ws[vc->m_index_b];
-
-        b3Vec3r impulse_a = m_impulses[vc->m_index_a];
-        b3Vec3r impulse_b = m_impulses[vc->m_index_b];
 
         // Follow the example of Box2d and prioritize friction because penetration is more important.
         for (int32 j = 0; j < vc->m_point_count; j++) {
@@ -320,14 +282,13 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
 
             b3Vec3r impulse = tangent1_lambda * vc->m_tangent1 + tangent2_lambda * vc->m_tangent2;
 
-            impulse_a -= impulse;
-            impulse_b += impulse;
-
             v_a = v_a - vc->m_inv_mass_a * impulse;
             w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
             v_b = v_b + vc->m_inv_mass_b * impulse;
             w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
         }
+
+        real total_impulse = 0;
 
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
@@ -359,8 +320,7 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             // apply normal Impulse
             b3Vec3r impulse = lambda * vc->m_normal;
 
-            impulse_a -= impulse;
-            impulse_b += impulse;
+            total_impulse += lambda;
 
             v_a = v_a - vc->m_inv_mass_a * impulse;
             v_b = v_b + vc->m_inv_mass_b * impulse;
@@ -368,82 +328,70 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
         }
 
+        apply_spinning_and_rolling_friction(vc, w_a, w_b, total_impulse);
+
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
-
-        m_impulses[vc->m_index_a] = impulse_a;
-        m_impulses[vc->m_index_b] = impulse_b;
 
         // solve_sphere_angular_velocity(vc);
     }
 }
 
 
-void b3Solver::solve_missing_angular_dimension()
+void b3Solver::apply_spinning_and_rolling_friction(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse)
 {
-    if (m_contact_count == 0) {
+    vc->m_total_normal_impulse += total_impulse;
+
+    if (vc->m_spinning_friction < b3_real_epsilon && vc->m_rolling_friction < b3_real_epsilon) {
         return;
     }
-    for (int i = 0; i < m_body_count; i++) {
 
-        if (m_bodies[i]->get_type() != b3BodyType::b3_dynamic_body) {
-            continue;
+    static auto helper_func = [](real& Iw_x, real& used, real max) {
+        if (b3_abs(Iw_x) < b3_real_epsilon) {
+            Iw_x = 0;
+            return;
         }
+        real now_using = b3_clamp(-Iw_x, -max - used, max - used);
+        used += now_using;
+        Iw_x += now_using;
+    };
 
-        b3Vec3r origin_w = m_bodies[i]->get_angular_velocity();
-        //spdlog::info("==========origin angular velocity: {}, {}, {}=================", origin_w.x, origin_w.y, origin_w.z);
-        const b3Mat33r& R = m_bodies[i]->get_quaternion().rotation_matrix();
-        b3Mat33r inv_inertia = m_bodies[i]->get_inv_inertia();
-        b3Mat33r inertia = m_bodies[i]->get_inertia();
+    b3Vec3r Iw_a = vc->m_I_a * w_a;
+    b3Vec3r Iw_b = vc->m_I_b * w_b;
 
-        // transform to world space
-        inv_inertia = R * inv_inertia * R.transpose();
-        inertia = R.transpose() * inertia * R;
+    real Iw_a_n = Iw_a.dot(vc->m_normal);
+    real Iw_b_n = Iw_b.dot(vc->m_normal);
+    real Iw_a_t1 = Iw_a.dot(vc->m_tangent1);
+    real Iw_a_t2 = Iw_a.dot(vc->m_tangent2);
+    real Iw_b_t1 = Iw_b.dot(vc->m_tangent1);
+    real Iw_b_t2 = Iw_b.dot(vc->m_tangent2);
 
-        b3Vec3r new_w = m_ws[i];
-        //spdlog::info("==========after solve angular velocity: {}, {}, {}=", new_w.x, new_w.y, new_w.z);
+    if (vc->m_spinning_friction > 0) {
+        real spinning_friction = vc->m_spinning_friction * vc->m_total_normal_impulse;
 
-        b3Vec3r new_Iw = inertia * new_w;
-
-        const b3Vec3r& apply_impulse = m_impulses[i];
-        const real torque_arm_length = 0.05;
-
-        real impulse = 0;
-        for (int k = 0; k < 3; k++) {
-            impulse += b3_abs(apply_impulse[k]);
-        }
-        // [-torque, torque]
-        real torque = impulse * torque_arm_length;
-
-        for (int j = 0; j < 3; j++) {
-            if (b3_abs(new_w[j]) < b3_real_epsilon) {
-                new_Iw[j] = 0;
-                continue;
-            }
-
-            // real impulse = -b3_abs(apply_impulse[j]);
-//            real impulse = 0;
-//            for (int k = 0; k < 3; k++) {
-//                impulse += b3_abs(apply_impulse[k]);
-//            }
-//            // [-torque, torque]
-//            real torque = impulse * torque_arm_length;
-
-            if (b3_abs(new_w[j] - origin_w[j]) <= 0.001) {
-                // this dimension is missing, we need to attempt to fix it.
-                if (new_Iw[j] > 0) {
-                    new_Iw[j] = b3_max((real)0, new_Iw[j] - torque);
-                } else {
-                    new_Iw[j] = b3_min((real)0, new_Iw[j] + torque);
-                }
-            }
-        }
-
-        m_ws[i] = inv_inertia * new_Iw;
-        //spdlog::info("==========new angular velocity: {}, {}, {}", m_ws[i].x, m_ws[i].y, m_ws[i].z);
+        // spinning
+        helper_func(Iw_a_n, vc->m_used_spinning_friction_impulse_torqueA, spinning_friction);
+        // spinning
+        helper_func(Iw_b_n, vc->m_used_spinning_friction_impulse_torqueB, spinning_friction);
     }
+
+    if (vc->m_rolling_friction > 0) {
+        real rolling_friction = vc->m_rolling_friction * vc->m_total_normal_impulse;
+
+        // rolling
+        helper_func(Iw_a_t1, vc->m_used_rolling_friction_impulse_torqueA1, rolling_friction);
+        helper_func(Iw_a_t2, vc->m_used_rolling_friction_impulse_torqueA2, rolling_friction);
+        // rolling
+        helper_func(Iw_b_t1, vc->m_used_rolling_friction_impulse_torqueB1, rolling_friction);
+        helper_func(Iw_b_t2, vc->m_used_rolling_friction_impulse_torqueB2, rolling_friction);
+    }
+
+    Iw_a = Iw_a_n * vc->m_normal + Iw_a_t1 * vc->m_tangent1 + Iw_a_t2 * vc->m_tangent2;
+    w_a = vc->m_inv_I_a * Iw_a;
+    Iw_b = Iw_b_n * vc->m_normal + Iw_b_t1 * vc->m_tangent1 + Iw_b_t2 * vc->m_tangent2;
+    w_b = vc->m_inv_I_b * Iw_b;
 }
 
 
@@ -633,7 +581,6 @@ void b3Solver::clear() {
     m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quaternionr));
     m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
     m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_impulses, m_body_count * sizeof(b3Vec3r));
 
     m_block_allocator = nullptr;
 }

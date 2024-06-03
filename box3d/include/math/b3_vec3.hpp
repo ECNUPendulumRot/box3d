@@ -136,6 +136,19 @@ struct b3Vec3 {
     inline T* data() {
         return m_ts;
     }
+
+    template <typename U>
+    b3Vec3(const b3Vec3<U>& other) : x((T)other.x), y((T)other.y), z((T)other.z) {
+
+    }
+
+    template <typename U>
+    inline b3Vec3<T>& operator=(const b3Vec3<U>& v) {
+        x = (T)v.x;
+        y = (T)v.y;
+        z = (T)v.z;
+        return *this;
+    }
 };
 
 

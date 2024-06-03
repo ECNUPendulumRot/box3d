@@ -45,8 +45,6 @@ protected:
 
     b3Vec3r* m_ws = nullptr;
 
-    b3Vec3r* m_impulses = nullptr;
-
     b3ContactVelocityConstraint* m_velocity_constraints = nullptr;
 
     b3TimeStep* m_timestep = nullptr;
@@ -77,7 +75,7 @@ public:
     // TODO: This function is not used now, it's effect not good.
     void correct_penetration();
 
-    void solve_missing_angular_dimension();
+    void apply_spinning_and_rolling_friction(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse);
 
     int solve();
 

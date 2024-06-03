@@ -30,6 +30,8 @@ public:
             sphere_fd.m_friction = 0.4;
             sphere_fd.m_density = 1.0;
             sphere_fd.m_shape = &shape;
+            sphere_fd.m_rolling_friction = 0.05;
+            sphere_fd.m_spinning_friction = 0.05;
 
             sphere->create_fixture(sphere_fd);
         }

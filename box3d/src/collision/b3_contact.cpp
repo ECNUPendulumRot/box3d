@@ -18,6 +18,28 @@ b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType:
 bool b3Contact::s_initialized = false;
 
 
+// Friction mixing law. The idea is to allow either fixture to drive the friction to zero.
+static real b3_mix_friction(real friction1, real friction2) {
+    return b3_sqrt(friction1 * friction2);
+}
+
+
+// Restitution mixing law. The idea is to allow for anything to bounce off an inelastic surface.
+static real b3_mix_restitution(real restitution1, real restitution2) {
+    return b3_max(restitution1, restitution2);
+}
+
+
+static real b3_mix_rolling_friction(real rolling_friction1, real rolling_friction2) {
+    return b3_max(rolling_friction1, rolling_friction2);
+}
+
+
+static real b3_mix_spinning_friction(real spinning_friction1, real spinning_friction2) {
+    return b3_max(spinning_friction1, spinning_friction2);
+}
+
+
 void b3Contact::initialize_registers()
 {
     add_type(b3SphereContact::create, b3SphereContact::destroy, b3ShapeType::e_sphere, b3ShapeType::e_sphere);
@@ -52,6 +74,8 @@ b3Contact::b3Contact(b3Fixture *f_A, int32 index_A, b3Fixture *f_B, int32 index_
 
     m_restitution = b3_mix_restitution(m_fixture_a->get_restitution(), m_fixture_b->get_restitution());
     m_friction = b3_mix_friction(m_fixture_a->get_friction(), m_fixture_b->get_friction());
+    m_rolling_friction = b3_mix_rolling_friction(m_fixture_a->get_rolling_friction(), m_fixture_b->get_rolling_friction());
+    m_spinning_friction = b3_mix_spinning_friction(m_fixture_a->get_spinning_friction(), m_fixture_b->get_spinning_friction());
 }
 
 

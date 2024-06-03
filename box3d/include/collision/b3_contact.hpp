@@ -44,16 +44,6 @@ struct b3ContactEdge {
 
 };
 
-// Friction mixing law. The idea is to allow either fixture to drive the friction to zero.
-inline real b3_mix_friction(real friction1, real friction2) {
-    return b3_sqrt(friction1 * friction2);
-}
-
-// Restitution mixing law. The idea is to allow for anything to bounce off an inelastic surface.
-inline real b3_mix_restitution(real restitution1, real restitution2) {
-    return restitution1 > restitution2 ? restitution1 : restitution2;
-}
-
 
 typedef b3Contact* b3ContactCreateFcn(b3Fixture* fixture_A, int32 index_A,
                                       b3Fixture* fixture_B, int32 index_B,
@@ -103,6 +93,8 @@ protected:
     ////////// Coefficients related to the material of the object ///////////
     real m_restitution;
     real m_friction;
+    real m_rolling_friction;
+    real m_spinning_friction;
 
     uint32 m_flags = 0;
 
@@ -196,6 +188,14 @@ public:
 
     real get_friction() const {
         return m_friction;
+    }
+
+    real get_rolling_friction() const {
+        return m_rolling_friction;
+    }
+
+    real get_spinning_friction() const {
+        return m_spinning_friction;
     }
 
     b3CollisionAlgorithm* get_algorithm() const {

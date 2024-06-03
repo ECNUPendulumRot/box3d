@@ -125,7 +125,6 @@ done:
 	return nr;
 }
 
-#define M__PI 3.14159265f
 
 // given n points in the plane (array p, of size 2*n), generate m points that
 // best represent the whole set. the definition of 'best' here is not
@@ -184,9 +183,9 @@ void cullPoints2(int n, real p[], int i0, int iret[])
 	iret[0] = i0;
 	iret++;
 	for (int j = 1; j < MAX_CONTACT_POINT_COUNT; j++) {
-		real theta = real(j) * (2 * M__PI / MAX_CONTACT_POINT_COUNT) + A[i0];
-		if (theta > M__PI) {
-            theta -= 2 * M__PI;
+		real theta = real(j) * (2 * b3_pi / MAX_CONTACT_POINT_COUNT) + A[i0];
+		if (theta > b3_pi) {
+            theta -= 2 * b3_pi;
         }
 
 		real max_diff = 1e9, diff;
@@ -196,8 +195,8 @@ void cullPoints2(int n, real p[], int i0, int iret[])
 		for (int i = 0; i < n; i++) {
 			if (avail[i]) {
 				diff = b3_abs(A[i] - theta);
-				if (diff > M__PI) {
-                    diff = 2 * M__PI - diff;
+				if (diff > b3_pi) {
+                    diff = 2 * b3_pi - diff;
                 }
                 if (diff < max_diff) {
 					max_diff = diff;

@@ -40,14 +40,33 @@ struct b3ContactVelocityConstraint {
     int32 m_point_count;
     int32 m_contact_index;
 
-    real m_restitution;
-
     real m_penetration;
-    // TODO
-    real m_normal_collision_impulse = 0;
-    real m_normal_contact_impulse = 0;
 
+    real m_restitution;
     real m_friction;
+    real m_rolling_friction;
+    real m_spinning_friction;
+
+    // this used to clamp rolling and spinning friction impulse torque.
+    real m_total_normal_impulse;
+
+    // spinning is normal direction, rolling are tangent1 and tangent2 directions
+    real m_used_spinning_friction_impulse_torqueA;
+    real m_used_spinning_friction_impulse_torqueB;
+    real m_used_rolling_friction_impulse_torqueA1;
+    real m_used_rolling_friction_impulse_torqueB1;
+    real m_used_rolling_friction_impulse_torqueA2;
+    real m_used_rolling_friction_impulse_torqueB2;
+
+    void init() {
+        m_total_normal_impulse = 0.0;
+        m_used_spinning_friction_impulse_torqueA = 0.0;
+        m_used_spinning_friction_impulse_torqueB = 0.0;
+        m_used_rolling_friction_impulse_torqueA1 = 0.0;
+        m_used_rolling_friction_impulse_torqueB1 = 0.0;
+        m_used_rolling_friction_impulse_torqueA2 = 0.0;
+        m_used_rolling_friction_impulse_torqueB2 = 0.0;
+    }
 };
 
 

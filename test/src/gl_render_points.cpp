@@ -90,7 +90,7 @@ void GLRenderPoints::destroy()
 }
 
 
-void GLRenderPoints::vertex(const b3Vec3r &v, const b3Color &c, float size)
+void GLRenderPoints::vertex(const b3Vec3f &v, const b3Color &c, float size)
 {
     if (m_count == e_maxVertices)
         flush();

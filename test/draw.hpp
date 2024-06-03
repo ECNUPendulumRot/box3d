@@ -50,8 +50,8 @@ public:
 
 extern Camera g_camera;
 extern DebugDraw g_debug_draw;
-extern b3Vec3r g_light_color;
-extern b3Vec3r g_light_position;
+extern b3Vec3f g_light_color;
+extern b3Vec3f g_light_position;
 
 
 #endif //BOX3D_DRAW_HPP

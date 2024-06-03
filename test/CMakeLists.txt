@@ -39,6 +39,8 @@ set (TESTBED_SOURCE_FILES
         src/manifold/test_box_box.cpp
         src/manifold/test_plane_sphere.cpp
         src/manifold/test_plane_box.cpp
+
+        src/test_gyro.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

@@ -22,6 +22,10 @@ struct b3FixtureDef {
 
     real m_friction = 0.0;
 
+    real m_rolling_friction = 0.0;
+
+    real m_spinning_friction = 0.0;
+
     real m_density = 1.0;
 
     /**
@@ -30,25 +34,6 @@ struct b3FixtureDef {
      * It can be allocated on the stack because the shape will be cloned
      */
     b3Shape* m_shape = nullptr;
-
-public:
-
-    inline real get_restitution() const {
-        return m_restitution;
-    }
-
-    inline real get_friction() const {
-        return m_friction;
-    }
-
-    inline b3Shape* get_shape() const {
-        return m_shape;
-    }
-
-    inline real get_density() const {
-        return m_density;
-    }
-
 };
 
 
@@ -83,6 +68,10 @@ class b3Fixture {
     real m_restitution = 0.0;
 
     real m_friction = 0.0;
+
+    real m_rolling_friction = 0.0;
+
+    real m_spinning_friction = 0.0;
 
     real m_density = 0.0;
 
@@ -137,6 +126,14 @@ public:
 
     real get_restitution() const {
         return m_restitution;
+    }
+
+    real get_rolling_friction() const {
+        return m_rolling_friction;
+    }
+
+    real get_spinning_friction() const {
+        return m_spinning_friction;
     }
 
 private:
