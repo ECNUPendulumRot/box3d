@@ -103,11 +103,13 @@ int b3SolverZHB::solve(bool allow_sleep)
 
     contact_solver.init_velocity_constraints();
 
-    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+    int32 iterations = m_timestep->m_velocity_iterations;
+    for(int32 i = 0; i < iterations; ++i) {
         if(i) spdlog::info("iteration {} is start",i+1);
         bool violate = false;
         //spdlog::info("iteration {} is start",i+1);
         contact_solver.solve_velocity_constraints(violate);
+        if(i==iterations-1&&violate) ++iterations;
         if(!violate) {
             if(i) spdlog::info("end the solving");
             break;

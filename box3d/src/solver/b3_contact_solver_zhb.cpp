@@ -171,7 +171,7 @@ void b3ContactSolverZHB::init_velocity_constraints()
 void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
 {
     real tolerance = 0.0;
-
+    bool st4=false;
     for (int32 i = 0; i < m_count; ++i) {
 
         b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
@@ -208,12 +208,13 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                             --m_wait;
                             vcp->m_wait = true;
                             //zero = !(bool)m_wait;
-                            spdlog::info("st:4, index A={},B={} is added in m_wait list,now have {} left",
+                            spdlog::info("st:4, index A={},B={} is kicked in m_wait list,now have {} left",
                                          vc->m_index_a,vc->m_index_b,m_wait);
                         } else{
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
                         }
                         if(m_wait == 0){
+                            st4 = true;
                             vcp->m_bias_velocity = rhs;
                             spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
                         }
@@ -227,23 +228,23 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                         vcp->m_relative_velocity = rhs;
                         rhs = 0.0;
                         rhs_restitution_velocity = 0.0;
-                        spdlog::info("st:4, index A={} is waiting",vc->m_index_a);
-                        spdlog::info("st:4, index B={} is waiting",vc->m_index_b);
+                        spdlog::info("st:4, index A={},B={} is waiting",vc->m_index_a,vc->m_index_b);
+                        spdlog::info("st:4, relative v={}",vcp->m_relative_velocity);
                         if(vcp->m_wait){
                             //register a vcp of situation 4 to wait_list
                             vcp->m_wait = false;
                             ++m_wait;
-                            spdlog::info("st:4, m_wait is true now");
+                            spdlog::info("st:4, index A={},B={} is added in m_wait list,now have {} left",
+                                         vc->m_index_a,vc->m_index_b,m_wait);
                         }
 
                     }
                 } else {
                     //2
-                    if(rhs<1e-8){
-                        violate = false;
-                        //需要直接将速度归零，也就是手动执行冲量计算
-                    }
+                    //怎么区分小冲突是来自数值误差还是真实计算？
+                    //if(rhs< vc->m_restitution_threshold) rhs_restitution_velocity = 0.0f;
                     spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
+                    //spdlog::info("the lambda is {}",vcp->m_normal_mass * (rhs + rhs_restitution_velocity));
                 }
             } else {
                 if (vcp->m_bias_velocity > 0) {
@@ -259,6 +260,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                     } else{
                         violate = true;
                         spdlog::info("st:1, the violated constrain {} ,{} is fake legal",vc->m_index_a,vc->m_index_b);
+                        spdlog::info("st:1, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
                     }
                 } else {
                     //3
@@ -293,6 +295,10 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                 //delete these seems have no effect to solver?why?
                 v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
                 vcp->m_relative_velocity = -v_rel.dot(vc->m_normal);
+
+                if(vcp->m_relative_velocity == rhs) violate = false;
+                spdlog::info("after resolve, the v_rel is{}",vcp->m_relative_velocity);
+                //if(vcp->m_relative_velocity+rhs<b3_real_epsilon) spdlog::info("reverse!v={}",vcp->m_relative_velocity+rhs);
             }
         }
 
@@ -301,8 +307,16 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
         m_vs[vc->m_index_b] = v_b;
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
+        /*if(violate){
+            spdlog::info("v_{} = ({},{},{})",vc->m_index_a,v_a.x,v_a.y,v_a.z);
+            spdlog::info("v_{} = ({},{},{})",vc->m_index_b,v_b.x,v_b.y,v_b.z);
+        }*/
+
     }
     if(violate) spdlog::info("Iteration: {0} is over", iteration++);
+    if(st4) violate = false;//保证局部解对称性
+    /*if(m_wait==0&&violate==false) violate = false;
+    else violate = true;*/
 }
 
 
