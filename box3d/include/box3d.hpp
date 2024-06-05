@@ -9,6 +9,7 @@
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
+#include "geometry/b3_cone_shape.hpp"
 
 #include "collision/b3_bvh.hpp"
 #include "collision/b3_fixture.hpp"

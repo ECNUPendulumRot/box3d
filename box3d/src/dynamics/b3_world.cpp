@@ -11,6 +11,7 @@
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
+#include "geometry/b3_cone_shape.hpp"
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -249,6 +250,13 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
             m_debug_draw->draw_sphere(sphere, xf, color);
             break;
         }
+
+        case b3ShapeType::e_cone: {
+            b3ConeShape* shape = (b3ConeShape*)fixture->get_shape();
+            m_debug_draw->draw_cone(shape, xf, color);
+            break;
+        }
+
         default:
             break;
     }

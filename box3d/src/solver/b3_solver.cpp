@@ -166,19 +166,19 @@ void b3Solver::write_states_back()
         // TODO: if we need SynchronizeTransform() ?
     }
 
-    for(int32 i = 0; i < m_body_count; i++) {
-        if(m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
-            spdlog::log(spdlog::level::info, "count: {}, velocity: {}, {}, {}, {}, {}, {}",
-                        m_contact_count,
-                        m_bodies[i]->get_linear_velocity().x,
-                        m_bodies[i]->get_linear_velocity().y,
-                        m_bodies[i]->get_linear_velocity().z,
-                        m_bodies[i]->get_angular_velocity().x,
-                        m_bodies[i]->get_angular_velocity().y,
-                        m_bodies[i]->get_angular_velocity().z
-            );
-        }
-    }
+//    for(int32 i = 0; i < m_body_count; i++) {
+//        if(m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
+//            spdlog::log(spdlog::level::info, "count: {}, velocity: {}, {}, {}, {}, {}, {}",
+//                        m_contact_count,
+//                        m_bodies[i]->get_linear_velocity().x,
+//                        m_bodies[i]->get_linear_velocity().y,
+//                        m_bodies[i]->get_linear_velocity().z,
+//                        m_bodies[i]->get_angular_velocity().x,
+//                        m_bodies[i]->get_angular_velocity().y,
+//                        m_bodies[i]->get_angular_velocity().z
+//            );
+//        }
+//    }
 }
 
 

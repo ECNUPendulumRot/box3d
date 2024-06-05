@@ -13,7 +13,7 @@ class b3Body;
 
 class b3AABB;
 
-class b3MassProperty;
+struct b3MassProperty;
 
 class b3BlockAllocator;
 

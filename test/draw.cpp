@@ -4,6 +4,8 @@
 #include "gl_render_lines.hpp"
 #include "gl_render_points.hpp"
 
+#include "spdlog/spdlog.h"
+
 Camera g_camera;
 DebugDraw g_debug_draw;
 b3Vec3f g_light_color = {1.0f, 1.0f, 1.0f};
@@ -212,7 +214,82 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transformr &xf,
 }
 
 
+void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const b3Color &color)
+{
+    // the tip of the cone in the world space
+    b3Vec3r tip = xf.position();
+
+    b3Vec3r axis = xf.rotation_matrix().col(2);
+
+    b3Vec3r base_center = tip + cone->get_height() * axis;
+
+    static const int base_point_count = 6;
+
+    b3Vec3r base_points[base_point_count];
+    b3Vec3r base_normals[base_point_count];
+
+    real radius = cone->get_radius();
+
+    // TODO: reduce this, make it const, so don need to compute it for every shape.
+    real theta = 0;
+    real delta_theta = b3_pi * 2 / base_point_count;
+
+    for (int i = 0; i < base_point_count; i++) {
+        base_normals[i].set(cos(theta), sin(theta), 0);
+        base_points[i] = base_center + radius * xf.transform(base_normals[i]);
+
+        theta += delta_theta;
+    }
+
+    // TODO: This ?
+    b3Vec3r normal = {0, 0, 1};
+
+    if (m_draw_flags & b3Draw::e_frame_only_bit) {
+        // base triangle face
+        m_lines->vertex(base_points[0], color);
+        m_lines->vertex(base_points[base_point_count - 1], color);
+        for (int i = 1; i < base_point_count; i++) {
+            m_lines->vertex(base_points[i], color);
+            m_lines->vertex(base_points[i - 1], color);
+        }
+
+        for (int i = 0; i < base_point_count; i++) {
+            m_lines->vertex(base_center, color);
+            m_lines->vertex(base_points[i], color);
+        }
+
+        // the conical surface
+        for (int i = 0; i < base_point_count; i++) {
+            m_lines->vertex(tip, color);
+            m_lines->vertex(base_points[i], color);
+        }
+    } else {
+        // base triangle face
+        m_triangles->vertex(base_center, normal, color);
+        m_triangles->vertex(base_points[0], normal, color);
+        m_triangles->vertex(base_points[base_point_count - 1], normal, color);
+        for (int i = 1; i < base_point_count; i++) {
+            m_triangles->vertex(base_center, normal, color);
+            m_triangles->vertex(base_points[i], normal, color);
+            m_triangles->vertex(base_points[i - 1], normal, color);
+        }
+
+        // the conical surface
+        m_triangles->vertex(tip, normal, color);
+        m_triangles->vertex(base_points[0], normal, color);
+        m_triangles->vertex(base_points[base_point_count - 1], normal, color);
+        for (int i = 1; i < base_point_count; i++) {
+            m_triangles->vertex(tip, normal, color);
+            m_triangles->vertex(base_points[i], normal, color);
+            m_triangles->vertex(base_points[i - 1], normal, color);
+        }
+    }
+}
+
+
 void DebugDraw::draw_point(const b3Vec3r &p, float size, const b3Color &color)
 {
     m_points->vertex(p, color, size);
 }
+
+

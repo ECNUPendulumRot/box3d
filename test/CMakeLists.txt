@@ -41,6 +41,7 @@ set (TESTBED_SOURCE_FILES
         src/manifold/test_plane_box.cpp
 
         src/test_gyro.cpp
+        src/aabb/test_cone_aabb.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

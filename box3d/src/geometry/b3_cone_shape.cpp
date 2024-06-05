@@ -21,6 +21,10 @@ void b3ConeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 chi
     b3Vec3r abs_half_extent(m_radius, m_radius, m_height * 0.5);
 
     b3Mat33r R = xf.rotation_matrix();
+
+    // xf.position() is the tip of the cone in world space
+    b3Vec3r center = xf.position() + R.col(2) * m_height * 0.5;
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             R(i, j) = b3_abs(R(i, j));
@@ -28,8 +32,8 @@ void b3ConeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 chi
     }
 
     abs_half_extent = R * abs_half_extent;
-    b3Vec3r upper_bound = xf.position() + abs_half_extent;
-    b3Vec3r lower_bound = xf.position() - abs_half_extent;
+    b3Vec3r upper_bound = center + abs_half_extent;
+    b3Vec3r lower_bound = center - abs_half_extent;
 
     aabb->set_aabb(lower_bound, upper_bound);
 }

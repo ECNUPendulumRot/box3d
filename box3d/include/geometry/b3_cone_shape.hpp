@@ -7,11 +7,12 @@
  *
  *  z   ^
  *     |                    --------
- *     |                    \      /
- *     |_ _ _ _ _ > y        \    /
+ *     |                    \       /
+ *     |_ _ _ _ _ > y        \     /
  *    /                       \  /
  *   x                         \/
  *
+ *  in the local frame, the m_centroid is the tip of the cone
  */
 
 class b3ConeShape : public b3Shape {
@@ -30,7 +31,7 @@ public:
     ~b3ConeShape() = default;
 
     int32 get_child_count() const override {
-        return 0;
+        return 1;
     }
 
     void set_as_cone(real radius, real height);

@@ -8,6 +8,7 @@
 #include "collision/b3_cube_sphere_contact.hpp"
 #include "collision/b3_plane_sphere_contact.hpp"
 #include "collision/b3_plane_cube_contact.hpp"
+#include "collision/b3_plane_cone_contact.hpp"
 
 #include "collision/b3_persistent_manifold.hpp"
 #include "collision/b3_dispatcher.hpp"
@@ -47,6 +48,7 @@ void b3Contact::initialize_registers()
     add_type(b3CubeAndSphereContact::create, b3CubeAndSphereContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_sphere);
     add_type(b3PlaneSphereContact::create, b3PlaneSphereContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_sphere);
     add_type(b3PlaneCubeContact::create, b3PlaneCubeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cube);
+    add_type(b3PlaneConeContact::create, b3PlaneConeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cone);
 }
 
 

@@ -42,6 +42,8 @@ public:
 
     void draw_point(const b3Vec3r& p, float size, const b3Color& color) override;
 
+    void draw_cone(const b3ConeShape* cone, const b3Transformr& xf, const b3Color& color) override;
+
     void flush();
 
     void destroy();
