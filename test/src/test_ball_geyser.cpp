@@ -32,8 +32,8 @@ public:
 //        utils.track_fixture(ground_fixture, "ground");
 
         b3Vec3r center_pos(-5, 20, 1);
-        b3Vec3r left_box_pos(-20, 10, 1);
-        b3Vec3r right_box_pos(10, 10, 1);
+        b3Vec3r left_box_pos(-20, 18, 1);
+        b3Vec3r right_box_pos(10, 18, 1);
 
         b3SphereShape sphere_shape;
         sphere_shape.set_as_sphere(1.0);
