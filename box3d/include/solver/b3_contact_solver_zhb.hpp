@@ -55,7 +55,7 @@ public:
 
     void init_velocity_constraints();
 
-    void solve_velocity_constraints(bool &violate);
+    void solve_velocity_constraints(bool &violate, int32 &propagations);
 };
 
 

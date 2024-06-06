@@ -168,9 +168,9 @@ void b3ContactSolverZHB::init_velocity_constraints()
 }
 
 
-void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
+void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propagations)
 {
-    real tolerance = 0.0;
+    real tolerance = 0.01;
     bool st4=false;
     for (int32 i = 0; i < m_count; ++i) {
 
@@ -214,6 +214,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
                         }
                         if(m_wait == 0){
+                            ++propagations;
                             st4 = true;
                             vcp->m_bias_velocity = rhs;
                             spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
@@ -314,7 +315,7 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate)
 
     }
     if(violate) spdlog::info("Iteration: {0} is over", iteration++);
-    if(st4) violate = false;//保证局部解对称性
+    //if(st4) violate = false;//保证局部解对称性
     /*if(m_wait==0&&violate==false) violate = false;
     else violate = true;*/
 }

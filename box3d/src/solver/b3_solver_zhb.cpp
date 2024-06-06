@@ -102,14 +102,20 @@ int b3SolverZHB::solve(bool allow_sleep)
     b3ContactSolverZHB contact_solver(&def);
 
     contact_solver.init_velocity_constraints();
-
+    int32 propagation_max = 3;
+    int32 propagation = 0;
     int32 iterations = m_timestep->m_velocity_iterations;
     for(int32 i = 0; i < iterations; ++i) {
         if(i) spdlog::info("iteration {} is start",i+1);
         bool violate = false;
         //spdlog::info("iteration {} is start",i+1);
-        contact_solver.solve_velocity_constraints(violate);
-        if(i==iterations-1&&violate) ++iterations;
+        contact_solver.solve_velocity_constraints(violate, propagation);
+        if(i) spdlog::info("propagation = {}",propagation);
+        if(propagation_max <= propagation) {
+            spdlog::info("end the solving by propagation");
+            break;
+        }
+        if(i==iterations-1&&violate) iterations += 10;
         if(!violate) {
             if(i) spdlog::info("end the solving");
             break;
