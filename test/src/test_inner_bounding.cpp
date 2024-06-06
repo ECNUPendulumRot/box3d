@@ -2,9 +2,9 @@
 
 class TestInnerBounding :public Test {
 
-    int c_count = 8;
+    int c_count = 4;
 
-    real radius = 0.5;
+    real radius = 1.0;
 
 public:
 
@@ -17,28 +17,30 @@ public:
         fixture_def.m_restitution = 1.0;
         b3SphereShape sphere_shape;
         sphere_shape.set_as_sphere(radius);
-        {
-            b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_dynamic_body;
-
-            b3Vec3r p(c_count * radius, -5, c_count * radius);
-            b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 10, 0);
-            b3Vec3r w(0, 0, 0);
-
-            body_def.set_init_pose(p, q);
-            body_def.set_init_velocity(v, w);
-
-            b3Body* b = m_world->create_body(body_def);
-
-            fixture_def.m_shape = &sphere_shape;
-            fixture_def.m_density = 1.0;
-
-            b3Fixture* f = b->create_fixture(fixture_def);
-
-            utils.track_body(b, "init_velocity_sphere");
-            utils.track_fixture(f, "init_velocity_sphere");
-        }
+        fixture_def.m_shape = &sphere_shape;
+        fixture_def.m_density = 1.0;
+//        {
+//            b3BodyDef body_def;
+//            body_def.m_type = b3BodyType::b3_dynamic_body;
+//
+//            b3Vec3r p(c_count * radius, -5, c_count * radius);
+//            b3Vec3r q(0, 0, 0);
+//            b3Vec3r v(0, 10, 0);
+//            b3Vec3r w(0, 0, 0);
+//
+//            body_def.set_init_pose(p, q);
+//            body_def.set_init_velocity(v, w);
+//
+//            b3Body* b = m_world->create_body(body_def);
+//
+//            fixture_def.m_shape = &sphere_shape;
+//            fixture_def.m_density = 1.0;
+//
+//            b3Fixture* f = b->create_fixture(fixture_def);
+//
+//            utils.track_body(b, "init_velocity_sphere");
+//            utils.track_fixture(f, "init_velocity_sphere");
+//        }
 
         {
             b3BodyDef body_def;
@@ -53,7 +55,7 @@ public:
                     for (int k = 0; k < c_count; k++) {
                         b3Vec3r p = left_position + 2 * j * b3Vec3r(radius, 0, 0) + 2 * k * b3Vec3r(0, 0, radius);
                         body_def.set_init_pose(p, q);
-                        body_def.set_init_velocity(b3Vec3r(0, 0, 0), b3Vec3r(0, 0, 0));
+                        body_def.set_init_velocity(b3Vec3r(0, 0, -2), b3Vec3r(0, 0, 0));
                         b3Body* b = m_world->create_body(body_def);
                         b3Fixture* f = b->create_fixture(fixture_def);
 
@@ -67,9 +69,9 @@ public:
 
         {
             b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_dynamic_body;
+            body_def.m_type = b3BodyType::b3_static_body;
 
-            b3Vec3r p(c_count * radius, c_count * radius, c_count * radius);
+            b3Vec3r p(c_count * radius, c_count * radius, c_count * radius + 6);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
@@ -78,14 +80,14 @@ public:
             body_def.set_init_velocity(v, w);
 
             b3Body* b = m_world->create_body(body_def);
-            sphere_shape.set_as_sphere(20);
+            sphere_shape.set_as_sphere(16);
             fixture_def.m_shape = &sphere_shape;
             fixture_def.m_density = 1.0;
 
             b3Fixture* f = b->create_fixture(fixture_def);
 
-//            utils.track_body(b, "init_velocity_sphere");
-//            utils.track_fixture(f, "init_velocity_sphere");
+            utils.track_body(b, "bounding_sphere");
+            utils.track_fixture(f, "bounding_sphere");
         }
 
 //        b3Vec3r p;

@@ -22,9 +22,12 @@ void b3_collide_spheres(
 
     real sq_distance = ab.length2();
     real radius = sphere_a->get_radius() + sphere_b->get_radius();
-
+    real neg_radius = sphere_a->get_radius() - sphere_b->get_radius();
     if (sq_distance > radius * radius) {
         // two spheres are not collide.
+        return;
+    }
+    if (sq_distance < neg_radius * neg_radius) {
         return;
     }
 
@@ -34,6 +37,7 @@ void b3_collide_spheres(
     manifold->m_point_count = 1;
 
     manifold->m_points[0].m_local_point = sphere_b->get_centroid();
+
 }
 
 

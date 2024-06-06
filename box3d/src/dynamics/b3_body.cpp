@@ -67,7 +67,10 @@ void b3Body::reset_mass_data()
     m_inertia = b3Mat33r::zero();
     m_inv_inertia = b3Mat33r::zero();
 
-    b3_assert(m_type == b3BodyType::b3_dynamic_body);
+    //b3_assert(m_type == b3BodyType::b3_dynamic_body);
+    if (m_type == b3BodyType::b3_static_body) {
+        return;
+    }
 
     b3Vec3r local_center = b3Vec3r::zero();
 

@@ -26,6 +26,21 @@ void b3WorldManifold::initialize(
             b3Vec3r c_B = point_B - radius_B * normal;
             points[0] = (c_A + c_B) * real(0.5);
             separations[0] = (c_B - c_A).dot(normal);
+
+            real outer_radius = radius_A > radius_B ? radius_A : radius_B;
+            real inner_radius = radius_A > radius_B ? radius_B : radius_A;
+            b3Vec3r outer_point = radius_A > radius_B ? point_A : point_B;
+            b3Vec3r inner_point = radius_A > radius_B ? point_B : point_A;
+
+            if ((point_A - point_B).length2() < outer_radius * outer_radius && (point_A - point_B).length2() > inner_radius * inner_radius) {
+                normal = (outer_point - inner_point).normalized();
+                b3Vec3r outer_p = outer_point - normal * outer_radius;
+                b3Vec3r inner_p = inner_point - normal * inner_radius;
+                points[0] = (inner_p + outer_p) * real(0.5);
+                separations[0] = -(outer_point - inner_point).dot(normal) + outer_radius - inner_radius;
+                normal = (inner_point - outer_point).normalized();
+            }
+
         }
         break;
         case b3Manifold::e_face_A: {
