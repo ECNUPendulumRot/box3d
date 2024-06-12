@@ -5,12 +5,16 @@
 
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
+
 #include "solver/b3_solver.hpp"
+#include "solver/b3_solver_zhb.hpp"
 #include "common/b3_draw.hpp"
 
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
+#include "solver/b3_solver_gr.hpp"
+
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -117,12 +121,12 @@ void b3World::solve(b3TimeStep &step)
 	    contact->unset_flag(b3Contact::e_island_flag);
     }
 
-    void *mem = m_block_allocator.allocate(sizeof(b3Island));
-    b3Island *island = new (mem) b3Island(&m_block_allocator, m_body_count,
+
+    b3Island island(&m_block_allocator, m_body_count,
                                         m_contact_manager.get_contact_count());
 
     // build all islands
-    mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
+    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
     b3Body **stack = new (mem) b3Body *;
     for (b3Body *body = m_body_list; body; body = body->next()) {
         if (body->m_flags & b3Body::e_island_flag) {
@@ -137,7 +141,7 @@ void b3World::solve(b3TimeStep &step)
         while (stack_count > 0) {
             b3Body *b = stack[--stack_count];
 
-            island->add_body(b);
+            island.add_body(b);
 
             // search all contact connected to this body
             for (b3ContactEdge *ce = b->get_contact_list(); ce; ce = ce->m_next) {
@@ -151,7 +155,7 @@ void b3World::solve(b3TimeStep &step)
                     continue;
                 }
 
-                island->add_contact(contact);
+                island.add_contact(contact);
                 contact->set_flag(b3Contact::e_island_flag);
 
                 b3Body *other = ce->m_other;
@@ -167,24 +171,24 @@ void b3World::solve(b3TimeStep &step)
         }
 
         // solve the constraints
-        b3Solver solver(&m_block_allocator, island, &step);
-        solver.solve();
-
+        // b3Solver solver(&m_block_allocator, island, &step);
+        b3SolverZHB solver(&m_block_allocator, &island, &step);
+        solver.solve(m_allow_sleep);
         // Post solve cleanup.
-        for(int32 i = 0; i < island->get_body_count(); ++i) {
+
+        for(int32 i = 0; i < island.get_body_count(); ++i) {
             // Allow static bodies to participate in other islands
-            b3Body* body = island->get_body(i);
+            b3Body* body = island.get_body(i);
             if(body->m_type == b3BodyType::b3_static_body) {
                 body->m_flags &= ~b3Body::e_island_flag;
             }
         }
         // clear all bodies and contacts count, so we can reuse the island for the next island.
-        island->clear();
+        island.clear();
     }
 
     // Free the stack and island memory.
     m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
-    m_block_allocator.free(island, sizeof(b3Island));
 
     // TODO: synchronize ?
     for (b3Body *b = m_body_list; b; b = b->m_next) {
@@ -215,7 +219,7 @@ void b3World::debug_draw() {
     if (flags & b3Draw::e_shape_bit) {
         for (b3Body *body = m_body_list; body; body = body->next()) {
 
-            b3Transform xf(body->get_position(), body->get_quaternion());
+            b3Transr xf(body->get_position(), body->get_quaternion());
 
             for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
                 draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
@@ -225,7 +229,7 @@ void b3World::debug_draw() {
 }
 
 
-void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Color &color) {
+void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &color) {
 
     switch (fixture->get_shape_type()) {
         case b3ShapeType::e_cube: {

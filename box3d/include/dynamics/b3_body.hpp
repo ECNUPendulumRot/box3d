@@ -40,7 +40,7 @@ class b3Body {
     b3Vec3r m_local_center = b3Vec3r::zero();
 
     // the quaternion of the body
-    b3Quaternionr m_q;
+    b3Quatr m_q;
 
     // the position of the body
     b3Vec3r m_p;
@@ -94,11 +94,14 @@ class b3Body {
 
     uint32 m_flags = 0;
 
+    real m_sleep_time = 0.0;
+
 public:
 
     enum Flag {
-        // This is used to generate islands.
-        e_island_flag = 1
+        e_island_flag = 0x0001,
+        e_awake_flag = 0x0002,
+        e_auto_sleep_flag = 0x0004,
     };
 
 
@@ -157,11 +160,11 @@ public:
         return m_p;
     }
 
-    b3Quaternionr get_quaternion() const {
+    b3Quatr get_quaternion() const {
         return m_q;
     }
 
-    void set_quaternion(const b3Quaternionr& q) {
+    void set_quaternion(const b3Quatr& q) {
         m_q = q;
     }
 
@@ -169,12 +172,16 @@ public:
         m_p = p;
     }
 
-    b3Vec3r get_linear_velocity() const {
+    const b3Vec3r& get_linear_velocity() const {
         return m_v;
     }
 
-    b3Vec3r get_angular_velocity() const {
+    const b3Vec3r& get_angular_velocity() const {
         return m_w;
+    }
+
+    const b3Vec3r& get_local_center() {
+        return m_local_center;
     }
 
     void set_linear_velocity(b3Vec3r& v) {
@@ -239,6 +246,21 @@ public:
 
     inline void set_island_index(int32 index) {
         m_island_index = index;
+    }
+
+    inline void set_awake(bool flag) {
+        if (m_type == b3BodyType::b3_static_body) {
+            return;
+        }
+        if (flag) {
+            m_flags |= e_awake_flag;
+            m_sleep_time = 0.0f;
+        } else {
+            m_flags &= ~e_awake_flag;
+            m_sleep_time = 0.0;
+            m_v = b3Vec3r::zero();
+            m_w = b3Vec3r::zero();
+        }
     }
 
     /**

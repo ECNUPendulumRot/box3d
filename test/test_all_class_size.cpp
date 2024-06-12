@@ -39,7 +39,7 @@ int main() {
     std::cout << "b3ShapeType: "        << sizeof(b3ShapeType)          << "  ";
     std::cout << "b3ShapeConfig: "      << sizeof(b3SphereConfig)       << "  ";
     std::cout << "b3SphereShape: "      << sizeof(b3SphereShape)        << "  ";
-    std::cout << "b3Transformr: " << sizeof(b3Transformr) << "  ";
+    std::cout << "b3Transr: " << sizeof(b3Transr) << "  ";
     std::cout << "b3Transformf: " << sizeof(b3Transformf) << "  ";
     std::cout << "b3ViewData: "         << sizeof(b3ViewData)           << "  ";
     std::cout << "b3Vec3f: "         << sizeof(b3Vec3f)           << "  ";

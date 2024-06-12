@@ -16,14 +16,18 @@ struct gl_render_triangles
 
     void destroy();
 
-    void vertex(const b3Vec3r& v, const b3Vec3r& n, const b3Color& c);
+    void vertex(const b3Vec3f &v, const b3Vec3f&n, const b3Color &c);
+
+    void face(const b3Vec3i& f, const b3Vec3f n[3], const b3Color& c);
+
 
     void flush();
 
-    enum { e_maxVertices = 1 << 14 };
-    b3Vec3r m_vertices[3 * e_maxVertices];
-    b3Color m_colors[4 * e_maxVertices];
-    b3Vec3r m_normals[3 * e_maxVertices];
+    enum { e_maxVertices = 1 << 17 };
+
+    b3Vec3r m_vertices[e_maxVertices];
+    b3Color m_colors[e_maxVertices];
+    b3Vec3r m_normals[e_maxVertices];
     int32 m_count;
 
     GLuint m_vaoId;

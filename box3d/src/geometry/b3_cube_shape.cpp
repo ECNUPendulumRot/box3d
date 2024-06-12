@@ -67,7 +67,7 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 }
 
 
-void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transformr &xf, int32 childIndex) const {
+void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transr &xf, int32 childIndex) const {
     b3_NOT_USED(childIndex);
 
     b3Vec3r min = xf.transform(m_vertices[0]);
@@ -105,40 +105,6 @@ void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real densit
     mass_data.m_Inertia(0, 0) = i11;
     mass_data.m_Inertia(1, 1) = i22;
     mass_data.m_Inertia(2, 2) = i33;
-}
-
-
-void b3CubeShape::init_view_data() {
-    m_view_data.m_vertex_count = 8;
-    void *mem = m_block_allocator->allocate(m_view_data.m_vertex_count * 3 * sizeof(double));
-    m_view_data.m_V = new (mem) double;
-
-    m_view_data.m_face_count = 12;
-    mem = m_block_allocator->allocate(m_view_data.m_face_count * 3 * sizeof(int));
-    m_view_data.m_F = new (mem) int;
-    m_view_data.set_face_row(0, { 0, 1, 2 });
-    m_view_data.set_face_row(1, { 0, 2, 3 });
-    m_view_data.set_face_row(2, { 4, 5, 6 });
-    m_view_data.set_face_row(3, { 4, 6, 7 });
-    m_view_data.set_face_row(4, { 0, 1, 5 });
-    m_view_data.set_face_row(5, { 0, 5, 4 });
-    m_view_data.set_face_row(6, { 1, 2, 6 });
-    m_view_data.set_face_row(7, { 1, 6, 5 });
-    m_view_data.set_face_row(8, { 2, 3, 7 });
-    m_view_data.set_face_row(9, { 2, 7, 6 });
-    m_view_data.set_face_row(10, { 3, 0, 4 });
-    m_view_data.set_face_row(11, { 3, 4, 7 });
-}
-
-
-void b3CubeShape::setup_view_data(const b3Transformr &xf) {
-    int index = 0;
-    for (const b3Vec3r &vertex : m_vertices) {
-  	    b3Vec3r v = xf.transform(vertex);
-  	    m_view_data.m_V[index++] = v.x;
-  	    m_view_data.m_V[index++] = v.y;
-  	    m_view_data.m_V[index++] = v.z;
-    }
 }
 
 

@@ -10,7 +10,7 @@
 
 
 template <typename T>
-struct b3Transform {
+struct b3Trans {
 
 public:
 
@@ -18,23 +18,23 @@ public:
     b3Vec3<T> m_p;
 
     // The rotation matrix of the pose.
-    b3Mat33<T> m_r_t;
+    b3Mat33<T> m_r;
 
-    b3Transform() = default;
+    b3Trans() = default;
 
-    b3Transform(const b3Transform& other) {
+    b3Trans(const b3Trans& other) {
         m_p = other.m_p;
-        m_r_t = other.m_r_t;
+        m_r = other.m_r;
     }
 
-    b3Transform(const b3Vec3<T>& p, const b3Quat<T>& q) {
+    b3Trans(const b3Vec3<T>& p, const b3Quat<T>& q) {
         m_p = p;
-        m_r_t = q.rotation_matrix();
+        m_r = q.rotation_matrix();
     }
 
     void set(const b3Vec3<T>& p, const b3Quat<T>& q) {
         m_p = p;
-        m_r_t = q.rotation_matrix();
+        m_r = q.rotation_matrix();
     }
 
     void set_position(const b3Vec3<T>& p) {
@@ -43,24 +43,27 @@ public:
 
     void set_euler_angles(const b3Vec3<T>& euler) {
         b3Quat<T> q(euler);
-        m_r_t = q.rotation_matrix();
+        m_r = q.rotation_matrix();
     }
 
+    void set_quaternion(const b3Quat<T>& q) {
+        m_r = q.rotation_matrix();
+    }
 
     inline const b3Mat33<T>& rotation_matrix() const {
-        return m_r_t;
+        return m_r;
     };
 
     inline b3Vec3<T> transform(const b3Vec3<T>& v) const {
-        return m_r_t * v + m_p;
+        return m_r * v + m_p;
     }
 
     inline b3Vec3<T> rotate(const b3Vec3<T>& v) const {
-        return m_r_t * v;
+        return m_r * v;
     }
 
     inline b3Vec3<T> transform_local(const b3Vec3<T>& v) const {
-        return m_r_t.transpose() * (v - m_p);
+        return m_r.transpose() * (v - m_p);
     }
 
     inline b3Vec3<T> position() const {
@@ -110,8 +113,8 @@ public:
 //}
 
 
-using b3Transformf = b3Transform<float>;
-using b3Transformd = b3Transform<double>;
-using b3Transformr = b3Transform<real>;
+using b3Transf = b3Trans<float>;
+using b3Transd = b3Trans<double>;
+using b3Transr = b3Trans<real>;
 
 #endif //BOX3D_B3_TRANSFORM_HPP

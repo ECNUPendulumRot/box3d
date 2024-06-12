@@ -25,8 +25,6 @@ class b3Lemke {
 
     real** m_tableau = nullptr;
 
-    real** m_I_inv = nullptr;
-
     int32* m_basis = nullptr;
 
     real* m_x = nullptr;

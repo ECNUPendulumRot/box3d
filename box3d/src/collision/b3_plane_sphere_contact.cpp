@@ -29,7 +29,7 @@ b3PlaneSphereContact::b3PlaneSphereContact(b3Fixture *fixture_a, b3Fixture *fixt
 }
 
 
-void b3PlaneSphereContact::evaluate(b3Manifold *manifold, const b3Transformr &xf_a, const b3Transformr &xf_b)
+void b3PlaneSphereContact::evaluate(b3Manifold *manifold, const b3Transr &xf_a, const b3Transr &xf_b)
 {
     b3_collide_plane_and_sphere(
         manifold,

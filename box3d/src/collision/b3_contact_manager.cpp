@@ -185,7 +185,7 @@ void b3ContactManager::collide()
 
         // the contact persist
         // TODO: add a contact lisitener: a callback function
-        contact->update();
+        contact->update(m_contact_listener);
         contact = contact->next();
     }
 }

@@ -10,25 +10,57 @@
 #include "box3d.hpp"
 #include "draw.hpp"
 
+#include <fstream>
+#include "utils.hpp"
 
 struct Settings;
 class Test;
+class Utils;
+
+struct ContactPoint
+{
+    b3Fixture* fixtureA;
+    b3Fixture* fixtureB;
+    b3Vec3r normal;
+    b3Vec3r position;
+    float normalImpulse;
+    float tangentImpulse;
+    float separation;
+};
 
 
-class Test {
+const int32 k_max_contact_points = 2048;
+
+
+class Test: public b3ContactListener {
 
 protected:
 
     b3World* m_world;
 
+    ContactPoint m_points[k_max_contact_points];
+    int32 m_point_count = 0;
+
+    Utils utils;
+
+    bool print_once = true;
+    int count = 0;
+
 public:
 
     Test();
 
-    virtual ~Test() = default;
+    virtual ~Test() {
+        m_world->clear();
+        utils.save_json_file();
+        delete m_world;
+    }
 
     virtual void step(Settings& settings);
 
+    virtual void pre_solve(b3Contact* contact, const b3Manifold* old_manifold);
+
+    void print_first_not_symmetry();
 };
 
 

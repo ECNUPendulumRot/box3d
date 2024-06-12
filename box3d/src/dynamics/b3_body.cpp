@@ -40,7 +40,7 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
     // create proxies for the fixture
     auto *broad_phase = m_world->get_broad_phase();
 
-    b3Transformr xf(m_p, m_q);
+    b3Transr xf(m_p, m_q);
     fixture->create_proxy(broad_phase, xf);
     fixture->m_body = this;
 
@@ -116,8 +116,8 @@ void b3Body::reset_mass_data()
         m_inv_inertia = b3Mat33r::zero();
     }
 
-    // TODO: check whether m_sweep is needed
-    // m_local_center = m_xf.transform(local_center);
+    m_local_center = local_center;
+    // TODO: if object added dynamically, the velocity need to be updated
 }
 
 
@@ -131,7 +131,7 @@ void b3Body::synchronize_fixtures()
     // xf1 is the position at the begin of the frame
     // xf2 is the position at the end of the frame
     // TODO: check if we need to do this.
-    b3Transformr xf(m_p, m_q);
+    b3Transr xf(m_p, m_q);
     for(b3Fixture* f = m_fixture_list; f; f = f->m_next) {
         f->synchronize(broad_phase, xf, xf);
     }

@@ -80,7 +80,7 @@ void GLRenderLines::destroy()
 }
 
 
-void GLRenderLines::vertex(const b3Vec3r &v, const b3Color &c)
+void GLRenderLines::vertex(const b3Vec3f &v, const b3Color &c)
 {
     if (m_count == e_maxVertices)
         flush();

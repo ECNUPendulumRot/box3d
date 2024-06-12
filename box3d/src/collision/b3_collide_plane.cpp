@@ -8,9 +8,9 @@
 
 // project the box onto a separation axis called axis
 // the axis is in the world frame
-static real transform_to_axis(const b3CubeShape& box, const b3Transformr& xf, const b3Vec3r& axis)
+static real transform_to_axis(const b3CubeShape& box, const b3Transr& xf, const b3Vec3r& axis)
 {
-    const b3Mat33r& R = xf.m_r_t;
+    const b3Mat33r& R = xf.m_r;
     const b3Vec3r& half_xyz = box.m_h_xyz;
 
     return half_xyz.x * b3_abs(axis.dot(R.col(0))) + half_xyz.y * b3_abs(axis.dot(R.col(1))) + half_xyz.z * b3_abs(axis.dot(R.col(2)));
@@ -21,8 +21,8 @@ static real transform_to_axis(const b3CubeShape& box, const b3Transformr& xf, co
 // separate cube_B from cube_A
 // so the axis is also from cube_A
 static void overlap_on_axis(
-    const b3Transformr& xf_A_plane,
-    const b3CubeShape& cube_B, const b3Transformr& xf_B,
+    const b3Transr& xf_A_plane,
+    const b3CubeShape& cube_B, const b3Transr& xf_B,
     const b3Vec3r& axis, real& penetration)
 {
     // project box onto the axis
@@ -42,56 +42,44 @@ static void overlap_on_axis(
 void b3_collide_plane_and_sphere(
     b3Manifold* manifold,
     const b3PlaneShape* plane_a,
-    const b3Transformr& xf_a,
+    const b3Transr& xf_a,
     const b3SphereShape* sphere_b,
-    const b3Transformr& xf_b)
+    const b3Transr& xf_b)
 {
     manifold->m_point_count = 0;
 
     // transform sphere center to plane frame
-    b3Vec3r local_center = xf_b.transform(sphere_b->get_centroid());
-    local_center = xf_a.transform_local(local_center);
+    b3Vec3r sphere_local_center = xf_b.transform(sphere_b->get_centroid());
+    sphere_local_center = xf_a.transform_local(sphere_local_center);
 
-    // find the closest point on the plane to the sphere center
-    b3Vec3r nearest_point;
-    if (local_center.x < -plane_a->m_half_width) {
-  	    nearest_point[0] = -plane_a->m_half_width;
-    } else if (local_center.x > plane_a->m_half_width) {
-  	    nearest_point[0] = plane_a->m_half_width;
-    } else {
-  	    nearest_point[0] = local_center.x;
+    b3Vec3r closest_point = sphere_local_center;
+
+    closest_point.x = b3_clamp(closest_point.x, -plane_a->m_half_width, plane_a->m_half_width);
+    closest_point.y = b3_clamp(closest_point.y, -plane_a->m_half_length, plane_a->m_half_length);
+    closest_point.z = 0;
+
+    b3Vec3r normal = sphere_local_center - closest_point;
+    real total_radius = sphere_b->get_radius() + plane_a->get_radius();
+    if (normal.length2() > total_radius * total_radius) {
+        return;
     }
 
-    if (local_center.y < -plane_a->m_half_length) {
-  	    nearest_point[1] = -plane_a->m_half_length;
-    } else if (local_center.y > plane_a->m_half_length) {
-  	    nearest_point[1] = plane_a->m_half_length;
-    } else {
-  	    nearest_point[1] = local_center.y;
+    if (normal.z <= 0) {
+        normal = b3Vec3r(0, 0, 1);
     }
-    real sq_distance = (local_center - nearest_point).length2();
-    real radius = sphere_b->get_radius() + plane_a->get_radius();
-    if (sq_distance > radius * radius) {
-  	    return;
-    }
+
     manifold->m_point_count = 1;
-    // transform the vector form the plane frame to the world frame
-    manifold->m_local_normal = xf_a.rotation_matrix() * (local_center - nearest_point);
-    if (manifold->m_local_normal.is_zero()) {
-  	    manifold->m_local_normal = b3Vec3r(0, 0, 1);
-    } else {
-  	    manifold->m_local_normal = manifold->m_local_normal.normalized();
-    }
-    manifold->m_penetration = (b3_sqrt(sq_distance) - radius) / real(2.0);
-    manifold->m_points[0].m_local_point = xf_a.transform(nearest_point) +
-                                          manifold->m_local_normal * manifold->m_penetration;
+    manifold->m_local_point = {0, 0, 0};
+    manifold->m_local_normal = normal.normalized();
+    manifold->m_points[0].m_local_point = {0, 0, 0};
+    manifold->m_type = b3Manifold::e_face_A;
 }
 
 
 static int32 find_incident_face(
     b3ClipVertex c[4],
     const b3Vec3r & n_p,
-    const b3CubeShape* cube2, const b3Transformr& xf2)
+    const b3CubeShape* cube2, const b3Transr& xf2)
 {
     int32 count2 = 6;
     const b3Vec3r* normals2 = cube2->m_normals;
@@ -118,7 +106,7 @@ static int32 find_incident_face(
     b3FaceIndex incident_face = faces2[incident_face_index_2];
 
     for (int32 i = 0; i < 4; ++i) {
-        c[i].v = xf2.transform(vertices2[edges2[incident_face.e[i]].v1]);
+        c[i].v = vertices2[edges2[incident_face.e[i]].v1];
         c[i].id.cf.type = b3ContactFeature::e_f_p;
         c[i].id.cf.index_1 = (uint8)0;
         c[i].id.cf.index_2 = (uint8)edges2[incident_face.e[i]].v1;
@@ -132,9 +120,9 @@ static int32 find_incident_face(
 void b3_collide_plane_and_cube(
     b3Manifold* manifold,
     const b3PlaneShape* plane_a,
-    const b3Transformr& xf_a,
+    const b3Transr& xf_a,
     const b3CubeShape* cube_b,
-    const b3Transformr& xf_b)
+    const b3Transr& xf_b)
 {
     manifold->m_point_count = 0;
 
@@ -143,6 +131,7 @@ void b3_collide_plane_and_cube(
     const b3Vec3r& axis = xf_a.rotation_matrix().col(2);
 
     real penetration;
+
     overlap_on_axis(xf_a, *cube_b, xf_b, axis, penetration);
 
     if (penetration > total_radius) {
@@ -158,22 +147,17 @@ void b3_collide_plane_and_cube(
 
     int32 point_count = 0;
     for (int32 i = 0; i < 4; ++i) {
-
         real separation = axis.dot(incident_vertices[i].v) - front_offset;
-
-
         if (separation <= total_radius) {
             b3ManifoldPoint* cp = manifold->m_points + point_count;
             b3Vec3r& v = incident_vertices[i].v;
-            // The point of the manifold is the mid point.
-            v = v + ((xf_a.position() - v).dot(axis)) / real(2.0) * axis;
             cp->m_local_point = v;
             cp->id = incident_vertices[i].id;
-
             ++point_count;
         }
     }
+    manifold->m_local_point = {0, 0, 0};
     manifold->m_point_count = point_count;
-    manifold->m_local_normal = axis;
-    manifold->m_penetration = penetration;
+    manifold->m_local_normal = {0, 0, 1};
+    manifold->m_type = b3Manifold::e_face_A;
 }

@@ -9,10 +9,10 @@
 // the axis is in the world frame
 static real transform_to_axis(
     const b3CubeShape &box,
-    const b3Transformr &xf,
+    const b3Transr &xf,
     const b3Vec3r &axis)
 {
-    const b3Mat33r &R = xf.m_r_t;
+    const b3Mat33r &R = xf.m_r;
     const b3Vec3r &half_xyz = box.m_h_xyz;
 
     return half_xyz.x * b3_abs(axis.dot(R.col(0))) +
@@ -25,8 +25,8 @@ static real transform_to_axis(
 // separate cube_B from cube_A
 // so the axis is also from cube_A
 static void overlap_on_axis(
-    const b3CubeShape &cube_A, const b3Transformr &xf_A,
-    const b3CubeShape &cube_B, const b3Transformr &xf_B,
+    const b3CubeShape &cube_A, const b3Transr &xf_A,
+    const b3CubeShape &cube_B, const b3Transr &xf_B,
     const b3Vec3r &axis, real &penetration)
 {
     // project two objects onto the axis.
@@ -43,8 +43,8 @@ static void overlap_on_axis(
 
 
 static void overlap_on_axis_absolute(
-    const b3CubeShape& cube_A, const b3Transformr& xf_A,
-    const b3CubeShape& cube_B, const b3Transformr& xf_B,
+    const b3CubeShape& cube_A, const b3Transr& xf_A,
+    const b3CubeShape& cube_B, const b3Transr& xf_B,
     const b3Vec3r& axis, real &penetration)
 {
     // project two objects onto the axis.
@@ -64,8 +64,8 @@ static void overlap_on_axis_absolute(
 
 // test face separation of cube_B from cube_A
 static real face_separation(
-    const b3CubeShape *cube_A, const b3Transformr &xf_A,
-    const b3CubeShape *cube_B, const b3Transformr &xf_B, int32 &face_index)
+    const b3CubeShape *cube_A, const b3Transr &xf_A,
+    const b3CubeShape *cube_B, const b3Transr &xf_B, int32 &face_index)
 {
     real max_penetration = -b3_real_max;
     int32 best_index;
@@ -90,8 +90,8 @@ static real face_separation(
 
 
 static real edge_separation(
-    const b3CubeShape* cube_A, const b3Transformr& xf_A,
-    const b3CubeShape* cube_B, const b3Transformr& xf_B,
+    const b3CubeShape* cube_A, const b3Transr& xf_A,
+    const b3CubeShape* cube_B, const b3Transr& xf_B,
     int32& axis_index_a, int32& axis_index_b)
 {
     real max_penetration = -b3_real_max;
@@ -129,8 +129,8 @@ static real edge_separation(
 
 static int32 b3_find_incident_face(
     b3ClipVertex c[4],
-    const b3CubeShape *cube1, const b3Transformr &xf1, int32 face1,
-    const b3CubeShape *cube2, const b3Transformr &xf2)
+    const b3CubeShape *cube1, const b3Transr &xf1, int32 face1,
+    const b3CubeShape *cube2, const b3Transr &xf2)
 {
     const b3Vec3r *normals1 = cube1->m_normals;
 
@@ -145,7 +145,7 @@ static int32 b3_find_incident_face(
 
     // the normal of face1 in cube2
     // In this way, we do not need to compute normals of cube2 into world frame
-    b3Vec3r normal1 = xf2.m_r_t.transpose() * (xf1.m_r_t * normals1[face1]);
+    b3Vec3r normal1 = xf2.m_r.transpose() * (xf1.m_r * normals1[face1]);
 
     // find the incident face on cube2
     // the incident face is the mose anti-parallel face of cube2 to face1
@@ -245,8 +245,8 @@ static int32 b3_clip_segment_to_face(
 
 static void create_face_contact(
     b3Manifold *manifold,
-    const b3CubeShape *cube_A, const b3Transformr &xf_A,
-    const b3CubeShape *cube_B, const b3Transformr &xf_B,
+    const b3CubeShape *cube_A, const b3Transr &xf_A,
+    const b3CubeShape *cube_B, const b3Transr &xf_B,
     const int32 &face_index_A, const int32 &face_index_B,
     const real &separation_A, const real &separation_B,
     const real &total_radius)
@@ -256,8 +256,9 @@ static void create_face_contact(
     // separate cube2 from cube1
     const b3CubeShape *cube1;
     const b3CubeShape *cube2;
-    b3Transformr xf1, xf2;
+    b3Transr xf1, xf2;
     int32 face1;
+    real flip = 1.0;
 
     if (separation_B > separation_A + k_tol) {
         // we will separate m_ from B
@@ -267,7 +268,7 @@ static void create_face_contact(
         xf2 = xf_A;
         face1 = face_index_B;
         manifold->m_type = b3Manifold::e_face_B;
-        manifold->m_penetration = separation_B;
+        flip = -1.0;
     } else {
         // we will separate B from m_
         cube1 = cube_A;
@@ -276,7 +277,6 @@ static void create_face_contact(
         xf2 = xf_B;
         face1 = face_index_A;
         manifold->m_type = b3Manifold::e_face_A;
-        manifold->m_penetration = separation_A;
     }
 
     // separate cube2 from cube1, the separation face on cube1 is face1
@@ -289,7 +289,7 @@ static void create_face_contact(
     int32 incident_face_index = b3_find_incident_face(incident_vertices, cube1, xf1, face1, cube2, xf2);
 
     // normal of the reference face in cube1 in world frame.
-    const b3Vec3r &n = xf1.m_r_t * cube1->m_normals[face1];
+    const b3Vec3r &n = xf1.m_r * cube1->m_normals[face1];
 
     const b3EdgeIndex *edges1 = cube1->m_edges;
     const b3FaceIndex &faces1 = cube1->m_faces[face1];
@@ -303,12 +303,17 @@ static void create_face_contact(
     // the equation of the reference plane is:
     // n \dot (x, y, z)^T - n \dot c1 = 0
     // the n \dot c1 part is called front offset
-    const b3Vec3r &v1 = xf1.transform(cube1->m_vertices[edges1[faces1.e1].v1]);
-    const b3Vec3r &v2 = xf1.transform(cube1->m_vertices[edges1[faces1.e2].v1]);
-    const b3Vec3r &v3 = xf1.transform(cube1->m_vertices[edges1[faces1.e3].v1]);
-    const b3Vec3r &v4 = xf1.transform(cube1->m_vertices[edges1[faces1.e4].v1]);
+    b3Vec3r v1 = cube1->m_vertices[edges1[faces1.e1].v1];
+    b3Vec3r v2 = cube1->m_vertices[edges1[faces1.e2].v1];
+    b3Vec3r v3 = cube1->m_vertices[edges1[faces1.e3].v1];
+    b3Vec3r v4 = cube1->m_vertices[edges1[faces1.e4].v1];
 
     b3Vec3r face_centroid = (v1 + v2 + v3 + v4) / real(4.0);
+
+    v1 = xf1.transform(v1);
+    v2 = xf1.transform(v2);
+    v3 = xf1.transform(v3);
+    v4 = xf1.transform(v4);
 
     b3Vec3r tangent1 = (v2 - v1).normalized();
     b3Vec3r tangent2 = (v3 - v2).normalized();
@@ -345,7 +350,7 @@ static void create_face_contact(
     // for complicated polygon, the np maybe invalid, but for box, there is no such problem
 
     int32 point_count = 0;
-    manifold->m_local_normal = n;
+    manifold->m_local_normal = flip * n;
     manifold->m_local_point = face_centroid;
 
     for (int32 i = 0; i < np; ++i) {
@@ -355,8 +360,7 @@ static void create_face_contact(
             b3ManifoldPoint *cp = manifold->m_points + point_count;
             b3Vec3r& v = clip_points4[i].v;
             // The point of manifold is the mid point
-            v = v + (face_centroid - v).dot(n) / real(2.0) * n;
-            cp->m_local_point = clip_points4[i].v;
+            cp->m_local_point = xf2.transform_local(clip_points4[i].v);
             cp->id = clip_points4[i].id;
 
             ++point_count;
@@ -406,13 +410,16 @@ real line_segement_separation(
 }
 
 
-void create_edge_contact(
+bool create_edge_contact(
     b3Manifold* manifold,
-    const b3CubeShape* cube_A, const b3Transformr& xf_A,
-    const b3CubeShape* cube_B, const b3Transformr& xf_B,
+    const b3CubeShape* cube_A, const b3Transr& xf_A,
+    const b3CubeShape* cube_B, const b3Transr& xf_B,
     const int32& axis_index_A, const int32& axis_index_B,
     const real &separation)
 {
+    if (b3_abs(separation - 0.015) < 0.001) {
+        int32 i = 0;
+    }
 
     real max_penetration = -b3_real_max;
     int32 best_edge_index_a, best_edge_index_b;
@@ -466,6 +473,10 @@ void create_edge_contact(
         }
     }
 
+    if (max_diff == b3_real_max) {
+        return false;
+    }
+
     b3ContactID id;
     id.cf.type = b3ContactFeature::e_e_e;
     id.cf.index_1 = (uint8)best_edge_index_a;
@@ -475,14 +486,15 @@ void create_edge_contact(
     manifold->m_type = b3Manifold::e_edges;
     manifold->m_point_count = 1;
     manifold->m_points[0].id = id;
-    manifold->m_penetration = max_penetration;
+
+    return true;
 }
 
 
 void b3_collide_cube(
     b3Manifold *manifold,
-    const b3CubeShape *cube_A, const b3Transformr &xf_A,
-    const b3CubeShape *cube_B, const b3Transformr &xf_B)
+    const b3CubeShape *cube_A, const b3Transr &xf_A,
+    const b3CubeShape *cube_B, const b3Transr &xf_B)
 {
     manifold->m_point_count = 0;
     real total_radius = cube_A->get_radius() + cube_B->get_radius();
@@ -515,11 +527,12 @@ void b3_collide_cube(
     bool face_contact_A = (separation_A + tol) >= separation_edge;
     bool face_contact_B = (separation_B + tol) >= separation_edge;
 
-    if (face_contact_A || face_contact_B) {
+    bool edge_succeed = true;
+    if (!face_contact_A && !face_contact_B) {
+        edge_succeed = create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B, separation_edge);
+    } else if (edge_succeed == false || face_contact_A || face_contact_B) {
         create_face_contact(manifold, cube_A, xf_A, cube_B, xf_B,
                             face_index_A, face_index_B, separation_A, separation_B, total_radius);
-    } else {
-        create_edge_contact(manifold, cube_A, xf_A, cube_B, xf_B, axis_index_A, axis_index_B, separation_edge);
     }
 }
 

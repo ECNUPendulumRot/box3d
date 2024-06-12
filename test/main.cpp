@@ -1,22 +1,19 @@
 
 #include <spdlog/spdlog.h>
 
-#include "imgui/imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "box3d.hpp"
 
 #include "draw.hpp"
 #include "settings.hpp"
 #include "test.hpp"
+#include "imgui_ext.hpp"
+
 
 GLFWwindow *g_main_window = nullptr;
 static Settings s_settings;
 static int32 s_test_selection = 0;
 static Test* s_test = nullptr;
 static float s_display_scale = 1.0f;
-
 static bool s_mid_mouse_down = false;
 static bool s_left_mouse_down = false;
 
@@ -195,26 +192,42 @@ void update_ui() {
     ImGui::SetNextWindowPos({g_camera.m_width - menuWidth - 10.0f, 10.0f});
     ImGui::SetNextWindowSize({menuWidth, g_camera.m_height - 20.0f});
     ImGui::Begin("Tools", &g_debug_draw.m_show_ui, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-
     ImGui::SliderInt("Velocity Iteration", &s_settings.m_velocity_iteration, 0, 100);
+    ImGui::SliderInt("Position Iteration", &s_settings.m_position_iteration, 0, 100);
     ImGui::SliderFloat("Hertz", &s_settings.m_hertz, 5.0f, 144.0f, "%.0f hz");
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Enable Sleep", &s_settings.m_enable_sleep);
 
     ImGui::Separator();
 
     ImGui::Checkbox("Shapes", &s_settings.m_draw_shapes);
     ImGui::Checkbox("Frame Only", &s_settings.m_draw_frame_only);
+    ImGui::Checkbox("Contact Points", &s_settings.m_draw_contact_points);
 
     ImVec2 button_sz = ImVec2(-1, 0);
 
     if (ImGui::Button("Pause (P)", button_sz)) {
         s_settings.m_pause = !s_settings.m_pause;
+        s_settings.m_generate_json = false;
     }
     if (ImGui::Button("Single Step (O)", button_sz)) {
         s_settings.m_single_step = !s_settings.m_single_step;
     }
     if (ImGui::Button("Restart (R)", button_sz)) {
         restart_test();
+        s_settings.m_generate_json = false;
     }
+
+    if (ToggleButton("Record Frame to JSON", &s_settings.m_generate_json)) {
+        restart_test();
+    }
+
+    if (ToggleButton("Record Body Info to CSV", &s_settings.m_output_bodies_info)) {
+        restart_test();
+    }
+
     ImGui::End();
 
 }
@@ -312,6 +325,7 @@ int main(int argc, char *argv[]) {
 
         if (s_test_selection != s_settings.m_test_index) {
             s_settings.m_test_index = s_test_selection;
+            s_settings.m_generate_json = false;
             delete s_test;
             s_test = g_test_entries[s_settings.m_test_index].create_fcn();
             g_camera.reset_view();

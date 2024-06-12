@@ -73,7 +73,7 @@ struct b3Manifold {
 
     enum Type {
 
-        e_circles,
+        e_spheres,
 
         e_face_A,
 
@@ -88,49 +88,57 @@ struct b3Manifold {
 
     b3Vec3r m_local_point;								///< usage depends on manifold type
 
-    // TODO: this maybe not useful, check to delete it.
     Type m_type;
 
     int32 m_point_count;								///< the number of manifold points
+};
 
-    ////// the penetration of two bodies. divide it equally between the two shapes.
-    real m_penetration;
+
+struct b3WorldManifold {
+
+    void initialize(const b3Manifold* manifold,
+                    const b3Transr& xf_A, real radius_A,
+                    const b3Transr& xf_B, real radius_B);
+
+    b3Vec3r normal;
+    b3Vec3r points[8];
+    real separations[8];
 };
 
 
 /// Compute the collision manifold between two circles.
 void b3_collide_spheres(b3Manifold* manifold,
 					    const b3SphereShape* sphere_a,
-                        const b3Transformr& xf_a,
+                        const b3Transr& xf_a,
 					    const b3SphereShape* sphere_b,
-                        const b3Transformr& xf_b);
+                        const b3Transr& xf_b);
 
 /// Compute the collision manifold between circle and cube
 void b3_collide_cube_and_sphere(b3Manifold* manifold,
                                 const b3CubeShape* cube_a,
-                                const b3Transformr& xf_a,
+                                const b3Transr& xf_a,
                                 const b3SphereShape* sphere_b,
-                                const b3Transformr& xf_b);
+                                const b3Transr& xf_b);
 
 /// Compute the collision manifold between two cubes
 void b3_collide_cube(b3Manifold* manifold,
                      const b3CubeShape* cube_A,
-                     const b3Transformr& xf_A,
+                     const b3Transr& xf_A,
                      const b3CubeShape* cube_B,
-                     const b3Transformr& xf_B);
+                     const b3Transr& xf_B);
 
 /// Compute the collision manifold between a plane and a sphere.
 void b3_collide_plane_and_sphere(b3Manifold* manifold,
                                  const b3PlaneShape* plane_a,
-                                 const b3Transformr& xf_a,
+                                 const b3Transr& xf_a,
                                  const b3SphereShape* sphere_b,
-                                 const b3Transformr& xf_b);
+                                 const b3Transr& xf_b);
 
 /// Compute the collision manifold between a plane and a cube.
 void b3_collide_plane_and_cube(b3Manifold* manifold,
                                const b3PlaneShape* plane_a,
-                               const b3Transformr& xf_a,
+                               const b3Transr& xf_a,
                                const b3CubeShape* cube_b,
-                               const b3Transformr& xf_b);
+                               const b3Transr& xf_b);
 
 #endif //BOX3D_B3_COLLISION_HPP

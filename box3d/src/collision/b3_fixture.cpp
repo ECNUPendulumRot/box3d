@@ -34,7 +34,7 @@ void b3Fixture::create_fixture(
 }
 
 
-void b3Fixture::create_proxy(b3BroadPhase *broad_phase, b3Transformr &m_xf)
+void b3Fixture::create_proxy(b3BroadPhase *broad_phase, b3Transr &m_xf)
 {
     b3_assert(m_proxy_count == 0);
     m_proxy_count = m_shape->get_child_count();
@@ -50,7 +50,7 @@ void b3Fixture::create_proxy(b3BroadPhase *broad_phase, b3Transformr &m_xf)
 }
 
 
-void b3Fixture::synchronize(b3BroadPhase *broad_phase, const b3Transformr &transform1, const b3Transformr &transform2)
+void b3Fixture::synchronize(b3BroadPhase *broad_phase, const b3Transr &transform1, const b3Transr &transform2)
 {
     if(m_proxy_count == 0) {
         return;

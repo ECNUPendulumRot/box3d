@@ -29,7 +29,7 @@ b3CubeAndSphereContact::b3CubeAndSphereContact(b3Fixture *fixture_a, b3Fixture *
 }
 
 
-void b3CubeAndSphereContact::evaluate(b3Manifold* manifold, const b3Transformr& xf_a, const b3Transformr& xf_b)
+void b3CubeAndSphereContact::evaluate(b3Manifold* manifold, const b3Transr& xf_a, const b3Transr& xf_b)
 {
     b3_collide_cube_and_sphere(
         manifold,

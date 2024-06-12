@@ -27,10 +27,15 @@ struct Settings {
 
     int m_test_index = 0;
     int m_velocity_iteration = 8;
+    int m_position_iteration = 8;
     bool m_draw_shapes = true;
     bool m_draw_frame_only = false;
+    bool m_draw_contact_points = false;
     bool m_pause = false;
     bool m_single_step = false;
+    bool m_generate_json = false;
+    bool m_output_bodies_info = false;
+    bool m_enable_sleep = true;
     float m_hertz;
 };
 

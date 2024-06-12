@@ -30,7 +30,7 @@ struct b3Vec3 {
         z = other.z;
     }
 
-    inline b3Vec3& operator=(std::initializer_list<double> list) {
+    inline b3Vec3& operator=(std::initializer_list<T> list) {
         b3_assert(list.size() == 3);
         auto it = list.begin();
         x = *it++;
@@ -85,8 +85,8 @@ struct b3Vec3 {
 
     inline b3Vec3 cross(const b3Vec3<T>& v) const {
         return b3Vec3(y * v.z - z * v.y,
-                         z * v.x - x * v.z,
-                         x * v.y - y * v.x);
+                      z * v.x - x * v.z,
+                      x * v.y - y * v.x);
     }
 
     inline b3Vec3 cwise_product(const b3Vec3<T>& v) const {
@@ -150,6 +150,7 @@ struct b3Vec3 {
 using b3Vec3d = b3Vec3<double>;
 using b3Vec3f = b3Vec3<float>;
 using b3Vec3r = b3Vec3<real>;
+using b3Vec3i = b3Vec3<int32>;
 
 //////////////////////////////////////////////////////
 

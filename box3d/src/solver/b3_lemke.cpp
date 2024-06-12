@@ -49,13 +49,6 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
 
     //print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
-
-    m_I_inv = (real**)m_block_allocator->allocate(m_size * sizeof(real*));
-    b3_assert(m_I_inv != nullptr);
-    for (int32 i = 0; i < m_size; ++i) {
-        m_I_inv[i] = (real*)m_block_allocator->allocate(m_size * sizeof(real));
-    }
-
     // set up pivot vector
     m_basis = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
     b3_assert(m_basis != nullptr);
@@ -144,6 +137,7 @@ void b3Lemke::solve()
     //print_matrix((const real**)m_tableau, m_size, 2 * m_size + 2, "tableau matrix");
 
     for (int32 i = 0; i < m_size; i++) {
+        if (m_basis[i] < m_size) continue;
         m_x[m_basis[i] - m_size] = m_tableau[i][2 * m_size + 1];
     }
 
@@ -185,7 +179,7 @@ void b3Lemke::print_vx() {
     auto logger = spdlog::get("lemke-logger");
     logger->set_pattern("%v");
     std::ostringstream oss;
-    for (int i = 0; i < 2 * m_size; i++) {
+    for (int i = 0; i < m_size; i++) {
         oss << m_x[i] << " ";
     }
     spdlog::info("Lemke VX Vector: \n {}", oss.str());
@@ -326,11 +320,6 @@ b3Lemke::~b3Lemke()
         m_block_allocator->free(m_tableau[i], (2 * m_size + 2) * sizeof(real));
     }
     m_block_allocator->free(m_tableau, m_size * sizeof(real*));
-
-    for (int32 i = 0; i < m_size; i++) {
-        m_block_allocator->free(m_I_inv[i], m_size * sizeof(real));
-    }
-    m_block_allocator->free(m_I_inv, m_size * sizeof(real*));
 }
 
 

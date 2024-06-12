@@ -31,7 +31,7 @@ b3SphereContact::b3SphereContact(b3Fixture* fixture_a, b3Fixture* fixture_b):
 }
 
 
-void b3SphereContact::evaluate(b3Manifold* manifold, const b3Transformr& xf_a, const b3Transformr& xf_b)
+void b3SphereContact::evaluate(b3Manifold* manifold, const b3Transr& xf_a, const b3Transr& xf_b)
 {
     b3_collide_spheres(
         manifold,

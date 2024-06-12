@@ -70,13 +70,13 @@ public:
         m_draw_flags &= ~flags;
     }
 
-    virtual void draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color) = 0;
+    virtual void draw_box(const b3CubeShape* cube, const b3Transr& xf, const b3Color& color) = 0;
 
-    virtual void draw_plane(const b3PlaneShape* plane, const b3Transformr& xf, const b3Color& color) = 0;
+    virtual void draw_plane(const b3PlaneShape* plane, const b3Transr& xf, const b3Color& color) = 0;
 
-    virtual void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) = 0;
+    virtual void draw_sphere(const b3SphereShape* sphere, const b3Transr& xf, const b3Color& color) = 0;
 
-    virtual void draw_segment(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) = 0;
+    virtual void draw_point(const b3Vec3r& p, float size, const b3Color& color) = 0;
 
 protected:
 

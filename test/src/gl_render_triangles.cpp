@@ -112,16 +112,19 @@ void gl_render_triangles::destroy() {
     }
 }
 
-void gl_render_triangles::vertex(const b3Vec3r &v, const b3Vec3r &n, const b3Color &c) {
+
+void gl_render_triangles::vertex(const b3Vec3f &v, const b3Vec3f&n, const b3Color &c)
+{
 
     if (m_count == e_maxVertices)
         flush();
-
     m_vertices[m_count] = v;
     m_colors[m_count] = c;
     m_normals[m_count] = n;
+
     ++m_count;
 }
+
 
 void gl_render_triangles::flush() {
 
@@ -175,3 +178,5 @@ void gl_render_triangles::flush() {
 
     m_count = 0;
 }
+
+

@@ -21,6 +21,8 @@ class DebugDraw : public b3Draw {
 
     int32 m_plane_segment = 4;
 
+    int32 m_start_index = 0;
+
 public:
 
     bool m_show_ui = true;
@@ -34,13 +36,13 @@ public:
 
     void create();
 
-    void draw_box(const b3CubeShape* cube, const b3Transformr& xf, const b3Color& color) override;
+    void draw_box(const b3CubeShape* cube, const b3Transr& xf, const b3Color& color) override;
 
-    void draw_plane(const b3PlaneShape* plane, const b3Transformr& xf, const b3Color& color) override;
+    void draw_plane(const b3PlaneShape* plane, const b3Transr& xf, const b3Color& color) override;
 
-    void draw_sphere(const b3SphereShape* sphere, const b3Transformr& xf, const b3Color& color) override;
+    void draw_sphere(const b3SphereShape* sphere, const b3Transr& xf, const b3Color& color) override;
 
-    void draw_segment(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) override;
+    void draw_point(const b3Vec3r& p, float size, const b3Color& color) override;
 
     void flush();
 
@@ -50,8 +52,8 @@ public:
 
 extern Camera g_camera;
 extern DebugDraw g_debug_draw;
-extern b3Vec3r g_light_color;
-extern b3Vec3r g_light_position;
+extern b3Vec3f g_light_color;
+extern b3Vec3f g_light_position;
 
 
 #endif //BOX3D_DRAW_HPP

@@ -29,13 +29,13 @@ struct b3BodyDef {
 
     b3BodyType m_type = b3BodyType::b3_type_not_defined;
 
-    b3Vec3r m_init_p = b3Vec3r ::zero();
+    b3Vec3r m_init_p = b3Vec3r::zero();
 
-    b3Quaternionr m_init_q;
+    b3Quatr m_init_q;
 
-    b3Vec3r m_init_v = b3Vec3r ::zero();
+    b3Vec3r m_init_v = b3Vec3r::zero();
 
-    b3Vec3r m_init_w = b3Vec3r ::zero();
+    b3Vec3r m_init_w = b3Vec3r::zero();
 
     real m_density = 1.0;
 

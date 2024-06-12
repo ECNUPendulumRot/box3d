@@ -17,13 +17,9 @@ public:
 
         for (int32 i = 0; i < box_count; ++i) {
             b3BodyDef body_def;
-//            if (i == 0) {
-//                body_def.m_type = b3BodyType::b3_static_body;
-//            }
-//            else
-                body_def.m_type = b3BodyType::b3_dynamic_body;
+            body_def.m_type = b3BodyType::b3_dynamic_body;
 
-            b3Vec3r p(0, 0, 1 + 1 * box_hf_size * 2.0f - i * box_hf_size * 2.0f);
+            b3Vec3r p(0, 0, 1 + i * box_hf_size * 2.0f);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
@@ -73,7 +69,7 @@ public:
             b3Body* cube = m_bodys[i];
             b3Vec3r v = cube->get_linear_velocity();
             b3Vec3r w = cube->get_angular_velocity();
-            spdlog::info("cube[{}] v = ({}, {}, {}), w = ({}, {}, {})\n", i, v.x, v.y, v.z, w.x, w.y, w.z);
+            // spdlog::info("cube[{}] v = ({}, {}, {}), w = ({}, {}, {})\n", i, v.x, v.y, v.z, w.x, w.y, w.z);
         }
 
     }
