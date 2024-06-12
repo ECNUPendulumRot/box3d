@@ -170,7 +170,7 @@ void b3ContactSolverZHB::init_velocity_constraints()
 
 void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propagations)
 {
-    real tolerance = 0.01;
+    real tolerance = 0.0;
     bool st4=false;
     for (int32 i = 0; i < m_count; ++i) {
 
