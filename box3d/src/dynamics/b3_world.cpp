@@ -5,7 +5,7 @@
 
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
-#include "collision/b3_time_of_impact.hpp"
+
 
 #include "solver/b3_solver.hpp"
 #include "solver/b3_solver_zhb.hpp"
@@ -14,7 +14,9 @@
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
-#include "solver/b3_solver_gr.hpp"
+// #include "solver/b3_solver_gr.hpp"
+
+// #include "collision/b3_time_of_impact.hpp"
 
 
 b3World::b3World():
@@ -368,14 +370,14 @@ void b3World::solve_toi(const b3TimeStep &step)
                 int32 index_a = c->get_child_index_a();
                 int32 index_b = c->get_child_index_b();
 
-                b3TOIInput input;
-                input.proxy_a.set(f_a->get_shape(), index_a);
-                input.proxy_b.set(f_b->get_shape(), index_b);
-                input.sweep_a = b_a->m_sweep;
-                input.sweep_b = b_b->m_sweep;
-                input.t_max = 1.0;
+                // b3TOIInput input;
+                // input.proxy_a.set(f_a->get_shape(), index_a);
+                // input.proxy_b.set(f_b->get_shape(), index_b);
+                // input.sweep_a = b_a->m_sweep;
+                // input.sweep_b = b_b->m_sweep;
+                // input.t_max = 1.0;
 
-                b3TOIOutput output;
+                //b3TOIOutput output;
 
             }
         }
