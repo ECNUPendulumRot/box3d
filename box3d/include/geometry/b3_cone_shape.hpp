@@ -15,12 +15,15 @@
  *  in the local frame, the m_centroid is the tip of the cone
  */
 
+#define B3_CONE_MAX_BASE_POINTS 30
+
 class b3ConeShape : public b3Shape {
 
-    real m_sin_angle;
     real m_height;
 
     b3Vec3r m_centroid;
+
+    b3Vec3r m_vertices[B3_CONE_MAX_BASE_POINTS];
 
 public:
 
@@ -44,5 +47,9 @@ public:
 
     real get_height() const {
         return m_height;
+    }
+
+    const b3Vec3r* get_vertices() const {
+        return m_vertices;
     }
 };

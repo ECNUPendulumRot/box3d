@@ -10,7 +10,16 @@ void b3ConeShape::set_as_cone(real radius, real height)
     m_centroid.set_zero();
     m_radius = radius;
     m_height = height;
-    m_sin_angle = m_radius / b3_sqrt(m_radius * m_radius + m_height * m_height);
+
+    real theta = 0;
+    real delta_theta = b3_pi * 2 / B3_CONE_MAX_BASE_POINTS;
+
+    for (int i = 0; i < B3_CONE_MAX_BASE_POINTS; i++) {
+        m_vertices[i] = m_radius * b3Vec3r(cos(theta), sin(theta), 0);
+        m_vertices[i].z = m_height;
+
+        theta += delta_theta;
+    }
 }
 
 

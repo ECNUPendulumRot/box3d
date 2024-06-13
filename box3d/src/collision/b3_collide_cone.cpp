@@ -11,77 +11,76 @@ void b3_collide_plane_and_cone(b3Manifold* manifold,
 
     const b3Mat33r& Ra = xf_a.rotation_matrix();
     const b3Mat33r& Rb = xf_b.rotation_matrix();
+    b3Mat33r Rab = Ra.transpose() * Rb;
 
     real heightB = cone_b->get_height();
     real radiusB = cone_b->get_radius();
 
     // transform the tip and the base center of the cone in the plane frame
     b3Vec3r local_tipB = Ra.transpose() * xf_b.position();
-    b3Vec3r local_base_centerB = Ra.transpose() * (xf_b.position() + Rb.col(2) * heightB);
 
-    b3Vec3r centerA_to_tip = local_tipB - xf_a.position();
-    b3Vec3r centerA_to_base_center = local_base_centerB - xf_a.position();
+    real total_radius = plane_a->get_radius();
 
-    // don't care x, and y
-    if (centerA_to_tip.z > 0 && centerA_to_base_center.z > radiusB) {
-        // there is no penetration
+    if (local_tipB.z > heightB + total_radius) {
         manifold->m_point_count = 0;
         return;
     }
 
+    const b3Vec3r* verticesB = cone_b->get_vertices();
+    b3Vec3r local_pointsB[B3_CONE_MAX_BASE_POINTS];
+    real min_distance = b3_real_max;
+    int min_index = -1;
+    for (int i = 0; i < B3_CONE_MAX_BASE_POINTS; i++) {
+        local_pointsB[i] = local_tipB + Rab * verticesB[i];
+        if (min_distance > local_pointsB[i].z) {
+            min_distance = local_pointsB[i].z;
+            min_index = i;
+        }
+    }
+
+    if (local_tipB.z > total_radius && min_distance > total_radius) {
+        manifold->m_point_count = 0;
+        return;
+    }
+
+    // manifold->m_point_count > 0
     manifold->m_local_normal = Ra.col(2);
 
-    if (centerA_to_tip.z < b3_real_epsilon && centerA_to_base_center.z > radiusB) {
+    // the tip of the cone is the deepest contact point
+    if (Ra.col(2) == Rb.col(2) && local_tipB.z <= total_radius) {
         manifold->m_point_count = 1;
         manifold->m_points[0].m_local_point = xf_b.position();
         return;
     }
+    // the base of the cone is parallel to the plane, so the base center of the cone is the contact point
+    if (Ra.col(2).abs() == Rb.col(2).abs() && min_distance <= total_radius) {
+        manifold->m_point_count = 1;
+        manifold->m_points[0].m_local_point = xf_b.position() + Rb * b3Vec3r(0, 0, heightB);
+        return;
+    }
 
-    // the cone falls on its side to the ground
-    // tan(theta) = radiusB / heightB
-    // r = (center_to_base_center - center_to_tip).z
-    // h = sqrt((center_to_base_center.x - center_to_tip.x)^2 + (center_to_base_center.y - center_to_tip.y)^2)
-    // if radiusB / heightB == r / h ==> radiusB * h - heightB * r = 0
-
-    b3Vec3r tip_to_base_center = centerA_to_base_center - centerA_to_tip;
-    real r = tip_to_base_center.z;
-    real h = b3_sqrt(tip_to_base_center.x * tip_to_base_center.x + tip_to_base_center.y * tip_to_base_center.y);
-    if (b3_abs(radiusB * h - heightB * r) < b3_real_epsilon) {
-        // two contact points
+    if (local_tipB.z <= total_radius && min_distance <= total_radius) {
         manifold->m_point_count = 2;
-        // the world position of the tip of the cone
-        b3Vec3r point1 = xf_b.position();
-        tip_to_base_center.z = 0;
-        tip_to_base_center.normalized();
-        b3Vec3r point2 = local_tipB + b3_sqrt(radiusB * radiusB + heightB * heightB) * tip_to_base_center;
-        point2 = Ra * point2;
-
-        manifold->m_points[0].m_local_point = point1;
-        manifold->m_points[1].m_local_point = point2;
-
+        manifold->m_points[0].m_local_point = xf_b.position();
+        manifold->m_points[1].m_local_point = Ra * local_pointsB[min_index];
+        return;
     }
 
-    // The contact surface is an ellipse，so generate 4 contact points
-
-    manifold->m_point_count = 4;
-    b3Mat33r Rab = Ra.transpose() * Rb;
-
-    static const b3Vec3r search_dirs[4] = {
-        b3Vec3r(1, 0, 0),
-        b3Vec3r(0, 1, 0),
-        b3Vec3r(-1, 0, 0),
-        b3Vec3r(0, -1, 0)
-    };
-
-    // TODO: reconsider how to generate the contact points
-    for (int i = 0; i < 4; i++) {
-        b3Vec3r dir = (tip_to_base_center + radiusB * (Rab * search_dirs[i])).normalized();
-        // remember, these vector are in the plane frame.
-        // tip.z + x * dir.z = 0 ===> x = -tip.z / dir.z
-        if (b3_abs(dir.z) > b3_real_epsilon) {
-            real x = -local_tipB.z / dir.z;
-
-        }
+    manifold->m_point_count = 2;
+    if (local_tipB.z <= total_radius) {
+        manifold->m_points[0].m_local_point = xf_b.position();
+    } else {
+        manifold->m_points[0].m_local_point = Ra * local_pointsB[min_index];
     }
 
+    // the tip of the cone and a point on the base of the cone, one is above the plane, one is below the plane
+    real x = b3_abs(local_tipB.z / (local_pointsB[min_index].z - local_tipB.z));
+    if (x <= b3_real_epsilon || (1 - x) <= b3_real_epsilon) {
+        manifold->m_point_count = 1;
+        return;
+    }
+    b3Vec3r dir = local_pointsB[min_index] - local_tipB;
+    b3Vec3r point = local_tipB + x * dir;
+
+    manifold->m_points[1].m_local_point = Ra * point;
 }

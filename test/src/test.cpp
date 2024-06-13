@@ -57,16 +57,18 @@ void Test::step(Settings &settings) {
 
 void Test::pre_solve(b3Contact *contact, const b3Manifold* old_manifold)
 {
-//    b3Manifold* manifold = contact->get_manifold();
-//
-//    for (int i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
-//        b3ManifoldPoint& point = manifold->m_points[i];
-//
-//        ContactPoint* cp = m_points + m_point_count;
-//        cp->position = point.m_local_point;
-//
-//        m_point_count++;
-//    }
+    b3Manifold* manifold = contact->get_manifold();
+
+    for (int i = 0; i < manifold->m_point_count && m_point_count < k_max_contact_points; i++) {
+        b3ManifoldPoint& point = manifold->m_points[i];
+
+        ContactPoint* cp = m_points + m_point_count;
+        cp->position = point.m_local_point;
+
+        spdlog::info("point position: {} {} {}", cp->position.x, cp->position.y, cp->position.z);
+
+        m_point_count++;
+    }
 
     b3PersistentManifold* persistentManifold = contact->get_persistent_manifold();
 

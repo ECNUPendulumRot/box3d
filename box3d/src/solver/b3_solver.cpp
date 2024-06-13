@@ -226,7 +226,7 @@ int b3Solver::solve() {
         m_qs[i].normalize();
     }
 
-    correct_penetration();
+    // correct_penetration();
 
     // copy state buffers back to the bodies.
     write_states_back();

@@ -196,6 +196,16 @@ inline b3Vec3<T> operator/(const b3Vec3<T>& v, T s) {
     return v * (T(1.0) / s) ;
 }
 
+#define B3_CONE_EPSILON real(0.0001)
+
+template <typename T>
+inline bool operator==(const b3Vec3<T>& v1, const b3Vec3<T>& v2) {
+    // b3_real_epsilon is too small, can't use.
+    return ( b3_abs(v1.x - v2.x) < B3_CONE_EPSILON &&
+             b3_abs(v1.y - v2.y) < B3_CONE_EPSILON &&
+             b3_abs(v1.z - v2.z) < B3_CONE_EPSILON );
+}
+
 
 template <typename T>
 inline b3Vec3<T> b3_min_coeff(const b3Vec3<T>& a, const b3Vec3<T>& b){

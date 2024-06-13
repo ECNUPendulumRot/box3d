@@ -230,16 +230,19 @@ void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const
 
     real radius = cone->get_radius();
 
-    // TODO: reduce this, make it const, so don need to compute it for every shape.
+    // TODO: reduce this, we define the point count in the b3_cone_shape class.
     real theta = 0;
     real delta_theta = b3_pi * 2 / base_point_count;
 
+    const b3Mat33r& R = xf.rotation_matrix();
+
     for (int i = 0; i < base_point_count; i++) {
         base_normals[i].set(cos(theta), sin(theta), 0);
-        base_points[i] = base_center + radius * xf.transform(base_normals[i]);
+        base_points[i] = base_center + radius * R * base_normals[i];
 
         theta += delta_theta;
     }
+
 
     // TODO: This ?
     b3Vec3r normal = {0, 0, 1};
