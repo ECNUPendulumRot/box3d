@@ -90,21 +90,33 @@ protected:
 
 
     ////////// Coefficients related to the material of the object ///////////
+
     real m_restitution;
+
     real m_friction;
+
     real m_restitution_threshold;
+
     uint32 m_flags = 0;
 
+    int32 m_toi_count = 0;
+    real m_toi;
+
 public:
+
+    friend class b3World;
 
     b3Contact(b3Fixture* f_A, int32 index_A, b3Fixture* f_B, int32 index_B);
 
     enum {
         // this is used to generate island.
         e_island_flag = 1,
+
         // when aabb overlap, but two shapes maybe not intersecting.
         // so this flag is set when two shapes are intersecting or touching.
-        e_touching_flag = 1 << 1
+        e_touching_flag = 1 << 1,
+
+        e_toi_flag = 1 << 2
     };
 
     void set_flag(uint32 flag) {

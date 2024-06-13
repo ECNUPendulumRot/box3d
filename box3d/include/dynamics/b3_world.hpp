@@ -50,6 +50,10 @@ class b3World {
 
     bool m_allow_sleep = false;
 
+    bool m_continuous_physics = false;
+
+    bool m_step_complete = true;
+
     b3Draw* m_debug_draw;
 
 public:
@@ -66,13 +70,11 @@ public:
         return m_body_count == 0;
     }
 
-    /**
-     * This is simulation world time forward.
-     * @param dt
-     * @param velocity_iterations the numbers of iterations when solving velocity constraints.
-     * @param position_iterations the numbers of iterations when solving position constraints. (but we have not use it)
-     */
     void step(real dt, int32 velocity_iterations, int32 position_iterations);
+
+    void set_allow_sleeping(bool flag);
+
+    void debug_draw();
 
     inline int get_shape_count() const {
         return m_shape_count;
@@ -88,7 +90,7 @@ public:
         m_gravity = gravity;
     }
 
-    b3Vec3r gravity() {
+    inline const b3Vec3r& gravity() {
         return m_gravity;
     }
 
@@ -100,9 +102,6 @@ public:
         return m_contact_manager.get_contact_list();
     }
 
-    /**
-     * @brief Clear all objects in the world.
-     */
     void clear();
 
     inline void awake_contact_check() {
@@ -113,7 +112,7 @@ public:
         return &m_block_allocator;
     }
 
-    inline int32 get_body_count() const {
+    inline const int32& get_body_count() const {
         return m_body_count;
     }
 
@@ -125,31 +124,23 @@ public:
         m_debug_draw = draw;
     }
 
-    void debug_draw();
-
-    void set_contact_listener(b3ContactListener* listener) {
+    inline void set_contact_listener(b3ContactListener* listener) {
         m_contact_manager.m_contact_listener = listener;
     }
 
-    inline void set_allow_sleeping(bool flag) {
+    inline void set_continuous_physics(bool flag) {
+        m_continuous_physics = flag;
+    }
 
-        if (flag == m_allow_sleep) {
-            return;
-        }
-
-        m_allow_sleep = flag;
-        if (m_allow_sleep == false) {
-            for (b3Body* b = m_body_list; b; b = b->m_next) {
-                b->set_awake(true);
-            }
-        }
+    inline bool get_continuous_physics() const {
+        return m_continuous_physics;
     }
 
 private:
 
-    // void solve(double delta_t);
-
     void solve(b3TimeStep& step);
+
+    void solve_toi(const b3TimeStep& step);
 
     void draw_shape(b3Fixture* fixture, const b3Transr& xf, const b3Color& color);
 };

@@ -24,7 +24,7 @@ struct b3FixtureDef {
 
     real m_density = 1.0;
 
-    real m_restitution_threshold = 1.0 * b3_length_units_per_meter;
+    real m_restitution_threshold = 0.0 * b3_length_units_per_meter;
 
     /**
      * @brief The shape of the fixture.
@@ -81,6 +81,7 @@ struct b3FixtureProxy {
 class b3Fixture {
 
     friend class b3Body;
+    friend class b3ContactManager;
 
     real m_restitution = 0.0;
 

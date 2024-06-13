@@ -12,6 +12,8 @@ public:
 
     real m_half_length, m_half_width;
 
+    b3Vec3r m_vertices[4];
+
     b3PlaneShape();
 
     /**

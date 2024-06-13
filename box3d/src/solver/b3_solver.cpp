@@ -64,10 +64,15 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
 void b3Solver::write_states_back()
 {
     for(int32 i = 0; i < m_body_count; ++i) {
-        m_bodies[i]->set_position(m_ps[i]);
-        m_bodies[i]->set_quaternion(m_qs[i]);
-        m_bodies[i]->set_linear_velocity(m_vs[i]);
-        m_bodies[i]->set_angular_velocity(m_ws[i]);
+        b3Body* b = m_bodies[i];
+        b->m_sweep.p = m_ps[i];
+        b->m_sweep.q = m_qs[i];
+
+        b->set_linear_velocity(m_vs[i]);
+        b->set_angular_velocity(m_ws[i]);
+
+        b->set_position(m_ps[i]);
+        b->set_quaternion(m_qs[i]);
     }
 }
 
@@ -83,11 +88,19 @@ int b3Solver::solve(bool allow_sleep)
         b3Vec3r v = m_vs[i];
         b3Vec3r w = m_ws[i];
 
+        b3Vec3r p = b->m_sweep.p;
+        b3Quatr q = b->m_sweep.q;
+
+        b->m_sweep.p0 = p;
+        b->m_sweep.q0 = q;
+
         v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
         w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
 
         m_vs[i] = v;
         m_ws[i] = w;
+        m_ps[i] = p;
+        m_qs[i] = q;
     }
 
     b3ContactSolverDef def;
@@ -115,6 +128,9 @@ int b3Solver::solve(bool allow_sleep)
         m_qs[i].normalize();
     }
 
+    // copy state buffers back to the bodies.
+    write_states_back();
+
     if (allow_sleep) {
         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
         const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
@@ -125,8 +141,8 @@ int b3Solver::solve(bool allow_sleep)
                 continue;
             }
 
-            b3Vec3r lin_vel = m_vs[i];
-            b3Vec3r ang_vel = m_ws[i];
+            b3Vec3r lin_vel = b->get_linear_velocity();
+            b3Vec3r ang_vel = b->get_angular_velocity();
 
             if (lin_vel.dot(lin_vel) < lin_tor_sqr && ang_vel.dot(ang_vel) < ang_tor_sqr) {
                 b->set_awake(false);
@@ -135,9 +151,6 @@ int b3Solver::solve(bool allow_sleep)
             }
         }
     }
-
-    // copy state buffers back to the bodies.
-    write_states_back();
 
     return 0;
 }

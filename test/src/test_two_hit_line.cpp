@@ -6,7 +6,7 @@ public:
 
     TestTwoHitLine() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, 0));
+        m_world->set_gravity(b3Vec3r(0, 0, -10));
         int num_of_spheres = 3;
         // create a dynamic body
         b3Transr pose, velocity;

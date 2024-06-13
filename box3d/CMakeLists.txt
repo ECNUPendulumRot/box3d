@@ -55,6 +55,8 @@ set(B3D_HEADER_FILES
         include/solver/b3_solver_gr.hpp
         include/solver/b3_contact_solver.hpp
         include/solver/b3_contact_solver_zhb.hpp
+        include/collision/b3_distance.hpp
+        include/collision/b3_time_of_impact.hpp
 )
 
 
@@ -95,6 +97,8 @@ set(B3D_SOURCE_FILES
         src/solver/b3_contact_solver.cpp
         src/collision/b3_collide.cpp
         src/solver/b3_contact_solver_zhb.cpp
+        src/collision/b3_distance.cpp
+        src/collision/b3_time_of_impact.cpp
 )
 
 # add third-party libraries

@@ -9,7 +9,7 @@ public:
 
     SphereCradleTest() {
 
-        m_world->set_gravity(b3Vec3r::zero());
+        m_world->set_gravity(b3Vec3r(0, 0, -10));
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_static_body;

@@ -8,6 +8,8 @@
 
 class b3SphereShape : public b3Shape {
 
+    friend class b3DistanceProxy;
+
     b3Vec3r m_centroid;
 
 public:

@@ -5,6 +5,7 @@
 
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
+#include "collision/b3_time_of_impact.hpp"
 
 #include "solver/b3_solver.hpp"
 #include "solver/b3_solver_zhb.hpp"
@@ -107,29 +108,112 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
     m_contact_manager.collide();
 
     // generate islands, and solve them.
-    solve(step);
+    if (m_step_complete && step.m_dt > 0.0) {
+        solve(step);
+    }
+
+    if (m_continuous_physics && step.m_dt > 0.0) {
+        //solve_toi(step);
+    }
 }
 
 
-void b3World::solve(b3TimeStep &step)
+void b3World::debug_draw() {
+
+    if (m_debug_draw == nullptr) {
+        return;
+    }
+
+    uint32 flags = m_debug_draw->get_flags();
+
+    if (flags & b3Draw::e_shape_bit) {
+        for (b3Body *body = m_body_list; body; body = body->next()) {
+
+            b3Transr xf(body->get_position(), body->get_quaternion());
+
+            for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
+                b3Color c;
+                if (f->get_body()->is_awake()) {
+                    c = b3Color(1.0f, 1.0f, 0.0f);
+                } else {
+                    c = b3Color(0.5f, 0.5f, 0.5f);
+                }
+                draw_shape(f, xf, c);
+            }
+        }
+    }
+}
+
+
+void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &color) {
+
+    switch (fixture->get_shape_type()) {
+        case b3ShapeType::e_cube: {
+            b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
+            m_debug_draw->draw_box(cube, xf, color);
+            break;
+        }
+        case b3ShapeType::e_plane: {
+            b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
+            m_debug_draw->draw_plane(plane, xf, color);
+            break;
+        }
+
+        case b3ShapeType::e_sphere: {
+            b3SphereShape* sphere = (b3SphereShape*)fixture->get_shape();
+            m_debug_draw->draw_sphere(sphere, xf, color);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
+void b3World::set_allow_sleeping(bool flag) {
+
+    if (flag == m_allow_sleep) {
+        return;
+    }
+
+    m_allow_sleep = flag;
+    if (m_allow_sleep == false) {
+        for (b3Body* b = m_body_list; b; b = b->m_next) {
+            b->set_awake(true);
+        }
+    }
+}
+
+
+
+void b3World::solve(b3TimeStep& step)
 {
     // clear all island flag.
     for (b3Body *body = m_body_list; body; body = body->next()) {
         body->m_flags &= ~b3Body::e_island_flag;
     }
     for (b3Contact *contact = m_contact_manager.get_contact_list(); contact; contact = contact->next()) {
-	    contact->unset_flag(b3Contact::e_island_flag);
+        contact->unset_flag(b3Contact::e_island_flag);
     }
 
 
     b3Island island(&m_block_allocator, m_body_count,
-                                        m_contact_manager.get_contact_count());
+                    m_contact_manager.get_contact_count());
 
     // build all islands
     void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
     b3Body **stack = new (mem) b3Body *;
     for (b3Body *body = m_body_list; body; body = body->next()) {
+
         if (body->m_flags & b3Body::e_island_flag) {
+            continue;
+        }
+
+        if (body->is_awake() == false) {
+            continue;
+        }
+
+        if (body->get_type() == b3BodyType::b3_static_body) {
             continue;
         }
 
@@ -137,11 +221,16 @@ void b3World::solve(b3TimeStep &step)
         stack[stack_count++] = body;
         body->m_flags |= b3Body::e_island_flag;
 
-	    // Perform a depth first search (DFS) on the constraint graph.
+        // Perform a depth first search (DFS) on the constraint graph.
         while (stack_count > 0) {
             b3Body *b = stack[--stack_count];
 
             island.add_body(b);
+
+            // do not propagate islands across static bodies
+            if (b->get_type() == b3BodyType::b3_static_body) {
+                continue;
+            }
 
             // search all contact connected to this body
             for (b3ContactEdge *ce = b->get_contact_list(); ce; ce = ce->m_next) {
@@ -167,12 +256,12 @@ void b3World::solve(b3TimeStep &step)
 
                 stack[stack_count++] = other;
                 other->m_flags |= b3Body::e_island_flag;
-	        }
+            }
         }
 
         // solve the constraints
         // b3Solver solver(&m_block_allocator, island, &step);
-        b3SolverZHB solver(&m_block_allocator, &island, &step);
+        b3Solver solver(&m_block_allocator, &island, &step);
         solver.solve(m_allow_sleep);
         // Post solve cleanup.
 
@@ -208,48 +297,88 @@ void b3World::solve(b3TimeStep &step)
 }
 
 
-void b3World::debug_draw() {
+void b3World::solve_toi(const b3TimeStep &step)
+{
+    b3Island island(&m_block_allocator, m_body_count,
+                    m_contact_manager.get_contact_count());
 
-    if (m_debug_draw == nullptr) {
-        return;
+    if (m_step_complete) {
+
+        for (b3Body *body = m_body_list; body; body = body->next()) {
+            body->m_flags &= ~b3Body::e_island_flag;
+            body->m_sweep.alpha0 = 0.0f;
+        }
+
+        for (b3Contact* c = m_contact_manager.m_contact_list; c; c = c->next()) {
+            c->m_flags &= ~(b3Contact::e_toi_flag | b3Contact::e_island_flag);
+            c->m_toi_count = 0;
+            c->m_toi = 1.0f;
+        }
     }
 
-    uint32 flags = m_debug_draw->get_flags();
+    for (;;) {
 
-    if (flags & b3Draw::e_shape_bit) {
-        for (b3Body *body = m_body_list; body; body = body->next()) {
+        b3Contact* min_contact = nullptr;
+        real min_alpha = 1.0;
 
-            b3Transr xf(body->get_position(), body->get_quaternion());
+        for (b3Contact* c = m_contact_manager.m_contact_list; c; c = c->next()) {
+            if (c->m_toi_count > b3_max_sub_steps) {
+                continue;
+            }
 
-            for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
-                draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
+            float alpha = 1.0;
+            if (c->m_flags & b3Contact::e_toi_flag) {
+                alpha = c->m_toi;
+            } else {
+                b3Fixture* f_a = c->get_fixture_a();
+                b3Fixture* f_b = c->get_fixture_b();
+
+                b3Body* b_a = f_a->get_body();
+                b3Body* b_b = f_b->get_body();
+
+                b3BodyType type_a = b_a->get_type();
+                b3BodyType type_b = b_b->get_type();
+
+                bool active_a = b_a->is_awake() && type_a != b3BodyType::b3_static_body;
+                bool active_b = b_b->is_awake() && type_b != b3BodyType::b3_static_body;
+
+                if (active_a == false && active_b == false) {
+                    continue;
+                }
+
+                bool collide_a = type_a != b3BodyType::b3_dynamic_body;
+                bool collide_b = type_b != b3BodyType::b3_dynamic_body;
+
+                if (collide_a == false && collide_b == false) {
+                    continue;
+                }
+
+                real alpha0 = b_a->m_sweep.alpha0;
+
+                if (b_a->m_sweep.alpha0 < b_b->m_sweep.alpha0) {
+                    alpha0 = b_b->m_sweep.alpha0;
+                    b_a->m_sweep.advance(alpha0);
+                } else if (b_b->m_sweep.alpha0 < b_a->m_sweep.alpha0) {
+                    alpha0 = b_a->m_sweep.alpha0;
+                    b_b->m_sweep.advance(alpha0);
+                }
+
+                b3_assert(alpha0 < 1.0f);
+
+                int32 index_a = c->get_child_index_a();
+                int32 index_b = c->get_child_index_b();
+
+                b3TOIInput input;
+                input.proxy_a.set(f_a->get_shape(), index_a);
+                input.proxy_b.set(f_b->get_shape(), index_b);
+                input.sweep_a = b_a->m_sweep;
+                input.sweep_b = b_b->m_sweep;
+                input.t_max = 1.0;
+
+                b3TOIOutput output;
+
             }
         }
-    }
-}
-
-
-void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &color) {
-
-    switch (fixture->get_shape_type()) {
-        case b3ShapeType::e_cube: {
-            b3CubeShape* cube = (b3CubeShape*)fixture->get_shape();
-            m_debug_draw->draw_box(cube, xf, color);
-            break;
-        }
-        case b3ShapeType::e_plane: {
-            b3PlaneShape* plane = (b3PlaneShape*)fixture->get_shape();
-            m_debug_draw->draw_plane(plane, xf, color);
-            break;
-        }
-
-        case b3ShapeType::e_sphere: {
-            b3SphereShape* sphere = (b3SphereShape*)fixture->get_shape();
-            m_debug_draw->draw_sphere(sphere, xf, color);
-            break;
-        }
-        default:
-            break;
     }
 }
 

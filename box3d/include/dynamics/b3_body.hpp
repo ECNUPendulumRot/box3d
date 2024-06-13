@@ -22,9 +22,26 @@ struct b3ContactEdge;
 //////////////////////////////////////////
 
 
+struct b3Sweep {
+
+    b3Sweep() = default;
+
+    void advance(real alpha);
+
+    void get_transform(b3Transr &xf, real beta) const;
+
+    real alpha0;
+    b3Vec3r m_local_center;
+    b3Vec3r p0, p;
+    b3Quatr q0, q;
+};
+
+
 class b3Body {
 
     friend class b3World;
+    friend class b3ContactManager;
+    friend class b3Solver;
 
     /**
      * @brief Type of the body
@@ -51,7 +68,6 @@ class b3Body {
     // the angular velocity of the body
     // in form of angle axis
     b3Vec3r m_w;
-
 
     ////////////////// Dynamic Properties //////////////////
 
@@ -87,7 +103,6 @@ class b3Body {
 
     b3Body* m_next = nullptr;
 
-
     //////////////// Island ////////////////////////////////
 
     int32 m_island_index;
@@ -95,6 +110,8 @@ class b3Body {
     uint32 m_flags = 0;
 
     real m_sleep_time = 0.0;
+
+    b3Sweep m_sweep;
 
 public:
 
@@ -104,10 +121,6 @@ public:
         e_auto_sleep_flag = 0x0004,
     };
 
-
-    /**
-     * @brief Construct a new b3Body object
-     */
     b3Body() = default;
 
     explicit b3Body(const b3BodyDef& body_def);
@@ -263,13 +276,11 @@ public:
         }
     }
 
-    /**
-     * @brief destroy all fixtures of this body.
-     * When the body is destroyed, will call this function to free memory.
-     */
-    void destroy_fixtures();
+    inline bool is_awake() {
+        return (m_flags & e_awake_flag) == e_awake_flag;
+    }
 
-    real kinetic_energy() const;
+    void destroy_fixtures();
 
 private:
     /**

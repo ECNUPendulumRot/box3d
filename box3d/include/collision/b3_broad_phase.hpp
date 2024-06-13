@@ -78,6 +78,12 @@ public:
 
     void set_block_allocator(b3BlockAllocator* block_allocator);
 
+    inline bool test_overlap(int32 proxy_id_a, int32 proxy_id_b) const {
+        const b3AABB& aabb_a = m_tree.get_AABB(proxy_id_a);
+        const b3AABB& aabb_b = m_tree.get_AABB(proxy_id_b);
+        return b3AABB::overlapped(aabb_a, aabb_b);
+    }
+
 private:
 
     void buffer_move(int32 proxy_id);

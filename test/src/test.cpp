@@ -39,7 +39,7 @@ void Test::step(Settings &settings) {
     m_point_count = 0;
 
     m_world->set_allow_sleeping(settings.m_enable_sleep);
-
+    m_world->set_continuous_physics(settings.m_enable_continuous_physics);
     m_world->step(time_step, settings.m_velocity_iteration, 8);
 
     m_world->debug_draw();

@@ -199,6 +199,7 @@ void update_ui() {
     ImGui::Separator();
 
     ImGui::Checkbox("Enable Sleep", &s_settings.m_enable_sleep);
+    ImGui::Checkbox("Enable Continuous Physics", &s_settings.m_enable_continuous_physics);
 
     ImGui::Separator();
 
