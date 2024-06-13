@@ -65,7 +65,7 @@ void Test::step(Settings &settings) {
     count++;
     print_first_not_symmetry();
 
-    spdlog::info("====frame {}=====", count);
+    //spdlog::info("====frame {}=====", count);
 }
 
 

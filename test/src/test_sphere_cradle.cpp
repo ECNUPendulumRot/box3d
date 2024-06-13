@@ -3,7 +3,7 @@
 
 class SphereCradleTest : public Test {
 
-    int sphere_count = 3;
+    int sphere_count = 4;
 
 public:
 
@@ -58,11 +58,22 @@ public:
             b3Fixture* f = b->create_fixture(fixture_def);
             utils.track_fixture(f, "init_velocity_sphere");
 
+            p = {0, -1 , 1};
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+            b = m_world->create_body(body_def);
+            b->create_fixture(fixture_def);
+
+            p = {0, 1 , 1};
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+            b = m_world->create_body(body_def);
+            b->create_fixture(fixture_def);
 
             v.set_zero();
             body_def.set_init_velocity(v, w);
             for(int i = 1; i <= sphere_count; i++) {
-                b3Vec3r position(0, 1 + 2 * i, 1);
+                b3Vec3r position(0, 3 + 2 * i, 1);
                 body_def.set_init_pose(position, q);
 
                 b3Body* bi  = m_world->create_body(body_def);
