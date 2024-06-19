@@ -323,9 +323,9 @@ struct b3PositionSolverManifold {
             {
                 normal = pc->m_local_normal;
 
-                b3Vec3r plane_point = pc->m_local_point;
+                b3Vec3r plane_point = xf_a.transform(pc->m_local_point);
 
-                b3Vec3 clipPoint = pc->m_local_points[index];
+                b3Vec3 clipPoint = xf_b.transform(pc->m_local_points[index]);
                 separation = (clipPoint - plane_point).dot(normal) - pc->m_radius_a - pc->m_radius_b;
                 point = clipPoint;
             }
@@ -364,7 +364,8 @@ bool b3ContactSolver::solve_position_constraints()
         int32 index_b = pc->m_index_b;
         b3Vec3r center_a = pc->m_center_a;
         b3Vec3r center_b = pc->m_center_b;
-
+        b3Vec3r local_center_a = pc->m_local_center_a;
+        b3Vec3r local_center_b = pc->m_local_center_b;
         real m_a = pc->m_inv_mass_a;
         real m_b = pc->m_inv_mass_b;
 
@@ -380,8 +381,14 @@ bool b3ContactSolver::solve_position_constraints()
         b3Quatr q_b = m_qs[index_b];
 
         for (int32 j = 0; j < point_count; ++j) {
-            b3Transr xf_a(p_a, q_a);
-            b3Transr xf_b(p_b, q_b);
+            b3Transr xf_a;
+            b3Transr xf_b;
+
+            xf_a.set_quaternion(q_a);
+            xf_b.set_quaternion(q_b);
+
+            xf_a.set_position(p_a - xf_a.rotate(local_center_a));
+            xf_b.set_position(p_b - xf_b.rotate(local_center_b));
 
             b3PositionSolverManifold psm;
             psm.initialize(pc, xf_a, xf_b, j);
@@ -389,8 +396,8 @@ bool b3ContactSolver::solve_position_constraints()
             b3Vec3r point = psm.point;
             real separation = psm.separation;
 
-            b3Vec3r r_a = point - center_a;
-            b3Vec3r r_b = point - center_b;
+            b3Vec3r r_a = point - p_a;
+            b3Vec3r r_b = point - p_b;
 
             min_separation = b3_min(min_separation, separation);
 

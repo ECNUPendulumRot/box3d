@@ -21,7 +21,9 @@ class DebugDraw : public b3Draw {
 
     int32 m_plane_segment = 4;
 
-    int32 m_start_index = 0;
+    static const int32 sphere_sector_count = 12;
+
+    static const int32 sphere_stack_count = 12;
 
 public:
 

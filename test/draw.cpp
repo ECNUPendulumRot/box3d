@@ -140,25 +140,22 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
     // vertex normal
     float nx, ny, nz, lengthInv = 1.0f / radius;
 
-    const int32 sector_count = 8;
-    const int32 stack_count = 8;
+    b3Vec3r vertices[(sphere_sector_count + 1) * (sphere_stack_count + 1)];
+    b3Vec3r normals[(sphere_sector_count + 1) * (sphere_stack_count + 1)];
 
-    b3Vec3r vertices[(sector_count + 1) * (stack_count + 1)];
-    b3Vec3r normals[(sector_count + 1) * (stack_count + 1)];
-
-    float sector_step = 2.0f * b3_pi / sector_count;
-    float stack_step = b3_pi / stack_count;
+    float sector_step = 2.0f * b3_pi / sphere_sector_count;
+    float stack_step = b3_pi / sphere_stack_count;
     float sector_angle, stack_angle;
 
     int32 index_v = 0;
     int32 index_n = 0;
-    for (int32 i = 0; i <= stack_count; ++i) {
+    for (int32 i = 0; i <= sphere_stack_count; ++i) {
         stack_angle = b3_pi / 2.0f - i * stack_step;
         xy = radius * cosf(stack_angle);
 
         z = radius * sinf(stack_angle);
 
-        for (int32 j = 0; j <= sector_count; ++j) {
+        for (int32 j = 0; j <= sphere_sector_count; ++j) {
             sector_angle = j * sector_step;
 
             x = xy * cosf(sector_angle);
@@ -176,18 +173,18 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
 
     if (m_draw_flags & b3Draw::e_frame_only_bit) {
         int32 k1, k2;
-        for (int32 i = 0; i < stack_count; ++i) {
-            k1 = i * (sector_count + 1);
-            k2 = k1 + sector_count + 1;
+        for (int32 i = 0; i < sphere_stack_count; ++i) {
+            k1 = i * (sphere_sector_count + 1);
+            k2 = k1 + sphere_sector_count + 1;
 
-            for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
+            for (int32 j = 0; j < sphere_sector_count; ++j, ++k1, ++k2) {
                 if (i != 0) {
                     m_lines->vertex(xf.transform(vertices[k1]), color);
                     m_lines->vertex(xf.transform(vertices[k2]), color);
                     m_lines->vertex(xf.transform(vertices[k1 + 1]), color);
                 }
 
-                if (i != (stack_count - 1)) {
+                if (i != (sphere_stack_count - 1)) {
                     m_lines->vertex(xf.transform(vertices[k1 + 1]), color);
                     m_lines->vertex(xf.transform(vertices[k2]), color);
                     m_lines->vertex(xf.transform(vertices[k2 + 1]), color);
@@ -197,18 +194,18 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
 
     } else {
         int32 k1, k2;
-        for (int32 i = 0; i < stack_count; ++i) {
-            k1 = i * (sector_count + 1);
-            k2 = k1 + sector_count + 1;
+        for (int32 i = 0; i < sphere_stack_count; ++i) {
+            k1 = i * (sphere_sector_count + 1);
+            k2 = k1 + sphere_sector_count + 1;
 
-            for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
+            for (int32 j = 0; j < sphere_sector_count; ++j, ++k1, ++k2) {
                 if (i != 0) {
                     m_triangles->vertex(xf.transform(vertices[k1]), xf.transform(normals[k1]), color);
                     m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
                     m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
                 }
 
-                if (i != (stack_count - 1)) {
+                if (i != (sphere_stack_count - 1)) {
                     m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
                     m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
                     m_triangles->vertex(xf.transform(vertices[k2 + 1]), xf.transform(normals[k2 + 1]), color);

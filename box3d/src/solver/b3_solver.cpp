@@ -120,17 +120,28 @@ int b3Solver::solve(bool allow_sleep)
         contact_solver.solve_velocity_constraints();
     }
 
-    // integrate positions and rotations.
-    bool position_solved = false;
+
+
     for (int32 i = 0; i < m_body_count; ++i) {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
         m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quatr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
     }
 
+    // integrate positions and rotations.
+    bool position_solved = false;
+    for (int32 i = 0; i < m_timestep->m_position_iterations; ++i) {
+        bool contact_ok = contact_solver.solve_position_constraints();
+
+        if (contact_ok) {
+            position_solved = true;
+            break;
+        }
+    }
+
     // copy state buffers back to the bodies.
     write_states_back();
-
+    allow_sleep = false;
     if (allow_sleep) {
         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
         const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
