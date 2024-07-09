@@ -20,6 +20,7 @@ struct b3DistanceProxy {
 
     void set(const b3Shape* shape, int32 index);
 
+
     b3Vec3r m_buffer[2];
     const b3Vec3r* m_vertices;
     int32 m_count;

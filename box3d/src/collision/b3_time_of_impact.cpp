@@ -45,3 +45,38 @@ void b3_time_of_impact(b3TOIOutput *output, const b3TOIInput *input)
         b3_distance(&distance_output, &cache, &distance_input);
     }
 }
+
+struct b3_separation_function{
+    enum Type{
+        e_points,
+        e_faceA,
+        e_faceB,
+        e_edges
+    };
+
+    real initialize(const b3SimplexCache* cache,
+                    const b3DistanceProxy* proxyA, const b3Sweep& sweepA,
+                    const b3DistanceProxy* proxyB, const b3Sweep& sweepB,
+                    real t1){
+        m_proxyA = proxyA;
+        m_proxyB = proxyB;
+        int32 count = cache->count;
+        b3_assert(0 < count && count < 3);
+
+        m_sweepA = sweepA;
+        m_sweepB = sweepB;
+
+        b3Transr xfA, xfB;
+        m_sweepA.get_transform(xfA, t1);
+        m_sweepB.get_transform(xfB, t1);
+
+
+    }
+
+    const b3DistanceProxy* m_proxyA;
+    const b3DistanceProxy* m_proxyB;
+    b3Sweep m_sweepA, m_sweepB;
+    Type m_type;
+    b3Vec3r m_localPoint;
+    b3Vec3r m_axis;
+};

@@ -210,11 +210,12 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propag
                             //zero = !(bool)m_wait;
                             spdlog::info("st:4, index A={},B={} is kicked in m_wait list,now have {} left",
                                          vc->m_index_a,vc->m_index_b,m_wait);
+                            if(m_wait == 0) ++propagations;
                         } else{
                             spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
                         }
                         if(m_wait == 0){
-                            ++propagations;
+
                             st4 = true;
                             vcp->m_bias_velocity = rhs;
                             spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);

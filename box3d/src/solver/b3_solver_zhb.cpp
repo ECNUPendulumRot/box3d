@@ -102,7 +102,7 @@ int b3SolverZHB::solve(bool allow_sleep)
     b3ContactSolverZHB contact_solver(&def);
 
     contact_solver.init_velocity_constraints();
-    int32 propagation_max = 100;
+    int32 propagation_max = 2;
     int32 propagation = 0;
     int32 iterations = m_timestep->m_velocity_iterations;
     for(int32 i = 0; i < iterations; ++i) {

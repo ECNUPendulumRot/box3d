@@ -68,6 +68,31 @@ struct b3Simplex {
         }
     }
 
+    real get_metric() const{
+        switch (m_count)
+        {
+            case 0:
+                b3_assert(false);
+                return 0.0f;
+
+            case 1:
+                return 0.0f;
+
+            case 2:
+                //return b3_distance(m_v1.w, m_v2.w, m_v3.w);
+
+            case 3:
+                //return b2Cross(m_v2.w - m_v1.w, m_v3.w - m_v1.w);
+
+            default:
+                b3_assert(false);
+                return 0.0f;
+        }
+    }
+
+    void Solve2();
+    void Solve3();
+
     b3SimplexVertex m_v1, m_v2, m_v3, m_v4;
     int32 m_count;
 };
@@ -112,4 +137,15 @@ void b3_distance(b3DistanceOutput *output, b3SimplexCache *cache, const b3Distan
     b3Transr transform_b = input->transform_b;
 
     b3Simplex simplex;
+    simplex.read_cache(cache, proxy_a, transform_a, proxy_b, transform_b);
+
+    // Get simplex vertices as an array.
+    b3SimplexVertex* vertices = &simplex.m_v1;
+    const int32 k_maxIters = 20;
+    ///to be Continue
 }
+
+bool b3_shape_cast(){
+
+}
+
