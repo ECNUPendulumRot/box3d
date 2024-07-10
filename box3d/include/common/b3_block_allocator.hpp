@@ -32,7 +32,7 @@
 #include "common/b3_types.hpp"
 
 
-/////////// Forward Delaration ///////////
+/////////// Forward Declaration ///////////
 
 struct b3Block;
 struct b3Chunk;
