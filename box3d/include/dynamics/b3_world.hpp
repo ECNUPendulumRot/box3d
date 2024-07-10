@@ -140,8 +140,6 @@ private:
 
     void solve(b3TimeStep& step);
 
-    void solve_toi(const b3TimeStep& step);
-
     void draw_shape(b3Fixture* fixture, const b3Transr& xf, const b3Color& color);
 };
 

@@ -5,7 +5,6 @@
 
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
-#include "collision/b3_time_of_impact.hpp"
 
 #include "solver/b3_solver.hpp"
 #include "solver/b3_solver_zhb.hpp"
@@ -295,93 +294,4 @@ void b3World::solve(b3TimeStep& step)
     // Look for new contacts
     m_contact_manager.find_new_contact();
 }
-
-
-void b3World::solve_toi(const b3TimeStep &step)
-{
-    b3Island island(&m_block_allocator, m_body_count,
-                    m_contact_manager.get_contact_count());
-
-    if (m_step_complete) {
-
-        for (b3Body *body = m_body_list; body; body = body->next()) {
-            body->m_flags &= ~b3Body::e_island_flag;
-            body->m_sweep.alpha0 = 0.0f;
-        }
-
-        for (b3Contact* c = m_contact_manager.m_contact_list; c; c = c->next()) {
-            c->m_flags &= ~(b3Contact::e_toi_flag | b3Contact::e_island_flag);
-            c->m_toi_count = 0;
-            c->m_toi = 1.0f;
-        }
-    }
-
-    for (;;) {
-
-        b3Contact* min_contact = nullptr;
-        real min_alpha = 1.0;
-
-        for (b3Contact* c = m_contact_manager.m_contact_list; c; c = c->next()) {
-            if (c->m_toi_count > b3_max_sub_steps) {
-                continue;
-            }
-
-            float alpha = 1.0;
-            if (c->m_flags & b3Contact::e_toi_flag) {
-                alpha = c->m_toi;
-            } else {
-                b3Fixture* f_a = c->get_fixture_a();
-                b3Fixture* f_b = c->get_fixture_b();
-
-                b3Body* b_a = f_a->get_body();
-                b3Body* b_b = f_b->get_body();
-
-                b3BodyType type_a = b_a->get_type();
-                b3BodyType type_b = b_b->get_type();
-
-                bool active_a = b_a->is_awake() && type_a != b3BodyType::b3_static_body;
-                bool active_b = b_b->is_awake() && type_b != b3BodyType::b3_static_body;
-
-                if (active_a == false && active_b == false) {
-                    continue;
-                }
-
-                bool collide_a = type_a != b3BodyType::b3_dynamic_body;
-                bool collide_b = type_b != b3BodyType::b3_dynamic_body;
-
-                if (collide_a == false && collide_b == false) {
-                    continue;
-                }
-
-                real alpha0 = b_a->m_sweep.alpha0;
-
-                if (b_a->m_sweep.alpha0 < b_b->m_sweep.alpha0) {
-                    alpha0 = b_b->m_sweep.alpha0;
-                    b_a->m_sweep.advance(alpha0);
-                } else if (b_b->m_sweep.alpha0 < b_a->m_sweep.alpha0) {
-                    alpha0 = b_a->m_sweep.alpha0;
-                    b_b->m_sweep.advance(alpha0);
-                }
-
-                b3_assert(alpha0 < 1.0f);
-
-                int32 index_a = c->get_child_index_a();
-                int32 index_b = c->get_child_index_b();
-
-                b3TOIInput input;
-                input.proxy_a.set(f_a->get_shape(), index_a);
-                input.proxy_b.set(f_b->get_shape(), index_b);
-                input.sweep_a = b_a->m_sweep;
-                input.sweep_b = b_b->m_sweep;
-                input.t_max = 1.0;
-
-                b3TOIOutput output;
-
-            }
-        }
-    }
-}
-
-
-
 
