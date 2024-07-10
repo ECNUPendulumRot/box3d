@@ -1,24 +1,44 @@
+// The MIT License
 
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "common/b3_block_allocator.hpp"
 
 #include <cstring>
 #include <climits>
+
 #include "common/b3_allocator.hpp"
 #include "common/b3_common.hpp"
 
-#include "spdlog/spdlog.h"
 
-//TODO: this const value need modify
+static constexpr int32 b3_chunk_size = 16 * 1024; ///< size of on chunk, default is 16KB
 
-static const int32 b3_chunk_size = 16 * 1024;
+static constexpr int32 b3_max_block_size = 640; ///< maximun size of one block
 
-static const int32 b3_max_block_size = 640;
+static constexpr int32 b3_chunk_array_increment = 128; ///< size of chunks to increase if current chunks are not enough
 
-static const int32 b3_chunk_array_increment = 128;
-
-static const int32 b3_block_sizes[b3_block_size_count] =
-{
+/// size of each block. Other size of blocks will be rounded to the nearest larger one.
+static const int32 b3_block_sizes[b3_block_size_count] =  {
     16,     // 0
     32,     // 1
     64,     // 2
@@ -36,12 +56,23 @@ static const int32 b3_block_sizes[b3_block_size_count] =
 };
 
 
-// This map an arbitrary allocation size to a suitable slot in b3_block_sizes
+/**
+ * @brief This map an arbitrary allocation size to a suitable slot in b3_block_sizes
+ */
 struct b3SizeMap {
 
+    /**
+     * @brief map of different block sizes to corresponding rounded blocks.
+     * @example a size of 17 will be rounded to m_values[17] = 32.
+     */
     uint8 m_values[b3_max_block_size + 1];
 
+    /**
+     * @brief constructor of b3SizeMap
+     * This will construct the m_values mapping.
+     */
     b3SizeMap() {
+
         int32 j = 0;
         m_values[0] = 0;
 
@@ -55,7 +86,7 @@ struct b3SizeMap {
 };
 
 
-static const b3SizeMap b3_size_map;
+static const b3SizeMap b3_size_map; ///< map of different block sizes to corresponding rounded blocks.
 
 
 struct b3Chunk {
@@ -70,7 +101,6 @@ struct b3Block {
 
 b3BlockAllocator::b3BlockAllocator()
 {
-
     b3_assert(b3_block_size_count < UCHAR_MAX);
 
     m_chunk_space = b3_chunk_array_increment;
@@ -106,15 +136,15 @@ void* b3BlockAllocator::allocate(int32 size)
     int32 index = b3_size_map.m_values[size];
     b3_assert(index >= 0 && index < b3_block_size_count);
 
-    static int count[b3_block_size_count] = {0};
-    count[index]++;
-
     if (m_free_lists[index]) {
+        // get the first free block in the list
         b3Block *block = m_free_lists[index];
         m_free_lists[index] = block->m_next;
 
         return block;
     } else {
+        // allocate a new chunk and construct the list of blocks
+        // if current chunks are all full, expand current chunk size
         if (m_chunk_count == m_chunk_space) {
             b3Chunk *old_chunk = m_chunks;
             m_chunk_space += b3_chunk_array_increment;
@@ -131,17 +161,15 @@ void* b3BlockAllocator::allocate(int32 size)
 
         b3_assert(block_count * block_size <= b3_chunk_size);
 
+        // construct the block list
         int8 *start = (int8 *)chunk->m_blocks;
         for (int32 i = 0; i < block_count - 1; ++i) {
-            // b3Block* block = (b3Block*)((int8*)chunk->m_blocks + block_size * i);
             b3Block *block = (b3Block *)(start);
 
             start += block_size;
 
             b3Block *next = (b3Block *)(start);
-            // b3Block* next  = (b3Block*)((int8*)chunk->m_blocks + block_size * (i + 1));
             block->m_next = next;
-
         }
         b3Block *last = (b3Block *)((int8 *)chunk->m_blocks + block_size * (block_count - 1));
         last->m_next = nullptr;
@@ -166,13 +194,11 @@ void b3BlockAllocator::free(void* p, int32 size)
         return;
     }
 
+    // the block is actually not freed but just set to b3Block type
     int index = b3_size_map.m_values[size];
     b3_assert(index >= 0 && index < b3_block_size_count);
 
     b3Block *block = (b3Block *)p;
-
-    static int count[b3_block_size_count] = {0};
-    count[index]++;
 
     block->m_next = m_free_lists[index];
     m_free_lists[index] = block;
