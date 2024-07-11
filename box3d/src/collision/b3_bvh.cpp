@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "collision/b3_bvh.hpp"
 
@@ -7,7 +31,9 @@
 
 #include "common/b3_block_allocator.hpp"
 
-
+/**
+ * @brief Construct a new b3Node object
+ */
 b3Node::b3Node():
     m_aabb(b3AABB()),
     m_child1(b3_NULL_NODE),
@@ -16,7 +42,9 @@ b3Node::b3Node():
     m_next = b3_NULL_NODE;
 }
 
-
+/**
+ * @brief Construct a new b3DynamicTree object
+ */
 b3DynamicTree::b3DynamicTree() {
     m_root = b3_NULL_NODE;
     m_node_capacity = 16;
@@ -25,7 +53,10 @@ b3DynamicTree::b3DynamicTree() {
     // Allocate memory space after the initialization of m_block_allocator
 }
 
-
+/**
+ * @brief Set the memory allocator
+ * @param block_allocator block_allocator is a pointer to an object of type b3BlockAllocator.
+ */
 void b3DynamicTree::set_block_allocator(b3BlockAllocator *block_allocator) {
     m_block_allocator = block_allocator;
     m_nodes = (b3Node *)m_block_allocator->allocate(m_node_capacity * sizeof(b3Node));
@@ -38,14 +69,21 @@ void b3DynamicTree::set_block_allocator(b3BlockAllocator *block_allocator) {
     m_nodes[m_node_capacity - 1].m_height = b3_NULL_HEIGHT;
 }
 
-
+/**
+ * @brief destroy the b3DynamicTree object
+ */
 b3DynamicTree::~b3DynamicTree() {
     m_block_allocator->free(m_nodes, m_node_capacity * sizeof(b3Node));
     // In the class b3World delete.
     m_block_allocator = nullptr;
 }
 
-
+/**
+ * @brief create a proxy in the dynamic tree.
+ * @param aabb: The AABB of the proxy.
+ * @param user_data: general is proxy of the fixture
+ * @return The index of the proxy.
+ */
 int32 b3DynamicTree::create_bvh_proxy(const b3AABB &aabb, b3FixtureProxy *fixture_proxy) {
     int32 bvh_proxy_id = assign_node();
 
@@ -64,13 +102,19 @@ int32 b3DynamicTree::create_bvh_proxy(const b3AABB &aabb, b3FixtureProxy *fixtur
     return bvh_proxy_id;
 }
 
-
+/**
+  * @brief destroy a proxy in the dynamic tree.
+  * @param proxy_id: The index of the proxy.
+  */
 void b3DynamicTree::destroy_bvh_proxy(int32 proxy_id) {
     b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
     b3_assert(m_nodes[proxy_id].is_leaf());
 }
 
-
+/**
+ * @brief assign a leaf node to the dynamic tree.
+ * @return The index of the leaf node.
+ */
 int32 b3DynamicTree::assign_node() {
     // If there is no empty node in allocated m_nodes,
     // then expands the m_nodes
@@ -94,7 +138,10 @@ int32 b3DynamicTree::assign_node() {
     return free_node;
 }
 
-
+/**
+ * @brief Recycle a leaf node from the dynamic tree.
+ * @param i_node: The index of the leaf node.
+ */
 void b3DynamicTree::recycle_node(int32 i_node) {
     b3_assert(0 <= i_node && i_node <= m_node_capacity);
     b3_assert(0 <= m_node_count);
@@ -105,7 +152,10 @@ void b3DynamicTree::recycle_node(int32 i_node) {
     --m_node_count;
 }
 
-
+/**
+ * @brief Insert a leaf node to the dynamic tree.
+ * @param leaf: The index of the leaf node.
+ */
 void b3DynamicTree::insert_to_leaf(int32 leaf) {
     if (m_root == b3_NULL_NODE) {
   	    m_root = leaf;
@@ -241,6 +291,10 @@ void b3DynamicTree::insert_to_leaf(int32 leaf) {
     }
 }
 
+/**
+ * @brief Remove a leaf node from the dynamic tree.
+ * @param leaf: The index of the leaf node.
+ */
 void b3DynamicTree::remove_leaf(int32 leaf) {
     if (leaf == m_root) {
 	    m_root = b3_NULL_NODE;
@@ -289,7 +343,10 @@ void b3DynamicTree::remove_leaf(int32 leaf) {
     }
 }
 
-
+/**
+ * @brief Expand the node capacity of dynamic tree.
+ * @param count: The count of new m_node_capacity
+ */
 void b3DynamicTree::expand_node_list(int32 count) {
 
     // Check whether the list is full
@@ -316,7 +373,11 @@ void b3DynamicTree::expand_node_list(int32 count) {
     m_free_list = m_node_count;
 }
 
-
+/**
+ * @brief Balance the dynamic tree.
+ * @param i_A: The index of the node m_.
+ * @return The index of the root of this balanced subtree.
+ */
 int32 b3DynamicTree::balance(int32 i_A)
 {
     b3_assert(i_A != b3_NULL_NODE);
@@ -441,7 +502,14 @@ int32 b3DynamicTree::balance(int32 i_A)
     return i_A;
 }
 
-
+/**
+ * @brief Move the position of a specified node in the dynamic tree,
+ * ensuring that the structure of the dynamic tree and the relationships
+ * between nodes' positions are correctly maintained.
+ * @param proxy_id the id of the proxy
+ * @param aabb one AABB
+ * @return Returns true if the node is successfully moved; otherwise, returns false.
+ */
 bool b3DynamicTree::move_proxy(int32 proxy_id, const b3AABB &aabb) {
     b3_assert(0 <= proxy_id && proxy_id < m_node_capacity);
 
