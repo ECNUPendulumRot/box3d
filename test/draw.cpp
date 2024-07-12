@@ -1,3 +1,34 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// The MIT License
+
+// history
+//
+// author           date                description
+// ----------------------------------------------------------------------------
+// sherman          2024-4-25           created
+
 #include "draw.hpp"
 #include "camera.hpp"
 #include "gl_render_triangles.hpp"
@@ -120,12 +151,12 @@ void DebugDraw::draw_plane(const b3PlaneShape* plane, const b3Transr &xf, const 
     } else {
         for (int32 i = 0; i < m_plane_segment; i++) {
             for (int j = 0; j < m_plane_segment; j++) {
-                m_triangles->vertex(lf + i * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+                m_triangles->vertex(lf + i * d_w + j * d_l,       b3Vec3r(0.0f, 0.0f, 1.0f), color);
                 m_triangles->vertex(lf + (i + 1) * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
                 m_triangles->vertex(lf + (i + 1) * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
                 m_triangles->vertex(lf + (i + 1) * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
                 m_triangles->vertex(lf + i * d_w + (j + 1) * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
-                m_triangles->vertex(lf + i * d_w + j * d_l, b3Vec3r(0.0f, 0.0f, 1.0f), color);
+                m_triangles->vertex(lf + i * d_w + j * d_l,       b3Vec3r(0.0f, 0.0f, 1.0f), color);
             }
         }
     }
@@ -182,14 +213,14 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
 
             for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
                 if (i != 0) {
-                    m_lines->vertex(xf.transform(vertices[k1]), color);
-                    m_lines->vertex(xf.transform(vertices[k2]), color);
+                    m_lines->vertex(xf.transform(vertices[k1]),     color);
+                    m_lines->vertex(xf.transform(vertices[k2]),     color);
                     m_lines->vertex(xf.transform(vertices[k1 + 1]), color);
                 }
 
                 if (i != (stack_count - 1)) {
                     m_lines->vertex(xf.transform(vertices[k1 + 1]), color);
-                    m_lines->vertex(xf.transform(vertices[k2]), color);
+                    m_lines->vertex(xf.transform(vertices[k2]),     color);
                     m_lines->vertex(xf.transform(vertices[k2 + 1]), color);
                 }
             }
@@ -203,14 +234,14 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transr &xf, con
 
             for (int32 j = 0; j < sector_count; ++j, ++k1, ++k2) {
                 if (i != 0) {
-                    m_triangles->vertex(xf.transform(vertices[k1]), xf.transform(normals[k1]), color);
-                    m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
+                    m_triangles->vertex(xf.transform(vertices[k1]),     xf.transform(normals[k1]),     color);
+                    m_triangles->vertex(xf.transform(vertices[k2]),     xf.transform(normals[k2]),     color);
                     m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
                 }
 
                 if (i != (stack_count - 1)) {
                     m_triangles->vertex(xf.transform(vertices[k1 + 1]), xf.transform(normals[k1 + 1]), color);
-                    m_triangles->vertex(xf.transform(vertices[k2]), xf.transform(normals[k2]), color);
+                    m_triangles->vertex(xf.transform(vertices[k2]),     xf.transform(normals[k2]),     color);
                     m_triangles->vertex(xf.transform(vertices[k2 + 1]), xf.transform(normals[k2 + 1]), color);
                 }
             }

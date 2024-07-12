@@ -1,3 +1,33 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// The MIT License
+
+// history
+//
+// author           date                description
+// ----------------------------------------------------------------------------
+// sherman          2024-4-25           created
 
 #include <spdlog/spdlog.h>
 
@@ -20,7 +50,8 @@ static bool s_left_mouse_down = false;
 static b3Vec3f s_click_point_ws = b3Vec3f::zero();
 static b3Vec2f s_click_ss = {0, 0};
 
-
+// The callback function receives the new size, in screen coordinates
+// when the window is resized
 static void resize_window_callback(GLFWwindow *, int width, int height) {
     g_camera.m_width = width;
     g_camera.m_height = height;
@@ -68,7 +99,8 @@ static void restart_test()
     s_test = g_test_entries[s_settings.m_test_index].create_fcn();
 }
 
-
+// The callback function receives the mouse button, button action and modifier bits.
+// If you wish to be notified when a mouse button is pressed or released, set a mouse button callback.
 static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action, int32 mods) {
 
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
@@ -96,7 +128,9 @@ static void mouse_button_callback(GLFWwindow* window, int32 button, int32 action
     }
 }
 
-
+// The callback functions receives the cursor position, measured in screen coordinates
+// but relative to the top-left corner of the window content area.
+// If you wish to be notified when the cursor moves over the window, set this callback.
 static void mouse_motion_call_back(GLFWwindow*, double xd, double yd) {
 
     b3Vec2f ss = {float(xd), float(yd)};
@@ -117,7 +151,9 @@ static void mouse_motion_call_back(GLFWwindow*, double xd, double yd) {
     s_click_ss = ss;
 }
 
-
+// The callback function receives two-dimensional scroll offsets.
+// If you wish to be notified when the user scrolls, 
+// whether with a mouse wheel or touchpad gesture, set a scroll callback.
 static void scroll_callback(GLFWwindow* window, double dx, double dy) {
 
     ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
@@ -133,7 +169,7 @@ static void sort_tests() {
     std::sort(g_test_entries, g_test_entries + g_test_count, compare_tests);
 }
 
-
+// update ImGUI for the given tests
 void update_ui() {
 
     float menuWidth = 180.0f * s_display_scale;
