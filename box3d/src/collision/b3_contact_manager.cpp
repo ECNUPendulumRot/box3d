@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "collision/b3_contact_manager.hpp"
 
@@ -8,14 +32,25 @@
 
 #include "common/b3_block_allocator.hpp"
 
-
+/**
+ * @brief Find new collision contacts. When new fixtures are added
+ * to the physical simulation, new collision contacts need to be found.
+ */
 void b3ContactManager::find_new_contact()
 {
     // when new fixtures are added, we need to find new contacts
     m_broad_phase.update_pairs(this);
 }
 
-
+/**
+ * @brief Add a collision contact between a pair of fixture proxies
+ * (fixture_proxy_a and fixture_proxy_b) in the physical simulation.
+ * If the two fixture proxies belong to different bodies and no
+ * contact exists yet, a new contact is created and added to the
+ * contact manager and the corresponding bodies.
+ * @param fixture_proxy_a Pointer to the first fixture proxy
+ * @param fixture_proxy_b Pointer to the second fixture proxy
+ */
 void b3ContactManager::add_pair(b3FixtureProxy *fixture_proxy_a, b3FixtureProxy *fixture_proxy_b)
 {
 
@@ -104,7 +139,10 @@ void b3ContactManager::add_pair(b3FixtureProxy *fixture_proxy_a, b3FixtureProxy 
     ++m_contact_count;
 }
 
-
+/**
+ * @brief destroy a contact and remove it from the contact list
+ * @param contact A pointer to the b3Contact object to be destroyed
+ */
 void b3ContactManager::destroy(b3Contact* contact)
 {
     b3Fixture* fixture_a = contact->get_fixture_a();
@@ -154,7 +192,11 @@ void b3ContactManager::destroy(b3Contact* contact)
     --m_contact_count;
 }
 
-
+/**
+ * @brief determine if the aabbs of two fixtures are overlapping,
+ * if overlapping, will generate manifold.
+ * if not overlapping, will destroy the contact.
+ */
 void b3ContactManager::collide()
 {
 
