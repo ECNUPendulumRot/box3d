@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "collision/b3_collision.hpp"
 #include "geometry/b3_plane_shape.hpp"
@@ -8,6 +32,15 @@
 
 // project the box onto a separation axis called axis
 // the axis is in the world frame
+/**
+ * @brief The function projects a given box (b3CubeShape) onto a specified
+ * separation axis. The separation axis is provided in the world frame.
+ * @param box A reference to the box shape which is to be projected.
+ * @param xf The transformation of the box.
+ * @param axis The separation axis in the world frame onto which the box is projected.
+ * @return : The scalar projection of the box onto the given axis,
+ * representing the extent of the box along that axis.
+ */
 static real transform_to_axis(const b3CubeShape& box, const b3Transr& xf, const b3Vec3r& axis)
 {
     const b3Mat33r& R = xf.m_r;
@@ -20,6 +53,16 @@ static real transform_to_axis(const b3CubeShape& box, const b3Transr& xf, const 
 // check whether two box will overlap under selected axis
 // separate cube_B from cube_A
 // so the axis is also from cube_A
+/**
+ * @brief The function checks whether two boxes overlap along a given axis.
+ * It calculates the penetration depth of one box relative to the other
+ * along the specified axis.
+ * @param xf_A_plane The transformation of the reference box cube_A.
+ * @param cube_B The shape of the second box which is being checked for overlap.
+ * @param xf_B The transformation of cube_B.
+ * @param axis The axis along which the overlap is being checked.
+ * @param penetration A reference variable to store the penetration depth.
+ */
 static void overlap_on_axis(
     const b3Transr& xf_A_plane,
     const b3CubeShape& cube_B, const b3Transr& xf_B,
@@ -38,7 +81,14 @@ static void overlap_on_axis(
     penetration = r - project_B;
 }
 
-
+/**
+ * @brief Compute the collision manifold between a plane and a sphere.
+ * @param manifold Pointer to the b3Manifold structure for storing details of collisions between the plane and the sphere
+ * @param plane_a A pointer to the shape of the plane involved in the collision
+ * @param xf_a Information about the transformation of the plane, including position and direction
+ * @param sphere_b A pointer to the shape of the sphere involved in the collision
+ * @param xf_b Information about the transformation of the sphere, including position and direction
+ */
 void b3_collide_plane_and_sphere(
     b3Manifold* manifold,
     const b3PlaneShape* plane_a,
@@ -75,7 +125,15 @@ void b3_collide_plane_and_sphere(
     manifold->m_type = b3Manifold::e_face_A;
 }
 
-
+/**
+ * @brief The function identifies the face of the second cube (cube2) that is most
+ * anti-parallel to a given normal vector (n_p).
+ * @param c An array to store the vertices of the incident face.
+ * @param n_p A normal vector in the world frame.
+ * @param cube2 A pointer to the second cube's shape data.
+ * @param xf2 The transformation of the second cube.
+ * @return The index of the incident face on cube2.
+ */
 static int32 find_incident_face(
     b3ClipVertex c[4],
     const b3Vec3r & n_p,
@@ -116,7 +174,14 @@ static int32 find_incident_face(
     return incident_face_index_2;
 }
 
-
+/**
+ * @brief Compute the collision manifold between a plane and a cube.
+ * @param manifold Pointer to the b3Manifold structure for storing details of collisions between planes and cubes
+ * @param plane_a A pointer to the shape of the plane involved in the collision
+ * @param xf_a Information about the transformation of the plane, including position and direction
+ * @param cube_b A pointer to the cube shape involved in the collision
+ * @param xf_b The transformation information of the cube, including position and orientation
+ */
 void b3_collide_plane_and_cube(
     b3Manifold* manifold,
     const b3PlaneShape* plane_a,

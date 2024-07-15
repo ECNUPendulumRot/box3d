@@ -1,9 +1,40 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "collision/b3_collision.hpp"
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_cube_shape.hpp"
 
-
+/**
+ * @brief Compute the collision manifold between two circles.
+ * @param manifold A pointer to the b3Manifold structure that will be filled with collision details if the spheres collide
+ * @param sphere_a A pointer to the shape of the first sphere involved in the collision
+ * @param xf_a Constant reference, transformation of the first sphere (position and direction)
+ * @param sphere_b A pointer to the shape of the second sphere involved in the collision
+ * @param xf_b Transformation of the second sphere (position and direction)
+ */
 void b3_collide_spheres(
     b3Manifold* manifold,
     const b3SphereShape* sphere_a,
@@ -36,7 +67,16 @@ void b3_collide_spheres(
     manifold->m_points[0].m_local_point = sphere_b->get_centroid();
 }
 
-
+/**
+ * @brief It finds the face of the cube that is closest to this point.
+ * @param cube_a A pointer to the cube's shape data
+ * @param sphere_local_position The position of the point inside the cube in the
+ * local coordinate system of the cube.
+ * @param normal A reference to a vector that will be set to the normal of the
+ * closest face of the cube.
+ * @param closest_point A reference to a vector that will be set to the closest
+ * point on the surface of the cube to sphere_local_position.
+ */
 static void find_normal(const b3CubeShape* cube_a,
                         const b3Vec3r& sphere_local_position,
                         b3Vec3r& normal, b3Vec3r& closest_point)
@@ -58,7 +98,14 @@ static void find_normal(const b3CubeShape* cube_a,
     }
 }
 
-
+/**
+ * @brief Compute the collision manifold between circle and cube
+ * @param manifold If the cube and the sphere collide, the structure will be filled with collision details.
+ * @param cube_a A pointer to the cube shape involved in the collision
+ * @param xf_a Transformation of the cube (position and orientation)
+ * @param sphere_b A pointer to the shape of the sphere involved in the collision
+ * @param xf_b Transformation of the sphere (position and direction)
+ */
 void b3_collide_cube_and_sphere(
     b3Manifold* manifold,
     const b3CubeShape* cube_a,
