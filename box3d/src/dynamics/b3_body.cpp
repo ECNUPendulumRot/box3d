@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "dynamics/b3_body.hpp"
 
@@ -12,7 +36,11 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 
-
+/**
+ * @brief  Constructor that initializes the body with a definition.
+ * @param body_def A reference to a b3BodyDef structure that contains the initial
+ * configuration for the body.
+ */
 b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::zero())
 {
 
@@ -32,7 +60,13 @@ b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::ze
     m_sweep.alpha0 = 0.0;
 }
 
-
+/**
+ * @brief The function creates and attaches a fixture to the body, defining the
+ * shape and physical properties of the body.
+ * @param def  A reference to a b3FixtureDef structure that contains the configuration
+ * for the fixture
+ * @return Returns a pointer to the newly created b3Fixture object.
+ */
 b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
 {
     b3_assert(m_world != nullptr);
@@ -70,7 +104,9 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
     return fixture;
 }
 
-
+/**
+ * @brief recalculate mass, inertia, and center of mass of the body.
+ */
 void b3Body::reset_mass_data()
 {
     m_mass = 0.0;
@@ -142,7 +178,11 @@ void b3Body::reset_mass_data()
     // TODO: if object added dynamically, the velocity need to be updated
 }
 
-
+/**
+ * @brief get velocity and position of bodies in the world at the time step begin.
+ * solve velocity constraints(if exist), integrate positions.
+ * and then, write the position and velocity back to the body
+ */
 void b3Body::synchronize_fixtures()
 {
     b3BroadPhase *broad_phase = m_world->get_broad_phase();
@@ -159,7 +199,10 @@ void b3Body::synchronize_fixtures()
     }
 }
 
-
+/**
+ * @brief responsible for deallocating all fixtures associated with the b3Body
+ * object, including their shapes, from the physics world.
+ */
 void b3Body::destroy_fixtures() {
     b3_assert(m_world != nullptr);
 
@@ -182,7 +225,10 @@ void b3Body::destroy_fixtures() {
     }
 }
 
-
+/**
+ * @brief The advance function advances the sweep to a given interpolation factor alpha.
+ * @param alpha The interpolation factor to advance
+ */
 void b3Sweep::advance(real alpha)
 {
     b3_assert(alpha0 < 1.0);
@@ -195,7 +241,13 @@ void b3Sweep::advance(real alpha)
     alpha0 = alpha;
 }
 
-
+/**
+ * @brief calculates the interpolated transformation of an object based on a
+ * given interpolation factor beta.
+ * @param xf This is a reference to a b3Transr object that will hold the
+ * interpolated position and orientation after the function executes.
+ * @param beta The interpolation factor to calculate the transformation.
+ */
 void b3Sweep::get_transform(b3Transr &xf, real beta) const
 {
     xf.m_p = (real(1.0) - beta) * p0 + beta * p;
