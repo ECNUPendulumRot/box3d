@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "dynamics/b3_world.hpp"
 
@@ -15,7 +39,9 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "solver/b3_solver_gr.hpp"
 
-
+/**
+ * @brief Constructor to initialize a world with default settings.
+ */
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
     m_shape_list(nullptr), m_shape_count(0)
@@ -23,20 +49,29 @@ b3World::b3World():
     m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
-
+/**
+ * @brief Constructor to initialize a world with a specified gravity vector.
+ * @param gravity Vector representing the gravitational force acting on bodies.
+ */
 b3World::b3World(const b3Vec3r &gravity):b3World()
 {
     m_gravity = gravity;
     m_contact_manager.set_block_allocator(&m_block_allocator);
 }
 
-
+/**
+ * @brief Destructor of b3World
+ */
 b3World::~b3World()
 {
     // TODO: think about how to destruct
 }
 
-
+/**
+ * @brief Creates a new body in the world based on the provided body definition.
+ * @param def Definition of the body to be created.
+ * @return Pointer to the created body.
+ */
 b3Body *b3World::create_body(const b3BodyDef &def)
 {
     b3_assert(def.m_type != b3BodyType::b3_type_not_defined);
@@ -61,7 +96,10 @@ b3Body *b3World::create_body(const b3BodyDef &def)
     return body;
 }
 
-
+/**
+ * @brief Adds a shape to the world
+ * @param shape Pointer to the shape to add.
+ */
 void b3World::add_shape(b3Shape* shape)
 {
     shape->set_next(m_shape_list);
@@ -69,7 +107,9 @@ void b3World::add_shape(b3Shape* shape)
     m_shape_count++;
 }
 
-
+/**
+ * @brief Clears the world, deallocating all bodies and associated resources.
+ */
 void b3World::clear()
 {
     // TODO: Check this function
@@ -85,7 +125,12 @@ void b3World::clear()
     }
 }
 
-
+/**
+ * @brief Advances the physics simulation by one time step.
+ * @param dt Time step size.
+ * @param velocity_iterations Iterations for velocity updates.
+ * @param position_iterations Iterations for position updates.
+ */
 void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations)
 {
 
@@ -116,7 +161,9 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
     }
 }
 
-
+/**
+ * @brief Draws debug information about bodies and shapes in the world.
+ */
 void b3World::debug_draw() {
 
     if (m_debug_draw == nullptr) {
@@ -143,7 +190,12 @@ void b3World::debug_draw() {
     }
 }
 
-
+/**
+ * @brief Draws a shape for debug visualization.
+ * @param fixture Pointer to the fixture containing the shape to draw.
+ * @param xf Transformation (position and orientation) of the shape.
+ * @param color Color to use for drawing the shape.
+ */
 void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &color) {
 
     switch (fixture->get_shape_type()) {
@@ -168,7 +220,10 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transr&xf, const b3Color &c
     }
 }
 
-
+/**
+ * @brief Sets whether bodies are allowed to enter sleep mode.
+ * @param flag true to allow sleeping, false to disable sleeping.
+ */
 void b3World::set_allow_sleeping(bool flag) {
 
     if (flag == m_allow_sleep) {
@@ -184,7 +239,11 @@ void b3World::set_allow_sleeping(bool flag) {
 }
 
 
-
+/**
+ * @brief Solves constraints and interactions between bodies for a given time step.
+ * @param step  A reference to a b3TimeStep object that contains time step information
+ * for the simulation
+ */
 void b3World::solve(b3TimeStep& step)
 {
     // clear all island flag.
