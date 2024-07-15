@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 
 #include "geometry/b3_cube_shape.hpp"
 
@@ -10,12 +34,20 @@
 
 #include "collision/b3_aabb.hpp"
 
+/**
+ * @brief the constructor of b3CubeShape
+ */
 b3CubeShape::b3CubeShape() {
     m_radius = b3_polygon_radius;
     m_type = e_cube;
 }
 
-
+/**
+ * @brief create the cube with length, width and height
+ * @param hx: the half width of the cube
+ * @param hy: the half length of the cube
+ * @param hz: the half height of the cube
+ */
 void b3CubeShape::set_as_box(double hx, double hy, double hz) {
     b3_assert(hx > 0.0f);
     b3_assert(hy > 0.0f);
@@ -66,7 +98,13 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 
 }
 
-
+/**
+ * @brief compute the axis-aligned bounding box (AABB) for the cube shape
+ * @param aabb A pointer to a b3AABB object where the resulting AABB will be stored.
+ * @param xf A constant reference to a b3Transr object representing the transformation to apply to the cube.
+ * @param childIndex An integer representing the index of the child shape. Not used
+ * in this function as a cube is considered a single shape.
+ */
 void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transr &xf, int32 childIndex) const {
     b3_NOT_USED(childIndex);
 
@@ -84,7 +122,12 @@ void b3CubeShape::get_bound_aabb(b3AABB *aabb, const b3Transr &xf, int32 childIn
     aabb->m_max = max + r;
 }
 
-
+/**
+ * @brief calculate and set the mass properties of the cube shape, given its density.
+ * @param mass_data A reference to a b3MassProperty object where the calculated mass
+ * properties will be stored.
+ * @param density A real number representing the density of the material of the cube.
+ */
 void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real density) const {
     mass_data.m_center = m_centroid;
 
@@ -107,7 +150,10 @@ void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real densit
     mass_data.m_Inertia(2, 2) = i33;
 }
 
-
+/**
+ * @brief create and return a deep copy of the current b3CubeShape object.
+ * @return return a deep copy of the current b3CubeShape object.
+ */
 b3Shape *b3CubeShape::clone() const {
     void *mem = m_block_allocator->allocate(sizeof(b3CubeShape));
     auto *clone = new (mem) b3CubeShape;
