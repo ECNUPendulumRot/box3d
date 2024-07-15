@@ -88,17 +88,31 @@ struct b3SizeMap {
 
 static const b3SizeMap b3_size_map; ///< map of different block sizes to corresponding rounded blocks.
 
-
+/**
+ * @brief The b3Chunk struct is designed to represent a chunk of memory allocated for
+ * storing b3Block objects or data blocks.
+ */
 struct b3Chunk {
+    /**
+     * @brief Pointer to an array or collection of b3Block objects or data.
+     */
     b3Block *m_blocks;
 };
 
-
+/**
+ * @brief The b3Block struct is designed as a node structure for building linked lists
+ * or chains of blocks.
+ */
 struct b3Block {
+    /**
+     * @brief Pointer to the next b3Block in the sequence.
+     */
     b3Block *m_next;
 };
 
-
+/**
+ * @brief constructor of b3BlockAllocator
+ */
 b3BlockAllocator::b3BlockAllocator()
 {
     b3_assert(b3_block_size_count < UCHAR_MAX);
@@ -111,7 +125,9 @@ b3BlockAllocator::b3BlockAllocator()
     memset(m_free_lists, 0, sizeof(m_free_lists));
 }
 
-
+/**
+ * @brief destructor of b3BlockAllocator
+ */
 b3BlockAllocator::~b3BlockAllocator()
 {
     for(int32 i = 0; i < m_chunk_count; ++i) {
@@ -120,7 +136,15 @@ b3BlockAllocator::~b3BlockAllocator()
     b3_free(m_chunks);
 }
 
-
+/**
+ * @brief allocate a block of memory with size.
+ * @param size size of the block in bytes.
+ * @return a pointer to the allocated block.
+ *     @retval nullptr if size is 0 or fail to allocate.
+ * @attention Blocks larger than b3_max_block_size will be directly allocated from heap.
+ * This will affect the performance of the allocator.
+ * Check and change the block size map in .cpp if needed.
+ */
 void* b3BlockAllocator::allocate(int32 size)
 {
     if(size == 0) {
@@ -181,7 +205,13 @@ void* b3BlockAllocator::allocate(int32 size)
     }
 }
 
-
+/**
+ * @brief free a block of memory.
+ * @param p pointer to the block.
+ * @param size size of the block in bytes.
+ * @attention Blocks larger than b3_max_block_size will free from heap.
+ *
+ */
 void b3BlockAllocator::free(void* p, int32 size)
 {
     if(size == 0 || p == nullptr) {
@@ -204,7 +234,9 @@ void b3BlockAllocator::free(void* p, int32 size)
     m_free_lists[index] = block;
 }
 
-
+/**
+ * @brief clear all allocated blocks.
+ */
 void b3BlockAllocator::clear()
 {
     for(int32 i = 0; i < m_chunk_count; ++i) {
