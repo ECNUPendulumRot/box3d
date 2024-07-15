@@ -33,7 +33,7 @@
 #include "dynamics/b3_body_def.hpp"
 
 
-/////////// Forward Delaration ///////////
+/////////// Forward Declaration ///////////
 
 class b3World;
 
