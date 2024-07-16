@@ -151,9 +151,9 @@ public:
 
 //////////////////////////////////////////////////////
 
-using b3Mat1212d = b3Mat1212<double>;
-using b3Mat1212f = b3Mat1212<float>;
-using b3Mat1212r = b3Mat1212<real>;
+using b3Mat1212d = b3Mat1212<double>; ///< defines b3Mat1212d as a b3Mat1212 matrix with double elements.
+using b3Mat1212f = b3Mat1212<float>; ///< defines b3Mat1212f as a b3Mat1212 matrix with float elements.
+using b3Mat1212r = b3Mat1212<real>; ///< defines b3Mat1212r as a b3Mat1212 matrix with real elements.
 
 //////////////////////////////////////////////////////
 
