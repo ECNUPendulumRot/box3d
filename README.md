@@ -65,16 +65,43 @@ Install CMake
 
 ### Building on Windows
 
-下载代码，命令行命令
+Download the code here and use the following command line commands
 ```
 git clone https://github.com/ECNUPendulumRot/box3d.git
 ```
-使用Visual Studio 2022打开该文件夹，在VS中打开CMakeLists.txt文件。
-然后在启动项处选择该文档，运行即可。
+Open the folder using Visual Studio 2022, open the CMakeLists.txt file in VS, then select the document in the startup items and run it.
 
 ### Building on Ubuntu
+
+Download the code here and use the following command line commands
 ```
 mkdir build && cd build
 cmake ..
 make
 ```
+
+## License
+
+The MIT License
+
+Copyright (c) 2024
+Robot Motion and Vision Laboratory at East China Normal University
+Contact: tophill.robotics@gmail.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
