@@ -1,13 +1,41 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "gl_render_object.hpp"
 #include "camera.hpp"
 #include "gl_render_triangles.hpp"
 
-
+/**
+ * @brief Sets up the renderer for a cube shape.
+ * 
+ * @param cube The cube shape to render.
+ * @param xf The transformation to apply to the cube.
+ */
 void GLRenderObject::setup_renderer(const b3CubeShape *cube, const b3Transr &xf)
 {
-    m_v_count = 8;
-    m_t_count = 2 * 6;
+    m_v_count = 8;  // Number of vertices in a cube
+    m_t_count = 2 * 6;  // Number of triangles in a cube (6 faces, 2 triangles per face)
 
     m_vertices = std::make_unique<b3Vec3f[]>(m_v_count);
     m_normals = std::make_unique<b3Vec3f[]>(m_v_count);
@@ -39,11 +67,16 @@ void GLRenderObject::setup_renderer(const b3CubeShape *cube, const b3Transr &xf)
     }
 }
 
-
+/**
+ * @brief Sets up the renderer for a plane shape.
+ * 
+ * @param plane The plane shape to render.
+ * @param xf The transformation to apply to the plane.
+ */
 void GLRenderObject::setup_renderer(const b3PlaneShape *plane, const b3Transr &xf)
 {
-    m_v_count = 4;
-    m_t_count = 2;
+    m_v_count = 4;  // Number of vertices in a plane
+    m_t_count = 2;  // Number of triangles in a plane (2 triangles)
 
     m_vertices = std::make_unique<b3Vec3f[]>(m_v_count);
     m_normals = std::make_unique<b3Vec3f[]>(m_v_count);
@@ -73,14 +106,19 @@ void GLRenderObject::setup_renderer(const b3PlaneShape *plane, const b3Transr &x
     m_normals[3] = xf.rotate({0.0f, 0.0f, 1.0f});
 }
 
-
+/**
+ * @brief Sets up the renderer for a sphere shape.
+ * 
+ * @param sphere The sphere shape to render.
+ * @param xf The transformation to apply to the sphere.
+ */
 void GLRenderObject::setup_renderer(const b3SphereShape *sphere, const b3Transr &xf)
 {
     const int32 sector_count = 20;
     const int32 stack_count = 20;
 
-    m_v_count = (sector_count + 1) * (stack_count + 1);
-    m_t_count = sector_count * stack_count;
+    m_v_count = (sector_count + 1) * (stack_count + 1);  // Number of vertices in a sphere
+    m_t_count = sector_count * stack_count;  // Number of triangles in a sphere
 
     m_vertices = std::make_unique<b3Vec3f[]>(m_v_count);
     m_normals = std::make_unique<b3Vec3f[]>(m_v_count);
@@ -135,7 +173,11 @@ void GLRenderObject::setup_renderer(const b3SphereShape *sphere, const b3Transr 
     }
 }
 
-
+/**
+ * @brief Renders the triangles using the provided triangle renderer.
+ * 
+ * @param renderer The triangle renderer to use for rendering.
+ */
 void GLRenderObject::render_triangles(gl_render_triangles *renderer)
 {
     for (int32 i = 0; i < m_t_count; i++) {
@@ -148,10 +190,14 @@ void GLRenderObject::render_triangles(gl_render_triangles *renderer)
     }
 }
 
-
+/**
+ * @brief Renders the lines using the provided line renderer.
+ * 
+ * @param renderer The line renderer to use for rendering.
+ */
 void GLRenderObject::render_lines(gl_render_lines *renderer)
 {
-
+    // Implementation not provided
 }
 
 

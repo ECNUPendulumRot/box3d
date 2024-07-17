@@ -1,9 +1,36 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "test.hpp"
 #include "settings.hpp"
 #include "utils.hpp"
 #include "include/gl_render_triangles.hpp"
 
+/**
+ * @brief Base class for tests in the simulation.
+ * This class provides common functionality for running and stepping through the simulation.
+ */
 Test::Test()
 {
     b3Vec3r gravity(0.0, 0.0, -10.0);
@@ -16,7 +43,10 @@ Test::Test()
     count = 0;
 }
 
-
+/**
+ * @brief Steps through the simulation for a single timestep.
+ * @param settings Configuration settings for the simulation.
+ */
 void Test::step(Settings &settings) {
 
     float time_step = settings.m_hertz > 0.0f ? 1.0f / settings.m_hertz : float(0.0f);
@@ -68,7 +98,9 @@ void Test::step(Settings &settings) {
     spdlog::info("====frame {}=====", count);
 }
 
-
+/**
+ * @brief Prints a message if the system is not symmetric.
+ */
 void Test::print_first_not_symmetry()
 {
 
@@ -93,7 +125,11 @@ void Test::print_first_not_symmetry()
 //    }
 }
 
-
+/**
+ * @brief Called before the physics solver processes a contact.
+ * @param contact The contact information.
+ * @param old_manifold The previous contact manifold.
+ */
 void Test::pre_solve(b3Contact *contact, const b3Manifold *old_manifold)
 {
 
@@ -118,10 +154,19 @@ void Test::pre_solve(b3Contact *contact, const b3Manifold *old_manifold)
     }
 }
 
-
+/**
+ * @brief Array of test entries for test registration.
+ */
 TestEntry g_test_entries[MAX_TEST] = { {nullptr} };
 int g_test_count = 0;
 
+/**
+ * @brief Registers a test with the given category, name, and creation function.
+ * @param category The category of the test.
+ * @param name The name of the test.
+ * @param fcn The function to create the test.
+ * @return The index of the registered test, or -1 if registration fails.
+ */
 int register_test(const char* category, const char* name, TestCreateFcn* fcn)
 {
     int index = g_test_count;
@@ -132,5 +177,5 @@ int register_test(const char* category, const char* name, TestCreateFcn* fcn)
         return index;
     }
 
-    return -1;
+    return -1;// Registration failed
 }

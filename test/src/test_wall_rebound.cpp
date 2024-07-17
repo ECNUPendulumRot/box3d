@@ -1,9 +1,40 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "test.hpp"
 
+/**
+ * @brief A test class to simulate dynamic spheres bouncing off a ground plane and a vertical wall.
+ */
 class TestWallRebound :public Test {
 
 public:
 
+    /**
+     * @brief Constructor for TestWallRebound.
+     * This constructor sets up the simulation environment with bouncing spheres and static ground and wall planes.
+     */
     TestWallRebound() {
 
         m_world->set_gravity(b3Vec3r(0, 0, -10));
@@ -78,10 +109,15 @@ public:
         ground_body->create_fixture(fixture_def);
     }
 
+    /**
+     * @brief Factory method to create an instance of TestWallRebound.
+     * @return A pointer to the created TestWallRebound instance.
+     */
     static Test* create() {
         return new TestWallRebound;
     }
 
 };
 
+// Register the test with the test index
 static int test_index = register_test("Sphere Scene Test", "Wall rebound", TestWallRebound::create);

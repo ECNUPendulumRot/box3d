@@ -1,3 +1,27 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "solver/b3_contact_solver_zhb.hpp"
 
 
@@ -8,9 +32,12 @@
 #include "common/b3_time_step.hpp"
 #include <spdlog/spdlog.h>
 
-
+/**
+ * @brief b3ContactSolverZHB: This class is responsible for solving contact constraints between bodies during the simulation.
+ */
 b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
 {
+    // Initialize member variables with the definition provided
     m_step = def->step;
     m_contacts = def->contacts;
     m_count = def->count;
@@ -21,9 +48,11 @@ b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
     m_ws = def->ws;
     m_block_allocator = def->block_allocator;
 
+    // Allocate memory for velocity and position constraints
     m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactVelocityConstraint));
     m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactPositionConstraint));
 
+    // Initialize constraints for each contact
     for(int32 i = 0; i < m_count; ++i) {
 
         b3Contact* contact = m_contacts[i];
@@ -94,7 +123,9 @@ b3ContactSolverZHB::b3ContactSolverZHB(b3ContactSolverDef *def)
     }
 }
 
-
+/**
+ * @brief Initializes velocity constraints for each contact.
+ */
 void b3ContactSolverZHB::init_velocity_constraints()
 {
     for(int32 i = 0; i < m_count; ++i) {
@@ -167,7 +198,11 @@ void b3ContactSolverZHB::init_velocity_constraints()
     }
 }
 
-
+/**
+ * @brief Solves velocity constraints for each contact.
+ * @param violate Indicates if any constraints are violated.
+ * @param propagations Number of constraint propagations.
+ */
 void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propagations)
 {
     real tolerance = 0.0;
@@ -321,7 +356,9 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propag
     else violate = true;*/
 }
 
-
+/**
+ * @brief Destroys the contact solver and releases allocated memory.
+ */
 b3ContactSolverZHB::~b3ContactSolverZHB()
 {
     m_block_allocator->free(m_velocity_constraints, m_count * sizeof(b3ContactVelocityConstraint));

@@ -1,3 +1,26 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "solver/b3_solver.hpp"
 
@@ -17,15 +40,26 @@
 #include "spdlog/spdlog.h"
 #include "solver/b3_contact_solver.hpp"
 
-
+// Global flag to control block solving
 bool g_block_solve = false;
 
+/**
+ * @brief Constructs a b3Solver instance and initializes it.
+ * @param block_allocator The allocator for memory management.
+ * @param island The island containing bodies and contacts.
+ * @param step The time step for simulation.
+ */
 b3Solver::b3Solver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     init(block_allocator, island, step);
 }
 
-
+/**
+ * @brief Initializes the solver with the provided parameters.
+ * @param block_allocator The allocator for memory management.
+ * @param island The island containing bodies and contacts.
+ * @param step The time step for simulation.
+ */
 void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     m_timestep = step;
@@ -60,7 +94,9 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
     ////////////////////////// Initialize Contact Constraints //////////////////////////
 }
 
-
+/**
+ * @brief Writes the computed states (position, orientation, velocity) back to the bodies.
+ */
 void b3Solver::write_states_back()
 {
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -76,11 +112,13 @@ void b3Solver::write_states_back()
     }
 }
 
-
+/**
+ * @brief Writes the computed states (position, orientation, velocity) back to the bodies.
+ */
 int b3Solver::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
-
+    // Update velocities based on forces and torques
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
@@ -102,7 +140,7 @@ int b3Solver::solve(bool allow_sleep)
         m_ps[i] = p;
         m_qs[i] = q;
     }
-
+    // Setup and run contact solver
     b3ContactSolverDef def;
     def.step = *m_timestep;
     def.contacts = m_contacts;
@@ -116,6 +154,7 @@ int b3Solver::solve(bool allow_sleep)
     b3ContactSolver contact_solver(&def);
     contact_solver.init_velocity_constraints();
 
+    // Solve velocity constraints for the specified number of iterations
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
         contact_solver.solve_velocity_constraints();
     }
@@ -130,7 +169,7 @@ int b3Solver::solve(bool allow_sleep)
 
     // copy state buffers back to the bodies.
     write_states_back();
-
+    // Optionally put bodies to sleep if their velocities are below tolerance
     if (allow_sleep) {
         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
         const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
@@ -155,7 +194,9 @@ int b3Solver::solve(bool allow_sleep)
     return 0;
 }
 
-
+/**
+ * @brief Destructor for b3Solver. Frees allocated memory.
+ */
 b3Solver::~b3Solver()
 {
     m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));

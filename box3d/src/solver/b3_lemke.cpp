@@ -1,3 +1,26 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "solver/b3_lemke.hpp"
 
@@ -14,7 +37,15 @@
 
 static auto logger = spdlog::stdout_color_mt("lemke-logger");
 
-
+/**
+ * @brief Constructor for b3Lemke class.
+ * @param allocator Memory allocator for dynamic allocations.
+ * @param vc Pointer to contact velocity constraint.
+ * @param v_a Linear velocity of body A.
+ * @param w_a Angular velocity of body A.
+ * @param v_b Linear velocity of body B.
+ * @param w_b Angular velocity of body B.
+ */
 b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
                  b3Vec3r& v_a, b3Vec3r& w_a, b3Vec3r& v_b, b3Vec3r& w_b)
 {
@@ -64,7 +95,10 @@ b3Lemke::b3Lemke(b3BlockAllocator *allocator, b3ContactVelocityConstraint *vc,
 }
 
 
-
+/**
+ * @brief Initializes the problem by finding the first row with the smallest b value.
+ * @return true if all b values are positive, false otherwise.
+ */
 bool b3Lemke::initialize_problem()
 {
     // find the first row with the smallest b value
@@ -72,6 +106,8 @@ bool b3Lemke::initialize_problem()
     real min_value = b3_real_max;
     bool all_positive = true;
     m_pivot_row_index = -1;
+    
+    // Find the row with the smallest b value
     for (int32 i = 0; i < m_size; i++) {
         real v = m_tableau[i][2 * m_size + 1];
         if (v < min_value) {
@@ -90,7 +126,9 @@ bool b3Lemke::initialize_problem()
     return all_positive;
 }
 
-
+/**
+ * @brief Solves the LCP using the Lemke algorithm.
+ */
 void b3Lemke::solve()
 {
     spdlog::info("---------- Lemke Solver Start! ----------");
@@ -148,6 +186,11 @@ void b3Lemke::solve()
 // the tableau is just like this:
 // v1 ...... vn x1 ...... xn   z0
 //      I            -JWJT    -e0  b
+/**
+ * @brief Eliminates the column j using the row i as the pivot row.
+ * @param i The pivot row index.
+ * @param j The pivot column index.
+ */
 void b3Lemke::eliminate(const int32 &i, const int32 &j)
 {
     b3_assert(0 <= i && i < m_size);
@@ -173,7 +216,9 @@ void b3Lemke::eliminate(const int32 &i, const int32 &j)
     }
 }
 
-
+/**
+ * @brief Prints the solution vector m_x.
+ */
 void b3Lemke::print_vx() {
 
     auto logger = spdlog::get("lemke-logger");
@@ -186,7 +231,12 @@ void b3Lemke::print_vx() {
 
 }
 
-
+/**
+ * @brief Prints a vector.
+ * @param vec The vector to print.
+ * @param size The size of the vector.
+ * @param s Description of the vector.
+ */
 void b3Lemke::print_vec(const real *vec, const int32 &size, const char* s) {
 
     auto logger = spdlog::get("lemke-logger");
@@ -198,6 +248,13 @@ void b3Lemke::print_vec(const real *vec, const int32 &size, const char* s) {
     spdlog::info("vector: {} \n {}", s, oss.str());
 }
 
+/**
+ * @brief Prints a matrix.
+ * @param matrix The matrix to print.
+ * @param rows The number of rows in the matrix.
+ * @param cols The number of columns in the matrix.
+ * @param s Description of the matrix.
+ */
 void b3Lemke::print_matrix(const real **matrix, const int32 &rows, const int32 &cols, const char *s) {
 
         auto logger = spdlog::get("lemke-logger");
@@ -213,6 +270,13 @@ void b3Lemke::print_matrix(const real **matrix, const int32 &rows, const int32 &
 
 }
 
+/**
+ * @brief Finds the row with the lexicographic minimum ratio.
+ * @param pivot_col_index The pivot column index.
+ * @param z0Row The row index of z0.
+ * @param is_ray_termination Whether ray termination occurred.
+ * @return The row index with the lexicographic minimum ratio.
+ */
 int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int& z0Row, bool& is_ray_termination)
 {
     is_ray_termination = false;
@@ -255,7 +319,7 @@ int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int&
             return z0Row;
         }
     }
-
+    // Lexicographic comparison to find the minimum
     for (int32 col = 0; col < m_size; col++) {
         int32* active_rows_copy = (int32*)m_block_allocator->allocate(m_size * sizeof(int32));
         for (int i = 0; i < active_rows_count; i++) {
@@ -296,7 +360,10 @@ int32 b3Lemke::find_lexicographic_minimum(const int& pivot_col_index, const int&
     return 0;
 }
 
-
+/**
+ * @brief Checks if the basis is valid.
+ * @return true if the basis is valid, false otherwise.
+ */
 bool b3Lemke::valid_basis()
 {
     bool valid = true;
@@ -310,7 +377,9 @@ bool b3Lemke::valid_basis()
 }
 
 
-
+/**
+ * @brief Destructor for b3Lemke class.
+ */
 b3Lemke::~b3Lemke()
 {
     m_block_allocator->free(m_basis, m_size * sizeof(int32));

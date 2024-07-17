@@ -1,3 +1,26 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "solver/b3_solver_zhb.hpp"
 
@@ -17,15 +40,26 @@
 #include "spdlog/spdlog.h"
 #include "solver/b3_contact_solver_zhb.hpp"
 
-
+// Global flag to control block solving
 bool g_block_solve = false;
 
+/**
+ * @brief Constructor for b3SolverZHB.
+ * @param block_allocator The allocator for memory management.
+ * @param island The island containing bodies and contacts.
+ * @param step The time step for simulation.
+ */
 b3SolverZHB::b3SolverZHB(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     init(block_allocator, island, step);
 }
 
-
+/**
+ * @brief Initializes the solver with the given parameters.
+ * @param block_allocator The allocator for memory management.
+ * @param island The island containing bodies and contacts.
+ * @param step The time step for simulation.
+ */
 void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     m_timestep = step;
@@ -59,7 +93,9 @@ void b3SolverZHB::init(b3BlockAllocator *block_allocator, b3Island *island, b3Ti
     }
 }
 
-
+/**
+ * @brief Writes the computed states back to the bodies.
+ */
 void b3SolverZHB::write_states_back()
 {
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -70,11 +106,15 @@ void b3SolverZHB::write_states_back()
     }
 }
 
-
+/**
+ * @brief Solves the constraints for all bodies and contacts.
+ * @param allow_sleep If true, bodies may go to sleep if they are not moving.
+ * @return Status code of the solve operation.
+ */
 int b3SolverZHB::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
-
+    // Update velocities based on forces and torques
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
@@ -88,7 +128,7 @@ int b3SolverZHB::solve(bool allow_sleep)
         m_vs[i] = v;
         m_ws[i] = w;
     }
-
+    // Setup contact solver
     b3ContactSolverDef def;
     def.step = *m_timestep;
     def.contacts = m_contacts;
@@ -102,6 +142,8 @@ int b3SolverZHB::solve(bool allow_sleep)
     b3ContactSolverZHB contact_solver(&def);
 
     contact_solver.init_velocity_constraints();
+
+    // Solve constraints iteratively
     int32 propagation_max = 2;
     int32 propagation = 0;
     int32 iterations = m_timestep->m_velocity_iterations;
@@ -123,14 +165,14 @@ int b3SolverZHB::solve(bool allow_sleep)
         }
     }
 
-    // integrate positions and rotations.
+    // Integrate positions and rotations
     for (int32 i = 0; i < m_body_count; ++i) {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
         m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quatr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
     }
 
-
+    // Set bodies to sleep if their velocities are below tolerance
     if (allow_sleep) {
         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
         const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
@@ -158,7 +200,9 @@ int b3SolverZHB::solve(bool allow_sleep)
     return 0;
 }
 
-
+/**
+ * @brief Destructor for b3SolverZHB. Frees allocated memory.
+ */
 b3SolverZHB::~b3SolverZHB()
 {
     m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));

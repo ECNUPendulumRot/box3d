@@ -1,3 +1,26 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "solver/b3_solver_gr.hpp"
 
@@ -16,13 +39,18 @@
 
 #include "spdlog/spdlog.h"
 
-
+// Constructor for the b3SolverGR class
 b3SolverGR::b3SolverGR(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     init(block_allocator, island, step);
 }
 
-
+/**
+ * @brief Initializes the solver with the given block allocator, island, and time step.
+ * @param block_allocator Pointer to the block allocator.
+ * @param island Pointer to the island.
+ * @param step Pointer to the time step.
+ */
 void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     m_timestep = step;
@@ -150,7 +178,9 @@ void b3SolverGR::init(b3BlockAllocator *block_allocator, b3Island *island, b3Tim
     }
 }
 
-
+/**
+ * @brief Writes the state back to the bodies.
+ */
 void b3SolverGR::write_states_back()
 {
     for(int32 i = 0; i < m_body_count; ++i) {
@@ -161,7 +191,11 @@ void b3SolverGR::write_states_back()
     }
 }
 
-
+/**
+ * @brief Solves the constraints.
+ * @param allow_sleep Indicates whether sleep is allowed.
+ * @return The result of the solve operation.
+ */
 int b3SolverGR::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
@@ -217,7 +251,10 @@ int b3SolverGR::solve(bool allow_sleep)
     return 0;
 }
 
-
+/**
+ * @brief Solves the position constraints.
+ * @return True if position constraints are solved, otherwise false.
+ */
 void b3SolverGR::init_velocity_constraints()
 {
     for(int32 i = 0; i < m_contact_count; ++i) {
@@ -294,7 +331,9 @@ void b3SolverGR::init_velocity_constraints()
     }
 }
 
-
+/**
+ * @brief Finds and records violated velocity constraints.
+ */
 void b3SolverGR::find_violated_constraints() {
 
     m_violated_count = 0;
@@ -311,7 +350,11 @@ void b3SolverGR::find_violated_constraints() {
             b3VelocityConstraintPoint* vcp = vc->m_points + j;
             real v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
             if (v_rel < 0) {
+
+                // Record the violated constraint
                 m_violated_constraints[m_violated_count++] = vc;
+
+                // Update bias velocity for each point
                 for (int32 k = 0; k < point_count; ++k) {
                     b3VelocityConstraintPoint* vcp = vc->m_points + k;
                     real v_rel_in = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra)).dot(normal);
@@ -326,7 +369,10 @@ void b3SolverGR::find_violated_constraints() {
     }
 }
 
-
+/**
+ * @brief Solves the velocity constraints iteratively.
+ * @param velocity_iterations Number of iterations to solve velocity constraints.
+ */
 void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
 {
 
@@ -339,10 +385,12 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
     while (m_violated_count != 0 && iteration++) {
         spdlog::info("Iteration: {0}", iteration);
         spdlog::info("Violated count: {0}", m_violated_count);
+        // Log the violated constraints
         for (int32 i = 0; i < m_violated_count; i++) {
             b3ContactVelocityConstraint* vc = m_violated_constraints[i];
             spdlog::info("violated pair: {}, {}", vc->m_index_a, vc->m_index_b);
         }
+        // Iterate through velocity constraints
         for (int32 it = 0; it < velocity_iterations; it++) {
             for (int32 i = 0; i < m_violated_count; i++) {
                 b3ContactVelocityConstraint* vc = m_violated_constraints[i];
@@ -363,6 +411,7 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
 
                     real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
 
+                    // Update impulse and velocities
                     real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                     lambda = new_impulse - vcp->m_normal_impulse;
                     vcp->m_normal_impulse = new_impulse;
@@ -385,7 +434,9 @@ void b3SolverGR::solve_velocity_constraints(int32 velocity_iterations)
     }
 }
 
-
+/**
+ * @brief Destructor for b3SolverGR. Frees allocated memory.
+ */
 b3SolverGR::~b3SolverGR()
 {
     m_block_allocator->free(m_violated_constraints, m_contact_count * sizeof(b3ContactVelocityConstraint*));

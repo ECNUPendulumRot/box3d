@@ -1,3 +1,26 @@
+// The MIT License
+
+// Copyright (c) 2024
+// Robot Motion and Vision Laboratory at East China Normal University
+// Contact: tophill.robotics@gmail.com
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "solver/b3_contact_solver.hpp"
 #include "collision/b3_fixture.hpp"
@@ -10,8 +33,14 @@
 static bool g_block_solve = false;
 
 
+/**
+ * @brief Constructs a b3ContactSolver object using the given definition.
+ * 
+ * @param def The definition containing the initialization parameters.
+ */
 b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
 {
+    // Initialize solver properties
     m_step = def->step;
     m_contacts = def->contacts;
     m_count = def->count;
@@ -22,10 +51,11 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
     m_ws = def->ws;
     m_block_allocator = def->block_allocator;
 
-
+    // Allocate memory for velocity and position constraints
     m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactVelocityConstraint));
     m_position_constraints = (b3ContactPositionConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactPositionConstraint));
 
+    // Initialize constraints for each contact
     for(int32 i = 0; i < m_count; ++i) {
 
         b3Contact* contact = m_contacts[i];
@@ -94,7 +124,9 @@ b3ContactSolver::b3ContactSolver(b3ContactSolverDef *def)
     }
 }
 
-
+/**
+ * @brief Initialize velocity constraints for the solver.
+ */
 void b3ContactSolver::init_velocity_constraints()
 {
     for(int32 i = 0; i < m_count; ++i) {
@@ -215,7 +247,9 @@ void b3ContactSolver::init_velocity_constraints()
     }
 }
 
-
+/**
+ * @brief Solves the velocity constraints for the contact solver.
+ */
 void b3ContactSolver::solve_velocity_constraints()
 {
     for (int32 i = 0; i < m_count; ++i) {
@@ -236,19 +270,21 @@ void b3ContactSolver::solve_velocity_constraints()
         const b3Vec3r& normal = vc->m_normal;
 
         if (point_count == 1 || !g_block_solve) {
-
+            // Single point contact or block solve not enabled
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
-
+                // Calculate relative velocity
                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
 
                 real vn = v_rel.dot(normal);
+                // Calculate the impulse needed to resolve the constraint
                 real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
-
+                // Ensure the new impulse is non-negative
                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_impulse;
                 vcp->m_normal_impulse = new_impulse;
 
+                // Apply the impulse to the velocities
                 b3Vec3r impulse = lambda * normal;
                 v_a = v_a - m_a * impulse;
                 w_a = w_a - I_a * vcp->m_ra.cross(impulse);
@@ -270,6 +306,7 @@ void b3ContactSolver::solve_velocity_constraints()
             //    = M * x + b - M * a
             // vn = M * x + b'
             // b' = b - M * a
+            
             b3Lemke lemke(m_block_allocator, vc, v_a, w_a, v_b, w_b);
 
             bool early_quit = lemke.initialize_problem();
@@ -302,15 +339,25 @@ void b3ContactSolver::solve_velocity_constraints()
     }
 }
 
-
+/**
+ * @brief Helper struct to manage position constraint manifolds.
+ */
 struct b3PositionSolverManifold {
-
+    /**
+     * @brief Initializes the manifold based on the contact position constraint and transformations.
+     * 
+     * @param pc The position constraint.
+     * @param xf_a Transformation of body A.
+     * @param xf_b Transformation of body B.
+     * @param index Index of the contact point.
+     */
     void initialize(b3ContactPositionConstraint* pc, const b3Transr& xf_a, const b3Transr& xf_b, int32 index) {
 
         b3_assert(pc->m_point_count > 0);
 
         switch (pc->m_type) {
             case b3Manifold::e_spheres: {
+                // Sphere-sphere collision
                 b3Vec3r point_a = xf_a.position();
                 b3Vec3r point_b = xf_b.position();
                 normal = pc->m_local_normal;
@@ -321,6 +368,7 @@ struct b3PositionSolverManifold {
 
             case b3Manifold::e_face_A:
             {
+                // Face-A collision
                 normal = pc->m_local_normal;
 
                 b3Vec3r plane_point = pc->m_local_point;
@@ -332,6 +380,7 @@ struct b3PositionSolverManifold {
             break;
 
             case b3Manifold::e_face_B: {
+                // Face-B collision
                 normal = pc->m_local_normal;
                 b3Vec3r plane_point = pc->m_local_point;
 
@@ -347,12 +396,16 @@ struct b3PositionSolverManifold {
         }
     }
 
-    b3Vec3r normal;
-    b3Vec3r point;
-    float separation;
+    b3Vec3r normal;   // Normal vector of the contact
+    b3Vec3r point;    // Contact point
+    float separation; // Separation distance
 };
 
-
+/**
+ * @brief Solves the position constraints for the contact solver.
+ * 
+ * @return True if the position constraints are solved successfully, false otherwise.
+ */
 bool b3ContactSolver::solve_position_constraints()
 {
     real min_separation = 0.0;
@@ -400,14 +453,17 @@ bool b3ContactSolver::solve_position_constraints()
             b3Vec3r ra_n = r_a.cross(normal);
             b3Vec3r rb_n = r_b.cross(normal);
 
+            // Calculate the effective mass
             real K = pc->m_inv_mass_a + pc->m_inv_mass_b +
                        (ra_n * pc->m_inv_I_a).dot(ra_n) +
                        (rb_n * pc->m_inv_I_b).dot(rb_n);
 
+            // Calculate the position correction impulse
             real impulse = K > 0 ? -C / K : 0;
 
             b3Vec3 P = impulse * normal;
 
+            // Apply the position correction impulse
             p_a -= m_a * P;
             //q_a -= real(0.5) * b3Quatr(0, I_a * ra_n.cross(P)) * q_a;
             p_b += m_b * P;
@@ -422,17 +478,20 @@ bool b3ContactSolver::solve_position_constraints()
     return min_separation >= -3.0 * b3_linear_slop;
 }
 
-
+/**
+ * @brief Destructor for the b3ContactSolver class.
+ */
 b3ContactSolver::~b3ContactSolver()
 {
     for (int32 i = 0; i < m_count; ++i) {
         const int32& point_count = m_velocity_constraints[i].m_point_count;
         if (point_count > 1 && g_block_solve) {
+            // Free memory allocated for the Jacobian matrix
             m_block_allocator->free(m_velocity_constraints[i].m_JWJT[0], point_count * point_count * sizeof(real));
             m_block_allocator->free(m_velocity_constraints[i].m_JWJT, point_count * sizeof(real*));
         }
     }
-
+    // Free memory allocated for the constraints
     m_block_allocator->free(m_velocity_constraints, m_count * sizeof(b3ContactVelocityConstraint));
     m_block_allocator->free(m_position_constraints, m_count * sizeof(b3ContactPositionConstraint));
 }
