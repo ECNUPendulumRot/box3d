@@ -111,20 +111,35 @@ class b3Body {
     ///////////////// Kinematic Properties /////////////////
 
     // CoM
-    b3Vec3r m_local_center = b3Vec3r::zero(); ///< CoM
+    /**
+     * @brief CoM
+     */
+    b3Vec3r m_local_center = b3Vec3r::zero();
 
     // the quaternion of the body
-    b3Quatr m_q; ///< the quaternion of the body
+    /**
+     * @brief the quaternion of the body
+     */
+    b3Quatr m_q;
 
     // the position of the body
-    b3Vec3r m_p; ///< the position of the body
+    /**
+     * @brief the position of the body
+     */
+    b3Vec3r m_p;
 
     // the linear velocity of the body
-    b3Vec3r m_v; ///< the linear velocity of the body
+    /**
+     * @brief the linear velocity of the body
+     */
+    b3Vec3r m_v;
 
     // the angular velocity of the body
     // in form of angle axis
-    b3Vec3r m_w; ///< the angular velocity of the body,in form of angle axis
+    /**
+     * @brief the angular velocity of the body,in form of angle axis
+     */
+    b3Vec3r m_w;
 
     ////////////////// Dynamic Properties //////////////////
 
