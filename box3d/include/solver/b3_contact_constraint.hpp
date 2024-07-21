@@ -39,11 +39,15 @@ struct b3VelocityConstraintPoint {
     b3Vec3r m_rb; ///< @brief The relative position vector from the center of mass of body B to the contact point.
     real m_normal_impulse; ///< @brief The impulse applied in the direction of the contact normal.
     real m_normal_mass; ///< @brief The mass associated with the normal direction.
-    real m_tanget_mass; ///< @brief The mass associated with the tangential direction.
     real m_bias_velocity; ///< @brief The bias added to the velocity to correct penetration.
     real m_rhs_penetration; ///< @brief The right-hand side value for penetration correction.
     real m_relative_velocity; ///< @brief The relative velocity between the two bodies at the contact point.
     bool m_wait; ///< this value is for situation 4
+
+    real m_tangent1_mass; ///< @brief The mass associated with the tangential1 direction.
+    real m_tangent2_mass; ///< @brief The mass associated with the tangential2 direction.
+    real m_tangent1_impulse; ///< @brief The impulse applied in the direction of the contact tangent1
+    real m_tangent2_impulse; ///< @brief The impulse applied in the direction of the contact tangent2
 };
 
 /**
@@ -54,6 +58,8 @@ struct b3ContactVelocityConstraint {
     b3VelocityConstraintPoint m_points[8]; ///< @brief Array of velocity constraint points for multiple contact points.
 
     b3Vec3r m_normal; ///< @brief The normal vector of the contact.
+    b3Vec3r m_tangent1; ///< @brief The tangent1 vector of the contact.
+    b3Vec3r m_tangent2; ///< @brief The tangent2 vector of the contact.
     int32 m_index_a; ///< @brief The index of body A in the constraint.
     int32 m_index_b; ///< @brief The index of body B in the constraint.
     real m_inv_mass_a; ///< @brief The inverse mass of body A.
@@ -66,34 +72,6 @@ struct b3ContactVelocityConstraint {
     real m_restitution_threshold; ///< @brief The threshold below which restitution is applied.
     real m_friction; ///< @brief The coefficient of friction for the contact.
     real** m_JWJT = nullptr; ///< @brief Pointer to a matrix used in the Jacobian transpose calculation.
-
-};
-
-/**
- * @brief Represents a friction constraint between two bodies.
- */
-struct b3FrictionConstraint {
-    int m_index_a; ///< @brief The index of body A in the friction constraint.
-    int m_index_b; ///< @brief The index of body B in the friction constraint.
-    real m_mass_a; ///< @brief The mass of body A.
-    real m_mass_b; ///< @brief The mass of body B.
-    real m_inv_mass_a; ///< @brief The inverse mass of body A.
-    real m_inv_mass_b; ///< @brief The inverse mass of body B.
-    b3Mat33r m_I_a; ///< @brief The inertia tensor of body A.
-    b3Mat33r m_I_b; ///< @brief The inertia tensor of body B.
-    b3Mat33r m_inv_I_a; ///< @brief The inverse inertia tensor of body A.
-    b3Mat33r m_inv_I_b; ///< @brief The inverse inertia tensor of body B.
-    b3Vec3r m_normal; ///< @brief The normal vector at the contact point.
-    int m_point_count; ///< @brief The number of contact points for the friction constraint.
-    b3Vec3r m_ra; ///< @brief The relative position vector from the center of mass of body A to the contact point.
-    b3Vec3r m_rb; ///< @brief The relative position vector from the center of mass of body B to the contact point.
-    b3Vec3r m_ras[4]; ///< @brief Array of relative position vectors for multiple contact points on body A.
-    b3Vec3r m_rbs[4]; ///< @brief Array of relative position vectors for multiple contact points on body B.
-    real m_not_applied_support_impulse; ///< @brief The support impulse not yet applied.
-    real m_max_friction_impulse; ///< @brief The maximum friction impulse that can be applied.
-    real m_friction_impulse[2]; ///< @brief The friction impulses in the tangential directions.
-    b3Vec3r m_friction_axis[2]; ///< @brief The axes along which friction is applied.
-    real m_friction; ///< @brief The coefficient of friction for the contact.
 
 };
 

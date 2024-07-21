@@ -46,7 +46,7 @@ public:
             // Create a dynamic cube
             b3Vec3r p(0, 0, 3);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
+            b3Vec3r v(5, 0, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);

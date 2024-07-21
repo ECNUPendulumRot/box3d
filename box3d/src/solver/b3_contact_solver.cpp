@@ -168,6 +168,7 @@ void b3ContactSolver::init_velocity_constraints()
         world_manifold.initialize(manifold, xf_a, radius_a, xf_b, radius_b);
 
         vc->m_normal = world_manifold.normal;
+        b3_plane_space(vc->m_normal, vc->m_tangent1, vc->m_tangent2);
 
         int32 point_count = vc->m_point_count;
         for (int32 j = 0; j < point_count; ++j) {
@@ -182,11 +183,24 @@ void b3ContactSolver::init_velocity_constraints()
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
-            real jmj = m_a + m_b +
+            real effective_mass = m_a + m_b +
                        (rn_a * I_a).dot(rn_a) +
                        (rn_b * I_b).dot(rn_b);
 
-            vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
+            vcp->m_normal_mass = effective_mass > 0 ? real(1.0) / effective_mass : 0;
+
+            b3Vec3r ra_t1 = vcp->m_ra.cross(vc->m_tangent1);
+            b3Vec3r rb_t1 = vcp->m_rb.cross(vc->m_tangent1);
+            effective_mass = vc->m_inv_mass_a + vc->m_inv_mass_b + (ra_t1 * vc->m_inv_I_a).dot(ra_t1)
+                             + (rb_t1 * vc->m_inv_I_b).dot(rb_t1);
+
+            vcp->m_tangent1_mass = effective_mass > 0 ? real(1.0) / effective_mass : 0;
+
+            b3Vec3r ra_t2 = vcp->m_ra.cross(vc->m_tangent2);
+            b3Vec3r rb_t2 = vcp->m_rb.cross(vc->m_tangent2);
+            effective_mass = vc->m_inv_mass_a + vc->m_inv_mass_b + (ra_t2 * vc->m_inv_I_a).dot(ra_t2)
+                             + (rb_t2 * vc->m_inv_I_b).dot(rb_t2);
+            vcp->m_tangent2_mass = effective_mass > 0 ? real(1.0) / effective_mass : 0;
 
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
@@ -199,6 +213,8 @@ void b3ContactSolver::init_velocity_constraints()
             }
 
             vcp->m_normal_impulse = 0.0;
+            vcp->m_tangent1_impulse = 0.0;
+            vcp->m_tangent2_impulse = 0.0;
         }
 
         if (point_count > 1 && g_block_solve) {
@@ -268,8 +284,41 @@ void b3ContactSolver::solve_velocity_constraints()
         b3Vec3r v_b = m_vs[index_b];
         b3Vec3r w_b = m_ws[index_b];
         const b3Vec3r& normal = vc->m_normal;
+        const b3Vec3r& tangent1 = vc->m_tangent1;
+        const b3Vec3r& tangent2 = vc->m_tangent2;
 
         if (point_count == 1 || !g_block_solve) {
+
+            // prioritize friction because penetration is more important.
+            for (int32 j = 0; j < vc->m_point_count; j++) {
+                b3VelocityConstraintPoint* vcp = vc->m_points + j;
+
+                b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+
+                real vt1 = v_rel.dot(vc->m_tangent1);
+                real vt2 = v_rel.dot(vc->m_tangent2);
+
+                float tangent1_lambda = vcp->m_tangent1_mass * (-vt1);
+                float tangent2_lambda = vcp->m_tangent2_mass * (-vt2);
+
+                real max_friction = vc->m_friction * vcp->m_normal_impulse;
+                float new_tangent1_lambda = b3_clamp(vcp->m_tangent1_impulse + tangent1_lambda, -max_friction, max_friction);
+                tangent1_lambda = new_tangent1_lambda - vcp->m_tangent1_impulse;
+                vcp->m_tangent1_impulse = new_tangent1_lambda;
+
+                float new_tangent2_lambda = b3_clamp(vcp->m_tangent2_impulse + tangent2_lambda, -max_friction, max_friction);
+                tangent2_lambda = new_tangent2_lambda - vcp->m_tangent2_impulse;
+                vcp->m_tangent2_impulse = new_tangent2_lambda;
+
+
+                b3Vec3r impulse = tangent1_lambda * vc->m_tangent1 + tangent2_lambda * vc->m_tangent2;
+
+                v_a = v_a - vc->m_inv_mass_a * impulse;
+                w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
+                v_b = v_b + vc->m_inv_mass_b * impulse;
+                w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
+            }
+
             // Single point contact or block solve not enabled
             for (int32 j = 0; j < vc->m_point_count; ++j) {
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;

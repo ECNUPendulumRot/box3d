@@ -382,5 +382,33 @@ inline b3Vec3<T> b3_max_coeff(const b3Vec3<T>& a, const b3Vec3<T>& b){
     return b3Vec3(b3_max(a.x, b.x), b3_max(a.y, b.y), b3_max(a.z, b.z));
 }
 
+#define SQRT12 real(0.7071067811865475244008443621048490)
+
+template <typename T>
+inline void b3_plane_space(const T& n, T& p, T& q) {
+    if (b3_abs(n[2]) > SQRT12) {
+        // choose p in y-z plane
+        real a = n[1] * n[1] + n[2] * n[2];
+        real k = 1.0 / b3_sqrt(a);
+        p[0] = 0;
+        p[1] = -n[2] * k;
+        p[2] = n[1] * k;
+        // set q = n x p
+        q[0] = a * k;
+        q[1] = -n[0] * p[2];
+        q[2] = n[0] * p[1];
+    } else {
+        // choose p in x-y plane
+        real a = n[0] * n[0] + n[1] * n[1];
+        real k = 1.0 / b3_sqrt(a);
+        p[0] = -n[1] * k;
+        p[1] = n[0] * k;
+        p[2] = 0;
+        // set q = n x p
+        q[0] = -n[2] * p[1];
+        q[1] = n[2] * p[0];
+        q[2] = a * k;
+    }
+}
 
 #endif //BOX3D_B3_VEC3_HPP

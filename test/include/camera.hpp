@@ -82,9 +82,9 @@ struct Camera
     b3Vec3f m_lookat;
 
     // Near and far clipping planes and scale for the projection matrix
-    float m_s;  // Scale
-    float m_n;  // Near clipping plane
-    float m_f;  // Far clipping plane
+    float m_s = 0.1f;  // Scale
+    float m_n = 0.1f;  // Near clipping plane
+    float m_f = 100.f;  // Far clipping plane
 
     // Model matrix of the camera
     float m_model_matrix[16];
