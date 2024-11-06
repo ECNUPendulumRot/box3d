@@ -114,6 +114,7 @@ void b3SolverZHB::write_states_back()
 int b3SolverZHB::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
+
     // Update velocities based on forces and torques
     for(int32 i = 0; i < m_body_count; ++i) {
 
@@ -144,7 +145,7 @@ int b3SolverZHB::solve(bool allow_sleep)
     contact_solver.init_velocity_constraints();
 
     // Solve constraints iteratively
-    int32 propagation_max = 2;
+    int32 propagation_max = 10;
     int32 propagation = 0;
     int32 iterations = m_timestep->m_velocity_iterations;
     for(int32 i = 0; i < iterations; ++i) {

@@ -40,6 +40,8 @@ set (TESTBED_SOURCE_FILES
         src/test_cube_propagation.cpp
         src/test_wall_rebound.cpp
         src/test_position_solver.cpp
+        src/test_sphere_rhombus.cpp
+        src/test_sphere_rhombus_symmetric.cpp
 
         src/test_ball_geyser.cpp
         src/test_inner_bounding.cpp
