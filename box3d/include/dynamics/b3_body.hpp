@@ -39,9 +39,7 @@ struct b3Sweep {
 
 class b3Body {
 
-    friend class b3World;
-    friend class b3ContactManager;
-    friend class b3Solver;
+public:
 
     /**
      * @brief Type of the body
@@ -112,8 +110,6 @@ class b3Body {
     real m_sleep_time = 0.0;
 
     b3Sweep m_sweep;
-
-public:
 
     enum Flag {
         e_island_flag = 0x0001,
@@ -282,7 +278,6 @@ public:
 
     void destroy_fixtures();
 
-private:
     /**
      * recalculate mass, inertia, and center of mass of the body.
      */

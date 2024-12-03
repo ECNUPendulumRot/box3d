@@ -11,7 +11,7 @@
 #include "collision/b3_aabb.hpp"
 
 b3CubeShape::b3CubeShape() {
-    m_radius = b3_polygon_radius;
+    m_radius = real(0.0);
     m_type = e_cube;
 }
 

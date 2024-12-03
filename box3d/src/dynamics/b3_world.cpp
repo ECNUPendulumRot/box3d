@@ -9,11 +9,13 @@
 
 #include "solver/b3_solver.hpp"
 #include "solver/b3_solver_zhb.hpp"
+#include "solver/b3_solver_substep.hpp"
 #include "common/b3_draw.hpp"
 
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
+
 // #include "solver/b3_solver_gr.hpp"
 
 // #include "collision/b3_time_of_impact.hpp"
@@ -263,7 +265,7 @@ void b3World::solve(b3TimeStep& step)
 
         // solve the constraints
         // b3Solver solver(&m_block_allocator, island, &step);
-        b3Solver solver(&m_block_allocator, &island, &step);
+        b3SolverSubstep solver(&m_block_allocator, &island, &step);
         solver.solve(m_allow_sleep);
         // Post solve cleanup.
 
