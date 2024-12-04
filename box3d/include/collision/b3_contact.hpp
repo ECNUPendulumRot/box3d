@@ -84,6 +84,8 @@ protected:
 
     b3Manifold m_manifold;
 
+    bool is_static_collide = false;
+
     static b3ContactRegister s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 
     static bool s_initialized;

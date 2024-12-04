@@ -15,7 +15,7 @@ b3ContactSolverSubstep::b3ContactSolverSubstep(b3ContactSolverDef *def)
     m_step = def->step;
     m_contacts = def->contacts;
     m_count = def->count;
-
+    m_vel_iteration = def->vel_interation;
     m_ps = def->ps;
     m_qs = def->qs;
     m_vs = def->vs;
@@ -218,27 +218,26 @@ void b3ContactSolverSubstep::init_velocity_constraints()
 
 void b3ContactSolverSubstep::solve_velocity_constraints()
 {
-    for (int32 n = 0; n < m_substep; n++) {
+    for (int32 i = 0; i < m_count; ++i) {
+        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
-        for (int32 i = 0; i < m_count; ++i) {
-            b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+        const int32& index_a = vc->m_index_a;
+        const int32& index_b = vc->m_index_b;
+        const real& m_a = vc->m_inv_mass_a;
+        const real& m_b = vc->m_inv_mass_b;
+        const b3Mat33r& I_a = vc->m_inv_I_a;
+        const b3Mat33r& I_b = vc->m_inv_I_b;
+        const int32& point_count = vc->m_point_count;
 
-            const int32& index_a = vc->m_index_a;
-            const int32& index_b = vc->m_index_b;
-            const real& m_a = vc->m_inv_mass_a;
-            const real& m_b = vc->m_inv_mass_b;
-            const b3Mat33r& I_a = vc->m_inv_I_a;
-            const b3Mat33r& I_b = vc->m_inv_I_b;
-            const int32& point_count = vc->m_point_count;
+        b3Vec3r v_a = m_vs[index_a];
+        b3Vec3r w_a = m_ws[index_a];
+        b3Vec3r v_b = m_vs[index_b];
+        b3Vec3r w_b = m_ws[index_b];
+        const b3Vec3r& normal = vc->m_normal;
 
-            b3Vec3r v_a = m_vs[index_a];
-            b3Vec3r w_a = m_ws[index_a];
-            b3Vec3r v_b = m_vs[index_b];
-            b3Vec3r w_b = m_ws[index_b];
-            const b3Vec3r& normal = vc->m_normal;
-
-            for (int32 j = 0; j < vc->m_point_count; ++j) {
-                b3VelocityConstraintPoint* vcp = vc->m_points + j;
+        for (int32 j = 0; j < m_vel_iteration; ++j) {
+            for (int32 k = 0; k< vc->m_point_count; ++k) {
+                b3VelocityConstraintPoint* vcp = vc->m_points + k;
 
                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
 
@@ -255,12 +254,12 @@ void b3ContactSolverSubstep::solve_velocity_constraints()
                 v_b = v_b + m_b * impulse;
                 w_b = w_b + I_b * vcp->m_rb.cross(impulse);
             }
-
-            m_vs[vc->m_index_a] = v_a;
-            m_vs[vc->m_index_b] = v_b;
-            m_ws[vc->m_index_a] = w_a;
-            m_ws[vc->m_index_b] = w_b;
         }
+
+        m_vs[vc->m_index_a] = v_a;
+        m_vs[vc->m_index_b] = v_b;
+        m_ws[vc->m_index_a] = w_a;
+        m_ws[vc->m_index_b] = w_b;
     }
 }
 

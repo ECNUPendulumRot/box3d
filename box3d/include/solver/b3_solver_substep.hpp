@@ -49,6 +49,8 @@ class b3SolverSubstep {
 
     b3Body** m_bodies;
 
+    int32 m_substep = 4;
+
 public:
 
     b3SolverSubstep() = default;
@@ -56,6 +58,8 @@ public:
     b3SolverSubstep(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+
+    void integrate_velocities(real dt);
 
     int solve(bool allow_sleep);
 

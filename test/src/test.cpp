@@ -19,12 +19,12 @@ Test::Test()
 
 void Test::step(Settings &settings) {
 
-    float time_step = settings.m_hertz > 0.0f ? 1.0f / settings.m_hertz : float(0.0f);
+    float hertz = settings.m_hertz;
     if (settings.m_pause) {
         if (settings.m_single_step) {
             settings.m_single_step = false;
         } else {
-            time_step = 0.0f;
+            hertz = 0.0;
         }
     }
     // set up flags
@@ -40,7 +40,7 @@ void Test::step(Settings &settings) {
 
     m_world->set_allow_sleeping(settings.m_enable_sleep);
     m_world->set_continuous_physics(settings.m_enable_continuous_physics);
-    m_world->step(time_step, settings.m_velocity_iteration, 8);
+    m_world->step(hertz, settings.m_velocity_iteration, 8);
 
     m_world->debug_draw();
 

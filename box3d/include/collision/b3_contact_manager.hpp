@@ -21,19 +21,23 @@ class b3BlockAllocator;
 
 class b3ContactManager {
 
+public:
+
     friend class b3World;
 
     b3BroadPhase m_broad_phase;
 
     b3Contact* m_contact_list = nullptr;
 
+    b3Contact* m_static_contact_list = nullptr;
+
     int32 m_contact_count = 0;
+    int32 m_static_contact_count = 0;
+    int32 m_normal_contact_count = 0;
 
     b3BlockAllocator* m_block_allocator = nullptr;
 
     b3ContactListener* m_contact_listener = nullptr;
-
-public:
 
     void find_new_contact();
 
@@ -62,6 +66,10 @@ public:
 
     b3Contact* get_contact_list() const {
         return m_contact_list;
+    }
+
+    b3Contact* get_static_contact_list() const {
+        return m_static_contact_list;
     }
 
     void set_block_allocator(b3BlockAllocator* block_allocator) {

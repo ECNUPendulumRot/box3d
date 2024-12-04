@@ -61,26 +61,7 @@ void b3SolverSubstep::init(b3BlockAllocator *block_allocator, b3Island *island, 
 }
 
 
-void b3SolverSubstep::write_states_back()
-{
-    for(int32 i = 0; i < m_body_count; ++i) {
-        b3Body* b = m_bodies[i];
-        b->m_sweep.p = m_ps[i];
-        b->m_sweep.q = m_qs[i];
-
-        b->set_linear_velocity(m_vs[i]);
-        b->set_angular_velocity(m_ws[i]);
-
-        b->set_position(m_ps[i]);
-        b->set_quaternion(m_qs[i]);
-    }
-}
-
-
-int b3SolverSubstep::solve(bool allow_sleep)
-{
-    // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
-
+void b3SolverSubstep::integrate_velocities(float dt) {
     for(int32 i = 0; i < m_body_count; ++i) {
 
         b3Body* b = m_bodies[i];
@@ -94,17 +75,44 @@ int b3SolverSubstep::solve(bool allow_sleep)
         b->m_sweep.p0 = p;
         b->m_sweep.q0 = q;
 
-        v += m_timestep->m_dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
-        w += m_timestep->m_dt * b->get_inv_inertia() * b->get_torque();
+        v += dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
+        w += dt * b->get_inv_inertia() * b->get_torque();
 
         m_vs[i] = v;
         m_ws[i] = w;
         m_ps[i] = p;
         m_qs[i] = q;
     }
+}
+
+
+void b3SolverSubstep::write_states_back()
+{
+    for(int32 i = 0; i < m_body_count; ++i) {
+        b3Body* b = m_bodies[i];
+        b->m_sweep.p = m_ps[i];
+        b->m_sweep.q = m_qs[i];
+
+        b->set_linear_velocity(m_vs[i]);
+        b->set_angular_velocity(m_ws[i]);
+        printf("b->m_sweep.p: %f\n", b->m_sweep.p);
+        b->set_position(m_ps[i]);
+        b->set_quaternion(m_qs[i]);
+    }
+}
+
+
+int b3SolverSubstep::solve(bool allow_sleep)
+{
+    // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
+
+    real hw = m_timestep->m_hw;
+    real dt_sub = real(1.0)/(m_substep * hw);
 
     b3ContactSolverDef def;
     def.step = *m_timestep;
+    def.vel_interation = m_timestep->m_velocity_iterations;
+    def.dt_substep = dt_sub;
     def.contacts = m_contacts;
     def.count = m_contact_count;
     def.ps = m_ps;
@@ -116,9 +124,12 @@ int b3SolverSubstep::solve(bool allow_sleep)
     b3ContactSolverSubstep contact_solver(&def);
     contact_solver.init_velocity_constraints();
 
-    for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+    for (int32 i = 0; i < m_substep; ++i) {
+        integrate_velocities(dt_sub);
+
         contact_solver.solve_velocity_constraints();
     }
+
 
     for (int32 i = 0; i < m_body_count; ++i) {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
@@ -139,6 +150,7 @@ int b3SolverSubstep::solve(bool allow_sleep)
 
     // copy state buffers back to the bodies.
     write_states_back();
+
     allow_sleep = false;
     if (allow_sleep) {
         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;

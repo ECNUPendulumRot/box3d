@@ -15,6 +15,8 @@ struct b3ContactSolverDef
 {
     b3TimeStep step;
     b3Contact** contacts;
+    real dt_substep;
+    int32 vel_interation;
     int32 count;
     b3Vec3r* ps;
     b3Quatr* qs;
@@ -38,6 +40,8 @@ class b3ContactSolverSubstep {
     int32 m_count;
 
     b3TimeStep m_step;
+
+    int32 m_vel_iteration = 0;
 
     int32 m_substep = 4;
 

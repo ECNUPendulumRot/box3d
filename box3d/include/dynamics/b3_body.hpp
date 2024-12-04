@@ -113,8 +113,10 @@ public:
 
     enum Flag {
         e_island_flag = 0x0001,
-        e_awake_flag = 0x0002,
-        e_auto_sleep_flag = 0x0004,
+        e_normal_island_flag = 0x0002,
+        e_static_island_flag = 0x0004,
+        e_awake_flag = 0x0008,
+        e_auto_sleep_flag = 0x0010,
     };
 
     b3Body() = default;

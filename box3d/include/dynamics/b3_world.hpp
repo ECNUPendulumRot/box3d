@@ -70,7 +70,7 @@ public:
         return m_body_count == 0;
     }
 
-    void step(real dt, int32 velocity_iterations, int32 position_iterations);
+    void step(int32 dt, int32 velocity_iterations, int32 position_iterations);
 
     void set_allow_sleeping(bool flag);
 

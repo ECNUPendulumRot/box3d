@@ -70,12 +70,23 @@ void b3ContactManager::add_pair(b3FixtureProxy *fixture_proxy_a, b3FixtureProxy 
     body_a = fixture_a->get_body();
     body_b = fixture_b->get_body();
 
+	bool is_static_contact = body_a->get_type() == b3BodyType::b3_static_body || body_b->get_type() == b3BodyType::b3_static_body;
+	contact->is_static_collide = is_static_contact;
+	// insert contact into contact list
+	b3Contact* &contact_list = is_static_contact ? m_static_contact_list : m_contact_list;
+
+	if (is_static_contact) {
+		++m_static_contact_count;
+	} else {
+		++m_normal_contact_count;
+	}
+
     contact->set_prev(nullptr);
-    contact->set_next(m_contact_list);
-    if (m_contact_list != nullptr) {
-  	    m_contact_list->set_prev(contact);
+    contact->set_next(contact_list);
+    if (contact_list != nullptr) {
+  	    contact_list->set_prev(contact);
     }
-    m_contact_list = contact;
+    contact_list = contact;
 
     // Connect to island graph
 
@@ -124,8 +135,11 @@ void b3ContactManager::destroy(b3Contact* contact)
   	    m_contact_list = contact->m_next;
     }
 
+	if (contact == m_static_contact_list) {
+		m_static_contact_list = contact->m_next;
+	}
+
     // remove form body a
-    // not use friend class.
     if (contact->m_node_a.m_prev) {
   	    contact->m_node_a.m_prev->m_next = contact->m_node_a.m_next;
     }
@@ -159,7 +173,6 @@ void b3ContactManager::collide()
 {
 
     b3Contact *contact = m_contact_list;
-
     while (contact) {
 
         b3Fixture* fixture_a = contact->get_fixture_a();
@@ -195,4 +208,41 @@ void b3ContactManager::collide()
         contact->update(m_contact_listener);
         contact = contact->next();
     }
+
+	contact = m_static_contact_list;
+	while (contact) {
+
+		b3Fixture* fixture_a = contact->get_fixture_a();
+		b3Fixture* fixture_b = contact->get_fixture_b();
+		int32 index_a = contact->get_child_index_a();
+		int32 index_b = contact->get_child_index_b();
+
+		b3Body *body_a = fixture_a->get_body();
+		b3Body *body_b = fixture_b->get_body();
+		// is this pair shouldn't collide,
+		// destory this contact
+
+		bool active_a = body_a->get_type() != b3BodyType::b3_static_body;
+		bool active_b = body_b->get_type() != b3BodyType::b3_static_body;
+
+		if (active_a == false && active_b == false) {
+			contact = contact->next();
+			continue;
+		}
+
+		int32 proxy_id_a = fixture_a->m_proxies[index_a].m_proxy_id;
+		int32 proxy_id_b = fixture_b->m_proxies[index_b].m_proxy_id;
+		bool overlap = m_broad_phase.test_overlap(proxy_id_a, proxy_id_b);
+
+		if (!overlap) {
+			b3Contact *destory_c = contact;
+			contact = contact->next();
+			destroy(destory_c);
+			continue;
+		}
+
+		// the contact persist
+		contact->update(m_contact_listener);
+		contact = contact->next();
+	}
 }

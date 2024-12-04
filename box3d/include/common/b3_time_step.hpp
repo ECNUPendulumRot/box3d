@@ -16,7 +16,7 @@ struct b3TimeStep {
     real m_dt;
 
     // inverse time step (0 if dt == 0).
-    real m_inv_dt;
+    real m_hw;
 
     // dt * inv_dt0
     real m_dt_ratio;

@@ -19,6 +19,8 @@ class b3BlockAllocator;
 
 class b3Island {
 
+public:
+
     int32 m_body_count;
 	int32 m_contact_count;
 
@@ -29,8 +31,6 @@ class b3Island {
     b3Contact** m_contacts;
 
     b3BlockAllocator* m_block_allocator;
-
-public:
 
     b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity);
 

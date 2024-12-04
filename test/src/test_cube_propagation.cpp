@@ -4,7 +4,7 @@
 
 class TestCubePropagation: public Test {
 
-    static constexpr int32 box_count = 3;
+    static constexpr int32 box_count = 2;
     const real box_hf_size = 1.0f;
 
 public:
