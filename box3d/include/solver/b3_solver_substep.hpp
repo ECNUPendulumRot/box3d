@@ -3,6 +3,9 @@
 #define BOX3D_B3_SOLVER_SUBSTEP_HPP
 
 
+#include "b3_contact_constraint.hpp"
+#include "collision/b3_collision.hpp"
+#include "dynamics/b3_island.hpp"
 #include "dynamics/b3_transform.hpp"
 #include "math/b3_quat.hpp"
 
@@ -26,22 +29,48 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
+struct b3ContactSim {
+    b3Contact* contact;
+    b3BodySim* body_sim_a;
+    b3BodySim* body_sim_b;
 
-class b3SolverSubstep {
+    b3Vec3r v_a;
+    b3Vec3r w_a;
+    b3Vec3r p_a;
+    b3Quatr q_a;
+
+    b3Vec3r v_b;
+    b3Vec3r w_b;
+    b3Vec3r p_b;
+    b3Quatr q_b;
+
+    b3Mat33r inv_I_a;
+    b3Mat33r inv_I_b;
+
+    real radius_a;
+    real radius_b;
+
+    b3Vec3r normal;
+
+    real m_a;
+    real m_b;
+    real inv_m_a;
+    real inv_m_b;
+
+    real restitution;
+
+    b3WorldManifold world_manifold;
+    b3VelocityConstraintPoint points[8];
+};
+
+
+class b3ContactSolver {
+
+public:
 
     b3Contact** m_contacts = nullptr;
 
     int32 m_contact_count;
-
-    int32 m_body_count;
-
-    b3Vec3r* m_ps = nullptr;
-
-    b3Quatr* m_qs = nullptr;
-
-    b3Vec3r* m_vs = nullptr;
-
-    b3Vec3r* m_ws = nullptr;
 
     b3TimeStep* m_timestep = nullptr;
 
@@ -49,23 +78,31 @@ class b3SolverSubstep {
 
     b3Body** m_bodies;
 
-    int32 m_substep = 4;
+    bool m_is_static = false;
 
-public:
+    b3StaticIsland* m_island = nullptr;
 
-    b3SolverSubstep() = default;
+    b3NormalIsland* m_normal_island = nullptr;
 
-    b3SolverSubstep(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    b3ContactSim* m_contact_constraints = nullptr;
 
-    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+    b3ContactSolver() = default;
 
-    void integrate_velocities(real dt);
+    b3ContactSolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step, bool is_static);
+
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step, bool is_static);
+
+    void prepare_contact_contraints();
+
+    void solve_velocity_constraints();
 
     int solve(bool allow_sleep);
 
-    void write_states_back();
+    ~b3ContactSolver();
 
-    ~b3SolverSubstep();
+    bool empty_solver() const {
+        return m_contact_count == 0;
+    }
 
 };
 

@@ -67,7 +67,7 @@ struct b3ContactRegister {
 
 class b3Contact {
 
-protected:
+public:
 
     b3Fixture* m_fixture_a;
     b3Fixture* m_fixture_b;
@@ -103,10 +103,6 @@ protected:
 
     int32 m_toi_count = 0;
     real m_toi;
-
-public:
-
-    friend class b3World;
 
     b3Contact(b3Fixture* f_A, int32 index_A, b3Fixture* f_B, int32 index_B);
 

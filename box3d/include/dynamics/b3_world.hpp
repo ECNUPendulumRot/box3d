@@ -20,6 +20,8 @@ struct b3Color;
 struct b3TimeStep;
 class b3Draw;
 
+
+
 class b3World {
 
     /**
@@ -85,6 +87,8 @@ public:
     }
 
     void add_shape(b3Shape* shape);
+
+    void integrate_velocity(real dt);
 
     void set_gravity(const b3Vec3r& gravity) {
         m_gravity = gravity;

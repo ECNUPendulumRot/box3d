@@ -17,9 +17,29 @@ class b3FixtureDef;
 
 class b3Fixture;
 
+class b3BodySim;
+
+class b3Body;
+
 struct b3ContactEdge;
 
 //////////////////////////////////////////
+
+
+struct b3BodySim {
+
+    b3Vec3r p;// the position of the body
+    b3Quatr q;// the quaternion of the body
+    b3Vec3r v;// the linear velocity of the body
+    b3Vec3r w;// the angular velocity of the body, in form of angle axis
+    b3Body* body;
+    uint32 flag;
+    int32 static_island_index = -1;
+    int32 normal_island_index = -1;
+    int32 index = -1;
+
+    static b3BodySim from_body(b3Body* body);
+};
 
 
 struct b3Sweep {
@@ -103,13 +123,17 @@ public:
 
     //////////////// Island ////////////////////////////////
 
-    int32 m_island_index;
-
+    int32 m_normal_island_index;
+    int32 m_static_island_index;
     uint32 m_flags = 0;
 
     real m_sleep_time = 0.0;
 
     b3Sweep m_sweep;
+
+    b3BodySim m_body_sim;
+
+    b3BodySim* generate_sim_body();
 
     enum Flag {
         e_island_flag = 0x0001,
@@ -203,10 +227,6 @@ public:
         m_w = w;
     }
 
-    const int32& get_island_index() const {
-        return m_island_index;
-    }
-
     const real& get_inv_mass() const {
         return m_inv_mass;
     }
@@ -255,8 +275,12 @@ public:
         m_contact_list = contact_list;
     }
 
-    inline void set_island_index(int32 index) {
-        m_island_index = index;
+    inline void set_normal_island_index(int32 index) {
+        m_normal_island_index = index;
+    }
+
+    inline void set_static_island_index(int32 index) {
+        m_static_island_index = index;
     }
 
     inline void set_awake(bool flag) {
@@ -294,6 +318,8 @@ public:
     void synchronize_fixtures();
 
 };
+
+
 
 
 #endif //BOX3D_B3_BODY_HPP

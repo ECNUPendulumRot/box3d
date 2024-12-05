@@ -10,7 +10,6 @@
 
 
 struct b3VelocityConstraintPoint {
-
     b3Vec3r m_ra;
     b3Vec3r m_rb;
     real m_normal_impulse;
@@ -19,7 +18,6 @@ struct b3VelocityConstraintPoint {
     real m_bias_velocity;
     real m_rhs_penetration;
     real m_relative_velocity;
-    bool m_wait; ///< this value is for situation 4
 };
 
 
@@ -38,6 +36,19 @@ struct b3ContactVelocityConstraint {
     int32 m_point_count;
     int32 m_contact_index;
 
+
+    b3Vec3r m_va;
+    b3Vec3r m_wa;
+    b3Quatr m_qa;
+    b3Vec3r m_pa;
+
+    b3Vec3r m_vb;
+    b3Vec3r m_wb;
+    b3Quatr m_qb;
+    b3Vec3r m_pb;
+
+    real m_radius_a;
+    real m_radius_b;
     real m_restitution;
     real m_restitution_threshold;
 

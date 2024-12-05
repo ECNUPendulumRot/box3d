@@ -14,20 +14,10 @@ b3Island::b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32
     m_block_allocator = block_allocator;
 
     void *mem = block_allocator->allocate(m_body_capacity * sizeof(b3Body *));
-    m_bodies = new (mem) b3Body *;
+    m_bodies = new (mem) b3BodySim *;
 
     mem = block_allocator->allocate(m_contact_capacity * sizeof(b3Contact *));
     m_contacts = new (mem) b3Contact*;
-}
-
-
-void b3Island::add_body(b3Body* body)
-{
-    b3_assert(m_body_count < m_body_capacity);
-
-    body->set_island_index(m_body_count);
-    m_bodies[m_body_count] = body;
-    m_body_count++;
 }
 
 
@@ -37,6 +27,22 @@ void b3Island::add_contact(b3Contact* contact)
 
     m_contacts[m_contact_count] = contact;
     m_contact_count++;
+}
+
+void b3StaticIsland::add_body(b3BodySim *body) {
+    b3_assert(m_body_count < m_body_capacity);
+
+    body->static_island_index = m_body_count;
+    m_bodies[m_body_count] = body;
+    m_body_count++;
+}
+
+void b3NormalIsland::add_body(b3BodySim *body) {
+    b3_assert(m_body_count < m_body_capacity);
+
+    body->normal_island_index = m_body_count;
+    m_bodies[m_body_count] = body;
+    m_body_count++;
 }
 
 

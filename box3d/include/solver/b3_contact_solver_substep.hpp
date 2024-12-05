@@ -16,25 +16,18 @@ struct b3ContactSolverDef
     b3TimeStep step;
     b3Contact** contacts;
     real dt_substep;
-    int32 vel_interation;
+    int32 vel_iteration;
     int32 count;
     b3Vec3r* ps;
     b3Quatr* qs;
     b3Vec3r* vs;
     b3Vec3r* ws;
+    bool is_static_collide;
     b3BlockAllocator* block_allocator;
 };
 
 
-class b3ContactSolverSubstep {
-
-    b3Vec3r* m_ps = nullptr;
-
-    b3Quatr* m_qs = nullptr;
-
-    b3Vec3r* m_vs = nullptr;
-
-    b3Vec3r* m_ws = nullptr;
+class b3ContactVelocitySolverSubstep {
 
     b3Contact** m_contacts = nullptr;
     int32 m_count;
@@ -45,6 +38,8 @@ class b3ContactSolverSubstep {
 
     int32 m_substep = 4;
 
+    bool m_is_static_collide = false;
+
     b3BlockAllocator* m_block_allocator = nullptr;
 
     b3ContactPositionConstraint* m_position_constraints;
@@ -52,15 +47,13 @@ class b3ContactSolverSubstep {
 
 public:
 
-    b3ContactSolverSubstep(b3ContactSolverDef* def);
+    b3ContactVelocitySolverSubstep(b3ContactSolverDef* def);
 
-    ~b3ContactSolverSubstep();
+    ~b3ContactVelocitySolverSubstep();
 
     void init_velocity_constraints();
 
     void solve_velocity_constraints();
-
-    bool solve_position_constraints();
 };
 
 

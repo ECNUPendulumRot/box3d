@@ -80,6 +80,8 @@ struct b3FixtureProxy {
 
 class b3Fixture {
 
+public:
+
     friend class b3Body;
     friend class b3ContactManager;
 
@@ -100,8 +102,6 @@ class b3Fixture {
     int32 m_proxy_count = 0;
 
     b3Fixture* m_next = nullptr;
-
-public:
 
     void create_fixture(b3BlockAllocator* block_allocator,  const b3FixtureDef& f_def, b3Body* body);
 

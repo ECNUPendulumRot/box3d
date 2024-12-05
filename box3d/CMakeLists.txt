@@ -49,12 +49,7 @@ set(B3D_HEADER_FILES
         include/math/b3_mat1212.hpp
 
         include/solver/b3_lemke.hpp
-        include/solver/b3_solver.hpp
-        include/solver/b3_solver_zhb.hpp
         include/solver/b3_contact_constraint.hpp
-        include/solver/b3_solver_gr.hpp
-        include/solver/b3_contact_solver.hpp
-        include/solver/b3_contact_solver_zhb.hpp
         include/solver/b3_solver_substep.hpp
         include/solver/b3_contact_solver_substep.hpp
         # include/collision/b3_distance.hpp
@@ -93,12 +88,7 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_sphere_shape.cpp
 
         src/solver/b3_lemke.cpp
-        src/solver/b3_solver.cpp
-        src/solver/b3_solver_zhb.cpp
-        src/solver/b3_solver_gr.cpp
-        src/solver/b3_contact_solver.cpp
         src/collision/b3_collide.cpp
-        src/solver/b3_contact_solver_zhb.cpp
         src/solver/b3_solver_substep.cpp
         src/solver/b3_contact_solver_substep.cpp
         # src/collision/b3_distance.cpp

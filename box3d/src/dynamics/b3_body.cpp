@@ -13,6 +13,7 @@
 #include "geometry/b3_plane_shape.hpp"
 
 
+
 b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::zero())
 {
 
@@ -30,6 +31,19 @@ b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::ze
     m_sweep.q0 = m_q;
     m_sweep.q = m_q;
     m_sweep.alpha0 = 0.0;
+}
+
+
+b3BodySim* b3Body::generate_sim_body() {
+    this->m_body_sim.p = this->m_p;
+    this->m_body_sim.q = this->m_q;
+    this->m_body_sim.v = this->m_v;
+    this->m_body_sim.w = this->m_w;
+    this->m_body_sim.body = this;
+    this->m_body_sim.flag = this->m_flags;
+    this->m_body_sim.normal_island_index = -1;
+    this->m_body_sim.static_island_index = -1;
+    return &this->m_body_sim;
 }
 
 
@@ -182,6 +196,17 @@ void b3Body::destroy_fixtures() {
     }
 }
 
+
+b3BodySim b3BodySim::from_body(b3Body *body) {
+    b3BodySim sim_body;
+    sim_body.p = body->get_position();
+    sim_body.q = body->get_quaternion();
+    sim_body.v = body->get_linear_velocity();
+    sim_body.w = body->get_angular_velocity();
+    sim_body.body = body;
+    sim_body.flag = body->m_flags;
+    return sim_body;
+}
 
 void b3Sweep::advance(real alpha)
 {

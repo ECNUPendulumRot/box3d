@@ -5,7 +5,6 @@
 
 #include "common/b3_types.hpp"
 
-
 /////////// Forward Delaration ///////////
 
 class b3Contact;
@@ -13,6 +12,8 @@ class b3Contact;
 class b3Body;
 
 class b3BlockAllocator;
+
+class b3BodySim;
 
 //////////////////////////////////////////
 
@@ -27,7 +28,7 @@ public:
 	int32 m_body_capacity;
 	int32 m_contact_capacity;
 
-    b3Body** m_bodies;
+    b3BodySim** m_bodies;
     b3Contact** m_contacts;
 
     b3BlockAllocator* m_block_allocator;
@@ -35,8 +36,6 @@ public:
     b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity);
 
     ~b3Island();
-
-    void add_body(b3Body* body);
 
     void add_contact(b3Contact* contact);
 
@@ -56,15 +55,22 @@ public:
     int get_body_count() const {
         return m_body_count;
     }
-
-    b3Body** get_bodies() const {
-        return m_bodies;
-    }
-
-    b3Body* get_body(int32 index) {
-        return m_bodies[index];
-    }
 };
 
+
+class b3StaticIsland: public b3Island {
+
+public:
+
+    b3StaticIsland(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity): b3Island(block_allocator, body_capacity, contact_capacity) {}
+
+    void add_body(b3BodySim* body);
+};
+
+class b3NormalIsland: public b3Island {
+public:
+    b3NormalIsland(b3BlockAllocator* block_allocator, int32 body_capacity, int32 contact_capacity): b3Island(block_allocator, body_capacity, contact_capacity) {}
+    void add_body(b3BodySim* body);
+};
 
 #endif // BOX3D_B3_ISLAND_HPP

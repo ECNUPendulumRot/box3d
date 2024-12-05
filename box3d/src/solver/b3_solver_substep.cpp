@@ -20,14 +20,16 @@
 
 bool g_block_solve = false;
 
-b3SolverSubstep::b3SolverSubstep(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
+b3ContactSolver::b3ContactSolver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step, bool is_static)
 {
-    init(block_allocator, island, step);
+    init(block_allocator, island, step, is_static);
 }
 
 
-void b3SolverSubstep::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
+void b3ContactSolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step, bool is_static)
 {
+    m_is_static = is_static;
+
     m_timestep = step;
     m_block_allocator = block_allocator;
 
@@ -40,116 +42,176 @@ void b3SolverSubstep::init(b3BlockAllocator *block_allocator, b3Island *island, 
     // and we need extra arrays to store the velocity and position of every body.
     // after solver all contacts and friction constraints, we copy the results back to bodies.
 
-    // The number of velocity constraints is same to the number of contacts.
-    m_body_count = island->get_body_count();
-    b3_assert(m_body_count > 0);
-
-    m_ps = (b3Vec3r*)m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
-    m_qs = (b3Quatr*)m_block_allocator->allocate(m_body_count * sizeof(b3Quatr));
-    m_vs = (b3Vec3r*)m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
-    m_ws = (b3Vec3r*)m_block_allocator->allocate(m_body_count * sizeof(b3Vec3r));
-
-    m_bodies = island->get_bodies();
-    for(int32 i = 0; i < m_body_count; ++i) {
-        b3Body* b = m_bodies[i];
-        m_ps[i] = b->get_position();
-        m_qs[i] = b->get_quaternion();
-        m_vs[i] = b->get_linear_velocity();
-        m_ws[i] = b->get_angular_velocity();
-    }
     ////////////////////////// Initialize Contact Constraints //////////////////////////
 }
 
 
-void b3SolverSubstep::integrate_velocities(float dt) {
-    for(int32 i = 0; i < m_body_count; ++i) {
+void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
+    int32 static_collide = island->m_contact_count;
+    for (int32 i = 0; i < static_collide; ++i) {
+        b3Contact* c = island->m_contacts[i];
+        b3ContactSim* cs = css + i;
 
-        b3Body* b = m_bodies[i];
+        b3Body* body_a = c->m_fixture_a->m_body;
+        b3Body* body_b = c->m_fixture_b->m_body;
 
-        b3Vec3r v = m_vs[i];
-        b3Vec3r w = m_ws[i];
+        cs->body_sim_a = &body_a->m_body_sim;
+        cs->body_sim_b = &body_b->m_body_sim;
 
-        b3Vec3r p = b->m_sweep.p;
-        b3Quatr q = b->m_sweep.q;
+        cs->v_a = cs->body_sim_a->v;
+        cs->w_a = cs->body_sim_a->w;
+        cs->p_a = cs->body_sim_a->p;
+        cs->q_a = cs->body_sim_a->q;
 
-        b->m_sweep.p0 = p;
-        b->m_sweep.q0 = q;
+        cs->v_b = cs->body_sim_b->v;
+        cs->w_b = cs->body_sim_b->w;
+        cs->p_b = cs->body_sim_b->p;
+        cs->q_b = cs->body_sim_b->q;
 
-        v += dt * b->get_inv_mass() * (b->get_force() + b->get_gravity());
-        w += dt * b->get_inv_inertia() * b->get_torque();
+        cs->m_a = body_a->m_mass;
+        cs->m_b = body_b->m_mass;
 
-        m_vs[i] = v;
-        m_ws[i] = w;
-        m_ps[i] = p;
-        m_qs[i] = q;
+        cs->inv_m_a = body_a->m_inv_mass;
+        cs->inv_m_b = body_b->m_inv_mass;
+
+        cs->radius_a = c->m_fixture_a->m_shape->m_radius;
+        cs->radius_b = c->m_fixture_b->m_shape->m_radius;
+
+        b3Transr xf_a, xf_b;
+        xf_a.set_quaternion(cs->q_a);
+        xf_b.set_quaternion(cs->q_b);
+        xf_a.set_position(cs->p_a);
+        xf_b.set_position(cs->p_b);
+        cs->world_manifold.initialize(&c->m_manifold, xf_a, cs->radius_a, xf_b, cs->radius_b);
+
+        cs->restitution = c->m_restitution;
+        cs->normal = cs->world_manifold.normal;
+
+        int32 point_count = c->m_manifold.m_point_count;
+        for (int32 j = 0; j < point_count; ++j) {
+            b3VelocityConstraintPoint *vcp = cs->points + j;
+
+            vcp->m_ra = cs->world_manifold.points[j] - cs->p_a;
+            vcp->m_rb = cs->world_manifold.points[j] - cs->p_b;
+
+            b3Vec3r rn_a = vcp->m_ra.cross(cs->normal);
+            b3Vec3r rn_b = vcp->m_rb.cross(cs->normal);
+
+            // JM_INV_J
+            // In box3d, a col vector multiply a matrix is the
+            // transpose of the vector multiply the matrix.
+            real jmj = cs->inv_m_a + cs->inv_m_b +
+                       (rn_a * cs->inv_I_a).dot(rn_a) +
+                       (rn_b * cs->inv_I_b).dot(rn_b);
+
+            vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
+
+            // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
+            // 2. Jv+ = J(-ev)
+            // ===> JM_invJ^T * lambda = -eJv - Jv
+            real v_rel = cs->normal.dot(cs->v_b + cs->w_b.cross(vcp->m_rb) - cs->v_a - cs->v_b.cross(vcp->m_ra));
+            // m_bias_velocity is eJv
+            vcp->m_bias_velocity = 0.0;
+            if (v_rel < 0) {
+                vcp->m_bias_velocity = -cs->restitution * v_rel;
+            }
+
+            vcp->m_normal_impulse = 0.0;
+        }
     }
 }
 
 
-void b3SolverSubstep::write_states_back()
-{
-    for(int32 i = 0; i < m_body_count; ++i) {
-        b3Body* b = m_bodies[i];
-        b->m_sweep.p = m_ps[i];
-        b->m_sweep.q = m_qs[i];
+void b3ContactSolver::prepare_contact_contraints() {
 
-        b->set_linear_velocity(m_vs[i]);
-        b->set_angular_velocity(m_ws[i]);
-        printf("b->m_sweep.p: %f\n", b->m_sweep.p);
-        b->set_position(m_ps[i]);
-        b->set_quaternion(m_qs[i]);
+    m_contact_count = m_island->m_contact_count;
+    void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
+    m_contact_constraints = new (mem) b3ContactSim[m_contact_count];
+    prepare_contact_sims(m_island, m_contact_constraints);
+}
+
+void b3ContactSolver::solve_velocity_constraints() {
+
+    for (int32 i = 0; i < m_count; ++i) {
+        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+
+        const int32& index_a = vc->m_index_a;
+        const int32& index_b = vc->m_index_b;
+        const real& m_a = vc->m_inv_mass_a;
+        const real& m_b = vc->m_inv_mass_b;
+        const b3Mat33r& I_a = vc->m_inv_I_a;
+        const b3Mat33r& I_b = vc->m_inv_I_b;
+        const int32& point_count = vc->m_point_count;
+
+        b3Vec3r v_a = vc->m_va;
+        b3Vec3r w_a = vc->m_wa;
+        b3Vec3r v_b = vc->m_vb;
+        b3Vec3r w_b = vc->m_wb;
+        const b3Vec3r& normal = vc->m_normal;
+
+        for (int32 j = 0; j < m_vel_iteration; ++j) {
+            for (int32 k = 0; k< vc->m_point_count; ++k) {
+                b3VelocityConstraintPoint* vcp = vc->m_points + k;
+
+                b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
+
+                real vn = v_rel.dot(normal);
+                real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
+
+                real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
+                lambda = new_impulse - vcp->m_normal_impulse;
+                vcp->m_normal_impulse = new_impulse;
+
+                b3Vec3r impulse = lambda * normal;
+                v_a = v_a - m_a * impulse;
+                w_a = w_a - I_a * vcp->m_ra.cross(impulse);
+                v_b = v_b + m_b * impulse;
+                w_b = w_b + I_b * vcp->m_rb.cross(impulse);
+            }
+        }
     }
+
+
 }
 
 
-int b3SolverSubstep::solve(bool allow_sleep)
+// void b3ContactSolver::write_states_back()
+// {
+//     for(int32 i = 0; i < m_body_count; ++i) {
+//         b3Body* b = m_bodies[i];
+//         b->m_sweep.p = m_ps[i];
+//         b->m_sweep.q = m_qs[i];
+//
+//         b->set_linear_velocity(m_vs[i]);
+//         b->set_angular_velocity(m_ws[i]);
+//         printf("b->m_sweep.p: %f\n", b->m_sweep.p);
+//         b->set_position(m_ps[i]);
+//         b->set_quaternion(m_qs[i]);
+//     }
+// }
+
+
+int b3ContactSolver::solve(bool allow_sleep)
 {
     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
-
+    int32 substep = 4;
     real hw = m_timestep->m_hw;
-    real dt_sub = real(1.0)/(m_substep * hw);
+    real dt_sub = real(1.0)/(substep * hw);
 
     b3ContactSolverDef def;
     def.step = *m_timestep;
-    def.vel_interation = m_timestep->m_velocity_iterations;
+    def.is_static_collide = m_is_static;
+    def.vel_iteration = m_timestep->m_velocity_iterations;
     def.dt_substep = dt_sub;
     def.contacts = m_contacts;
     def.count = m_contact_count;
-    def.ps = m_ps;
-    def.qs = m_qs;
-    def.vs = m_vs;
-    def.ws = m_ws;
     def.block_allocator = m_block_allocator;
 
-    b3ContactSolverSubstep contact_solver(&def);
+    b3ContactVelocitySolverSubstep contact_solver(&def);
+
     contact_solver.init_velocity_constraints();
 
-    for (int32 i = 0; i < m_substep; ++i) {
-        integrate_velocities(dt_sub);
-
-        contact_solver.solve_velocity_constraints();
-    }
-
-
-    for (int32 i = 0; i < m_body_count; ++i) {
-        m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
-        m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quatr(0, m_ws[i]) * m_qs[i];
-        m_qs[i].normalize();
-    }
-
-    // solve position
-    // bool position_solved = false;
-    // for (int32 i = 0; i < m_timestep->m_position_iterations; ++i) {
-    //     bool contact_ok = contact_solver.solve_position_constraints();
-    //
-    //     if (contact_ok) {
-    //         position_solved = true;
-    //         break;
-    //     }
-    // }
-
-    // copy state buffers back to the bodies.
-    write_states_back();
+    contact_solver.solve_velocity_constraints();
 
     allow_sleep = false;
     if (allow_sleep) {
@@ -177,12 +239,9 @@ int b3SolverSubstep::solve(bool allow_sleep)
 }
 
 
-b3SolverSubstep::~b3SolverSubstep()
+b3ContactSolver::~b3ContactSolver()
 {
-    m_block_allocator->free(m_ps, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_qs, m_body_count * sizeof(b3Quatr));
-    m_block_allocator->free(m_vs, m_body_count * sizeof(b3Vec3r));
-    m_block_allocator->free(m_ws, m_body_count * sizeof(b3Vec3r));
+    ;
 }
 
 
