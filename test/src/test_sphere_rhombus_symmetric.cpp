@@ -26,7 +26,7 @@
 
 class TestRhombusSymmetric :public Test {
 
-    int layer = 2;
+    int layer = 3;
 
 public:
 

@@ -30,7 +30,7 @@
 class SphereCradleTest : public Test {
 
     // Number of dynamic spheres in the simulation
-    int sphere_count = 3;
+    int sphere_count = 10;
 
 public:
 

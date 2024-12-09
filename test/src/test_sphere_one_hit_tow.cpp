@@ -38,7 +38,7 @@ public:
      */
     TestTwoHitOne() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, -10));
+        m_world->set_gravity(b3Vec3r(0, 0, 0));
         int num_of_spheres = 3;
         // create a dynamic body
         b3Transr pose, velocity;
@@ -60,7 +60,7 @@ public:
 
         b3Vec3r p(0, 0, 0.5);
         b3Vec3r q(0, 0, 0);
-        b3Vec3r v(0, 5, 0);
+        b3Vec3r v(0, 0, 0);
         b3Vec3r w(0, 0, 0);
 
         body_def.set_init_pose(p, q);
@@ -68,11 +68,11 @@ public:
 
         m_world->create_body(body_def)->create_fixture(fixture_def);
 
-        real x = 2;
+        real x = 5;
 
-        for (int32 i = 0; i < num_of_spheres - 1; i++) {
-            p = { 0, x * (i + 1) + i * 2.0f, 0.5 };
-            v = { 0, -15.0f * i, 0 };
+        for (int32 i = 1; i <= num_of_spheres - 1; i++) {
+            p = { 0, (i%2==1?1.0f:-1.0f)*(-1.0f)*(x), 0.5 };
+            v = { 0, -(i%2==1?1.0f:-1.0f)*(-1.0f)*5.0f , 0 };
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
             m_world->create_body(body_def)->create_fixture(fixture_def);

@@ -45,6 +45,7 @@ set (TESTBED_SOURCE_FILES
 
         src/test_ball_geyser.cpp
         src/test_inner_bounding.cpp
+        src/test_circle_stack.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

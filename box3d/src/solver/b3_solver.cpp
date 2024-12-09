@@ -156,7 +156,9 @@ int b3Solver::solve(bool allow_sleep)
 
     // Solve velocity constraints for the specified number of iterations
     for(int32 i = 0; i < m_timestep->m_velocity_iterations; ++i) {
+        //if(i) spdlog::info("iteration {} is start",i+1);
         contact_solver.solve_velocity_constraints();
+
     }
 
     // integrate positions and rotations.

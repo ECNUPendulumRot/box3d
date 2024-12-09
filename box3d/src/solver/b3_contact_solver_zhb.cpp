@@ -231,86 +231,89 @@ void b3ContactSolverZHB::solve_velocity_constraints(bool &violate, int32 &propag
             //2.init constrain violate,now still violate
             //3.init constrain legal,now legal
             //4.init constrain legal,now violate
-            if (rhs > 0) {
-                if (vcp->m_bias_velocity <= 0) {
-                    //4
-                    if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
-                        //if rhs is converged,change it to situation 2 or 1
-                        //vcp->m_bias_velocity = rhs * vc->m_restitution;
-                        //bool zero = false;
-                        if(!vcp->m_wait){
 
-                            --m_wait;
-                            vcp->m_wait = true;
-                            //zero = !(bool)m_wait;
-                            spdlog::info("st:4, index A={},B={} is kicked in m_wait list,now have {} left",
-                                         vc->m_index_a,vc->m_index_b,m_wait);
-                            if(m_wait == 0) ++propagations;
-                        } else{
-                            spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
-                        }
-                        if(m_wait == 0){
+            #pragma region gGS
+                if (rhs > 0) {
+                    if (vcp->m_bias_velocity <= 0) {
+                        //4
+                        if (abs(vcp->m_relative_velocity - rhs) <= tolerance) {
+                            //if rhs is converged,change it to situation 2 or 1
+                            //vcp->m_bias_velocity = rhs * vc->m_restitution;
+                            //bool zero = false;
+                            if(!vcp->m_wait){
 
-                            st4 = true;
-                            vcp->m_bias_velocity = rhs;
-                            spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
+                                --m_wait;
+                                vcp->m_wait = true;
+                                //zero = !(bool)m_wait;
+                                spdlog::info("st:4, index A={},B={} is kicked in m_wait list,now have {} left",
+                                             vc->m_index_a,vc->m_index_b,m_wait);
+                                if(m_wait == 0) ++propagations;
+                            } else{
+                                spdlog::info("st:4, index A={},B={} is waiting to convert",vc->m_index_a,vc->m_index_b);
+                            }
+                            if(m_wait == 0){
+
+                                st4 = true;
+                                vcp->m_bias_velocity = rhs;
+                                spdlog::info("st:4, constrain {}, {} is converted",vc->m_index_a,vc->m_index_b);
+                            }
+                            vcp->m_relative_velocity = rhs;
+                            rhs_restitution_velocity = 0.0;
+                            rhs = 0.0;
+                            //问题全在这部分了，考虑少了一种情况，即多物体撞一个物体的情况
+                        } else {
+                            //have some problem
+                            //当多个物体撞击一个物体时，
+                            vcp->m_relative_velocity = rhs;
+                            rhs = 0.0;
+                            rhs_restitution_velocity = 0.0;
+                            spdlog::info("st:4, index A={},B={} is waiting",vc->m_index_a,vc->m_index_b);
+                            spdlog::info("st:4, relative v={}",vcp->m_relative_velocity);
+                            if(vcp->m_wait){
+                                //register a vcp of situation 4 to wait_list
+                                vcp->m_wait = false;
+                                ++m_wait;
+                                spdlog::info("st:4, index A={},B={} is added in m_wait list,now have {} left",
+                                             vc->m_index_a,vc->m_index_b,m_wait);
+                            }
+
                         }
-                        vcp->m_relative_velocity = rhs;
-                        rhs_restitution_velocity = 0.0;
-                        rhs = 0.0;
-                        //问题全在这部分了，考虑少了一种情况，即多物体撞一个物体的情况
                     } else {
-                        //have some problem
-                        //当多个物体撞击一个物体时，
-                        vcp->m_relative_velocity = rhs;
-                        rhs = 0.0;
-                        rhs_restitution_velocity = 0.0;
-                        spdlog::info("st:4, index A={},B={} is waiting",vc->m_index_a,vc->m_index_b);
-                        spdlog::info("st:4, relative v={}",vcp->m_relative_velocity);
-                        if(vcp->m_wait){
-                            //register a vcp of situation 4 to wait_list
-                            vcp->m_wait = false;
-                            ++m_wait;
-                            spdlog::info("st:4, index A={},B={} is added in m_wait list,now have {} left",
+                        //2
+                        //怎么区分小冲突是来自数值误差还是真实计算？
+                        //if(rhs< vc->m_restitution_threshold) rhs_restitution_velocity = 0.0f;
+                        spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
+                        //spdlog::info("the lambda is {}",vcp->m_normal_mass * (rhs + rhs_restitution_velocity));
+                    }
+                } else {
+                    if (vcp->m_bias_velocity > 0) {
+                        //1
+                        if (abs(vcp->m_relative_velocity - rhs) <= tolerance || rhs == 0.0f) {
+                            vcp->m_relative_velocity = rhs;
+                            //change to situation 3
+                            vcp->m_bias_velocity = rhs;
+                            //不加上这项结果会有问题，因此问题在于考虑转换的条件
+                            rhs = 0.0;
+                            rhs_restitution_velocity = 0.0;
+                            spdlog::info("st:1, the violated constrain {} ,{} is real legal",vc->m_index_a,vc->m_index_b);
+                        } else{
+                            violate = true;
+                            spdlog::info("st:1, the violated constrain {} ,{} is fake legal",vc->m_index_a,vc->m_index_b);
+                            spdlog::info("st:1, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
+                        }
+                    } else {
+                        //3
+                        if(!vcp->m_wait){
+                            vcp->m_wait = true;
+                            m_wait--;
+                            spdlog::info("st:3, index A={},B={} is kicked in m_wait list,now have {} left",
                                          vc->m_index_a,vc->m_index_b,m_wait);
                         }
-
-                    }
-                } else {
-                    //2
-                    //怎么区分小冲突是来自数值误差还是真实计算？
-                    //if(rhs< vc->m_restitution_threshold) rhs_restitution_velocity = 0.0f;
-                    spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
-                    //spdlog::info("the lambda is {}",vcp->m_normal_mass * (rhs + rhs_restitution_velocity));
-                }
-            } else {
-                if (vcp->m_bias_velocity > 0) {
-                    //1
-                    if (abs(vcp->m_relative_velocity - rhs) <= tolerance || rhs == 0.0f) {
-                        vcp->m_relative_velocity = rhs;
-                        //change to situation 3
-                        vcp->m_bias_velocity = rhs;
-                        //不加上这项结果会有问题，因此问题在于考虑转换的条件
                         rhs = 0.0;
                         rhs_restitution_velocity = 0.0;
-                        spdlog::info("st:1, the violated constrain {} ,{} is real legal",vc->m_index_a,vc->m_index_b);
-                    } else{
-                        violate = true;
-                        spdlog::info("st:1, the violated constrain {} ,{} is fake legal",vc->m_index_a,vc->m_index_b);
-                        spdlog::info("st:1, the violating constrain is {} ,{},v_rel = {},v_bias = {}",vc->m_index_a,vc->m_index_b,rhs,rhs_restitution_velocity);
                     }
-                } else {
-                    //3
-                    if(!vcp->m_wait){
-                        vcp->m_wait = true;
-                        m_wait--;
-                        spdlog::info("st:3, index A={},B={} is kicked in m_wait list,now have {} left",
-                                     vc->m_index_a,vc->m_index_b,m_wait);
-                    }
-                    rhs = 0.0;
-                    rhs_restitution_velocity = 0.0;
                 }
-            }
+            #pragma endregion
 
             real lambda = 0;
 

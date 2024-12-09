@@ -268,6 +268,7 @@ void b3ContactSolver::init_velocity_constraints()
  */
 void b3ContactSolver::solve_velocity_constraints()
 {
+    bool violate = false;
     for (int32 i = 0; i < m_count; ++i) {
         b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
 
@@ -294,6 +295,8 @@ void b3ContactSolver::solve_velocity_constraints()
                 b3VelocityConstraintPoint* vcp = vc->m_points + j;
 
                 b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
+
+                if(-v_rel.dot(vc->m_normal)>0) violate = true;
 
                 real vt1 = v_rel.dot(vc->m_tangent1);
                 real vt2 = v_rel.dot(vc->m_tangent2);
@@ -386,6 +389,8 @@ void b3ContactSolver::solve_velocity_constraints()
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
     }
+    if(violate) spdlog::info("still violate");
+    //else spdlog::info("resolve");
 }
 
 /**
