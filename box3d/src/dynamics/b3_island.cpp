@@ -13,7 +13,7 @@ b3Island::b3Island(b3BlockAllocator* block_allocator, int32 body_capacity, int32
     m_contact_count = 0;
     m_block_allocator = block_allocator;
 
-    void *mem = block_allocator->allocate(m_body_capacity * sizeof(b3Body *));
+    void *mem = block_allocator->allocate(m_body_capacity * sizeof(b3BodySim *));
     m_bodies = new (mem) b3BodySim *;
 
     mem = block_allocator->allocate(m_contact_capacity * sizeof(b3Contact *));

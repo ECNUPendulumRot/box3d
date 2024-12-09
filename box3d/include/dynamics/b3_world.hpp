@@ -24,6 +24,8 @@ class b3Draw;
 
 class b3World {
 
+public:
+
     /**
      * This is the all bodies in the world.
      * doubly linked list
@@ -58,8 +60,6 @@ class b3World {
 
     b3Draw* m_debug_draw;
 
-public:
-
     b3World();
 
     explicit b3World(const b3Vec3r& gravity);
@@ -88,7 +88,11 @@ public:
 
     void add_shape(b3Shape* shape);
 
-    void integrate_velocity(real dt);
+    void integrate_velocity(b3BodySim* body_sims, real dt);
+
+    void integrate_position(b3BodySim* body_sims, real dt);
+
+    void write_back_status(b3BodySim* body_sims);
 
     void set_gravity(const b3Vec3r& gravity) {
         m_gravity = gravity;
@@ -139,6 +143,7 @@ public:
     inline bool get_continuous_physics() const {
         return m_continuous_physics;
     }
+
 
 private:
 

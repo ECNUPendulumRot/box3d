@@ -34,16 +34,24 @@ b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::ze
 }
 
 
-b3BodySim* b3Body::generate_sim_body() {
-    this->m_body_sim.p = this->m_p;
-    this->m_body_sim.q = this->m_q;
-    this->m_body_sim.v = this->m_v;
-    this->m_body_sim.w = this->m_w;
-    this->m_body_sim.body = this;
-    this->m_body_sim.flag = this->m_flags;
-    this->m_body_sim.normal_island_index = -1;
-    this->m_body_sim.static_island_index = -1;
-    return &this->m_body_sim;
+void b3Body::generate_sim_body(b3BodySim& body_sim) {
+    body_sim.p = this->m_p;
+    body_sim.q = this->m_q;
+    body_sim.v = this->m_v;
+    body_sim.w = this->m_w;
+
+    body_sim.flag = this->m_flags;
+    body_sim.normal_island_index = -1;
+    body_sim.static_island_index = -1;
+
+    body_sim.body = this;
+
+    body_sim.ext_force = this->m_force;
+    body_sim.ext_torque = this->m_torque;
+    body_sim.inv_I = this->m_inv_inertia;
+    body_sim.inv_mass = this->m_inv_mass;
+
+    this->m_body_sim = &body_sim;
 }
 
 

@@ -186,20 +186,59 @@ void b3World::set_allow_sleeping(bool flag) {
 }
 
 
-void b3World::integrate_velocity(real dt) {
+void b3World::integrate_velocity(b3BodySim* body_sims, real dt) {
 
     for(int32 i = 0; i < m_body_count; ++i) {
 
-        b3Body& b = m_body_list[i];
+        b3BodySim* b = body_sims + i;
 
-        b3Vec3r v = b.get_linear_velocity();
-        b3Vec3r w = b.get_angular_velocity();
+        b3Vec3r v = b->v;
+        b3Vec3r w = b->w;
 
-        v += dt * b.get_inv_mass() * (b.get_force() + b.get_gravity());
-        w += dt * b.get_inv_inertia() * b.get_torque();
+        if (b->inv_mass == 0) {
+            continue;
+        }
 
-        b.set_linear_velocity(v);
-        b.set_angular_velocity(w);
+        v += dt * (m_gravity + b->inv_mass * (b->ext_force ));
+        w += dt * b->inv_I * b->ext_torque;
+
+        b->v = v;
+        b->w = w;
+    }
+}
+
+
+void b3World::integrate_position(b3BodySim* body_sims, real dt) {
+
+    for (int32 i = 0; i < m_body_count; ++i) {
+        b3BodySim* b = body_sims + i;
+
+        b3Vec3r p = b->p;
+        b3Quatr q = b->q;
+
+        const b3Vec3r& v = b->v;
+        const b3Vec3r& w = b->w;
+
+        p = p + v * dt;
+        q = q + real(0.5) * dt * b3Quatr(0, w) * q;
+        q.normalize();
+
+        b->p = p;
+        b->q = q;
+    }
+}
+
+
+void b3World::write_back_status(b3BodySim *body_sims) {
+    for (int32 i = 0; i < m_body_count; ++i) {
+        b3BodySim* b = body_sims + i;
+
+        b3Body* body = b->body;
+
+        body->m_p = b->p;
+        body->m_q = b->q;
+        body->m_v = b->v;
+        body->m_w = b->w;
     }
 }
 
@@ -221,13 +260,12 @@ void b3World::solve(b3TimeStep& step)
         contact->unset_flag(b3Contact::e_island_flag);
     }
 
-    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3BodySim*));
-    b3BodySim** sim_bodies = new (mem) b3BodySim*;
+    void* mem = m_block_allocator.allocate(m_body_count * sizeof(b3BodySim));
+    b3BodySim* body_sims = new (mem) b3BodySim[m_body_count];;
 
     int32 index = 0;
     for (b3Body *body = m_body_list; body; body = body->next()) {
-        sim_bodies[index] = body->generate_sim_body();
-        sim_bodies[index]->index = index;
+        body->generate_sim_body(body_sims[index]);
         index++;
     }
 
@@ -240,69 +278,52 @@ void b3World::solve(b3TimeStep& step)
 
     // build static island
     for (b3Contact *contact = m_contact_manager.m_static_contact_list; contact; contact = contact->next()) {
-        b3Body* body_a = contact->get_fixture_a()->get_body();
-        b3Body* body_b = contact->get_fixture_b()->get_body();
-
-        b3BodySim* sim_body_a = &body_a->m_body_sim;
-        b3BodySim* sim_body_b = &body_b->m_body_sim;
-
         if (!contact->test_flag(b3Contact::e_touching_flag)) {
             continue;
         }
 
         static_contact_island.add_contact(contact);
-
-        if (!(body_a->m_flags & b3Body::e_static_island_flag)) {
-            static_contact_island.add_body(sim_body_a);
-        }
-        if (!(body_b->m_flags & b3Body::e_static_island_flag)) {
-            static_contact_island.add_body(sim_body_b);
-        }
     }
 
     // build normal island
     for (b3Contact *contact = m_contact_manager.m_contact_list; contact; contact = contact->next()) {
-        b3Body* body_a = contact->get_fixture_a()->get_body();
-        b3Body* body_b = contact->get_fixture_b()->get_body();
-
-        b3BodySim* sim_body_a = &body_a->m_body_sim;
-        b3BodySim* sim_body_b = &body_b->m_body_sim;
-
         if (!contact->test_flag(b3Contact::e_touching_flag)) {
             continue;
         }
         normal_contact_island.add_contact(contact);
-
-        if (!(body_a->m_flags & b3Body::e_normal_island_flag)) {
-            normal_contact_island.add_body(sim_body_a);
-        }
-        if (!(body_b->m_flags & b3Body::e_normal_island_flag)) {
-            normal_contact_island.add_body(sim_body_b);
-        }
     }
 
-    b3ContactSolver solver;
-    solver.m_block_allocator = &m_block_allocator;
-    solver.m_static_island = &static_contact_island;
-    solver.m_normal_island = &normal_contact_island;
+    b3ContactSolver static_solver;
+    static_solver.m_block_allocator = &m_block_allocator;
+    static_solver.m_island = &static_contact_island;
+    static_solver.m_timestep = &step;
+    static_solver.prepare_contact_contraints();
 
-    solver.prepare_contact_contraints();
+    b3ContactSolver dynamic_solver;
+    dynamic_solver.m_block_allocator = &m_block_allocator;
+    dynamic_solver.m_island = &normal_contact_island;
+    dynamic_solver.m_timestep = &step;
+    dynamic_solver.prepare_contact_contraints();
 
     // solve velocity constraints
     for (int32 i = 0; i < substep; i++) {
-        integrate_velocity(dt_sub); // integrate velocity
+        integrate_velocity(body_sims, dt_sub); // integrate velocity
 
-        if (static_contact_island.m_contact_count > 0) {
-            solver.solve(m_allow_sleep);
+        if (!static_solver.empty_solver()) {
+            static_solver.solve_velocity_constraints();
         }
 
         if (normal_contact_island.m_contact_count > 0) {
-            b3ContactSolver solver(&m_block_allocator, &normal_contact_island, &step, false);
-            solver.solve(m_allow_sleep);
+            dynamic_solver.solve_velocity_constraints();
         }
     }
 
+    integrate_position(body_sims, real(1.0) / hw);
+
+    write_back_status(body_sims);
+
     for (b3Body *b = m_body_list; b; b = b->m_next) {
+
         if (b->m_type == b3BodyType::b3_static_body) {
             continue;
         }
@@ -314,6 +335,9 @@ void b3World::solve(b3TimeStep& step)
         // Update fixtures(for broad-phase).
         b->synchronize_fixtures();
     }
+
+    m_block_allocator.free(body_sims, m_body_count * sizeof(b3BodySim));
+
     // Look for new contacts
     m_contact_manager.find_new_contact();
 }

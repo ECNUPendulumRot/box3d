@@ -32,12 +32,17 @@ struct b3BodySim {
     b3Quatr q;// the quaternion of the body
     b3Vec3r v;// the linear velocity of the body
     b3Vec3r w;// the angular velocity of the body, in form of angle axis
+    b3Mat33r inv_I;// the inverse of the inertia matrix
+    real inv_mass;// the inverse of the mass
+
     b3Body* body;
     uint32 flag;
     int32 static_island_index = -1;
     int32 normal_island_index = -1;
     int32 index = -1;
 
+    b3Vec3r ext_force;
+    b3Vec3r ext_torque;
     static b3BodySim from_body(b3Body* body);
 };
 
@@ -131,9 +136,9 @@ public:
 
     b3Sweep m_sweep;
 
-    b3BodySim m_body_sim;
+    b3BodySim* m_body_sim = nullptr;
 
-    b3BodySim* generate_sim_body();
+    void generate_sim_body(b3BodySim& body_sim);
 
     enum Flag {
         e_island_flag = 0x0001,

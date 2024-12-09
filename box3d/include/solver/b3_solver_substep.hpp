@@ -59,8 +59,10 @@ struct b3ContactSim {
 
     real restitution;
 
+
     b3WorldManifold world_manifold;
     b3VelocityConstraintPoint points[8];
+    int32 point_count;
 };
 
 
@@ -80,9 +82,7 @@ public:
 
     bool m_is_static = false;
 
-    b3StaticIsland* m_island = nullptr;
-
-    b3NormalIsland* m_normal_island = nullptr;
+    b3Island* m_island = nullptr;
 
     b3ContactSim* m_contact_constraints = nullptr;
 
@@ -95,8 +95,6 @@ public:
     void prepare_contact_contraints();
 
     void solve_velocity_constraints();
-
-    int solve(bool allow_sleep);
 
     ~b3ContactSolver();
 
