@@ -3,7 +3,7 @@
 
 class TestBoxStack: public Test {
 
-    static constexpr int32 box_count = 2;
+    static constexpr int32 box_count = 3;
     const real box_hf_size = 1.0f;
 
     b3Body* m_bodys[box_count];
@@ -57,7 +57,6 @@ public:
         ground_fd.m_friction = 0.3;
         ground_fd.m_restitution = 1.0;
         ground_fd.m_density = 0.0;
-
 
         ground_body->create_fixture(ground_fd);
 

@@ -1,4 +1,6 @@
 
+#include <iostream>
+#include <iomanip>
 #include "dynamics/b3_world.hpp"
 
 #include "common/b3_time_step.hpp"
@@ -239,6 +241,9 @@ void b3World::write_back_status(b3BodySim *body_sims) {
         body->m_q = b->q;
         body->m_v = b->v;
         body->m_w = b->w;
+
+        std::cout << std::fixed << std::setprecision(7);
+        std::cout << "velocity: " << b->v[0] <<  " " << b->v[1] << " " << b->v[2] << std::endl;
     }
 }
 
