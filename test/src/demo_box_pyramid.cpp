@@ -17,7 +17,7 @@ public:
         b3Body* ground_body = m_world->create_body(ground_bd);
 
         b3PlaneShape ground_shape;
-        ground_shape.set_as_plane(20, 20);
+        ground_shape.set_as_plane(50, 50);
 
         b3FixtureDef ground_fd;
         ground_fd.m_shape = &ground_shape;
@@ -71,7 +71,7 @@ public:
                 cube->create_fixture(box_fd);
             }
             layer_count--;
-            start_position += b3Vec3r{0, 2 * delta, 0};
+            start_position += b3Vec3r{0, 2 * delta, box_l};
         }
 
 
