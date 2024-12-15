@@ -3,6 +3,7 @@
 #define BOX3D_B3_ISLAND_HPP
 
 
+#include "common/b3_common.hpp"
 #include "common/b3_types.hpp"
 
 /////////// Forward Delaration ///////////
@@ -54,6 +55,12 @@ public:
 
     int get_body_count() const {
         return m_body_count;
+    }
+
+    void add_body(b3BodySim* body) {
+        b3_assert(m_body_count < m_body_capacity);
+        m_bodies[m_body_count] = body;
+        m_body_count++;
     }
 };
 

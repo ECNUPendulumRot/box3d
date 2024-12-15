@@ -50,8 +50,13 @@ set(B3D_HEADER_FILES
 
         include/solver/b3_lemke.hpp
         include/solver/b3_contact_constraint.hpp
-        include/solver/b3_solver_substep.hpp
         include/solver/b3_contact_solver_substep.hpp
+        include/solver/b3_contact_velocity_solver_substep.hpp
+        include/solver/b3_solver.hpp
+        include/solver/b3_solver_substep_split_island.hpp
+        include/solver/b3_solver_jacobi.hpp
+        include/solver/b3_contact_velocity_solver.hpp
+        include/solver/b3_contact_solver_jacobi.hpp
         # include/collision/b3_distance.hpp
         # include/collision/b3_time_of_impact.hpp
 )
@@ -89,8 +94,11 @@ set(B3D_SOURCE_FILES
 
         src/solver/b3_lemke.cpp
         src/collision/b3_collide.cpp
-        src/solver/b3_solver_substep.cpp
         src/solver/b3_contact_solver_substep.cpp
+        src/solver/b3_contact_velocity_solver_substep.cpp
+        src/solver/b3_solver.cpp
+        src/solver/b3_contact_velocity_solver.cpp
+        src/solver/b3_contact_solver_jacobi.cpp
         # src/collision/b3_distance.cpp
         # src/collision/b3_time_of_impact.cpp
 )

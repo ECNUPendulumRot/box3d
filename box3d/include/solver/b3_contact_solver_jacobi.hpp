@@ -1,6 +1,4 @@
-
-#ifndef BOX3D_B3_SOLVER_SUBSTEP_HPP
-#define BOX3D_B3_SOLVER_SUBSTEP_HPP
+# pragma once
 
 
 #include "b3_contact_constraint.hpp"
@@ -66,7 +64,7 @@ struct b3ContactSim {
 };
 
 
-class b3ContactSolver {
+class b3ContactSolverJacobi {
 
 public:
 
@@ -86,23 +84,22 @@ public:
 
     b3ContactSim* m_contact_constraints = nullptr;
 
-    b3ContactSolver() = default;
+    b3ContactSim* m_contact_constraints_copy = nullptr;
 
-    b3ContactSolver(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step, bool is_static);
+    b3ContactSolverJacobi() = default;
 
-    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step, bool is_static);
+    b3ContactSolverJacobi(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
+
+    void init(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step);
 
     void prepare_contact_contraints();
 
     void solve_velocity_constraints();
 
-    ~b3ContactSolver();
+    ~b3ContactSolverJacobi();
 
     bool empty_solver() const {
         return m_contact_count == 0;
     }
 
 };
-
-
-#endif //BOX3D_B3_SOLVER_HPP

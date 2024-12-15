@@ -38,6 +38,8 @@ protected:
 
     b3World* m_world;
 
+    b3Solver* m_solver;
+
     ContactPoint m_points[k_max_contact_points];
     int32 m_point_count = 0;
 

@@ -1,195 +1,154 @@
 
 #include "solver/b3_contact_solver_substep.hpp"
+
+#include "dynamics/b3_island.hpp"
+#include "dynamics/b3_body.hpp"
+
+
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
-#include "dynamics/b3_body.hpp"
-#include "solver/b3_lemke.hpp"
+
 #include "common/b3_time_step.hpp"
-#include <spdlog/spdlog.h>
+#include "common/b3_block_allocator.hpp"
 
-static bool g_block_solve = false;
+#include "solver/b3_contact_constraint.hpp"
+#include "solver/b3_lemke.hpp"
+
+#include "spdlog/spdlog.h"
+#include "solver/b3_contact_velocity_solver_substep.hpp"
 
 
-b3ContactVelocitySolverSubstep::b3ContactVelocitySolverSubstep(b3ContactSolverDef *def)
+bool g_block_solve = false;
+
+b3ContactSolver::b3ContactSolver(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step, bool is_static)
 {
-    m_step = def->step;
-    m_contacts = def->contacts;
-    m_count = def->count;
-    m_vel_iteration = def->vel_iteration;
-
-    m_block_allocator = def->block_allocator;
-    m_is_static_collide = def->is_static_collide;
-
-    m_velocity_constraints = (b3ContactVelocityConstraint*)m_block_allocator->allocate(m_count * sizeof(b3ContactVelocityConstraint));
-
-    for(int32 i = 0; i < m_count; ++i) {
-
-        b3Contact* contact = m_contacts[i];
-
-        b3Fixture* fixture_a = contact->get_fixture_a();
-        b3Fixture* fixture_b = contact->get_fixture_b();
-        b3Body* body_a = fixture_a->get_body();
-        b3Body* body_b = fixture_b->get_body();
-        b3Manifold* manifold = contact->get_manifold();
-
-        int32 point_count = manifold->m_point_count;
-        b3_assert(point_count > 0);
-
-        //////////////////////////// Velocity Constraints ////////////////////////////
-        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
-        vc->m_friction = contact->get_friction();
-        vc->m_restitution = contact->get_restitution();
-        vc->m_restitution_threshold = contact->get_restitution_threshold();
-        vc->m_va = body_a->get_linear_velocity();
-        vc->m_vb = body_b->get_linear_velocity();
-        vc->m_wa = body_a->get_angular_velocity();
-        vc->m_wb = body_b->get_angular_velocity();
-        vc->m_pa = body_a->get_position();
-        vc->m_pb = body_b->get_position();
-        vc->m_qa = body_a->get_quaternion();
-        vc->m_qb = body_b->get_quaternion();
-        vc->m_radius_a = fixture_a->get_shape()->get_radius();
-        vc->m_radius_b = fixture_b->get_shape()->get_radius();
-
-        vc->m_inv_mass_a = body_a->get_inv_mass();
-        vc->m_inv_mass_b = body_b->get_inv_mass();
-
-        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
-        vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
-        const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
-        vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
-
-        vc->m_point_count = point_count;
-        vc->m_contact_index = i;
-    }
+    init(block_allocator, island, step, is_static);
 }
 
 
-void b3ContactVelocitySolverSubstep::init_velocity_constraints()
+void b3ContactSolver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step, bool is_static)
 {
-    for(int32 i = 0; i < m_count; ++i) {
+    m_is_static = is_static;
 
-        b3ContactVelocityConstraint* vc = m_velocity_constraints + i;
+    m_timestep = step;
+    m_block_allocator = block_allocator;
 
-        b3Manifold* manifold = m_contacts[vc->m_contact_index]->get_manifold();
+    m_contact_count = island->get_contacts_count();
+    m_contacts = island->get_contacts();
 
-        const real& m_a = vc->m_inv_mass_a;
-        const real& m_b = vc->m_inv_mass_b;
-        const b3Mat33r& I_a = vc->m_inv_I_a;
-        const b3Mat33r& I_b = vc->m_inv_I_b;
+    b3_assert(m_contact_count >= 0);
+}
+
+
+void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
+    int32 static_collide = island->m_contact_count;
+    for (int32 i = 0; i < static_collide; ++i) {
+        b3Contact* c = island->m_contacts[i];
+        b3ContactSim* cs = css + i;
+
+        b3Body* body_a = c->m_fixture_a->m_body;
+        b3Body* body_b = c->m_fixture_b->m_body;
+
+        cs->body_sim_a = body_a->m_body_sim;
+        cs->body_sim_b = body_b->m_body_sim;
+
+        cs->v_a = cs->body_sim_a->v;
+        cs->w_a = cs->body_sim_a->w;
+        cs->p_a = cs->body_sim_a->p;
+        cs->q_a = cs->body_sim_a->q;
+
+        cs->v_b = cs->body_sim_b->v;
+        cs->w_b = cs->body_sim_b->w;
+        cs->p_b = cs->body_sim_b->p;
+        cs->q_b = cs->body_sim_b->q;
+
+        cs->m_a = body_a->m_mass;
+        cs->m_b = body_b->m_mass;
+
+        cs->inv_m_a = body_a->m_inv_mass;
+        cs->inv_m_b = body_b->m_inv_mass;
+
+        cs->radius_a = c->m_fixture_a->m_shape->m_radius;
+        cs->radius_b = c->m_fixture_b->m_shape->m_radius;
 
         b3Transr xf_a, xf_b;
-        xf_a.set_quaternion(vc->m_qa);
-        xf_b.set_quaternion(vc->m_qb);
-        xf_a.set_position(vc->m_pa);
-        xf_b.set_position(vc->m_pb);
+        xf_a.set_quaternion(cs->q_a);
+        xf_b.set_quaternion(cs->q_b);
+        xf_a.set_position(cs->p_a);
+        xf_b.set_position(cs->p_b);
+        cs->world_manifold.initialize(&c->m_manifold, xf_a, cs->radius_a, xf_b, cs->radius_b);
 
-        b3WorldManifold world_manifold;
-        world_manifold.initialize(manifold, xf_a, vc->m_radius_a, xf_b, vc->m_radius_b);
+        cs->restitution = c->m_restitution;
+        cs->normal = cs->world_manifold.normal;
+        cs->point_count = c->m_manifold.m_point_count;
 
-        vc->m_normal = world_manifold.normal;
+        for (int32 j = 0; j < cs->point_count; ++j) {
+            b3VelocityConstraintPoint *vcp = cs->points + j;
 
-        int32 point_count = vc->m_point_count;
-        for (int32 j = 0; j < point_count; ++j) {
-            b3VelocityConstraintPoint *vcp = vc->m_points + j;
+            vcp->m_ra = cs->world_manifold.points[j] - cs->p_a;
+            vcp->m_rb = cs->world_manifold.points[j] - cs->p_b;
 
-            vcp->m_ra = world_manifold.points[j] - vc->m_pa;
-            vcp->m_rb = world_manifold.points[j] - vc->m_pb;
-
-            b3Vec3r rn_a = vcp->m_ra.cross(vc->m_normal);
-            b3Vec3r rn_b = vcp->m_rb.cross(vc->m_normal);
+            b3Vec3r rn_a = vcp->m_ra.cross(cs->normal);
+            b3Vec3r rn_b = vcp->m_rb.cross(cs->normal);
 
             // JM_INV_J
             // In box3d, a col vector multiply a matrix is the
             // transpose of the vector multiply the matrix.
-            real jmj = m_a + m_b +
-                       (rn_a * I_a).dot(rn_a) +
-                       (rn_b * I_b).dot(rn_b);
+            real jmj = cs->inv_m_a + cs->inv_m_b +
+                       (rn_a * cs->inv_I_a).dot(rn_a) +
+                       (rn_b * cs->inv_I_b).dot(rn_b);
 
             vcp->m_normal_mass = jmj > 0 ? real(1.0) / jmj : 0;
 
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv
-            real v_rel = vc->m_normal.dot(vc->m_vb + vc->m_wb.cross(vcp->m_rb) - vc->m_va - vc->m_wa.cross(vcp->m_ra));
+            real v_rel = cs->normal.dot(cs->v_b + cs->w_b.cross(vcp->m_rb) - cs->v_a - cs->v_b.cross(vcp->m_ra));
             // m_bias_velocity is eJv
             vcp->m_bias_velocity = 0.0;
-            if (v_rel < -vc->m_restitution_threshold) {
-                vcp->m_bias_velocity = -vc->m_restitution * v_rel;
+            if (v_rel < 0) {
+                vcp->m_bias_velocity = -cs->restitution * v_rel;
             }
 
             vcp->m_normal_impulse = 0.0;
-        }
-
-        if (point_count > 1 && g_block_solve) {
-
-            b3Vec12r* J = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
-            b3Vec12r* JW = (b3Vec12r*)m_block_allocator->allocate(point_count * sizeof(b3Vec12r));
-            real* mem_JWJT = (real*)m_block_allocator->allocate(point_count * point_count * sizeof(real));
-            vc->m_JWJT = (real**)m_block_allocator->allocate(point_count * sizeof(real*));
-
-            // calculate JWJT
-            b3Mat1212r W;
-            W.set_zero();
-            W.set_block(vc->m_inv_mass_a * b3Mat33r::identity(), 0, 0);
-            W.set_block(vc->m_inv_I_a, 3, 3);
-            W.set_block(vc->m_inv_mass_b * b3Mat33r::identity(), 6, 6);
-            W.set_block(vc->m_inv_I_b, 9, 9);
-
-            for (int32 i = 0; i < point_count; ++i) {
-                vc->m_JWJT[i] = &mem_JWJT[i * point_count];
-            }
-
-            for (int32 i = 0; i < point_count; i++) {
-                b3VelocityConstraintPoint* vcp = vc->m_points;
-                J[i].set_segment(-vc->m_normal, 0);
-                J[i].set_segment(-vcp[i].m_ra.cross(vc->m_normal), 3);
-                J[i].set_segment(vc->m_normal, 6);
-                J[i].set_segment(vcp[i].m_rb.cross(vc->m_normal), 9);
-            }
-
-            for (int32 i = 0; i < point_count; i++) {
-                JW[i].set_zero();
-                for (int32 j = 0; j < 12; j++) {
-                    JW[i] += J[i][j] * W.row(j);
-                }
-            }
-
-            for (int32 i = 0; i < point_count; ++i) {
-                for (int32 j = 0; j < point_count; ++j) {
-                    vc->m_JWJT[i][j] = JW[i].dot(J[j]);
-                }
-            }
-
-            m_block_allocator->free(J, point_count * sizeof(b3Vec12r));
-            m_block_allocator->free(JW, point_count * sizeof(b3Vec12r));
         }
     }
 }
 
 
-void b3ContactVelocitySolverSubstep::solve_velocity_constraints()
-{
-    for (int32 i = 0; i < m_count; ++i) {
-        b3ContactVelocityConstraint *vc = m_velocity_constraints + i;
+void b3ContactSolver::prepare_contact_contraints() {
 
-        const int32& index_a = vc->m_index_a;
-        const int32& index_b = vc->m_index_b;
-        const real& m_a = vc->m_inv_mass_a;
-        const real& m_b = vc->m_inv_mass_b;
-        const b3Mat33r& I_a = vc->m_inv_I_a;
-        const b3Mat33r& I_b = vc->m_inv_I_b;
-        const int32& point_count = vc->m_point_count;
+    m_contact_count = m_island->m_contact_count;
+    void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
+    m_contact_constraints = new (mem) b3ContactSim[m_contact_count];
+    prepare_contact_sims(m_island, m_contact_constraints);
 
-        b3Vec3r v_a = vc->m_va;
-        b3Vec3r w_a = vc->m_wa;
-        b3Vec3r v_b = vc->m_vb;
-        b3Vec3r w_b = vc->m_wb;
-        const b3Vec3r& normal = vc->m_normal;
+}
 
-        for (int32 j = 0; j < m_vel_iteration; ++j) {
-            for (int32 k = 0; k< vc->m_point_count; ++k) {
-                b3VelocityConstraintPoint* vcp = vc->m_points + k;
+
+void b3ContactSolver::solve_velocity_constraints() {
+
+    int32 vel_iteration = m_timestep->m_velocity_iterations;
+
+    for (int32 i = 0; i < m_contact_count; ++i) {
+
+        b3ContactSim *cs = m_contact_constraints + i;
+
+        const real& m_a = cs->inv_m_a;
+        const real& m_b = cs->inv_m_b;
+        const b3Mat33r& I_a = cs->inv_I_a;
+        const b3Mat33r& I_b = cs->inv_I_b;
+
+        const b3Vec3r& normal = cs->normal;
+
+        b3Vec3r v_a = cs->body_sim_a->v;
+        b3Vec3r w_a = cs->body_sim_a->w;
+        b3Vec3r v_b = cs->body_sim_b->v;
+        b3Vec3r w_b = cs->body_sim_b->w;
+
+        for (int32 j = 0; j < vel_iteration; ++j) {
+            for (int32 k = 0; k < cs->point_count; ++k) {
+                b3VelocityConstraintPoint* vcp = cs->points + k;
 
                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
 
@@ -207,23 +166,123 @@ void b3ContactVelocitySolverSubstep::solve_velocity_constraints()
                 w_b = w_b + I_b * vcp->m_rb.cross(impulse);
             }
         }
+        cs->body_sim_a->v = v_a;
+        cs->body_sim_a->w = w_a;
+        cs->body_sim_b->v = v_b;
+        cs->body_sim_b->w = w_b;
     }
 }
 
 
-b3ContactVelocitySolverSubstep::~b3ContactVelocitySolverSubstep()
+// void b3ContactSolver::write_states_back()
+// {
+//     for(int32 i = 0; i < m_body_count; ++i) {
+//         b3Body* b = m_bodies[i];
+//         b->m_sweep.p = m_ps[i];
+//         b->m_sweep.q = m_qs[i];
+//
+//         b->set_linear_velocity(m_vs[i]);
+//         b->set_angular_velocity(m_ws[i]);
+//         printf("b->m_sweep.p: %f\n", b->m_sweep.p);
+//         b->set_position(m_ps[i]);
+//         b->set_quaternion(m_qs[i]);
+//     }
+// }
+
+
+// int b3ContactSolver::solve(bool allow_sleep)
+// {
+//     // spdlog::info("|||||||||||||||||| Solve ||||||||||||||||||");
+//     int32 substep = 4;
+//     real hw = m_timestep->m_hw;
+//     real dt_sub = real(1.0)/(substep * hw);
+//
+//     b3ContactSolverDef def;
+//     def.step = *m_timestep;
+//     def.is_static_collide = m_is_static;
+//     def.vel_iteration = m_timestep->m_velocity_iterations;
+//     def.dt_substep = dt_sub;
+//     def.contacts = m_contacts;
+//     def.count = m_contact_count;
+//     def.block_allocator = m_block_allocator;
+//
+//     // b3ContactVelocitySolverSubstep contact_solver(&def);
+//     //
+//     // contact_solver.init_velocity_constraints();
+//     //
+//     // contact_solver.solve_velocity_constraints();
+//
+//     for (int32 i = 0; i < m_contact_count; ++i) {
+//
+//         b3ContactSim *cs = m_contact_constraints + i;
+//
+//         const int32& index_a = cs->m_index_a;
+//         const int32& index_b = cs->m_index_b;
+//         const real& m_a = cs->inv_m_a;
+//         const real& m_b = cs->inv_m_b;
+//         const b3Mat33r& I_a = cs->inv_I_a;
+//         const b3Mat33r& I_b = cs->inv_I_b;
+//         const int32& point_count = cs->points;
+//
+//         b3Vec3r v_a = vc->m_va;
+//         b3Vec3r w_a = vc->m_wa;
+//         b3Vec3r v_b = vc->m_vb;
+//         b3Vec3r w_b = vc->m_wb;
+//         const b3Vec3r& normal = vc->m_normal;
+//
+//         for (int32 j = 0; j < m_vel_iteration; ++j) {
+//             for (int32 k = 0; k< vc->m_point_count; ++k) {
+//                 b3VelocityConstraintPoint* vcp = vc->m_points + k;
+//
+//                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
+//
+//                 real vn = v_rel.dot(normal);
+//                 real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
+//
+//                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
+//                 lambda = new_impulse - vcp->m_normal_impulse;
+//                 vcp->m_normal_impulse = new_impulse;
+//
+//                 b3Vec3r impulse = lambda * normal;
+//                 v_a = v_a - m_a * impulse;
+//                 w_a = w_a - I_a * vcp->m_ra.cross(impulse);
+//                 v_b = v_b + m_b * impulse;
+//                 w_b = w_b + I_b * vcp->m_rb.cross(impulse);
+//             }
+//         }
+//     }
+//
+//
+//
+//     allow_sleep = false;
+//     if (allow_sleep) {
+//         const float lin_tor_sqr = b3_linear_sleep_tolerance * b3_linear_sleep_tolerance;
+//         const float ang_tor_sqr = b3_angular_sleep_tolerance * b3_angular_sleep_tolerance;
+//
+//         for (int32 i = 0; i < m_body_count; ++i) {
+//             b3Body* b = m_bodies[i];
+//             if (b->get_type() == b3BodyType::b3_static_body) {
+//                 continue;
+//             }
+//
+//             b3Vec3r lin_vel = b->get_linear_velocity();
+//             b3Vec3r ang_vel = b->get_angular_velocity();
+//
+//             if (lin_vel.dot(lin_vel) < lin_tor_sqr && ang_vel.dot(ang_vel) < ang_tor_sqr) {
+//                 b->set_awake(false);
+//             } else {
+//                 b->set_awake(true);
+//             }
+//         }
+//     }
+//
+//     return 0;
+// }
+
+
+b3ContactSolver::~b3ContactSolver()
 {
-    for (int32 i = 0; i < m_count; ++i) {
-        const int32& point_count = m_velocity_constraints[i].m_point_count;
-        if (point_count > 1 && g_block_solve) {
-            m_block_allocator->free(m_velocity_constraints[i].m_JWJT[0], point_count * point_count * sizeof(real));
-            m_block_allocator->free(m_velocity_constraints[i].m_JWJT, point_count * sizeof(real*));
-        }
-    }
-
-    m_block_allocator->free(m_velocity_constraints, m_count * sizeof(b3ContactVelocityConstraint));
-    m_block_allocator->free(m_position_constraints, m_count * sizeof(b3ContactPositionConstraint));
+    ;
 }
-
 
 

@@ -37,6 +37,7 @@ struct Settings {
     bool m_output_bodies_info = false;
     bool m_enable_sleep = true;
     bool m_enable_continuous_physics = false;
+
     float m_hertz;
 };
 

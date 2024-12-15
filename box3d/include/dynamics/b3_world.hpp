@@ -15,11 +15,12 @@
 #include "dynamics/b3_island.hpp"
 
 #include "common/b3_block_allocator.hpp"
+#include "solver/b3_solver.hpp"
 
 struct b3Color;
 struct b3TimeStep;
 class b3Draw;
-
+struct b3Solver;
 
 
 class b3World {
@@ -72,7 +73,7 @@ public:
         return m_body_count == 0;
     }
 
-    void step(int32 dt, int32 velocity_iterations, int32 position_iterations);
+    void step(int32 dt, int32 velocity_iterations, int32 position_iterations, b3Solver* solver);
 
     void set_allow_sleeping(bool flag);
 
@@ -147,7 +148,7 @@ public:
 
 private:
 
-    void solve(b3TimeStep& step);
+    void solve(b3TimeStep& step, b3Solver* solver);
 
     void solve_toi(const b3TimeStep& step);
 
