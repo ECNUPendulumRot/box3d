@@ -9,6 +9,9 @@
 #include "collision/b3_collision.hpp"
 
 
+struct b3BodySim;
+class b3Contact;
+
 struct b3VelocityConstraintPoint {
     b3Vec3r m_ra;
     b3Vec3r m_rb;
@@ -100,6 +103,43 @@ struct b3ContactPositionConstraint
     int32 m_point_count;
 
     b3Manifold::Type m_type;
+};
+
+
+struct b3ContactSim {
+    b3Contact* contact;
+    b3BodySim* body_sim_a;
+    b3BodySim* body_sim_b;
+
+    b3Vec3r v_a;
+    b3Vec3r w_a;
+    b3Vec3r p_a;
+    b3Quatr q_a;
+
+    b3Vec3r v_b;
+    b3Vec3r w_b;
+    b3Vec3r p_b;
+    b3Quatr q_b;
+
+    b3Mat33r inv_I_a;
+    b3Mat33r inv_I_b;
+
+    real radius_a;
+    real radius_b;
+
+    b3Vec3r normal;
+
+    real m_a;
+    real m_b;
+    real inv_m_a;
+    real inv_m_b;
+
+    real restitution;
+
+
+    b3WorldManifold world_manifold;
+    b3VelocityConstraintPoint points[8];
+    int32 point_count;
 };
 
 

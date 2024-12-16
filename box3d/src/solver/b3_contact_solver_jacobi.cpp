@@ -18,8 +18,6 @@
 #include "solver/b3_contact_velocity_solver_substep.hpp"
 
 
-bool g_block_solve = false;
-
 b3ContactSolverJacobi::b3ContactSolverJacobi(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
     init(block_allocator, island, step);
@@ -30,7 +28,7 @@ void b3ContactSolverJacobi::init(b3BlockAllocator *block_allocator, b3Island *is
 {
     m_timestep = step;
     m_block_allocator = block_allocator;
-
+    m_island = island;
     m_contact_count = island->get_contacts_count();
     m_contacts = island->get_contacts();
 
@@ -38,7 +36,7 @@ void b3ContactSolverJacobi::init(b3BlockAllocator *block_allocator, b3Island *is
 }
 
 
-static void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
+static void prepare_contact_sims(b3Island* island, b3ContactSimJacobi* css) {
     int32 collide = island->m_contact_count;
     for (int32 i = 0; i < collide; ++i) {
         b3Contact* c = island->m_contacts[i];
@@ -117,19 +115,10 @@ static void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
 void b3ContactSolverJacobi::prepare_contact_contraints() {
 
     m_contact_count = m_island->m_contact_count;
-    void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
-    m_contact_constraints = new (mem) b3ContactSim[m_contact_count];
-
-    mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
-    m_contact_constraints_copy = new (mem) b3ContactSim[m_contact_count];
+    void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSimJacobi));
+    m_contact_constraints = new (mem) b3ContactSimJacobi[m_contact_count];
 
     prepare_contact_sims(m_island, m_contact_constraints);
-
-    for (int32 i = 0; i < m_contact_count; ++i) {
-        b3ContactSim* cs = m_contact_constraints + i;
-        b3ContactSim* copy = m_contact_constraints_copy + i;
-        *copy = *cs;
-    }
 
 }
 
@@ -142,7 +131,7 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
 
         for (int32 j = 0; j < m_contact_count; ++j) {
 
-            b3ContactSim *cs = m_contact_constraints + j;
+            b3ContactSimJacobi *cs = m_contact_constraints + j;
 
             const real& m_a = cs->inv_m_a;
             const real& m_b = cs->inv_m_b;
@@ -170,20 +159,25 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
                 vcp->m_normal_impulse = new_impulse;
 
                 b3Vec3r impulse = lambda * normal;
-                v_a = v_a - m_a * impulse;
-                w_a = w_a - I_a * vcp->m_ra.cross(impulse);
-                v_b = v_b + m_b * impulse;
-                w_b = w_b + I_b * vcp->m_rb.cross(impulse);
+
+                cs->delta_v_a = -m_a * impulse;
+                cs->delta_w_a = -(I_a * vcp->m_ra.cross(impulse));
+                cs->delta_v_b = m_b * impulse;
+                cs->delta_w_b = I_b * vcp->m_rb.cross(impulse);
             }
-
-            b3ContactSim* cscp = m_contact_constraints_copy + j;
-
-            cscp->v_a = v_a;
-            cscp->w_a = w_a;
-            cscp->v_b = v_b;
-            cscp->w_b = w_b;
         }
 
+        for (int32 i = 0 ; i < m_contact_count; ++i) {
+            b3ContactSimJacobi* cs = m_contact_constraints + i;
+
+            b3BodySim* body_sim_a = cs->body_sim_a;
+            b3BodySim* body_sim_b = cs->body_sim_b;
+
+            body_sim_a->v += cs->delta_v_a;
+            body_sim_a->w += cs->delta_w_a;
+            body_sim_b->v += cs->delta_v_b;
+            body_sim_b->w += cs->delta_w_b;
+        }
     }
 }
 
@@ -191,7 +185,6 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
 b3ContactSolverJacobi::~b3ContactSolverJacobi()
 {
     m_block_allocator->free(m_contact_constraints, m_contact_count * sizeof(b3ContactSim));
-    m_block_allocator->free(m_contact_constraints_copy, m_contact_count * sizeof(b3ContactSim));
 }
 
 

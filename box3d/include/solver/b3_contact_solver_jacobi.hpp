@@ -27,40 +27,23 @@ class b3BlockAllocator;
 
 //////////////////////////////////////////
 
-struct b3ContactSim {
-    b3Contact* contact;
-    b3BodySim* body_sim_a;
-    b3BodySim* body_sim_b;
+struct b3JacobiSim {
 
-    b3Vec3r v_a;
-    b3Vec3r w_a;
-    b3Vec3r p_a;
-    b3Quatr q_a;
+    b3BodySim* body_sim;
 
-    b3Vec3r v_b;
-    b3Vec3r w_b;
-    b3Vec3r p_b;
-    b3Quatr q_b;
+    b3Vec3r v;
+    b3Vec3r w;
+    b3Vec3r p;
+    b3Quatr q;
 
-    b3Mat33r inv_I_a;
-    b3Mat33r inv_I_b;
-
-    real radius_a;
-    real radius_b;
-
-    b3Vec3r normal;
-
-    real m_a;
-    real m_b;
-    real inv_m_a;
-    real inv_m_b;
-
-    real restitution;
+};
 
 
-    b3WorldManifold world_manifold;
-    b3VelocityConstraintPoint points[8];
-    int32 point_count;
+struct b3ContactSimJacobi: b3ContactSim {
+    b3Vec3r delta_v_a = b3Vec3r(0, 0, 0);
+    b3Vec3r delta_w_a = b3Vec3r(0, 0, 0);
+    b3Vec3r delta_v_b = b3Vec3r(0, 0, 0);
+    b3Vec3r delta_w_b = b3Vec3r(0, 0, 0);
 };
 
 
@@ -82,9 +65,7 @@ public:
 
     b3Island* m_island = nullptr;
 
-    b3ContactSim* m_contact_constraints = nullptr;
-
-    b3ContactSim* m_contact_constraints_copy = nullptr;
+    b3ContactSimJacobi* m_contact_constraints = nullptr;
 
     b3ContactSolverJacobi() = default;
 

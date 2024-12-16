@@ -3,32 +3,32 @@
 
 class SphereCradleTest : public Test {
 
-    int sphere_count = 3;
+    int sphere_count = 2;
 
 public:
 
     SphereCradleTest() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, -10));
-        {
-            b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_static_body;
-
-            b3PlaneShape plane_shape;
-            plane_shape.set_as_plane(100, 100);
-
-            b3FixtureDef fixture_def;
-            fixture_def.m_shape = &plane_shape;
-            fixture_def.m_density = 0.0;
-            fixture_def.m_restitution = 1.0;
-            fixture_def.m_friction = 0.0;
-
-            b3Body* ground = m_world->create_body(body_def);
-            b3Fixture* fg = ground->create_fixture(fixture_def);
-
-            utils.track_body(ground, "ground");
-            utils.track_fixture(fg, "ground");
-        }
+        m_world->set_gravity(b3Vec3r(0, 0, 0));
+        // {
+        //     b3BodyDef body_def;
+        //     body_def.m_type = b3BodyType::b3_static_body;
+        //
+        //     b3PlaneShape plane_shape;
+        //     plane_shape.set_as_plane(100, 100);
+        //
+        //     b3FixtureDef fixture_def;
+        //     fixture_def.m_shape = &plane_shape;
+        //     fixture_def.m_density = 0.0;
+        //     fixture_def.m_restitution = 1.0;
+        //     fixture_def.m_friction = 0.0;
+        //
+        //     b3Body* ground = m_world->create_body(body_def);
+        //     b3Fixture* fg = ground->create_fixture(fixture_def);
+        //
+        //     utils.track_body(ground, "ground");
+        //     utils.track_fixture(fg, "ground");
+        // }
         {
             b3BodyDef body_def;
             body_def.m_type = b3BodyType::b3_dynamic_body;

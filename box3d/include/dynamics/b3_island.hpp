@@ -49,6 +49,10 @@ public:
         return m_contacts;
     }
 
+    b3BodySim* get_body(int32 index) const {
+        return m_bodies[index];
+    }
+
     int get_contacts_count() const {
         return m_contact_count;
     }
