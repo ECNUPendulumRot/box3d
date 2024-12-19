@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "solver/b3_contact_solver_jacobi.hpp"
 
 #include "dynamics/b3_island.hpp"
@@ -99,7 +100,7 @@ static void prepare_contact_sims(b3Island* island, b3ContactSimJacobi* css) {
             // 1. Mv+ = Mv + J^T * lambda ==> Jv+ = Jv + JM_invJ^T * lambda
             // 2. Jv+ = J(-ev)
             // ===> JM_invJ^T * lambda = -eJv - Jv
-            real v_rel = cs->normal.dot(cs->v_b + cs->w_b.cross(vcp->m_rb) - cs->v_a - cs->v_b.cross(vcp->m_ra));
+            real v_rel = cs->normal.dot(cs->v_b + cs->w_b.cross(vcp->m_rb) - cs->v_a - cs->w_b.cross(vcp->m_ra));
             // m_bias_velocity is eJv
             vcp->m_bias_velocity = 0.0;
             if (v_rel < 0) {
@@ -144,6 +145,11 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
             b3Vec3r w_a = cs->body_sim_a->w;
             b3Vec3r v_b = cs->body_sim_b->v;
             b3Vec3r w_b = cs->body_sim_b->w;
+//            if(i<4){
+//                std::cout <<"v_a: ("<< v_a.x<<","<<v_a.y<<","<<v_a.z<<")"<<std::endl;
+//                std::cout <<"v_b: ("<< v_b.x<<","<<v_b.y<<","<<v_b.z<<")"<<std::endl;
+//                std::cout <<"normal: ("<< normal.x<<","<<normal.y<<","<<normal.z<<")"<<std::endl;
+//            }
 
 
             for (int32 k = 0; k < cs->point_count; ++k) {
@@ -153,7 +159,10 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
 
                 real vn = v_rel.dot(normal);
                 real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
-
+//                if(i<4) {
+//                    std::cout << "vn: " << vn << std::endl;
+//                    std::cout << "m_bias_velocity: " << vcp->m_bias_velocity << std::endl;
+//                }
                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_impulse;
                 vcp->m_normal_impulse = new_impulse;
@@ -164,6 +173,12 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
                 cs->delta_w_a = -(I_a * vcp->m_ra.cross(impulse));
                 cs->delta_v_b = m_b * impulse;
                 cs->delta_w_b = I_b * vcp->m_rb.cross(impulse);
+
+//                if(i<4){
+//                    std::cout <<"lambda_new: "<<lambda<<std::endl;
+//                    std::cout <<"impulse: ("<< impulse.x<<","<<impulse.y<<","<<impulse.z<<")"<<std::endl;
+//                    std::cout<<std::endl;
+//                }
             }
         }
 

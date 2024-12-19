@@ -15,6 +15,7 @@ struct b3Solver {
         e_null_solver          = 0x001,
         e_substep_split_island = 0x002,
         e_jacobi_solver        = 0x003,
+        e_gGS_substep_split_island = 0x004
     };
 
 

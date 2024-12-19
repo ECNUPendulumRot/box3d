@@ -99,6 +99,9 @@ set(B3D_SOURCE_FILES
         src/solver/b3_solver.cpp
         src/solver/b3_contact_velocity_solver.cpp
         src/solver/b3_contact_solver_jacobi.cpp
+        include/solver/b3_solver_gGS_substep_split_island.hpp
+        include/solver/b3_contact_solver_gGS_substep.hpp
+        src/solver/b3_contact_solver_gGS_substep.cpp
         # src/collision/b3_distance.cpp
         # src/collision/b3_time_of_impact.cpp
 )

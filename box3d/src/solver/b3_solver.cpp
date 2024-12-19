@@ -3,7 +3,7 @@
 
 #include "solver/b3_solver_jacobi.hpp"
 #include "solver/b3_solver_substep_split_island.hpp"
-
+#include "solver/b3_solver_gGS_substep_split_island.hpp"
 
 b3Solver* b3Solver::get_solver(uint32 solver_type, b3World* world, b3BlockAllocator* block_allocator) {
 
@@ -12,6 +12,8 @@ b3Solver* b3Solver::get_solver(uint32 solver_type, b3World* world, b3BlockAlloca
             return b3SolverSubstepSplitIsland::create(world, block_allocator);
         case e_jacobi_solver:
             return new b3SolverJacobi(world, block_allocator);
+        case e_gGS_substep_split_island:
+            return b3SolvergGSSubstepSplitIsland::create(world, block_allocator);
         default:
             return b3Solver::create(world, block_allocator);
     }
