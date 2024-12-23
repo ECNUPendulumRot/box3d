@@ -18,7 +18,12 @@ struct b3VelocityConstraintPoint {
     real m_normal_impulse;
     real m_normal_mass;
     real m_tanget_mass;
+
+    // bias velocity while preparing the velocity constraint.
     real m_bias_velocity;
+
+    real m_iter_bias_velocity;
+
     real m_rhs_penetration;
     real m_relative_velocity;
 };

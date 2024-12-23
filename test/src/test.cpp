@@ -41,7 +41,7 @@ void Test::step(Settings &settings) {
     m_world->set_allow_sleeping(settings.m_enable_sleep);
     m_world->set_continuous_physics(settings.m_enable_continuous_physics);
 
-    m_solver = b3Solver::get_solver(b3Solver::e_gGS_substep_split_island, m_world, &m_world->m_block_allocator);
+    m_solver = b3Solver::get_solver(b3Solver::e_jacobi_solver, m_world, &m_world->m_block_allocator);
 
     m_world->step(hertz, settings.m_velocity_iteration, 8, m_solver);
 

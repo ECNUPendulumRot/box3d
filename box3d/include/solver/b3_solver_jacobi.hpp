@@ -86,10 +86,12 @@ struct b3SolverJacobi: b3Solver {
                 }
             }
 
+
+            integrate_velocity(island.m_bodies, island.m_body_count, step.m_dt);
+
             // solve the constraints
             // b3Solver solver(&m_block_allocator, island, &step);
             b3ContactSolverJacobi solver(m_block_allocator, &island, &step);
-            integrate_velocity(island.m_bodies, island.m_body_count, step.m_dt);
 
             solver.prepare_contact_contraints();
             solver.solve_velocity_constraints();

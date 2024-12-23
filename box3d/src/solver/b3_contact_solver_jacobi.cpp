@@ -106,7 +106,7 @@ static void prepare_contact_sims(b3Island* island, b3ContactSimJacobi* css) {
             if (v_rel < 0) {
                 vcp->m_bias_velocity = -cs->restitution * v_rel;
             }
-
+            vcp->m_iter_bias_velocity = vcp->m_bias_velocity;
             vcp->m_normal_impulse = 0.0;
         }
     }
@@ -145,12 +145,6 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
             b3Vec3r w_a = cs->body_sim_a->w;
             b3Vec3r v_b = cs->body_sim_b->v;
             b3Vec3r w_b = cs->body_sim_b->w;
-//            if(i<4){
-//                std::cout <<"v_a: ("<< v_a.x<<","<<v_a.y<<","<<v_a.z<<")"<<std::endl;
-//                std::cout <<"v_b: ("<< v_b.x<<","<<v_b.y<<","<<v_b.z<<")"<<std::endl;
-//                std::cout <<"normal: ("<< normal.x<<","<<normal.y<<","<<normal.z<<")"<<std::endl;
-//            }
-
 
             for (int32 k = 0; k < cs->point_count; ++k) {
                 b3VelocityConstraintPoint* vcp = cs->points + k;
@@ -158,13 +152,15 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
                 b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
 
                 real vn = v_rel.dot(normal);
-                real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
+                real lambda = -vcp->m_normal_mass * (vn - vcp->m_iter_bias_velocity);
 //                if(i<4) {
 //                    std::cout << "vn: " << vn << std::endl;
 //                    std::cout << "m_bias_velocity: " << vcp->m_bias_velocity << std::endl;
 //                }
-                real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
-                lambda = new_impulse - vcp->m_normal_impulse;
+                // real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
+                real new_impulse = b3_max(lambda, (real)0.0);
+                // lambda = new_impulse - vcp->m_normal_impulse;
+                lambda = new_impulse;
                 vcp->m_normal_impulse = new_impulse;
 
                 b3Vec3r impulse = lambda * normal;
@@ -192,6 +188,20 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
             body_sim_a->w += cs->delta_w_a;
             body_sim_b->v += cs->delta_v_b;
             body_sim_b->w += cs->delta_w_b;
+
+            b3Vec3r v_a = body_sim_a->v;
+            b3Vec3r w_a = body_sim_a->w;
+            b3Vec3r v_b = body_sim_b->v;
+            b3Vec3r w_b = body_sim_b->w;
+
+            for (int32 j = 0; j < cs->point_count; ++j) {
+                b3VelocityConstraintPoint* vcp = cs->points + j;
+                real v_rel = cs->normal.dot(v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
+                vcp->m_iter_bias_velocity = 0.0;
+                if (v_rel < 0) {
+                    vcp->m_iter_bias_velocity = -cs->restitution * v_rel;
+                }
+            }
         }
     }
 }
