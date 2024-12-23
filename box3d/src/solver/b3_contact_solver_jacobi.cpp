@@ -188,6 +188,13 @@ void b3ContactSolverJacobi::solve_velocity_constraints() {
             body_sim_a->w += cs->delta_w_a;
             body_sim_b->v += cs->delta_v_b;
             body_sim_b->w += cs->delta_w_b;
+        }
+
+        for (int32 i = 0 ; i < m_contact_count; ++i) {
+            b3ContactSimJacobi* cs = m_contact_constraints + i;
+
+            b3BodySim* body_sim_a = cs->body_sim_a;
+            b3BodySim* body_sim_b = cs->body_sim_b;
 
             b3Vec3r v_a = body_sim_a->v;
             b3Vec3r w_a = body_sim_a->w;
