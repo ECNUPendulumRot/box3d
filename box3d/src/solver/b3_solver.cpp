@@ -109,6 +109,7 @@ void b3Solver::write_states_back()
 
         b->set_position(m_ps[i]);
         b->set_quaternion(m_qs[i]);
+        //spdlog::info("linear_velocity = {},{},{}", m_vs[i].x, m_vs[i].y, m_vs[i].z);
     }
 }
 

@@ -53,9 +53,9 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(0, -3, 1);
+            b3Vec3r p(0,  - 3, 1);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 5, 0);
+            b3Vec3r v(0, 3, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);
@@ -75,8 +75,8 @@ public:
             utils.track_body(b, "init_velocity_sphere");
             utils.track_fixture(f, "init_velocity_sphere");
 
-            p = b3Vec3r(0, sqrtf(3.0) * (2 * layer - 2) + 9, 1);
-            v = b3Vec3r(0, -5, 0);
+            p = b3Vec3r(0, sqrtf(3.0f) * (2.0f * layer - 2.0f) + 9.0001, 1);
+            v = b3Vec3r(0, -3, 0);
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
@@ -115,7 +115,7 @@ public:
                 }
             }
             for(int i = layer; i < 2 * layer - 1; i++) {
-                b3Vec3r left_position(2 * layer - i - 2 , 3 + i * y_distance, 1);
+                b3Vec3r left_position(2.0f * layer - i - 2 , 3 + 0.9999 * i * y_distance, 1);
                 for(int j = 0; j < 2 * layer - i - 1; j++) {
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);

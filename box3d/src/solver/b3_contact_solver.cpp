@@ -296,8 +296,6 @@ void b3ContactSolver::solve_velocity_constraints()
 
                 b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
 
-                if(-v_rel.dot(vc->m_normal)>0) violate = true;
-
                 real vt1 = v_rel.dot(vc->m_tangent1);
                 real vt2 = v_rel.dot(vc->m_tangent2);
 
@@ -320,6 +318,7 @@ void b3ContactSolver::solve_velocity_constraints()
                 w_a = w_a - vc->m_inv_I_a * vcp->m_ra.cross(impulse);
                 v_b = v_b + vc->m_inv_mass_b * impulse;
                 w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
+
             }
 
             // Single point contact or block solve not enabled
@@ -334,14 +333,27 @@ void b3ContactSolver::solve_velocity_constraints()
                 // Ensure the new impulse is non-negative
                 real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
                 lambda = new_impulse - vcp->m_normal_impulse;
+                if(lambda!=0) violate = true;
+                else violate = false;
                 vcp->m_normal_impulse = new_impulse;
-
+                if(violate) {
+                    spdlog::info("m_count = {}", i);
+                    spdlog::info("v_a_old = {},{},{}", v_a.x, v_a.y, v_a.z);
+                    spdlog::info("v_b_old = {},{},{}", v_b.x, v_b.y, v_b.z);
+                }
                 // Apply the impulse to the velocities
                 b3Vec3r impulse = lambda * normal;
                 v_a = v_a - m_a * impulse;
                 w_a = w_a - I_a * vcp->m_ra.cross(impulse);
                 v_b = v_b + m_b * impulse;
                 w_b = w_b + I_b * vcp->m_rb.cross(impulse);
+                if(violate) {
+
+                    spdlog::info("v_a = {},{},{}", v_a.x, v_a.y, v_a.z);
+                    spdlog::info("v_b = {},{},{}", v_b.x, v_b.y, v_b.z);
+                    spdlog::info("impulse = {},{},{}", impulse.x, impulse.y, impulse.z);
+                    spdlog::info("lambda = {},m_normal_impulse = {}", lambda, new_impulse);
+                }
             }
 
         } else {
@@ -389,7 +401,7 @@ void b3ContactSolver::solve_velocity_constraints()
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
     }
-    if(violate) spdlog::info("still violate");
+
     //else spdlog::info("resolve");
 }
 
