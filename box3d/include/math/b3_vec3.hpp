@@ -40,6 +40,10 @@ struct b3Vec3 {
         return *this;
     }
 
+    operator real*() {
+        return &m_ts[0];
+    }
+
     inline b3Vec3(T x, T y, T z) {
         this->x = x;
         this->y = y;
@@ -99,6 +103,16 @@ struct b3Vec3 {
 
     inline b3Vec3 normalized() const {
         return *this / length();
+    }
+
+    inline b3Vec3 safe_normalized() {
+        real l2 = length2();
+        if (l2 >= b3_real_epsilon * b3_real_epsilon) {
+            *this /= b3_sqrt(l2);
+        } else {
+            set(1, 0, 0);
+        }
+        return *this;
     }
 
     inline b3Vec3 abs() const {
@@ -184,6 +198,11 @@ inline b3Vec3<T> operator*(U s, const b3Vec3<T>& v) {
     return b3Vec3<T>(s * v.x, s * v.y, s * v.z);
 }
 
+template <typename T>
+inline b3Vec3<T> operator*(const b3Vec3<T>& u, const b3Vec3<T>& v) {
+    return b3Vec3<T>(u.x * v.x, u.y * v.y, u.z * v.z);
+}
+
 
 template <typename T, typename U>
 inline b3Vec3<T> operator*(const b3Vec3<T>& v, U s) {
@@ -222,6 +241,7 @@ inline b3Vec3<T> b3_max_coeff(const b3Vec3<T>& a, const b3Vec3<T>& b){
 #define SQRT12 real(0.7071067811865475244008443621048490)
 
 template <typename T>
+// n is normal, p x q = n
 inline void b3_plane_space(const T& n, T& p, T& q) {
     if (b3_abs(n[2]) > SQRT12) {
         // choose p in y-z plane

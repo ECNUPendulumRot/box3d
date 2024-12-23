@@ -158,6 +158,17 @@ void b3PersistentManifold::replace_contact_point(const b3PersistentManifoldPoint
     b3_assert(valid_contact_distance(new_point));
 
     // TODO: Maybe use Bullet's Maintain persistency
+    int lifeTime = m_points[insert_index].get_lifetime();
+    real applied_impulse = m_points[insert_index].m_applied_impulse;
+    real applied_lateral_impulse1 = m_points[insert_index].m_applied_tangent_impulse1;
+    real applied_lateral_impulse2 = m_points[insert_index].m_applied_tangent_impulse2;
+    real prev_rhs = m_points[insert_index].m_prevRHS;
+
     m_points[insert_index] = new_point;
+    m_points[insert_index].m_applied_impulse = applied_impulse;
+    m_points[insert_index].m_prevRHS = prev_rhs;
+    m_points[insert_index].m_applied_tangent_impulse1 = applied_lateral_impulse1;
+    m_points[insert_index].m_applied_tangent_impulse2 = applied_lateral_impulse2;
+    m_points[insert_index].m_lifetime = lifeTime;
 }
 

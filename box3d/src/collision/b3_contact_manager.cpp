@@ -57,6 +57,10 @@ void b3ContactManager::add_pair(b3FixtureProxy *fixture_proxy_a, b3FixtureProxy 
 	    edge = edge->m_next;
     }
 
+    if (!body_b->should_collide(body_a)) {
+        return;
+    }
+
     b3Contact *contact = b3Contact::create(fixture_a, index_a,
                                            fixture_b, index_b, m_block_allocator);
 

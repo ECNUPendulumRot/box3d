@@ -11,7 +11,10 @@
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
+#include "geometry/b3_cone_shape.hpp"
+#include "geometry/b3_cylinder_shape.hpp"
 
+#include "dynamics/constraint/b3_constraint_base.hpp"
 
 b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::zero())
 {
@@ -21,6 +24,10 @@ b3Body::b3Body(const b3BodyDef &body_def): m_volume(0.0), m_inertia(b3Mat33r::ze
     m_v = body_def.m_init_v;
     m_w = body_def.m_init_w;
     m_density = body_def.m_density;
+    m_linear_damping = body_def.m_linear_damping;
+    m_angular_damping = body_def.m_angular_damping;
+
+    m_world_transform.set(m_p, m_q);
 }
 
 
@@ -32,7 +39,6 @@ void b3Body::set_gravity_scale(real scale)
 b3Vec3r b3Body::get_gravity() const {
     return m_gravity_scale * m_world->get_gravity() * m_mass;
 }
-
 
 b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
 {
@@ -60,7 +66,8 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
     ++m_fixture_count;
 
     if (fixture->m_density > 0.0) {
-  	    reset_mass_data();
+        reset_mass_data();
+        update_inertia_tensor();
     }
 
     // After create a new fixture, may cause new contacts in the scene
@@ -69,6 +76,110 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
     return fixture;
 }
 
+bool b3Body::add_constraint(b3ConstraintBase* constraint) {
+    if (find_constraint(constraint) == -1) {
+        m_constraints.push_back(constraint);
+        return true;
+    }
+    return false;
+}
+
+int b3Body::find_constraint(b3ConstraintBase* constraint) {
+    for (int i = 0; i < m_constraints.size(); i++) {
+        if (m_constraints[i] == constraint) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool b3Body::remove_constraint(b3ConstraintBase* constraint) {
+    int find_index = find_constraint(constraint);
+    if (find_index != -1) {
+        m_constraints.erase(m_constraints.begin() + find_index);
+        return true;
+    }
+    return false;
+}
+
+bool b3Body::should_collide(const b3Body* other) {
+
+    // At least one body should be dynamic
+    if (m_type != b3BodyType::b3_dynamic_body || other->m_type != b3BodyType::b3_dynamic_body) {
+        return false;
+    }
+
+    for (b3ConstraintBase* constraint : m_constraints) {
+        if (constraint->get_bodyA() == other || constraint->get_bodyB() == other) {
+            if (!constraint->get_collide_connected()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+b3Mat33r b3Body::get_local_inertia() const {
+//    b3Vec3r local_inertia;
+//    const b3Vec3r inertia = m_local_inv_inertia;
+//    local_inertia.set(
+//        inertia.x != real(0.0) ? real(1.0) / inertia.x : real(0.0),
+//        inertia.y != real(0.0) ? real(1.0) / inertia.y : real(0.0),
+//        inertia.z != real(0.0) ? real(1.0) / inertia.z : real(0.0)
+//        );
+//    return local_inertia;
+    return m_local_inertia;
+}
+
+// https://www.cnblogs.com/21207-iHome/p/9196997.html
+b3Vec3r b3Body::compute_gyro_scopic_implicit(real dt) const {
+
+    b3Mat33r Ib = get_local_inertia();
+    // b3Vec3r idl = get_local_inertia();
+    b3Vec3r omega1 = m_w;
+    b3Quaternionr q = m_world_transform.get_rotation();
+    // Convert to body coordinates
+    b3Vec3r omegab = quat_rotate(q.inverse(), omega1);
+
+    // b3Mat33r Ib(idl.x, 0, 0, 0, idl.y, 0, 0, 0, idl.z);
+
+    b3Vec3r ibo = Ib * omegab;
+
+    // Residual vector
+    b3Vec3r f = dt * omegab.cross(ibo);
+
+    b3Mat33r skew0;
+    skew0.set_skew_symmetric_matrix(omegab);
+    b3Vec3r om = Ib * omegab;
+    b3Mat33r skew1;
+    skew1.set_skew_symmetric_matrix(om);
+
+    // Jacobian
+
+    b3Mat33r J = Ib + (skew0 * Ib - skew1) * dt;
+
+    b3Vec3r omega_div = J.solve33(f);
+
+    // Single Netwon-Raphson update
+    omegab = omegab - omega_div;
+    // Back to world coordinates
+    b3Vec3r omega2 = quat_rotate(q, omegab);
+    b3Vec3r gf = omega2 - omega1;
+    // spdlog::info("fg:: {}, {}, {}", gf.x, gf.y, gf.z);
+    return gf;
+}
+
+void b3Body::update_inertia_tensor() {
+    // m_inv_inertia_tensor_world = m_world_transform.rotation_matrix().scaled(m_local_inv_inertia) * m_world_transform.rotation_matrix().transpose();
+    m_inv_inertia_tensor_world = m_world_transform.rotation_matrix() * m_local_inv_inertia * m_world_transform.rotation_matrix().transpose();
+}
+
+void b3Body::apply_gravity() {
+    m_force += get_gravity();
+}
+
+#include <iostream>
 
 void b3Body::reset_mass_data()
 {
@@ -76,6 +187,8 @@ void b3Body::reset_mass_data()
     m_inv_mass = 0.0;
     m_inertia = b3Mat33r::zero();
     m_inv_inertia = b3Mat33r::zero();
+    m_local_inertia = b3Mat33r::zero();
+    m_local_inv_inertia = b3Mat33r::zero();
 
     b3_assert(m_type == b3BodyType::b3_dynamic_body);
 
@@ -91,16 +204,22 @@ void b3Body::reset_mass_data()
         f->get_mass_data(mass_data);
         m_mass += mass_data.m_mass;
 
-        local_center += mass_data.m_mass * mass_data.m_center;
-        m_inertia += mass_data.m_Inertia;
+        b3Transformr xf = f->get_local_transform();
+
+        local_center += mass_data.m_mass * (mass_data.m_center + xf.position());
+        m_local_inertia += xf.rotation_matrix().transpose() * mass_data.m_local_Inertia * xf.rotation_matrix();
     }
+
+    std::cout << "local inertia: " << m_local_inertia(0, 0) << ", " << m_local_inertia(0, 1) << ", " << m_local_inertia(0, 2) << ", "
+                                    << m_local_inertia(1, 0) << ", " << m_local_inertia(1, 1) << ", " << m_local_inertia(1, 2) << ", "
+                                    << m_local_inertia(2, 0) << ", " << m_local_inertia(2, 1) << ", " << m_local_inertia(2, 2) << std::endl;
 
     if (m_mass > 0.0) {
         m_inv_mass = 1.0 / m_mass;
         local_center *= m_inv_mass;
     }
 
-    if (m_inertia.determinant() > 0) {
+    if (m_local_inertia.determinant() > 0) {
         real bxx = local_center.y * local_center.y + local_center.z * local_center.z;
         real byy = local_center.x * local_center.x + local_center.z * local_center.z;
         real bzz = local_center.x * local_center.x + local_center.y * local_center.y;
@@ -113,21 +232,21 @@ void b3Body::reset_mass_data()
         b3Vec3r col3(-bxz, -byz, bzz);
         b3Mat33r bias_center(col1, col2, col3);
 
-        m_inertia -= m_mass * bias_center;
+        // ????
+        // m_local_inertia -= m_mass * bias_center;
+        m_local_inertia += m_mass * bias_center;
 
-        b3_assert(m_inertia.determinant() > 0.0);
+        b3_assert(m_local_inertia.determinant() > 0);
 
-        m_inv_inertia = m_inertia.inverse();
-
+        m_local_inv_inertia = m_local_inertia.inverse();
     } else {
-        m_inv_inertia = b3Mat33r::zero();
-        m_inv_inertia = b3Mat33r::zero();
+        m_local_inertia.set_zero();
+        m_local_inv_inertia.set_zero();
     }
 
     // TODO: check whether m_sweep is needed
     // m_local_center = m_xf.transform(local_center);
 }
-
 
 void b3Body::synchronize_fixtures()
 {
@@ -163,6 +282,10 @@ void b3Body::destroy_fixtures() {
         } else if (destroy_shape->get_type() == b3ShapeType::e_plane) {
             m_world->get_block_allocator()->free(destroy_shape, sizeof(b3PlaneShape));
             // TODO: deal with other situation
+        } else if (destroy_shape->get_type() == b3ShapeType::e_cone) {
+            m_world->get_block_allocator()->free(destroy_shape, sizeof(b3ConeShape));
+        } else if (destroy_shape->get_type() == b3ShapeType::e_cylinder) {
+            m_world->get_block_allocator()->free(destroy_shape, sizeof(b3CylinderShape));
         }
         m_world->get_block_allocator()->free(destroy_fixture, sizeof(b3Fixture));
     }
@@ -170,10 +293,8 @@ void b3Body::destroy_fixtures() {
 
 
 real b3Body::kinetic_energy() const {
-
     // kinetic energy = 1/2 * m * v^2 + 1/2 * (I1 * w1^2 + I2 * w2^2 + I3 * w3^2)
     return real(0.5) * (m_mass * m_v.length2() + (m_w * m_inertia).dot(m_w));
-
 }
 
 

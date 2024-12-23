@@ -11,9 +11,15 @@
 
 #define b3_assert(A) assert(A)
 
-#define b3_pi 3.14159265359f
+#define b3_2_pi real(6.283185307179586232)
 
-#define b3_pi_6 0.5235987667f
+#define b3_pi (b3_2_pi * real(0.5))
+
+#define b3_pi_half ((real)0.25 * b3_2_pi)
+
+#define b3_pi_4 ((real)0.125 * b3_2_pi)
+
+#define b3_pi_6 (real)0.5235987667
 
 #define b3_close_to_zero_epsilon 1e-5
 
@@ -38,6 +44,7 @@ struct b3RealLimits<float> {
     static constexpr float Max = FLT_MAX;
     static constexpr float Min = FLT_MIN;
     static constexpr float Epsilon = FLT_EPSILON;
+    static constexpr float REL_ERROR2 = 1.0e-6;
 };
 
 template<>
@@ -45,11 +52,13 @@ struct b3RealLimits<double> {
     static constexpr double Max = DBL_MAX;
     static constexpr double Min = DBL_MIN;
     static constexpr double Epsilon = DBL_EPSILON;
+    static constexpr double REL_ERROR2 = 1.0e-12;
 };
 
 constexpr auto b3_real_max = b3RealLimits<real>::Max;
 constexpr auto b3_real_min = b3RealLimits<real>::Min;
 constexpr auto b3_real_epsilon = b3RealLimits<real>::Epsilon;
+constexpr auto b3_rel_error2 = b3RealLimits<real>::REL_ERROR2;
 
 inline bool b3_is_zero(real x) {
     return fabs(x) < b3_real_epsilon;
@@ -57,6 +66,13 @@ inline bool b3_is_zero(real x) {
 
 inline bool b3_close_to_zero(real x) {
     return fabs(x) < b3_close_to_zero_epsilon;
+}
+
+template <typename T>
+inline void b3_swap(T& a, T& b) {
+    T temp = a;
+    a = b;
+    b = temp;
 }
 
 #endif //BOX3D_B3_COMMON_HPP

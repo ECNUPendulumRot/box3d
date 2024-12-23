@@ -14,6 +14,7 @@ class b3CubeShape;
 class b3PlaneShape;
 class b3SphereShape;
 class b3ConeShape;
+class b3CylinderShape;
 
 //////////////////////////////////////////
 
@@ -80,6 +81,8 @@ public:
     virtual void draw_point(const b3Vec3r& p, float size, const b3Color& color) = 0;
 
     virtual void draw_cone(const b3ConeShape* cone, const b3Transformr& xf, const b3Color& color) = 0;
+
+    virtual void draw_cylinder(const b3CylinderShape* cylinder, const b3Transformr& xf, const b3Color& color) = 0;
 
 protected:
 

@@ -38,8 +38,6 @@ class b3CubeShape : public b3Shape {
 
 public:
 
-    b3Vec3r m_centroid;
-
     b3Vec3r m_vertices[8];
 
     b3Vec3r m_normals[6];
@@ -51,6 +49,8 @@ public:
     b3Vec3r m_xyz;
 
     b3Vec3r m_h_xyz;
+    //TODO: can use m_h_xyz instead of m_xyz_no_margin
+    b3Vec3r m_h_xyz_no_margin;
 
     b3CubeShape();
 

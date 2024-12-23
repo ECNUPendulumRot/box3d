@@ -30,8 +30,7 @@ void b3PlaneSphereCollisionAlgorithm::process_collision(
     // transform sphere center to local space of bodyA
     b3Vec3r local_sphere_center = bodyB->get_position();
 
-    b3Transformr xfA;
-    xfA.set(bodyA->get_position(), bodyA->get_quaternion());
+    b3Transformr xfA = bodyA->get_world_transform();
 
     local_sphere_center = xfA.transform_local(local_sphere_center);
 
@@ -62,7 +61,7 @@ void b3PlaneSphereCollisionAlgorithm::process_collision(
     closest_point = xfA.transform(closest_point);
 
     b3ManifoldResult result(bodyA, bodyB, manifold);
-    result.add_contact_point(normal, closest_point, distance);
+    result.add_contact_point(-normal, closest_point, distance);
     result.refresh_contact_points();
 }
 

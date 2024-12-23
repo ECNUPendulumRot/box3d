@@ -6,12 +6,20 @@
 #include "collision/b3_fixture.hpp"
 #include "collision/b3_contact.hpp"
 #include "solver/b3_solver.hpp"
+#include "solver/b3_solver_lxj.hpp"
 #include "common/b3_draw.hpp"
 
 #include "geometry/b3_cube_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_cone_shape.hpp"
+
+#include "dynamics/b3_transform_util.hpp"
+#include "dynamics/constraint/b3_constraint_base.hpp"
+
+#include "spdlog/spdlog.h"
+#include "geometry/b3_cylinder_shape.hpp"
+#include <iostream>
 
 b3World::b3World():
     m_body_list(nullptr), m_body_count(0),
@@ -71,6 +79,31 @@ void b3World::add_shape(b3Shape* shape)
     m_shape_count++;
 }
 
+void b3World::add_constraint(b3ConstraintBase* constraint) {
+
+    b3Body* bodyA = constraint->get_bodyA();
+    b3Body* bodyB = constraint->get_bodyB();
+
+    b3_assert(bodyA != bodyB);
+
+    if (bodyA->add_constraint(constraint) && bodyB->add_constraint(constraint)) {
+        m_constraints.push_back(constraint);
+    }
+}
+
+void b3World::remove_constraint(b3ConstraintBase* constraint) {
+    b3Body* bodyA = constraint->get_bodyA();
+    b3Body* bodyB = constraint->get_bodyB();
+
+    if (bodyA->remove_constraint(constraint) && bodyB->remove_constraint(constraint)) {
+        for (int i = 0; i < m_constraints.size(); i++) {
+            if (m_constraints[i] == constraint) {
+                m_constraints.erase(m_constraints.begin() + i);
+                break;
+            }
+        }
+    }
+}
 
 void b3World::clear()
 {
@@ -91,6 +124,10 @@ void b3World::clear()
 void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations)
 {
 
+    if (dt > real(0.0)) {
+        apply_gravity();
+    }
+
     // when new fixtures were added, we need to find the new contacts.
     if (m_new_contacts) {
         m_contact_manager.find_new_contact();
@@ -107,8 +144,23 @@ void b3World::step(real dt, int32 velocity_iterations, int32 position_iterations
     // otherwise, update the contact manifold.
     m_contact_manager.collide(m_dispatcher, m_dispatcher_info);
 
+//    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+//        if (body->m_type != b3BodyType::b3_static_body) {
+//            auto p = body->get_position();
+//            auto q = body->get_quaternion();
+//            auto v = body->get_linear_velocity();
+//            auto w = body->get_angular_velocity();
+//            std::cout << "body position: " << p.x << " " << p.y << " " << p.z << ", rotation: "
+//                      << q.m_x << " " << q.m_y << " " << q.m_z << " " << q.m_w << std::endl;
+//            std::cout << "linear velocity: " << v.x << " " << v.y << " " << v.z << ", angular velocity: "
+//                      << w.x << " " << w.y << " " << w.z << std::endl;
+//        }
+//    }
+
     // generate islands, and solve them.
     solve(step);
+
+    clear_forces();
 }
 
 
@@ -124,7 +176,7 @@ void b3World::solve(b3TimeStep &step)
 
     void *mem = m_block_allocator.allocate(sizeof(b3Island));
     b3Island *island = new (mem) b3Island(&m_block_allocator, m_body_count,
-                                        m_contact_manager.get_contact_count());
+                                        m_contact_manager.get_contact_count(), m_constraints.size());
 
     // build all islands
     mem = m_block_allocator.allocate(m_body_count * sizeof(b3Body *));
@@ -169,13 +221,42 @@ void b3World::solve(b3TimeStep &step)
                 stack[stack_count++] = other;
                 other->m_flags |= b3Body::e_island_flag;
 	        }
+
+            // search all constraints connected to this body
+            for (int i = 0; i < m_constraints.size(); i++) {
+                b3ConstraintBase* constraint = m_constraints[i];
+
+                if (constraint->test_flag(b3ConstraintBase::e_island)) {
+                    continue;
+                }
+
+                b3Body* bodyA = constraint->get_bodyA();
+                b3Body* bodyB = constraint->get_bodyB();
+
+                if (bodyA != b && bodyB != b) {
+                    continue;
+                }
+
+                island->add_constraint(constraint);
+                constraint->add_flag(b3ConstraintBase::e_island);
+
+                if (!(bodyA->m_flags & b3Body::e_island_flag)) {
+                    stack[stack_count++] = bodyA;
+                    bodyA->m_flags |= b3Body::e_island_flag;
+                }
+                if (!(bodyB->m_flags & b3Body::e_island_flag)) {
+                    stack[stack_count++] = bodyB;
+                    bodyB->m_flags |= b3Body::e_island_flag;
+                }
+            }
         }
 
-        // solve the constraints
-        b3Solver solver;
-        solver.init(&m_block_allocator, island, &step);
-        solver.solve();
-
+        // TODO：solve the constraints
+//        b3Solver solver;
+//        solver.init(&m_block_allocator, island, &step);
+//        solver.solve();
+        b3SolverLxj solver;
+        solver.solve_group(island, &step);
         // Post solve cleanup.
         for(int32 i = 0; i < island->get_body_count(); ++i) {
             // Allow static bodies to participate in other islands
@@ -184,6 +265,9 @@ void b3World::solve(b3TimeStep &step)
                 body->m_flags &= ~b3Body::e_island_flag;
             }
         }
+        for (int32 i = 0; i < m_constraints.size(); i++) {
+            m_constraints[i]->remove_flag(b3ConstraintBase::e_island);
+        }
         // clear all bodies and contacts count, so we can reuse the island for the next island.
         island->clear();
     }
@@ -191,6 +275,9 @@ void b3World::solve(b3TimeStep &step)
     // Free the stack and island memory.
     m_block_allocator.free(stack, m_body_count * sizeof(b3Body*));
     m_block_allocator.free(island, sizeof(b3Island));
+
+    // TODO: do all contacts solver, so integrate all body transform.
+    integrate_transforms_internal(step);
 
     // TODO: synchronize ?
     for (b3Body *b = m_body_list; b; b = b->m_next) {
@@ -210,6 +297,60 @@ void b3World::solve(b3TimeStep &step)
 }
 
 
+void b3World::integrate_transforms_internal(b3TimeStep &step) {
+
+//    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+//        if (body->m_type != b3BodyType::b3_static_body) {
+//            auto p = body->get_position();
+//            auto q = body->get_quaternion();
+//            auto v = body->get_linear_velocity();
+//            auto w = body->get_angular_velocity();
+//            std::cout << "积分前 body position: " << p.x << " " << p.y << " " << p.z << ", rotation: "
+//                      << q.m_x << " " << q.m_y << " " << q.m_z << " " << q.m_w << std::endl;
+//            std::cout << "linear velocity: " << v.x << " " << v.y << " " << v.z << ", angular velocity: "
+//                      << w.x << " " << w.y << " " << w.z << std::endl;
+//        }
+//    }
+
+    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+        if (body->m_type != b3BodyType::b3_static_body) {
+            b3Transformr world_transform = body->get_world_transform();
+            b3Transformr predicted_transform;
+            b3TransformUtils::integrate_transform(world_transform, body->get_linear_velocity(), body->get_angular_velocity(), step.m_dt, predicted_transform);
+            body->proceed_to_transform(predicted_transform);
+            body->set_position(predicted_transform.position());
+            b3Quaternionr q;
+            predicted_transform.rotation_matrix().get_rotation(q);
+            body->set_quaternion(q);
+        }
+    }
+    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+        if (body->m_type != b3BodyType::b3_static_body) {
+            auto p = body->get_position();
+            auto q = body->get_quaternion();
+            auto v = body->get_linear_velocity();
+            auto w = body->get_angular_velocity();
+//            std::cout << "body position: " << p.x << " " << p.y << " " << p.z << std::endl;
+//            std::cout << "body position: " << p.x << " " << p.y << " " << p.z << ", rotation: "
+//                      << q.m_x << " " << q.m_y << " " << q.m_z << " " << q.m_w << std::endl;
+//            std::cout << "linear velocity: " << v.x << " " << v.y << " " << v.z << ", angular velocity: "
+//                      << w.x << " " << w.y << " " << w.z << std::endl;
+        }
+    }
+}
+
+void b3World::apply_gravity() {
+    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+        body->apply_gravity();
+    }
+}
+
+void b3World::clear_forces() {
+    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+        body->clear_forces();
+    }
+}
+
 void b3World::debug_draw() {
 
     if (m_debug_draw == nullptr) {
@@ -221,13 +362,28 @@ void b3World::debug_draw() {
     if (flags & b3Draw::e_shape_bit) {
         for (b3Body *body = m_body_list; body; body = body->next()) {
 
-            b3Transform xf(body->get_position(), body->get_quaternion());
+            b3Transform xf = body->get_world_transform();
 
             for (b3Fixture *f = body->get_fixture_list(); f; f = f->get_next()) {
-                draw_shape(f, xf, b3Color(1.0f, 1.0f, 0.0f));
+                b3Transformr world_transform = f->get_world_transform(xf);
+                draw_shape(f, world_transform, b3Color(1.0f, 1.0f, 0.0f));
             }
         }
     }
+
+//    for (b3Body* body = m_body_list; body != nullptr; body = body->next()) {
+//        b3Transformr xf = body->get_world_transform();
+//        b3AABB aabb;
+//        body->get_fixture_list()->get_shape()->get_bound_aabb(&aabb, xf, 0);
+//
+//        b3Vec3r center = aabb.center();
+//        b3Vec3r half_extent = (aabb.max() - aabb.min()) * 0.5;
+//        b3CubeShape aabbShape;
+//        aabbShape.set_as_box(half_extent.x, half_extent.y, half_extent.z);
+//        b3Transformr aabb_xf;
+//        aabb_xf.set_position(center);
+//        m_debug_draw->draw_box(&aabbShape, aabb_xf, b3Color(1.0f, 0.0f, 0.0f));
+//    }
 }
 
 
@@ -253,7 +409,13 @@ void b3World::draw_shape(b3Fixture *fixture, const b3Transformr&xf, const b3Colo
 
         case b3ShapeType::e_cone: {
             b3ConeShape* shape = (b3ConeShape*)fixture->get_shape();
-            m_debug_draw->draw_cone(shape, xf, color);
+            m_debug_draw->draw_cone(shape, xf, b3Color(0.f, 1.f, 0.f));
+            break;
+        }
+
+        case b3ShapeType::e_cylinder: {
+            b3CylinderShape* shape = (b3CylinderShape*)fixture->get_shape();
+            m_debug_draw->draw_cylinder(shape, xf, b3Color(0.f, 1.f, 0.f));
             break;
         }
 

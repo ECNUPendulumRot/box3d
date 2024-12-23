@@ -26,7 +26,9 @@ void b3PlaneBoxCollisionAlgorithm::process_collision(
     b3CubeShape* shapeB = (b3CubeShape*)fixtureB->get_shape();
 
     // get the normal of the plane in the world frame
-    const b3Vec3r& axis = bodyA->get_quaternion().rotation_matrix().col(2);
+    b3Mat33r Ra;
+    Ra.set_rotation(bodyA->get_quaternion());
+    const b3Vec3r& axis = Ra.col(2);
 
     b3Transformr xfB;
     xfB.set(bodyB->get_position(), bodyB->get_quaternion());

@@ -41,7 +41,18 @@ set (TESTBED_SOURCE_FILES
         src/manifold/test_plane_box.cpp
 
         src/test_gyro.cpp
-        src/aabb/test_cone_aabb.cpp
+        src/cone/test_cone.cpp
+        src/cone/test_cone_collide_point.cpp
+        src/cone/test_cone_rotation.cpp
+        src/cone/test_box_cone_rotation.cpp
+        src/cone/test_cone_data.cpp
+        src/cone/test_cone_gyro.cpp
+        src/cone/test_two_cone.cpp
+
+        src/spin/test_spin_without_gravity.cpp
+
+        src/cylinder/test_cylinder.cpp
+        src/cylinder/test_cylinder_gyro.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})

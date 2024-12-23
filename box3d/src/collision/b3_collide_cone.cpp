@@ -17,7 +17,8 @@ void b3_collide_plane_and_cone(b3Manifold* manifold,
     real radiusB = cone_b->get_radius();
 
     // transform the tip and the base center of the cone in the plane frame
-    b3Vec3r local_tipB = Ra.transpose() * xf_b.position();
+    b3Vec3r tipB = xf_b.position() + cone_b->get_half_height() * Rb.col(2);
+    b3Vec3r local_tipB = Ra.transpose() * tipB;
 
     real total_radius = plane_a->get_radius();
 

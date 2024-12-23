@@ -112,13 +112,36 @@ void b3Dispatcher::dispatch_collision_pair(b3Contact *contact, const b3Dispatche
         if (contact->get_algorithm() == nullptr) {
             int allocate_size;
             b3CollisionAlgorithm* algo = find_algorithm(fixtureA, fixtureB, DispatcherQueryType::B3_CONTACT_POINT_ALGORITHMS, allocate_size);
-
+            if (algo == nullptr) {
+                algo = find_algorithm(fixtureB, fixtureA, DispatcherQueryType::B3_CONTACT_POINT_ALGORITHMS, allocate_size);
+                contact->set_swap_bodies(true);
+            }
             contact->set_collision_algorithm(algo, allocate_size);
         }
 
         b3CollisionAlgorithm* algo = contact->get_algorithm();
         if (algo != nullptr) {
-            algo->process_collision(fixtureA, fixtureB, info, manifold);
+            if (contact->is_swap_bodies()) {
+                algo->process_collision(fixtureB, fixtureA, info, manifold);
+            } else {
+                algo->process_collision(fixtureA, fixtureB, info, manifold);
+            }
+
+            real friction = fixtureA->get_friction() * fixtureB->get_friction();
+            real restitution = b3_max(fixtureA->get_restitution(), fixtureB->get_restitution());
+            real rolling_friction = fixtureA->get_rolling_friction() * fixtureA->get_friction() + fixtureB->get_rolling_friction() * fixtureB->get_friction();
+            real spinning_friction = fixtureA->get_spinning_friction() * fixtureA->get_friction() + fixtureB->get_spinning_friction() * fixtureB->get_friction();
+
+            b3_clamp(friction, real(0), real(1));
+            b3_clamp(rolling_friction, real(0), real(1));
+            b3_clamp(spinning_friction, real(0), real(1));
+
+            for (int j = 0; j < manifold->get_contact_point_count(); j++) {
+                manifold->get_cached_point(j).m_friction = friction;
+                manifold->get_cached_point(j).m_restitution = restitution;
+                manifold->get_cached_point(j).m_rolling_friction = rolling_friction;
+                manifold->get_cached_point(j).m_spinning_friction = spinning_friction;
+            }
         }
 
     }

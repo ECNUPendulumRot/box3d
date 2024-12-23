@@ -44,6 +44,8 @@ public:
 
     void draw_cone(const b3ConeShape* cone, const b3Transformr& xf, const b3Color& color) override;
 
+    void draw_cylinder(const b3CylinderShape* cylinder, const b3Transformr& xf, const b3Color& color) override;
+
     void flush();
 
     void destroy();

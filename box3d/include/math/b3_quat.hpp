@@ -4,7 +4,6 @@
 
 
 #include "b3_vec3.hpp"
-#include "b3_mat33.hpp"
 
 template <typename T>
 struct b3Quat {
@@ -65,53 +64,75 @@ struct b3Quat {
         m_z = z;
     }
 
-    inline void normalize() {
-        T length = m_w * m_w + m_x * m_x + m_y * m_y + m_z * m_z;
+    b3Quat<T> inverse() const {
+        return b3Quat<T>(m_w, -m_x, -m_y, -m_z);
+    }
 
-        if (length == T(0)) {
-            m_w = T(1);
-            m_x = m_y = m_z = T(0);
-            return;
+    b3Quat<T>& operator/=(const T& s) {
+        b3_assert(s != real(0.0));
+        return *this *= real(1.0) / s;
+    }
+
+    b3Quat<T>& operator*=(const T& s) {
+        m_x *= s;
+        m_y *= s;
+        m_z *= s;
+        m_w *= s;
+        return *this;
+    }
+
+    b3Quat<T>& safe_normalize() {
+        real l2 = length2();
+        if (l2 > b3_real_epsilon) {
+            normalize();
         }
-
-        length = T(1) / b3_sqrt(length);
-
-        m_w *= length;
-        m_x *= length;
-        m_y *= length;
-        m_z *= length;
+        return *this;
     }
 
-    inline b3Mat33<T> rotation_matrix() const {
-        T ww = m_w * m_w;
-        T xx = m_x * m_x;
-        T yy = m_y * m_y;
-        T zz = m_z * m_z;
-        T xy = m_x * m_y;
-        T xz = m_x * m_z;
-        T yz = m_y * m_z;
-        T wx = m_w * m_x;
-        T wy = m_w * m_y;
-        T wz = m_w * m_z;
-
-        b3Mat33<T> result;
-
-        result.m_11 = ww + xx - yy - zz;
-        result.m_12 = T(2) * (xy - wz);
-        result.m_13 = T(2) * (xz + wy);
-
-        result.m_21 = T(2) * (xy + wz);
-        result.m_22 = ww - xx + yy - zz;
-        result.m_23 = T(2) * (yz - wx);
-
-        result.m_31 = T(2) * (xz - wy);
-        result.m_32 = T(2) * (yz + wx);
-        result.m_33 = ww - xx - yy + zz;
-
-        return result;
-
+    inline b3Quat<T> normalize() {
+        return *this /= length();
     }
 
+    T length() const {
+        return b3_sqrt(length2());
+    }
+
+    T length2() const {
+        return dot(*this);
+    }
+
+    T dot(const b3Quat<T>& q) const {
+        return m_x * q.m_x + m_y * q.m_y + m_z * q.m_z + m_w * q.m_w;
+    }
+
+//    b3M rotation_matrix() const {
+//        T ww = m_w * m_w;
+//        T xx = m_x * m_x;
+//        T yy = m_y * m_y;
+//        T zz = m_z * m_z;
+//        T xy = m_x * m_y;
+//        T xz = m_x * m_z;
+//        T yz = m_y * m_z;
+//        T wx = m_w * m_x;
+//        T wy = m_w * m_y;
+//        T wz = m_w * m_z;
+//
+//        b3Mat33<T> result;
+//
+//        result.m_11 = ww + xx - yy - zz;
+//        result.m_12 = T(2) * (xy - wz);
+//        result.m_13 = T(2) * (xz + wy);
+//
+//        result.m_21 = T(2) * (xy + wz);
+//        result.m_22 = ww - xx + yy - zz;
+//        result.m_23 = T(2) * (yz - wx);
+//
+//        result.m_31 = T(2) * (xz - wy);
+//        result.m_32 = T(2) * (yz + wx);
+//        result.m_33 = ww - xx - yy + zz;
+//
+//        return result;
+//    }
 };
 
 //////////////////////////////////////////////////////
@@ -122,6 +143,20 @@ using b3Quaternionr = b3Quat<real>;
 
 //////////////////////////////////////////////////////
 
+template <typename T>
+b3Quat<T> operator*(const b3Quat<T>& q, const b3Vec3<T>& w) {
+    return b3Quat<T>(-q.m_x * w.x - q.m_y * w.y - q.m_z * w.z,
+                     q.m_w * w.x + q.m_y * w.z - q.m_z * w.y,
+                     q.m_w * w.y + q.m_z * w.x - q.m_x * w.z,
+                     q.m_w * w.z + q.m_x * w.y - q.m_y * w.x);
+}
+
+template <typename T>
+b3Vec3<T> quat_rotate(const b3Quat<T>& rotation, const b3Vec3<T>& v) {
+    b3Quat<T> q = rotation * v;
+    q = q * rotation.inverse();
+    return b3Vec3<T>(q.m_x, q.m_y, q.m_z);
+}
 
 template <typename T>
 inline b3Quat<T> operator*(const b3Quat<T>& q1, const b3Quat<T>& q2) {

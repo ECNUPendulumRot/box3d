@@ -88,6 +88,7 @@ protected:
 
     b3CollisionAlgorithm* m_algorithm;
     int m_algorithm_size;
+    bool swap_bodies = false;
 
 
     ////////// Coefficients related to the material of the object ///////////
@@ -110,6 +111,14 @@ public:
         e_touching_flag = 1 << 1
     };
 
+    void set_swap_bodies(bool swap) {
+        swap_bodies = swap;
+    }
+
+    bool is_swap_bodies() const {
+        return swap_bodies;
+    }
+
     void set_flag(uint32 flag) {
         m_flags |= flag;
     }
@@ -120,10 +129,7 @@ public:
 
     // test of a flag is set
     bool test_flag(uint32 flag) {
-        if(m_flags & flag) {
-            return true;
-        }
-        return false;
+        return m_flags & flag;
     }
 
     inline b3Fixture* get_fixture_a() const {

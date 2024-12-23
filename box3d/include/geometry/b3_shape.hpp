@@ -27,7 +27,8 @@ enum b3ShapeType {
     e_sphere     = 1,
     e_plane      = 2,
     e_cone       = 3,
-    e_type_count = 4
+    e_cylinder   = 4,
+    e_type_count = 5
 };
 
 
@@ -90,6 +91,10 @@ protected:
      * This is used for extending the AABB of the shape for collision test
      */
     real m_radius = 0;
+    real m_collision_margin;
+
+    // the centroid offset base the local transform
+    b3Vec3r m_centroid = b3Vec3r::zero();
 
     /**
      * @brief Next mesh in the list
@@ -114,13 +119,33 @@ protected:
      */
     b3Vec3r m_color = b3Vec3r::zero();
 
+    b3Shape() : m_collision_margin(0.04) {}
+
 public:
 
     virtual ~b3Shape();
 
+    virtual real get_margin() const {
+        return m_collision_margin;
+    }
+
+    void set_margin(real margin) {
+        m_collision_margin = margin;
+    }
+
+    void set_centroid(const b3Vec3r& centroid) {
+        m_centroid = centroid;
+    }
+
+    const b3Vec3r& get_centroid() const {
+        return m_centroid;
+    }
+
     virtual int32 get_child_count() const {
         return 0;
     };
+
+    virtual b3Vec3r local_get_support_vertex(const b3Vec3r& local_dir) const;
 
     virtual void get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 child_index) const {
         b3_NOT_USED(aabb);

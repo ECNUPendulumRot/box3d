@@ -22,6 +22,17 @@ void DebugDraw::create()
 
     m_triangles = new gl_render_triangles;
     m_triangles->create();
+
+    static b3Vec3r origin = {0.0, 0.0, 0.0};
+    static b3Vec3r x_axis = {1.0, 0.0, 0.0};
+    static b3Vec3r y_axis = {0.0, 1.0, 0.0};
+    static b3Vec3r z_axis = {0.0, 0.0, 1.0};
+    m_lines->vertex(origin, b3Color(1.0f, 0.0f, 0.f));
+    m_lines->vertex(x_axis, b3Color(1.0f, 0.0f, 0.f));
+    m_lines->vertex(origin, b3Color(0.0f, 1.0f, 0.f));
+    m_lines->vertex(y_axis, b3Color(0.0f, 1.0f, 0.f));
+    m_lines->vertex(origin, b3Color(0.0f, 0.0f, 1.0f));
+    m_lines->vertex(z_axis, b3Color(0.0f, 0.0f, 1.0f));
 }
 
 
@@ -217,32 +228,43 @@ void DebugDraw::draw_sphere(const b3SphereShape* sphere, const b3Transformr &xf,
 void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const b3Color &color)
 {
     // the tip of the cone in the world space
-    b3Vec3r tip = xf.position();
-
-    b3Vec3r axis = xf.rotation_matrix().col(2);
-
-    b3Vec3r base_center = tip + cone->get_height() * axis;
-
-    static const int base_point_count = 6;
-
-    b3Vec3r base_points[base_point_count];
-    b3Vec3r base_normals[base_point_count];
-
-    real radius = cone->get_radius();
-
-    // TODO: reduce this, we define the point count in the b3_cone_shape class.
-    real theta = 0;
-    real delta_theta = b3_pi * 2 / base_point_count;
+//    b3Vec3r tip = xf.position();
+//
+//    b3Vec3r axis = xf.rotation_matrix().col(2);
+//
+//    b3Vec3r base_center = tip + cone->get_height() * axis;
+//
+//    static const int base_point_count = 6;
+//
+//    b3Vec3r base_points[base_point_count];
+//    b3Vec3r base_normals[base_point_count];
+//
+//    real radius = cone->get_radius();
+//
+//    // TODO: reduce this, we define the point count in the b3_cone_shape class.
+//    real theta = 0;
+//    real delta_theta = b3_pi * 2 / base_point_count;
+//
+//    const b3Mat33r& R = xf.rotation_matrix();
+//
+//    for (int i = 0; i < base_point_count; i++) {
+//        base_normals[i].set(cos(theta), sin(theta), 0);
+//        base_points[i] = base_center + radius * R * base_normals[i];
+//
+//        theta += delta_theta;
+//    }
 
     const b3Mat33r& R = xf.rotation_matrix();
 
-    for (int i = 0; i < base_point_count; i++) {
-        base_normals[i].set(cos(theta), sin(theta), 0);
-        base_points[i] = base_center + radius * R * base_normals[i];
+    b3Vec3r tip = xf.position() + cone->get_half_height() * R.col(2);
 
-        theta += delta_theta;
+    b3Vec3r base_center = tip - cone->get_height() * R.col(2);
+
+    b3Vec3r base_points[B3_CONE_MAX_BASE_POINTS];
+    const b3Vec3r* local_base_points = cone->get_vertices();
+    for (int i = 0; i < B3_CONE_MAX_BASE_POINTS; i++) {
+        base_points[i] = R * local_base_points[i] + xf.position();
     }
-
 
     // TODO: This ?
     b3Vec3r normal = {0, 0, 1};
@@ -250,19 +272,23 @@ void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const
     if (m_draw_flags & b3Draw::e_frame_only_bit) {
         // base triangle face
         m_lines->vertex(base_points[0], color);
-        m_lines->vertex(base_points[base_point_count - 1], color);
-        for (int i = 1; i < base_point_count; i++) {
+        m_lines->vertex(base_points[B3_CONE_MAX_BASE_POINTS - 1], color);
+        for (int i = 1; i < B3_CONE_MAX_BASE_POINTS; i++) {
             m_lines->vertex(base_points[i], color);
             m_lines->vertex(base_points[i - 1], color);
         }
 
-        for (int i = 0; i < base_point_count; i++) {
+        for (int i = 0; i < B3_CONE_MAX_BASE_POINTS; i++) {
             m_lines->vertex(base_center, color);
             m_lines->vertex(base_points[i], color);
         }
 
+        b3Color other_color = {1.0f, 0.f, 0.f};
+        m_lines->vertex(base_center, other_color);
+        m_lines->vertex(base_points[0], other_color);
+
         // the conical surface
-        for (int i = 0; i < base_point_count; i++) {
+        for (int i = 0; i < B3_CONE_MAX_BASE_POINTS; i++) {
             m_lines->vertex(tip, color);
             m_lines->vertex(base_points[i], color);
         }
@@ -270,8 +296,8 @@ void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const
         // base triangle face
         m_triangles->vertex(base_center, normal, color);
         m_triangles->vertex(base_points[0], normal, color);
-        m_triangles->vertex(base_points[base_point_count - 1], normal, color);
-        for (int i = 1; i < base_point_count; i++) {
+        m_triangles->vertex(base_points[B3_CONE_MAX_BASE_POINTS - 1], normal, color);
+        for (int i = 1; i < B3_CONE_MAX_BASE_POINTS; i++) {
             m_triangles->vertex(base_center, normal, color);
             m_triangles->vertex(base_points[i], normal, color);
             m_triangles->vertex(base_points[i - 1], normal, color);
@@ -280,8 +306,8 @@ void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const
         // the conical surface
         m_triangles->vertex(tip, normal, color);
         m_triangles->vertex(base_points[0], normal, color);
-        m_triangles->vertex(base_points[base_point_count - 1], normal, color);
-        for (int i = 1; i < base_point_count; i++) {
+        m_triangles->vertex(base_points[B3_CONE_MAX_BASE_POINTS - 1], normal, color);
+        for (int i = 1; i < B3_CONE_MAX_BASE_POINTS; i++) {
             m_triangles->vertex(tip, normal, color);
             m_triangles->vertex(base_points[i], normal, color);
             m_triangles->vertex(base_points[i - 1], normal, color);
@@ -289,6 +315,75 @@ void DebugDraw::draw_cone(const b3ConeShape *cone, const b3Transformr &xf, const
     }
 }
 
+void DebugDraw::draw_cylinder(const b3CylinderShape *cylinder, const b3Transformr &xf, const b3Color &color) {
+    const b3Mat33r& R = xf.rotation_matrix();
+
+    b3Vec3r top[B3_CYLINDER_MAX_POINTS];
+    b3Vec3r bottom[B3_CYLINDER_MAX_POINTS];
+    real half_height = cylinder->get_height() * 0.5;
+    const b3Vec3r* vertices = cylinder->get_vertices();
+    for (int i = 0; i < B3_CYLINDER_MAX_POINTS; i++) {
+        top[i] = R * (vertices[i] + b3Vec3r(0, 0, half_height)) + xf.position();
+        bottom[i] = R * (vertices[i] + b3Vec3r(0, 0, -half_height)) + xf.position();
+    }
+
+    b3Vec3r normal = {0, 0, 1};
+
+    if (m_draw_flags & b3Draw::e_frame_only_bit) {
+        m_lines->vertex(top[0], color);
+        m_lines->vertex(top[B3_CYLINDER_MAX_POINTS - 1], color);
+        for (int i = 1; i < B3_CYLINDER_MAX_POINTS; i++) {
+            m_lines->vertex(top[i], color);
+            m_lines->vertex(top[i - 1], color);
+        }
+        m_lines->vertex(bottom[0], color);
+        m_lines->vertex(bottom[B3_CYLINDER_MAX_POINTS - 1], color);
+        for (int i = 1; i < B3_CYLINDER_MAX_POINTS; i++) {
+            m_lines->vertex(bottom[i], color);
+            m_lines->vertex(bottom[i - 1], color);
+        }
+        for (int i = 0; i < B3_CYLINDER_MAX_POINTS; i += 4) {
+            m_lines->vertex(top[i], color);
+            m_lines->vertex(bottom[i], color);
+        }
+    } else {
+        const b3Vec3r bottom_center = R * b3Vec3r(0, 0, -half_height) + xf.position();
+        const b3Vec3r top_center = R * b3Vec3r(0, 0, half_height) + xf.position();
+
+        m_triangles->vertex(bottom[0], normal, color);
+        m_triangles->vertex(bottom[B3_CYLINDER_MAX_POINTS - 1], normal, color);
+        m_triangles->vertex(bottom_center, normal, color);
+        for (int i = 1; i < B3_CYLINDER_MAX_POINTS; i++) {
+            m_triangles->vertex(bottom[i], normal, color);
+            m_triangles->vertex(bottom[i - 1], normal, color);
+            m_triangles->vertex(bottom_center, normal, color);
+        }
+
+        m_triangles->vertex(top[0], normal, color);
+        m_triangles->vertex(top[B3_CYLINDER_MAX_POINTS - 1], normal, color);
+        m_triangles->vertex(top_center, normal, color);
+        for (int i = 1; i < B3_CYLINDER_MAX_POINTS; i++) {
+            m_triangles->vertex(top[i], normal, color);
+            m_triangles->vertex(top[i - 1], normal, color);
+            m_triangles->vertex(top_center, normal, color);
+        }
+
+        m_triangles->vertex(top[B3_CYLINDER_MAX_POINTS - 1], normal, color);
+        m_triangles->vertex(bottom[B3_CYLINDER_MAX_POINTS - 1], normal, color);
+        m_triangles->vertex(bottom[0], normal, color);
+        m_triangles->vertex(bottom[0], normal, color);
+        m_triangles->vertex(top[0], normal, color);
+        m_triangles->vertex(top[B3_CYLINDER_MAX_POINTS - 1], normal, color);
+        for (int i = 1; i < B3_CYLINDER_MAX_POINTS; i++) {
+            m_triangles->vertex(top[i - 1], normal, color);
+            m_triangles->vertex(bottom[i - 1], normal, color);
+            m_triangles->vertex(bottom[i], normal, color);
+            m_triangles->vertex(bottom[i], normal, color);
+            m_triangles->vertex(top[i], normal, color);
+            m_triangles->vertex(top[i - 1], normal, color);
+        }
+    }
+}
 
 void DebugDraw::draw_point(const b3Vec3r &p, float size, const b3Color &color)
 {

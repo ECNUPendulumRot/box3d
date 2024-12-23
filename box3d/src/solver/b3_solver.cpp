@@ -12,29 +12,6 @@
 #include "common/b3_draw.hpp"
 
 #include "spdlog/spdlog.h"
-//////////////////////////////////////////
-// In the tangent plane, t1 and t2 are counterclockwise
-/*
- *   ^ t2
- *   |
- *   |
- *   n----> t1
- *
- */
-static void b3_get_two_tangent_bases(const b3Vec3r& normal, b3Vec3r& t1, b3Vec3r& t2)
-{
-    if(b3_abs(normal.x) < b3_real_min && b3_abs(normal.y) < b3_real_min) {
-        t1 = b3Vec3r(1, 0, 0);
-        t2 = b3Vec3r(0 , 1, 0);
-        return;
-    }
-    t1 = b3Vec3r(-normal.y, normal.x, 0);
-    t2 = normal.cross(t1).normalized();
-    t1 = t2.cross(normal).normalized();
-}
-
-/////////////////////////////////////////
-
 
 void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeStep *step)
 {
@@ -110,13 +87,14 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_point_count = point_count;
 
         vc->m_normal = manifold->m_local_normal;
-        b3_get_two_tangent_bases(vc->m_normal, vc->m_tangent1, vc->m_tangent2);
+        b3_plane_space(vc->m_normal, vc->m_tangent1, vc->m_tangent2);
 
         vc->m_index_a = body_a->get_island_index();
         vc->m_mass_a = body_a->get_mass();
         vc->m_inv_mass_a = body_a->get_inv_mass();
 
-        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
+        b3Mat33r R_a;
+        R_a.set_rotation(body_a->get_quaternion());
 
         vc->m_I_a = R_a * body_a->get_inertia() * R_a.transpose();
         vc->m_inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
@@ -125,7 +103,8 @@ void b3Solver::init(b3BlockAllocator *block_allocator, b3Island *island, b3TimeS
         vc->m_mass_b = body_b->get_mass();
         vc->m_inv_mass_b = body_b->get_inv_mass();
 
-        const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
+        b3Mat33r R_b;
+        R_b.set_rotation(body_b->get_quaternion());
 
         vc->m_I_b = R_b * body_b->get_inertia() * R_b.transpose();
         vc->m_inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
@@ -222,8 +201,19 @@ int b3Solver::solve() {
 
     for (int32 i = 0; i < m_body_count; ++i) {
         m_ps[i] = m_ps[i] + m_vs[i] * m_timestep->m_dt;
+        if (m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
+            m_ws[i][0] = 0.01f;
+        }
         m_qs[i] = m_qs[i] + real(0.5) * m_timestep->m_dt * b3Quaternionr(0, m_ws[i]) * m_qs[i];
         m_qs[i].normalize();
+        m_ws[i][0] = 0;
+    }
+
+    for (int32 i = 0; i < m_body_count; i++) {
+        if (m_bodies[i]->get_type() == b3BodyType::b3_dynamic_body) {
+            spdlog::log(spdlog::level::info, "position: {}, {}, {}, rotation: {}, {}, {}, {}", m_ps[i].x, m_ps[i].y, m_ps[i].z, m_qs[i].m_x, m_qs[i].m_y, m_qs[i].m_z, m_qs[i].m_w);
+            spdlog::log(spdlog::level::info, "velocity: {}, {}, {}, w: {}, {}, {}", m_vs[i].x, m_vs[i].y, m_vs[i].z, m_ws[i].x, m_ws[i].y, m_ws[i].z);
+        }
     }
 
     // correct_penetration();
@@ -293,13 +283,6 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
         for (int32 j = 0; j < vc->m_point_count; ++j) {
             b3VelocityConstraintPoint *vcp = vc->m_points + j;
 
-            // TODO: if we enable this ?
-            // TODO: Borrowed from《Nonconvex Rigid Bodies with Stacking》
-//            real w_rel = (w_b - w_a).dot(vc->m_normal);
-//            b3Vec3r lambda_torque = vc->m_inv_I_ab * vc->m_normal * (vc->m_target_normal_angular_velocity - w_rel);
-//            w_b = w_b + vc->m_inv_I_b * lambda_torque;
-//            w_a = w_a - vc->m_inv_I_a * lambda_torque;
-
             b3Vec3r v_rel = v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra);
             real rhs = -v_rel.dot(vc->m_normal);
 
@@ -328,19 +311,17 @@ void b3Solver::solve_velocity_constraints(bool is_collision)
             w_b = w_b + vc->m_inv_I_b * vcp->m_rb.cross(impulse);
         }
 
-        apply_spinning_and_rolling_friction(vc, w_a, w_b, total_impulse);
+        apply_spinning_and_rolling_friction1(vc, w_a, w_b, total_impulse);
 
         m_vs[vc->m_index_a] = v_a;
         m_vs[vc->m_index_b] = v_b;
         m_ws[vc->m_index_a] = w_a;
         m_ws[vc->m_index_b] = w_b;
-
-        // solve_sphere_angular_velocity(vc);
     }
 }
 
 
-void b3Solver::apply_spinning_and_rolling_friction(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse)
+void b3Solver::apply_spinning_and_rolling_friction1(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse)
 {
     vc->m_total_normal_impulse += total_impulse;
 
@@ -395,76 +376,21 @@ void b3Solver::apply_spinning_and_rolling_friction(b3ContactVelocityConstraint* 
 }
 
 
-//void b3Solver::solve_sphere_angular_velocity(b3ContactVelocityConstraint *vc)
-//{
-//    // Try correcting the angular velocity along the t1 and t2 axes
-//    if (vc->m_is_sphere[0]) {
-//        b3_assert(vc->m_point_count == 1);
-//        // for sphere a
-//        b3Vec3r w = m_ws[vc->m_index_a];
-//
-//        // Iw * 1/d = N
-//        b3Vec3r Iw_to_zero = vc->m_I_a * w * m_timestep->m_inv_dt * vc->m_inv_radius[0];
-//
-//        real Iw_t[2];
-//        Iw_t[0] = Iw_to_zero.dot(vc->m_tangent1);
-//        Iw_t[1] = Iw_to_zero.dot(vc->m_tangent2);
-//        real Iw_n = Iw_to_zero.dot(vc->m_normal);
-//
-//        // boundary is [-boundary, boundary]
-//        real boundary = vc->m_points->m_normal_collision_impulse + vc->m_points->m_normal_contact_impulse;
-//        // for t1 and t2, now use some, so boundary is [-boundary - use, boundary - use]
-//        for(int i = 0; i < 2; i++) {
-//            if(Iw_t[i] > boundary + vc->m_use_support_lambda[0][i]) {
-//                Iw_t[i] = Iw_t[i] - boundary - vc->m_use_support_lambda[0][i];
-//                vc->m_use_support_lambda[0][i] = -boundary;
-//            } else if(Iw_t[i] < vc->m_use_support_lambda[0][i] - boundary) {
-//                Iw_t[i] = Iw_t[i] + boundary - vc->m_use_support_lambda[0][i];
-//                vc->m_use_support_lambda[0][i] = boundary;
-//            } else {
-//                vc->m_use_support_lambda[0][i] -= Iw_t[i];
-//                Iw_t[i] = 0;
-//            }
-//        }
-//
-//        w = vc->m_inv_I_a * (Iw_n * vc->m_normal + Iw_t[0] * vc->m_tangent1 + Iw_t[1] * vc->m_tangent2);
-//        w = vc->m_radius[0] * w;
-//        m_ws[vc->m_index_a] = w;
-//    }
-//
-//    if (vc->m_is_sphere[1]) {
-//        b3_assert(vc->m_point_count == 1);
-//        // for sphere b
-//        b3Vec3r w = m_ws[vc->m_index_b];
-//        // Iw * 1/d = N
-//        b3Vec3r Iw_to_zero = vc->m_I_b * w * vc->m_inv_radius[1];
-//
-//        real Iw_t[2];
-//        Iw_t[0] = Iw_to_zero.dot(vc->m_tangent1);
-//        Iw_t[1] = Iw_to_zero.dot(vc->m_tangent2);
-//        real Iw_n = Iw_to_zero.dot(vc->m_normal);
-//
-//        // boundary is [-boundary, boundary]
-//        real boundary = vc->m_points->m_normal_collision_impulse + vc->m_points->m_normal_contact_impulse;
-//        // for t1 and t2, now use some, so boundary is [-boundary - use, boundary - use]
-//        for(int i = 0; i < 2; i++) {
-//            if(Iw_t[i] > boundary + vc->m_use_support_lambda[1][i]) {
-//                Iw_t[i] = Iw_t[i] - boundary - vc->m_use_support_lambda[1][i];
-//                vc->m_use_support_lambda[1][i] = -boundary;
-//            } else if(Iw_t[i] < vc->m_use_support_lambda[1][i] - boundary) {
-//                Iw_t[i] = Iw_t[i] + boundary - vc->m_use_support_lambda[1][i];
-//                vc->m_use_support_lambda[1][i] = boundary;
-//            } else {
-//                vc->m_use_support_lambda[1][i] -= Iw_t[i];
-//                Iw_t[i] = 0;
-//            }
-//        }
-//
-//        w = vc->m_inv_I_b * (Iw_n * vc->m_normal + Iw_t[0] * vc->m_tangent1 + Iw_t[1] * vc->m_tangent2);
-//        w = vc->m_radius[1] * w;
-//        m_ws[vc->m_index_b] = w;
-//    }
-//}
+void b3Solver::apply_spinning_and_rolling_friction2(
+    b3ContactVelocityConstraint *vc, b3Vec3r &w_a, b3Vec3r &w_b, real total_impulse)
+{
+    vc->m_total_normal_impulse += total_impulse;
+    if (vc->m_spinning_friction < b3_real_epsilon && vc->m_rolling_friction < b3_real_epsilon) {
+        return;
+    }
+
+    if (vc->m_total_normal_impulse > 0.f) {
+        real upper_limit = vc->m_rolling_friction * vc->m_total_normal_impulse;
+        real lower_limit = -upper_limit;
+    }
+
+    b3Vec3r relative_angular = w_b - w_a;
+}
 
 
 void b3Solver::correct_penetration()

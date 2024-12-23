@@ -20,21 +20,29 @@ public:
     // The rotation matrix of the pose.
     b3Mat33<T> m_r;
 
-    b3Transform() = default;
+    b3Transform() {
+        m_p.set_zero();
+        m_r.set_identity();
+    }
 
     b3Transform(const b3Transform& other) {
         m_p = other.m_p;
         m_r = other.m_r;
     }
 
+    b3Transform(const b3Vec3<T>& p, const b3Mat33<T>& r) {
+        m_p = p;
+        m_r = r;
+    }
+
     b3Transform(const b3Vec3<T>& p, const b3Quat<T>& q) {
         m_p = p;
-        m_r = q.rotation_matrix();
+        m_r.set_rotation(q);
     }
 
     void set(const b3Vec3<T>& p, const b3Quat<T>& q) {
         m_p = p;
-        m_r = q.rotation_matrix();
+        m_r.set_rotation(q);
     }
 
     void set_position(const b3Vec3<T>& p) {
@@ -46,6 +54,13 @@ public:
         m_r = q.rotation_matrix();
     }
 
+    void set_basis(const b3Mat33r& basis) {
+        m_r = basis;
+    }
+
+    void set_rotation(const b3Quaternionr& q) {
+        m_r.set_rotation(q);
+    }
 
     inline const b3Mat33<T>& rotation_matrix() const {
         return m_r;
@@ -63,52 +78,32 @@ public:
         return m_r.transpose() * (v - m_p);
     }
 
+    b3Transform inverse_times(const b3Transform& t) const {
+        b3Vec3 v = m_r.transpose() * (t.position() - m_p);
+        b3Mat33 r = m_r.transpose_times(t.m_r);
+        b3Quat<T> q;
+        r.get_rotation(q);
+        return b3Transform(v, q);
+    }
+
     inline b3Vec3<T> position() const {
         return m_p;
     }
 
+    void set_identity() {
+        m_r.set_identity();
+        m_p.set_zero();
+    }
+
+    b3Quat<T> get_rotation() const {
+        b3Quat<T> q;
+        m_r.get_rotation(q);
+        return q;
+    }
+
 };
 
-
 /////////////////////////////////////////////////////////////////////
-
-
-//template<typename T>
-//b3Mat33<T> b3Transform<T>::rotation_matrix() const {
-//    if (m_r.is_zero()) {
-//        return b3Mat33<T>::identity();
-//    }
-//
-//    // Rodrigues' rotation formula:
-//    // R = I + sin(theta) * K + (1 - cos(theta)) * K^2
-//    T l = m_r.length();
-//    b3Vec3<T> v = m_r / l;
-//
-//    b3Mat33<T> res;
-//    b3Vec3<T> sin_axis = sin(l) * v;
-//    T c = cos(l);
-//    b3Vec3<T> cos1_axis = (T(1) - c) * v;
-//
-//    T tmp = cos1_axis.x * v.y;
-//    res(0, 1) = tmp - sin_axis.z;
-//    res(1, 0) = tmp + sin_axis.z;
-//
-//    tmp = cos1_axis.x * v.z;
-//    res(0, 2) = tmp + sin_axis.y;
-//    res(2, 0) = tmp - sin_axis.y;
-//
-//    tmp = cos1_axis.y * v.z;
-//    res(1, 2) = tmp - sin_axis.x;
-//    res(2, 1) = tmp + sin_axis.x;
-//
-//    cos1_axis = cos1_axis.cwise_product(v);
-//    res(0, 0) = cos1_axis.x + c;
-//    res(1, 1) = cos1_axis.y + c;
-//    res(2, 2) = cos1_axis.z + c;
-//
-//    return res;
-//}
-
 
 using b3Transformf = b3Transform<float>;
 using b3Transformd = b3Transform<double>;

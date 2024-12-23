@@ -6,10 +6,14 @@
 
 class b3BlockAllocator;
 
+class b3PenetrationDepthSolver;
+
 
 class b3CollisionConfiguration {
 
 private:
+
+    b3PenetrationDepthSolver* m_pd_solver;
 
     b3BlockAllocator* m_block_allocator;
 
@@ -22,6 +26,12 @@ private:
     b3CollisionAlgorithmCreateFunc* m_plane_sphere_cf;
 
     b3CollisionAlgorithmCreateFunc* m_plane_box_cf;
+
+    b3CollisionAlgorithmCreateFunc* m_plane_cone_cf;
+
+    b3CollisionAlgorithmCreateFunc* m_box_cone_cf;
+
+    b3CollisionAlgorithmCreateFunc* m_box_cylinder_cf;
 
     void init();
 

@@ -31,7 +31,7 @@ public:
      */
     inline b3Vec3r center() const {
 
-        return real(0.5) * (m_max - m_min);
+        return real(0.5) * (m_max + m_min);
     }
 
     inline b3Vec3r min() const {

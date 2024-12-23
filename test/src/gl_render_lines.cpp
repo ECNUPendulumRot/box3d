@@ -126,5 +126,5 @@ void GLRenderLines::flush()
     glBindVertexArray(0);
     glUseProgram(0);
 
-    m_count = 0;
+    m_count = 6;
 }

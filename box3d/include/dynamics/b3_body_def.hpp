@@ -39,6 +39,10 @@ struct b3BodyDef {
 
     real m_density = 1.0;
 
+    real m_linear_damping = 0;
+
+    real m_angular_damping = 0;
+
 public:
 
     explicit b3BodyDef(b3BodyType type = b3BodyType::b3_dynamic_body) {

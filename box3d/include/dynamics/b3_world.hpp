@@ -3,6 +3,7 @@
 #define BOX3D_B3_WORLD_HPP
 
 #include <filesystem>
+#include <vector>
 
 #include "dynamics/b3_body.hpp"
 #include "dynamics/b3_body_def.hpp"
@@ -21,6 +22,7 @@
 struct b3Color;
 struct b3TimeStep;
 class b3Draw;
+class b3ConstraintBase;
 
 class b3World {
 
@@ -56,6 +58,8 @@ class b3World {
 
     b3DispatcherInfo m_dispatcher_info;
 
+    std::vector<b3ConstraintBase*> m_constraints;
+
 public:
 
     b3World();
@@ -69,6 +73,10 @@ public:
     inline bool empty() const {
         return m_body_count == 0;
     }
+
+    void add_constraint(b3ConstraintBase* constraint);
+
+    void remove_constraint(b3ConstraintBase* constraint);
 
     /**
      * This is simulation world time forward.
@@ -136,11 +144,17 @@ public:
         m_contact_manager.set_contact_listener(listener);
     }
 
+    void apply_gravity();
+
+    void clear_forces();
+
 private:
 
     // void solve(double delta_t);
 
     void solve(b3TimeStep& step);
+
+    void integrate_transforms_internal(b3TimeStep& step);
 
 public:
 

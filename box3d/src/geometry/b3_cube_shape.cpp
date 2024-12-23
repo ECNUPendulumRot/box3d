@@ -7,7 +7,6 @@
 #include "dynamics/b3_mass_property.hpp"
 #include "dynamics/b3_body.hpp"
 
-
 #include "collision/b3_aabb.hpp"
 
 b3CubeShape::b3CubeShape() {
@@ -20,8 +19,6 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
     b3_assert(hx > 0.0f);
     b3_assert(hy > 0.0f);
     b3_assert(hz > 0.0f);
-
-    m_centroid.set_zero();
 
     // TODO: check the order of the axis
     m_vertices[0].set(hx, -hy, -hz);
@@ -63,7 +60,7 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 
     m_xyz.set(2 * hx, 2 * hy, 2 * hz);
     m_h_xyz.set(hx, hy, hz);
-
+    m_h_xyz_no_margin = m_h_xyz - b3Vec3r(m_collision_margin, m_collision_margin, m_collision_margin);
 }
 
 
@@ -89,7 +86,8 @@ void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real densit
 
     mass_data.m_volume = m_xyz.x * m_xyz.y * m_xyz.z;
 
-    mass_data.m_mass = density * mass_data.m_volume;
+    mass_data.m_mass = density;
+    // mass_data.m_mass = density * mass_data.m_volume;
 
     real x2 = m_xyz.x * m_xyz.x;
     real y2 = m_xyz.y * m_xyz.y;
@@ -100,10 +98,10 @@ void b3CubeShape::compute_mass_properties(b3MassProperty &mass_data, real densit
     real i22 = ot * mass_data.m_mass * (x2 + z2);
     real i33 = ot * mass_data.m_mass * (x2 + y2);
 
-    mass_data.m_Inertia = b3Mat33r::zero();
-    mass_data.m_Inertia(0, 0) = i11;
-    mass_data.m_Inertia(1, 1) = i22;
-    mass_data.m_Inertia(2, 2) = i33;
+    mass_data.m_local_Inertia = b3Mat33r::zero();
+    mass_data.m_local_Inertia(0, 0) = i11;
+    mass_data.m_local_Inertia(1, 1) = i22;
+    mass_data.m_local_Inertia(2, 2) = i33;
 }
 
 

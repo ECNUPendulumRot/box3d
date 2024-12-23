@@ -55,13 +55,10 @@ b3SphereShape::b3SphereShape()
     m_vertices = nullptr;
 }
 
-
 void b3SphereShape::set_as_sphere(real radius)
 {
     m_radius = radius;
-    m_centroid.set_zero();
 }
-
 
 void b3SphereShape::get_bound_aabb(b3AABB *aabb, const b3Transformr& xf, int32 child_index) const
 {
@@ -80,16 +77,17 @@ void b3SphereShape::compute_mass_properties(b3MassProperty& mass_data, real dens
 {
     mass_data.m_center = m_centroid;
 
-    mass_data.m_volume = 4 * real(b3_pi) * m_radius * m_radius * m_radius / 3;
+    // mass_data.m_volume = 4 * real(b3_pi) * m_radius * m_radius * m_radius / 3;
 
-    mass_data.m_mass = density * mass_data.m_volume;
+    mass_data.m_mass = density;
+    // mass_data.m_mass = density * mass_data.m_volume;
 
     real ixx = real(0.4) * mass_data.m_mass * m_radius * m_radius;
 
-    mass_data.m_Inertia = b3Mat33r::zero();
-    mass_data.m_Inertia(0, 0) = ixx;
-    mass_data.m_Inertia(1, 1) = ixx;
-    mass_data.m_Inertia(2, 2) = ixx;
+    mass_data.m_local_Inertia = b3Mat33r::zero();
+    mass_data.m_local_Inertia(0, 0) = ixx;
+    mass_data.m_local_Inertia(1, 1) = ixx;
+    mass_data.m_local_Inertia(2, 2) = ixx;
 }
 
 

@@ -19,8 +19,7 @@ struct b3MassProperty {
      */
     b3Vec3r m_center;
 
-    b3Mat33r m_Inertia;
-
+    b3Mat33r m_local_Inertia;
 };
 
 

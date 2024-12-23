@@ -38,7 +38,7 @@ public:
     }
 
     /**
-     * @param normal : in the world frame, from A to B
+     * @param normal : in the world frame, from B to A in world
      * @param pointA the point of A in world frame
      * so the point of B is point_in_world + normal * depth
      * @param depth  < 0

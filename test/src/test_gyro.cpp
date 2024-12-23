@@ -29,16 +29,23 @@ public:
         b3BodyDef gyro_body_def;
         gyro_body_def.m_type = b3BodyType::b3_dynamic_body;
         b3Vec3r p(0, 0, b3_sqrt(3.0f));
-        b3Vec3r q;
+        b3Vec3r q(0, b3_pi / 4.0, 0);
         b3Vec3r v;
-        b3Vec3r w(0, 0, 200);
+        b3Vec3r w(0, 0, 20);
 
         // Rx(45)Ry(45) = [ sqrt(2) / 2, 0, sqrt(2) / 2
         //                  0.5, sqrt(2) / 2, -0.5
         //                  -0.5 sqrt(2) / 2, 0.5]
+        /**
+         * R = [ sqrt(2) / 2, 0, sqrt(2) / 2
+         *       sqrt(6) / 6, sqrt(6) / 3, -sqrt(6) / 6
+         *       -sqrt(3) / 3, sqrt(3) / 3, sqrt(3) / 3]
+         */
         real sqrt_2 = b3_sqrt(2.0);
-        real theta = 1.0 / cos((sqrt_2 + 0.5 - 1) * 0.5);
-        b3Vec3r n(sqrt_2 * 0.5 + 0.5, sqrt_2 * 0.5 + 0.5, 0.5);
+        real sqrt_3 = b3_sqrt(3.0);
+        real sqrt_6 = sqrt_2 * sqrt_3;
+        real theta = acos((0.5 * sqrt_2 + sqrt_3 / 3.0 + sqrt_6 / 3.0 - 1) * 0.5);
+        b3Vec3r n(sqrt_3 / 3.0 + sqrt_6 / 6.0, 0.5 * sqrt_2 + sqrt_3 / 3.0, sqrt_6 / 6.0);
         n = n * 0.5 / sin(theta);
 
         q = theta * n;
@@ -46,11 +53,14 @@ public:
         gyro_body_def.set_init_pose(p, q);
         gyro_body_def.set_init_velocity(v, w);
 
-        b3Mat33r R = gyro_body_def.m_init_q.rotation_matrix();
-        spdlog::info("R: {} {} {} | {} {} {} | {} {} {}", R(0,0), R(0,1), R(0,2), R(1,0), R(1,1), R(1,2), R(2,0), R(2,1), R(2,2));
+        // b3Mat33r R = gyro_body_def.m_init_q.rotation_matrix();
+        // spdlog::info("R: {} {} {} | {} {} {} | {} {} {}", R(0,0), R(0,1), R(0,2), R(1,0), R(1,1), R(1,2), R(2,0), R(2,1), R(2,2));
 
-        b3Vec3r point = R * b3Vec3r(1, -1, -1);
-        gyro_body_def.m_init_p.z = -point.z;
+//        b3Vec3r point = R * b3Vec3r(1, -1, -1);
+//        gyro_body_def.m_init_p = -point;
+//
+//        point.set(-1, 1, 1);
+//        point = R * point;
 
         b3Body* gyro_body = m_world->create_body(gyro_body_def);
 
@@ -61,7 +71,7 @@ public:
         gyro_fixture_def.m_shape = &gyro_shape;
         gyro_fixture_def.m_density = 1.0;
         gyro_fixture_def.m_restitution = 0;
-        gyro_fixture_def.m_friction = 0.4;
+        gyro_fixture_def.m_friction = 0.0;
 
         gyro_body->create_fixture(gyro_fixture_def);
     }

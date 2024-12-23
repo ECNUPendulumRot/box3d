@@ -10,6 +10,7 @@
 #include "geometry/b3_sphere_shape.hpp"
 #include "geometry/b3_plane_shape.hpp"
 #include "geometry/b3_cone_shape.hpp"
+#include "geometry/b3_cylinder_shape.hpp"
 
 #include "collision/b3_bvh.hpp"
 #include "collision/b3_fixture.hpp"
@@ -21,6 +22,8 @@
 #include "utils/b3_timer.hpp"
 #include "common/b3_draw.hpp"
 #include "math/b3_vec2.hpp"
+
+#include "dynamics/constraint/b3_point_point_constraint.hpp"
 
 #endif //BOX3D_HPP
 

@@ -2,12 +2,12 @@
 #ifndef BOX3D_B3_BODY_HPP
 #define BOX3D_B3_BODY_HPP
 
-
 #include "common/b3_allocator.hpp"
 #include "math/b3_quat.hpp"
 #include "dynamics/b3_transform.hpp"
 #include "dynamics/b3_body_def.hpp"
 
+#include <vector>
 
 /////////// Forward Delaration ///////////
 
@@ -18,6 +18,8 @@ class b3FixtureDef;
 class b3Fixture;
 
 struct b3ContactEdge;
+
+class b3ConstraintBase;
 
 //////////////////////////////////////////
 
@@ -52,6 +54,7 @@ class b3Body {
     // in form of angle axis
     b3Vec3r m_w;
 
+    b3Transformr m_world_transform;
 
     ////////////////// Dynamic Properties //////////////////
 
@@ -63,6 +66,12 @@ class b3Body {
 
     real m_inv_mass = 0.0;
 
+    b3Mat33r m_local_inertia = b3Mat33r::zero();
+
+    b3Mat33r m_local_inv_inertia = b3Mat33r::zero();
+
+    b3Mat33r m_inv_inertia_tensor_world;
+
     b3Mat33r m_inertia = b3Mat33r::zero();
 
     b3Mat33r m_inv_inertia = b3Mat33r::zero();
@@ -72,6 +81,10 @@ class b3Body {
     real m_gravity_scale = 1.0;
 
     b3Vec3r m_torque;
+
+    real m_linear_damping = 0.0;
+
+    real m_angular_damping = 0.0;
 
     ///////////////// Collision Properties /////////////////
 
@@ -92,7 +105,11 @@ class b3Body {
 
     int32 m_island_index;
 
+    int32 m_companion_id;
+
     uint32 m_flags = 0;
+
+    std::vector<b3ConstraintBase*> m_constraints;
 
 public:
 
@@ -117,14 +134,40 @@ public:
 
     b3Fixture* create_fixture(const b3FixtureDef& def);
 
+    b3Vec3r get_velocity_in_local_point(const b3Vec3r& rel_pos) const {
+        return m_v + m_w.cross(rel_pos);
+    }
+
+    bool add_constraint(b3ConstraintBase* constraint);
+
+    int find_constraint(b3ConstraintBase* constraint);
+
+    bool remove_constraint(b3ConstraintBase* constraint);
+
+    bool should_collide(const b3Body* other);
+
+    b3Vec3r compute_gyro_scopic_implicit(real dt) const;
+
     ///////////////// Getter and Setter /////////////////
 
     inline b3Body* next() const {
         return m_next;
     }
 
+//    const b3Vec3r& get_inv_inertia_diag_local() const {
+//        return m_local_inv_inertia;
+//    }
+
     inline b3BodyType get_type() const {
         return m_type;
+    }
+
+    int32 get_companion_id() const {
+        return m_companion_id;
+    }
+
+    void set_companion_id(int32 id) {
+        m_companion_id = id;
     }
 
     inline b3Vec3r get_force() const {
@@ -143,6 +186,18 @@ public:
         m_force = force;
     }
 
+    b3Mat33r get_inv_inertia_local() const {
+        return m_local_inv_inertia;
+    }
+
+    void apply_gravity();
+
+    void clear_forces() {
+        m_force.set(0, 0, 0);
+        m_torque.set(0, 0 , 0);
+    }
+
+    b3Mat33r get_local_inertia() const;
 
     void apply_torque(b3Vec3r& torque) {
         m_torque = torque;
@@ -157,16 +212,24 @@ public:
     }
 
     b3Vec3r get_position() const {
-        return m_p;
+        // return m_p;
+        return m_world_transform.position();
+    }
+
+    b3Transformr get_world_transform() const {
+        return m_world_transform;
     }
 
     b3Quaternionr get_quaternion() const {
-        return m_q;
+        // return m_q;
+        return m_world_transform.get_rotation();
     }
 
     void set_quaternion(const b3Quaternionr& q) {
         m_q = q;
     }
+
+    void update_inertia_tensor();
 
     void set_position(const b3Vec3r& p) {
         m_p = p;
@@ -180,11 +243,11 @@ public:
         return m_w;
     }
 
-    void set_linear_velocity(b3Vec3r& v) {
+    void set_linear_velocity(const b3Vec3r& v) {
         m_v = v;
     }
 
-    void set_angular_velocity(b3Vec3r& w) {
+    void set_angular_velocity(const b3Vec3r& w) {
         m_w = w;
     }
 
@@ -200,10 +263,23 @@ public:
         return m_mass;
     }
 
+    real get_linear_damping() const {
+        return m_linear_damping;
+    }
+
+    real get_angular_damping() const {
+        return m_angular_damping;
+    }
+
     b3Mat33r get_inv_inertia() const {
         return m_inv_inertia;
     }
 
+    b3Mat33r get_inv_inertia_tensor_world() const {
+        return m_inv_inertia_tensor_world;
+    }
+
+    // TODO: delete
     b3Mat33r get_inertia() const {
         return m_inertia;
     }
@@ -226,6 +302,11 @@ public:
 
     inline bool test_flag(Flag flag) {
         return m_flags & flag;
+    }
+
+    void proceed_to_transform(const b3Transformr& new_transform) {
+        m_world_transform = new_transform;
+        update_inertia_tensor();
     }
 
     inline void unset_flag(Flag flag) {

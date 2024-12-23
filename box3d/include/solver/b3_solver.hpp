@@ -68,14 +68,14 @@ public:
 
     void solve_velocity_constraints(bool is_collision);
 
-    void solve_sphere_angular_velocity(b3ContactVelocityConstraint* vc);
-
     void init_velocity_constraints();
 
     // TODO: This function is not used now, it's effect not good.
     void correct_penetration();
 
-    void apply_spinning_and_rolling_friction(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse);
+    void apply_spinning_and_rolling_friction1(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse);
+
+    void apply_spinning_and_rolling_friction2(b3ContactVelocityConstraint* vc, b3Vec3r& w_a, b3Vec3r& w_b, real total_impulse);
 
     int solve();
 

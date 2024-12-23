@@ -30,12 +30,14 @@ set(B3D_HEADER_FILES
         include/dynamics/b3_body_def.hpp
         include/dynamics/b3_island.hpp
         include/dynamics/b3_mass_property.hpp
+        include/dynamics/b3_transform_util.hpp
 
         include/geometry/b3_shape.hpp
         include/geometry/b3_cube_shape.hpp
         include/geometry/b3_sphere_shape.hpp
         include/geometry/b3_plane_shape.hpp
         include/geometry/b3_cone_shape.hpp
+        include/geometry/b3_cylinder_shape.hpp
 
         include/utils/b3_timer.hpp
 
@@ -66,6 +68,25 @@ set(B3D_HEADER_FILES
         include/collision/algorithm/b3_sphere_box_collision_algorithm.hpp
         include/collision/algorithm/b3_plane_sphere_collision_algorithm.hpp
         include/collision/algorithm/b3_plane_box_collision_algorithm.hpp
+        include/collision/algorithm/b3_plane_cone_collision_algorithm.hpp
+        include/collision/algorithm/b3_box_cone_collision_algorithm.hpp
+        include/collision/algorithm/b3_box_cylinder_collision_algorithm.hpp
+
+        include/collision/b3_cube_cone_contact.hpp
+
+        include/collision/gjk/b3_gjk_pair_detector.hpp
+        include/collision/gjk/b3_voronoi_simplex_solver.hpp
+        include/collision/gjk/b3_penetration_depth_solver.hpp
+        include/collision/gjk/b3_gjk_epa_solver2.hpp
+
+        include/solver/b3_solver_body.hpp
+        include/solver/b3_solver_lxj.hpp
+        include/solver/b3_solver_constraint.hpp
+
+        include/collision/b3_octree.hpp
+        include/dynamics/constraint/b3_constraint_base.hpp
+        include/dynamics/constraint/b3_point_point_constraint.hpp
+        include/dynamics/constraint/b3_jacobian_entry.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -98,6 +119,7 @@ set(B3D_SOURCE_FILES
         src/geometry/b3_sphere_shape.cpp
         src/geometry/b3_plane_shape.cpp
         src/geometry/b3_cone_shape.cpp
+        src/geometry/b3_cylinder_shape.cpp
 
         src/solver/b3_solver.cpp
         src/geometry/b3_shape.cpp
@@ -114,6 +136,23 @@ set(B3D_SOURCE_FILES
         src/collision/algorithm/b3_sphere_box_collision_algorithm.cpp
         src/collision/algorithm/b3_plane_sphere_collision_algorithm.cpp
         src/collision/algorithm/b3_plane_box_collision_algorithm.cpp
+        src/collision/algorithm/b3_plane_cone_collision_algorithm.cpp
+        src/collision/algorithm/b3_box_cone_collision_algorithm.cpp
+        src/collision/algorithm/b3_box_cylinder_cllision_algorithm.cpp
+
+        src/collision/b3_cube_cone_contact.cpp
+
+        src/collision/gjk/b3_gjk_pair_detector.cpp
+        src/collision/gjk/b3_voronoi_simplex_solver.cpp
+        src/collision/gjk/b3_penetration_depth_solver.cpp
+        src/collision/gjk/b3_gjk_epa_solver2.cpp
+
+        src/solver/b3_solver_lxj.cpp
+
+        src/collision/b3_octree.cpp
+
+        src/dynamics/constraints/b3_constraint_base.cpp
+        src/dynamics/constraints/b3_point_point_constraint.cpp
 )
 
 # add third-party libraries

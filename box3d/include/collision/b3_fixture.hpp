@@ -34,6 +34,8 @@ struct b3FixtureDef {
      * It can be allocated on the stack because the shape will be cloned
      */
     b3Shape* m_shape = nullptr;
+
+    b3Transformr m_local_transform;
 };
 
 
@@ -73,6 +75,7 @@ class b3Fixture {
 
     real m_spinning_friction = 0.0;
 
+    // TODO: replace this with m_mass
     real m_density = 0.0;
 
     b3Shape* m_shape = nullptr;
@@ -85,7 +88,15 @@ class b3Fixture {
 
     b3Fixture* m_next = nullptr;
 
+    b3Transformr m_local_transform;
+
 public:
+
+    b3Transformr get_world_transform(const b3Transformr& xf);
+
+    b3Transformr get_local_transform() const {
+        return m_local_transform;
+    }
 
     void create_fixture(b3BlockAllocator* block_allocator,  const b3FixtureDef& f_def, b3Body* body);
 
@@ -93,6 +104,10 @@ public:
 
     inline void get_mass_data(b3MassProperty& mass_data) const {
         m_shape->compute_mass_properties(mass_data, m_density);
+    }
+
+    b3Vec3r get_center_offset() const {
+        return m_local_transform.position();
     }
 
     b3Body* get_body() const {

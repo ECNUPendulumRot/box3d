@@ -9,6 +9,7 @@
 #include "collision/b3_plane_sphere_contact.hpp"
 #include "collision/b3_plane_cube_contact.hpp"
 #include "collision/b3_plane_cone_contact.hpp"
+#include "collision/b3_cube_cone_contact.hpp"
 
 #include "collision/b3_persistent_manifold.hpp"
 #include "collision/b3_dispatcher.hpp"
@@ -49,6 +50,7 @@ void b3Contact::initialize_registers()
     add_type(b3PlaneSphereContact::create, b3PlaneSphereContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_sphere);
     add_type(b3PlaneCubeContact::create, b3PlaneCubeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cube);
     add_type(b3PlaneConeContact::create, b3PlaneConeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cone);
+    add_type(b3CubeConeContact::create, b3CubeConeContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_cone);
 }
 
 
@@ -164,17 +166,20 @@ void b3Contact::update(b3Dispatcher* dispatcher, const b3DispatcherInfo& info, b
     b3Body *body_b = m_fixture_b->get_body();
 
     // TODO: use dispatcher to get the persistent manifold
-    m_persistent_manifold = dispatcher->get_new_manifold(body_a, body_b);
+    if (m_persistent_manifold == nullptr) {
+        m_persistent_manifold = dispatcher->get_new_manifold(body_a, body_b);
+        m_persistent_manifold->set_bodies(body_a, body_b);
+    }
     dispatcher->dispatch_collision_pair(this, info, m_persistent_manifold);
 
-    b3Transformr xf_a(body_a->get_position(), body_a->get_quaternion());
-    b3Transformr xf_b(body_b->get_position(), body_b->get_quaternion());
+    b3Transformr xf_a = body_a->get_world_transform();
+    b3Transformr xf_b = body_b->get_world_transform();
 
     // TODO: add sensor ?
     // generate the manifold between the two shapes
     evaluate(&m_manifold, xf_a, xf_b);
 
-    bool touching = m_manifold.m_point_count > 0;
+    bool touching = m_manifold.m_point_count > 0 || m_persistent_manifold->get_contact_point_count() > 0;
 
     if (touching) {
   	    m_flags |= e_touching_flag;

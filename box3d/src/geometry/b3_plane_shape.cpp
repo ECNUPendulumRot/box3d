@@ -50,10 +50,9 @@ void b3PlaneShape::get_bound_aabb(b3AABB* aabb, const b3Transformr& xf, int32 ch
 void b3PlaneShape::compute_mass_properties(b3MassProperty &mass_data, real density) const
 {
     // plane is static object
-    mass_data.m_center = b3Vec3r::zero();
     mass_data.m_volume = 0;
     mass_data.m_mass = 0;
-    mass_data.m_Inertia = b3Mat33r::zero();
+    mass_data.m_local_Inertia = b3Mat33r::zero();
 }
 
 b3Shape* b3PlaneShape::clone() const
