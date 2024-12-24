@@ -32,6 +32,7 @@ class b3BlockAllocator;
 class b3ContactSolvergGS {
 
 public:
+    bool  violate = false;
 
     b3Contact** m_contacts = nullptr;
 
