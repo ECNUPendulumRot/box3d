@@ -51,6 +51,7 @@ public:
     void clear() {
         m_body_count = 0;
         m_contact_count = 0;
+        m_constraint_count = 0;
     }
 
     b3Contact** get_contacts() const {

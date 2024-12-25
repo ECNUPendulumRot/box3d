@@ -333,8 +333,8 @@ void b3World::integrate_transforms_internal(b3TimeStep &step) {
 //            std::cout << "body position: " << p.x << " " << p.y << " " << p.z << std::endl;
 //            std::cout << "body position: " << p.x << " " << p.y << " " << p.z << ", rotation: "
 //                      << q.m_x << " " << q.m_y << " " << q.m_z << " " << q.m_w << std::endl;
-//            std::cout << "linear velocity: " << v.x << " " << v.y << " " << v.z << ", angular velocity: "
-//                      << w.x << " " << w.y << " " << w.z << std::endl;
+            std::cout << "linear velocity: " << v.x << " " << v.y << " " << v.z << ", angular velocity: "
+                      << w.x << " " << w.y << " " << w.z << std::endl;
         }
     }
 }

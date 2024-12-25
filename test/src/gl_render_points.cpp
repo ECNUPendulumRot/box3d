@@ -70,6 +70,7 @@ void GLRenderPoints::create()
     glBindVertexArray(0);
 
     m_count = 0;
+    m_permanent_count = 0;
 }
 
 
@@ -99,6 +100,18 @@ void GLRenderPoints::vertex(const b3Vec3f &v, const b3Color &c, float size)
     m_colors[m_count] = c;
     m_sizes[m_count] = size;
     ++m_count;
+}
+
+void GLRenderPoints::permanent_vertex(const b3Vec3f &v, const b3Color &c, float size) {
+    if (m_count == e_maxVertices) {
+        flush();
+    }
+
+    m_vertices[m_count] = v;
+    m_colors[m_count] = c;
+    m_sizes[m_count] = size;
+    ++m_count;
+    ++m_permanent_count;
 }
 
 
@@ -139,5 +152,5 @@ void GLRenderPoints::flush()
     glBindVertexArray(0);
     glUseProgram(0);
 
-    m_count = 0;
+    m_count = m_permanent_count;
 }

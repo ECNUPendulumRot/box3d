@@ -281,7 +281,7 @@ void b3GjkPairDetector::get_closest_points(const b3GjkPairDetector::ClosestPoint
 
         result.add_contact_point(normalInB, pointOnB + position_offset, distance);
     } else {
-        printf("invalid gjk query\n");
+        // printf("invalid gjk query\n");
     }
 }
 

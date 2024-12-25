@@ -87,6 +87,8 @@ set(B3D_HEADER_FILES
         include/dynamics/constraint/b3_constraint_base.hpp
         include/dynamics/constraint/b3_point_point_constraint.hpp
         include/dynamics/constraint/b3_jacobian_entry.hpp
+
+        include/collision/b3_cube_cylinder_contact.hpp
 )
 
 set(B3D_SOURCE_FILES
@@ -153,6 +155,8 @@ set(B3D_SOURCE_FILES
 
         src/dynamics/constraints/b3_constraint_base.cpp
         src/dynamics/constraints/b3_point_point_constraint.cpp
+
+        src/collision/b3_cube_cylinder_contact.cpp
 )
 
 # add third-party libraries

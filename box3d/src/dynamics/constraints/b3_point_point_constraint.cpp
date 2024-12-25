@@ -2,21 +2,28 @@
 #include "dynamics/constraint/b3_point_point_constraint.hpp"
 #include "solver/b3_solver_constraint.hpp"
 
-b3Point2PointConstraint::b3Point2PointConstraint(b3Body* bodyA, const b3Vec3r& pivot_inA, bool collide_connected) :
-    b3ConstraintBase(bodyA, collide_connected),
-    m_pivot_inA(pivot_inA),
-    m_use_solve_constraint_obsolete(false)
-{
-    // TODO:
-}
+#include "spdlog/spdlog.h"
 
+// bodyA is static body and bodyB is dynamic body
 b3Point2PointConstraint::b3Point2PointConstraint(b3Body* bodyA, b3Body* bodyB, const b3Vec3r& pivot_inA, const b3Vec3r& pivot_inB, bool collide_connected) :
     b3ConstraintBase(bodyA, bodyB, collide_connected),
     m_pivot_inA(pivot_inA),
     m_pivot_inB(pivot_inB),
     m_use_solve_constraint_obsolete(false)
 {
+    m_pivotA_world = m_bodyA->get_world_transform().transform(m_pivot_inA);
+}
 
+void b3Point2PointConstraint::apply_constraint_force_and_torque(b3SolverBody& solver_bodyB) {
+    real force = -(solver_bodyB.m_external_force_impulse.dot(m_apply_force_direction));
+    if (force > 0.f) {
+        b3Vec3r apply_force = force * m_apply_force_direction;
+        b3Vec3r r = m_pivotA_world - solver_bodyB.m_world_transform.position();
+
+        solver_bodyB.m_external_force_impulse.set_zero();
+        // solver_bodyB.m_external_force_impulse += apply_force * m_apply_force_direction;
+        solver_bodyB.m_external_torque_impulse += r.cross(apply_force);
+    }
 }
 
 void b3Point2PointConstraint::build_jacobian() {

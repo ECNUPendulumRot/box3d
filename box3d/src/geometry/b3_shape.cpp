@@ -25,8 +25,8 @@ b3Vec3r b3Shape::local_get_support_vertex(const b3Vec3r &local_dir) const {
         }
         case b3ShapeType::e_cylinder: {
             b3CylinderShape* shape = (b3CylinderShape*)this;
-            real radius = shape->get_radius();
-            real half_height = shape->get_height() * 0.5f;
+            real radius = shape->get_radius() - get_margin();
+            real half_height = shape->get_height() * 0.5f - get_margin();
 
             b3Vec3r res;
             real s = b3_sqrt(local_dir.x * local_dir.x + local_dir.y * local_dir.y);

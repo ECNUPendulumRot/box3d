@@ -15,6 +15,7 @@
 #include "collision/b3_dispatcher.hpp"
 #include "collision/algorithm/b3_collision_algorithm.hpp"
 #include "common/b3_world_callback.hpp"
+#include "collision/b3_cube_cylinder_contact.hpp"
 
 b3ContactRegister b3Contact::s_registers[b3ShapeType::e_type_count][b3ShapeType::e_type_count];
 bool b3Contact::s_initialized = false;
@@ -51,6 +52,7 @@ void b3Contact::initialize_registers()
     add_type(b3PlaneCubeContact::create, b3PlaneCubeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cube);
     add_type(b3PlaneConeContact::create, b3PlaneConeContact::destroy, b3ShapeType::e_plane, b3ShapeType::e_cone);
     add_type(b3CubeConeContact::create, b3CubeConeContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_cone);
+    add_type(b3CubeCylinderContact::create, b3CubeCylinderContact::destroy, b3ShapeType::e_cube, b3ShapeType::e_cylinder);
 }
 
 

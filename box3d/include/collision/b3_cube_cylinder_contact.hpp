@@ -1,12 +1,12 @@
 
-#ifndef BOX3D_B3_CUBE_CONE_CONTACT_HPP
-#define BOX3D_B3_CUBE_CONE_CONTACT_HPP
+#ifndef BOX3D_B3_CUBE_CYLINDER_CONTACT_HPP
+#define BOX3D_B3_CUBE_CYLINDER_CONTACT_HPP
 
 
 #include "collision/b3_contact.hpp"
 
 
-class b3CubeConeContact: public b3Contact {
+class b3CubeCylinderContact: public b3Contact {
 
 public:
 
@@ -14,9 +14,9 @@ public:
 
     static void destroy(b3Contact* contact, b3BlockAllocator* block_allocator);
 
-    b3CubeConeContact(b3Fixture* fixture_a, b3Fixture* fixture_b);
+    b3CubeCylinderContact(b3Fixture* fixture_a, b3Fixture* fixture_b);
 
-    virtual ~b3CubeConeContact() = default;
+    virtual ~b3CubeCylinderContact() = default;
 
     void evaluate(b3Manifold* manifold, const b3Transformr& xf_a, const b3Transformr& xf_b) override;
 

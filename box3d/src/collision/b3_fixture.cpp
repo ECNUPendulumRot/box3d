@@ -44,6 +44,12 @@ b3Transformr b3Fixture::get_world_transform(const b3Transformr &xf) {
     return world_xf;
 }
 
+b3Transformr b3Fixture::get_world_transform(const b3Transformr &xf) const {
+    b3Transformr world_xf(xf.rotation_matrix() * m_local_transform.position() + xf.position(),
+                          xf.rotation_matrix() * m_local_transform.rotation_matrix());
+    return world_xf;
+}
+
 void b3Fixture::create_proxy(b3BroadPhase *broad_phase, b3Transformr &m_xf)
 {
     b3_assert(m_proxy_count == 0);

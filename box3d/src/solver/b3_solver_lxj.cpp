@@ -294,7 +294,6 @@ void b3SolverLxj::convert_bodies(b3Island *island, b3TimeStep* time_step) {
             // 计算科里奥利力矩
             b3Vec3r gyro_torque =  bodies[i]->compute_gyro_scopic_implicit(time_step->m_dt);;
             solver_body.m_external_torque_impulse += gyro_torque;
-
         }
     }
 }
@@ -311,37 +310,52 @@ void b3SolverLxj::convert_contacts(b3Island *island, b3TimeStep *time_step) {
     }
 }
 
+#include "spdlog/spdlog.h"
 
 void b3SolverLxj::convert_joints(b3Island* island, b3TimeStep* time_step) {
 
-    b3ConstraintBase* c = island->get_constraint(0);
-    b3Body* bodyA = c->get_bodyA();
-    b3Body* bodyB = c->get_bodyB();
-
-    int solver_body_idA = get_or_init_solver_body(*bodyA, time_step->m_dt);
-    int solver_body_idB = get_or_init_solver_body(*bodyB, time_step->m_dt);
-    b3SolverBody& solver_bodyA = m_tmp_solver_bodies_pool[solver_body_idA];
-    b3SolverBody& solver_bodyB = m_tmp_solver_bodies_pool[solver_body_idB];
-
-
-    if (solver_bodyA.m_original_body == nullptr) {
-        b3Vec3r pivotA = bodyA->get_world_transform().transform(b3Vec3r(0, 0, -0.4));
-        // bodyA is the fixed body
-        b3Vec3r r = pivotA - solver_bodyB.m_world_transform.position();
-        b3Vec3r external_force = -solver_bodyB.m_external_force_impulse;
-        solver_bodyB.m_external_force_impulse += external_force;
-        solver_bodyB.m_external_torque_impulse = r.cross(external_force);
-    } else {
-        b3Vec3r pivotB = bodyB->get_world_transform().transform(b3Vec3r(0, 0, -0.4));
-        // bodyB is the fixed body
-        b3Vec3r r = pivotB - solver_bodyA.m_world_transform.position();
-        b3Vec3r external_force = -solver_bodyA.m_external_force_impulse;
-        solver_bodyA.m_external_force_impulse += external_force;
-        solver_bodyA.m_external_torque_impulse = r.cross(external_force);
-    }
-    // return;
-
     int32 num_constraints = island->get_constraint_count();
+    if (num_constraints == 0) {
+        return;
+    }
+
+    for (int i = 0; i < num_constraints; i++) {
+        b3ConstraintBase* constraint = island->get_constraint(i);
+        b3Body* bodyB = constraint->get_bodyB();
+        int solver_body_IdB = get_or_init_solver_body(*bodyB, time_step->m_dt);
+        b3SolverBody& solver_bodyB = m_tmp_solver_bodies_pool[solver_body_IdB];
+
+        constraint->apply_constraint_force_and_torque(solver_bodyB);
+    }
+//
+//    b3ConstraintBase* c = island->get_constraint(0);
+//    b3Body* bodyA = c->get_bodyA();
+//    b3Body* bodyB = c->get_bodyB();
+//
+//    int solver_body_idA = get_or_init_solver_body(*bodyA, time_step->m_dt);
+//    int solver_body_idB = get_or_init_solver_body(*bodyB, time_step->m_dt);
+//    b3SolverBody& solver_bodyA = m_tmp_solver_bodies_pool[solver_body_idA];
+//    b3SolverBody& solver_bodyB = m_tmp_solver_bodies_pool[solver_body_idB];
+
+
+//    if (solver_bodyA.m_original_body == nullptr) {
+//        b3Vec3r pivotA = bodyA->get_world_transform().transform(b3Vec3r(0, 0, -0.4));
+//        // bodyA is the fixed body
+//        b3Vec3r r = pivotA - solver_bodyB.m_world_transform.position();
+//        b3Vec3r external_force = -solver_bodyB.m_external_force_impulse;
+//        solver_bodyB.m_external_force_impulse += external_force;
+//        solver_bodyB.m_external_torque_impulse = r.cross(external_force);
+//    } else {
+//        b3Vec3r pivotB = bodyB->get_world_transform().transform(b3Vec3r(0, 0, -0.4));
+//        // bodyB is the fixed body
+//        b3Vec3r r = pivotB - solver_bodyA.m_world_transform.position();
+//        b3Vec3r external_force = -solver_bodyA.m_external_force_impulse;
+//        solver_bodyA.m_external_force_impulse += external_force;
+//        solver_bodyA.m_external_torque_impulse = r.cross(external_force);
+//    }
+//    // return;
+
+
     for (int j = 0; j < num_constraints; j++) {
         b3ConstraintBase* constraint = island->get_constraint(j);
         constraint->build_jacobian();
@@ -857,7 +871,6 @@ void b3SolverLxj::init_solver_body(b3SolverBody& solver_body, b3Body* body, real
         solver_body.m_external_force_impulse = body->get_force() * body->get_inv_mass() * dt;
 
         const b3Mat33r& R = solver_body.m_world_transform.rotation_matrix();
-        b3Mat33r world_inertia = R * body->get_inv_inertia() * R.transpose();
         solver_body.m_external_torque_impulse = body->get_torque() * body->get_inv_inertia_tensor_world() * dt;
         // solver_body.m_external_torque_impulse = body->get_torque() * body->get_inv_inertia() * dt;
     }

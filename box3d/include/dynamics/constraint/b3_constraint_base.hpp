@@ -73,6 +73,8 @@ public:
         return m_collide_connected;
     }
 
+    virtual void apply_constraint_force_and_torque(b3SolverBody& solver_bodyB) {}
+
     virtual void build_jacobian() {}
 
     virtual void get_info1(b3ConstraintInfo1* info) = 0;

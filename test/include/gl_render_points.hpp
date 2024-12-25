@@ -20,14 +20,18 @@ struct GLRenderPoints
 
     void vertex(const b3Vec3f& v, const b3Color& c, float size);
 
+    void permanent_vertex(const b3Vec3f& v, const b3Color& c, float size);
+
     void flush();
 
-    enum { e_maxVertices = 2048 };
+    enum { e_maxVertices = 2048000 };
     b3Vec3f m_vertices[e_maxVertices];
     b3Color m_colors[e_maxVertices];
     float m_sizes[e_maxVertices];
 
-    int32 m_count;
+    long long m_count;
+
+    long long m_permanent_count;
 
     GLuint m_vao_id;
     GLuint m_vbo_ids[3];

@@ -4,6 +4,9 @@
 
 class TestBoxConeRotation : public Test {
 
+    b3Body* m_coneBody;
+    b3Body* m_fixedBody;
+
 public:
 
     TestBoxConeRotation() {
@@ -30,8 +33,8 @@ public:
         fixtureDef.m_spinning_friction = 0.4;
         fixtureDef.m_rolling_friction = 0.4;
 
-        b3Body* body = m_world->create_body(bodyDef);
-        body->create_fixture(fixtureDef);
+        m_coneBody = m_world->create_body(bodyDef);
+        m_coneBody->create_fixture(fixtureDef);
 
         {
             b3BodyDef boxBodyDef;
@@ -40,7 +43,7 @@ public:
             b3Vec3r boxq(0, 0, 0);
             boxBodyDef.set_init_pose(boxPos, boxq);
 
-            b3Body* body = m_world->create_body(boxBodyDef);
+            m_fixedBody = m_world->create_body(boxBodyDef);
 
             b3FixtureDef boxFixtureDef;
 
@@ -55,8 +58,17 @@ public:
             boxFixtureDef.m_rolling_friction = 0.8;
 
 
-            body->create_fixture(boxFixtureDef);
+            m_fixedBody->create_fixture(boxFixtureDef);
         }
+//        {
+//            b3Vec3r pivotInA(0, 0, 10);
+//            b3Vec3r pivotInB(0, 0, 0.6);
+//            b3Point2PointConstraint* constraint = new b3Point2PointConstraint(m_fixedBody, m_coneBody,
+//                                                                              pivotInA, pivotInB, true);
+//            constraint->set_apply_force_direction(b3Vec3r(0, 0, 0));
+//            m_world->add_constraint(constraint);
+//
+//        }
     }
 
     static Test* create() {

@@ -45,7 +45,7 @@ void b3BoxCylinderCollisionAlgorithm::process_collision(
 //    input.m_transformA = b3Transformr(bodyA->get_position(), bodyA->get_quaternion());
 //    input.m_transformB = b3Transformr(bodyB->get_position(), bodyB->get_quaternion());
     input.m_transformA = bodyA->get_world_transform();
-    input.m_transformB = bodyB->get_world_transform();
+    input.m_transformB = fixtureB->get_world_transform(bodyB->get_world_transform());
 
     b3ManifoldResult result(bodyA, bodyB, manifold);
     gjk_pair_detector.get_closest_points(input, result);

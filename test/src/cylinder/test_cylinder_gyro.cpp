@@ -1,5 +1,6 @@
 
 #include "test.hpp"
+#include "gl_render_points.hpp"
 
 #include <iostream>
 
@@ -17,13 +18,13 @@ public:
             b3BodyDef bodyDef;
             bodyDef.m_type = b3BodyType::b3_dynamic_body;
             /// add damping
-             bodyDef.m_linear_damping = 0.1;
-             bodyDef.m_angular_damping = 0.1;
+            bodyDef.m_linear_damping = 0;
+            bodyDef.m_angular_damping = 0;
 
             b3Vec3r p(0, -1, 1.6);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v;
-            b3Vec3r w(0, -40, 0);
+            b3Vec3r w(0, 100, 0);
             bodyDef.set_init_pose(p, q);
             bodyDef.set_init_velocity(v, w);
 
@@ -88,7 +89,10 @@ public:
     void step(Settings& settings) override {
         Test::step(settings);
         auto p = m_gyro_body->get_world_transform().position();
-        std::cout << "pos: " << p.x << " " << p.y << " " << p.z << std::endl;
+        auto w = m_gyro_body->get_angular_velocity();
+        // std::cout << "pos: " << p.x << " " << p.y << " " << p.z << std::endl;
+        std::cout << "angular velocity: " << w.x << " " << w.y << " " << w.z << std::endl;
+        g_debug_draw.m_points->permanent_vertex(p, b3Color(0, 0, 1), 3.0);
     }
 
     static Test* create() {

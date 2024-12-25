@@ -94,6 +94,8 @@ public:
 
     b3Transformr get_world_transform(const b3Transformr& xf);
 
+    b3Transformr get_world_transform(const b3Transformr& xf) const;
+
     b3Transformr get_local_transform() const {
         return m_local_transform;
     }

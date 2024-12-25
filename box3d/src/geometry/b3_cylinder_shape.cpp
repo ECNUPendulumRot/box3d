@@ -44,9 +44,10 @@ void b3CylinderShape::compute_mass_properties(b3MassProperty &mass_data, real de
     mass_data.m_local_Inertia(0, 0) = t1;
     mass_data.m_local_Inertia(1, 1) = t1;
     mass_data.m_local_Inertia(2, 2) = t2;
-//    mass_data.m_local_Inertia(0, 0) = 1;
-//    mass_data.m_local_Inertia(1, 1) = 1;
-//    mass_data.m_local_Inertia(2, 2) = 0.5;
+
+    mass_data.m_local_Inertia(0, 0) = 1;
+    mass_data.m_local_Inertia(1, 1) = 1;
+    mass_data.m_local_Inertia(2, 2) = 1;
 }
 
 

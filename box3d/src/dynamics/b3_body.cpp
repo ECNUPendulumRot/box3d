@@ -105,7 +105,7 @@ bool b3Body::remove_constraint(b3ConstraintBase* constraint) {
 bool b3Body::should_collide(const b3Body* other) {
 
     // At least one body should be dynamic
-    if (m_type != b3BodyType::b3_dynamic_body || other->m_type != b3BodyType::b3_dynamic_body) {
+    if (m_type != b3BodyType::b3_dynamic_body && other->m_type != b3BodyType::b3_dynamic_body) {
         return false;
     }
 
