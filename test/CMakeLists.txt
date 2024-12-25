@@ -44,6 +44,7 @@ set (TESTBED_SOURCE_FILES
         src/demo_box_pyramid.cpp
         src/test_sphere_rhombus.cpp
         src/test_sphere_rhombus_symmetric.cpp
+        src/test_sphere_stack.cpp
 )
 
 add_executable(testbed ${TESTBED_SOURCE_FILES})
