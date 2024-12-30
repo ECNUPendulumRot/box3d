@@ -27,7 +27,7 @@ struct b3VelocityConstraintPoint {
     real m_rhs_penetration;
     real m_relative_velocity = 0.0f;
 
-    real m_wait = false;
+    real m_wait = true;
 };
 
 

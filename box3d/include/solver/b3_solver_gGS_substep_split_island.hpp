@@ -3,6 +3,7 @@
 #include "b3_solver.hpp"
 #include "solver/b3_contact_solver_gGS_substep.hpp"
 #include "collision/b3_contact.hpp"
+#include "spdlog/spdlog.h"
 
 struct b3SolvergGSSubstepSplitIsland: b3Solver {
     int32 m_body_count;
@@ -51,7 +52,7 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
             normal_contact_island.add_contact(contact);
         }
 
-        b3ContactSolvergGS static_solver;
+        b3ContactSolver static_solver;
         static_solver.m_block_allocator = m_block_allocator;
         static_solver.m_island = &static_contact_island;
         static_solver.m_timestep = &step;
@@ -72,6 +73,7 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
             }
 
             if (normal_contact_island.m_contact_count > 0) {
+                spdlog::info("substep:{},contact:{}",i,normal_contact_island.m_contact_count);
                 dynamic_solver.solve_velocity_constraints();
             }
         }
