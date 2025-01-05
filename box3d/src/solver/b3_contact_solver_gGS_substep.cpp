@@ -36,11 +36,12 @@ void b3ContactSolvergGS::init(b3BlockAllocator *block_allocator, b3Island *islan
 }
 
 
-static void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
+static void prepare_contact_sims(b3Island* island, b3ContactSim* css, b3ContactSim* last) {
     int32 static_collide = island->m_contact_count;
     for (int32 i = 0; i < static_collide; ++i) {
         b3Contact* c = island->m_contacts[i];
         b3ContactSim* cs = css + i;
+        b3ContactSim* la = last + i;
 
         b3Body* body_a = c->m_fixture_a->m_body;
         b3Body* body_b = c->m_fixture_b->m_body;
@@ -56,10 +57,18 @@ static void prepare_contact_sims(b3Island* island, b3ContactSim* css) {
         cs->p_a = cs->body_sim_a->p;
         cs->q_a = cs->body_sim_a->q;
 
+        la->v_a = cs->body_sim_a->v;
+        la->w_a = cs->body_sim_a->w;
+
+
         cs->v_b = cs->body_sim_b->v;
         cs->w_b = cs->body_sim_b->w;
         cs->p_b = cs->body_sim_b->p;
         cs->q_b = cs->body_sim_b->q;
+
+        la->v_b = cs->body_sim_b->v;
+        la->w_b = cs->body_sim_b->w;
+
 
         cs->m_a = body_a->m_mass;
         cs->m_b = body_b->m_mass;
@@ -120,37 +129,84 @@ void b3ContactSolvergGS::prepare_contact_contraints() {
     m_contact_count = m_island->m_contact_count;
     void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
     m_contact_constraints = new (mem) b3ContactSim[m_contact_count];
-    prepare_contact_sims(m_island, m_contact_constraints);
+    mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
+    last = new (mem) b3ContactSim[m_contact_count];
+    prepare_contact_sims(m_island, m_contact_constraints, last);
 
 }
+void b3ContactSolvergGS::solve_static_velocity_constrains() {
+    int32 vel_iteration = m_timestep->m_position_iterations;
 
+    for (int32 i = 0; i < m_contact_count; ++i) {
+
+        b3ContactSim *cs = m_contact_constraints + i;
+
+        const real& m_a = cs->inv_m_a;
+        const real& m_b = cs->inv_m_b;
+        const b3Mat33r& I_a = cs->inv_I_a;
+        const b3Mat33r& I_b = cs->inv_I_b;
+
+        const b3Vec3r& normal = cs->normal;
+
+        b3Vec3r v_a = cs->body_sim_a->v;
+        b3Vec3r w_a = cs->body_sim_a->w;
+        b3Vec3r v_b = cs->body_sim_b->v;
+        b3Vec3r w_b = cs->body_sim_b->w;
+
+        for (int32 j = 0; j < vel_iteration; ++j) {
+            for (int32 k = 0; k < cs->point_count; ++k) {
+                b3VelocityConstraintPoint* vcp = cs->points + k;
+
+                b3Vec3r v_rel = (v_b + w_b.cross(vcp->m_rb) - v_a - w_a.cross(vcp->m_ra));
+
+                real vn = v_rel.dot(normal);
+                real lambda = -vcp->m_normal_mass * (vn - vcp->m_bias_velocity);
+
+                real new_impulse = b3_max(vcp->m_normal_impulse + lambda, (real)0.0);
+                lambda = new_impulse - vcp->m_normal_impulse;
+                vcp->m_normal_impulse = new_impulse;
+
+                b3Vec3r impulse = lambda * normal;
+                v_a = v_a - m_a * impulse;
+                w_a = w_a - I_a * vcp->m_ra.cross(impulse);
+                v_b = v_b + m_b * impulse;
+                w_b = w_b + I_b * vcp->m_rb.cross(impulse);
+            }
+        }
+        cs->body_sim_a->v = v_a;
+        cs->body_sim_a->w = w_a;
+        cs->body_sim_b->v = v_b;
+        cs->body_sim_b->w = w_b;
+    }
+}
 
 void b3ContactSolvergGS::solve_velocity_constraints() {
     real tolerance = 0.0;
 
     int32 wait = 0;
 
-    int32 vel_iteration = m_timestep->m_velocity_iterations;
+    //total_iterations is fixed, but the iterations of one substep is variable
+    int32 vel_iteration = iter_capacity - iteration_now;
+    bool violate;
+    for (int32 j = 0; j < vel_iteration; ++j) {
+        if(j>0) spdlog::info("iterations now = {}",iteration_now);
+        ++iteration_now;
+        violate = false;
+        for (int32 i = 0; i < m_contact_count; ++i) {
 
+            b3ContactSim *cs = m_contact_constraints + i;
 
+            const real& m_a = cs->inv_m_a;
+            const real& m_b = cs->inv_m_b;
+            const b3Mat33r& I_a = cs->inv_I_a;
+            const b3Mat33r& I_b = cs->inv_I_b;
 
-        for (int32 j = 0; j < vel_iteration; ++j) {
+            const b3Vec3r& normal = cs->normal;
 
-            for (int32 i = 0; i < m_contact_count; ++i) {
-
-                b3ContactSim *cs = m_contact_constraints + i;
-
-                const real& m_a = cs->inv_m_a;
-                const real& m_b = cs->inv_m_b;
-                const b3Mat33r& I_a = cs->inv_I_a;
-                const b3Mat33r& I_b = cs->inv_I_b;
-
-                const b3Vec3r& normal = cs->normal;
-
-                b3Vec3r v_a = cs->body_sim_a->v;
-                b3Vec3r w_a = cs->body_sim_a->w;
-                b3Vec3r v_b = cs->body_sim_b->v;
-                b3Vec3r w_b = cs->body_sim_b->w;
+            b3Vec3r v_a = cs->body_sim_a->v;
+            b3Vec3r w_a = cs->body_sim_a->w;
+            b3Vec3r v_b = cs->body_sim_b->v;
+            b3Vec3r w_b = cs->body_sim_b->w;
 
                 for (int32 k = 0; k < cs->point_count; ++k) {
                     b3VelocityConstraintPoint* vcp = cs->points + k;
@@ -160,11 +216,13 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
                     real vn = -v_rel.dot(normal);
                     real v_bias = vcp->m_bias_velocity;
                     //there are four situations of constrains
-                    //1.init constrain violate,now legal
-                    //2.init constrain violate,now still violate
+
+                    //1.init constrain violate,now still violate
+                    //2.init constrain violate,now legal
                     //3.init constrain legal,now legal
                     //4.init constrain legal,now violate
                     if (vn > 0) {
+                        violate = true;
                         if (vcp->m_bias_velocity <= 0) {
                             //4
                             if (abs(vcp->m_relative_velocity - vn) <= tolerance) {
@@ -174,10 +232,9 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
                                 if(!vcp->m_wait){
                                     --wait;
                                     vcp->m_wait = true;
-                                    //zero = !(bool)m_wait;
+                                    //zero = !(bool)wait;
                                     spdlog::info("st:4, index A={},B={} is kicked in m_wait list,now have {} left",
                                                  cs->body_sim_a->index,cs->body_sim_b->index,wait);
-                                    //if(m_wait == 0) ++propagations;
                                 } else{
                                     spdlog::info("st:4, index A={},B={} is waiting to convert",cs->body_sim_a->index,cs->body_sim_b->index);
                                 }
@@ -186,6 +243,7 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
                                     //st4 = true;
                                     vcp->m_bias_velocity = vn;
                                     spdlog::info("st:4, constrain {}, {} is converted",cs->body_sim_a->index,cs->body_sim_b->index);
+                                    violate = false;
                                 }
                                 vcp->m_relative_velocity = vn;
                                 v_bias = 0.0;
@@ -209,15 +267,15 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
 
                             }
                         } else {
-                            //2
+                            //1
                             //怎么区分小冲突是来自数值误差还是真实计算？
                             //if(rhs< vc->m_restitution_threshold) rhs_restitution_velocity = 0.0f;
-                            spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",cs->body_sim_a->index,cs->body_sim_b->index,vn,v_bias);
+                            spdlog::info("st:1, the violating constrain is {} ,{},v_rel = {},v_bias = {}",cs->body_sim_a->index,cs->body_sim_b->index,vn,v_bias);
                             //spdlog::info("the lambda is {}",vcp->m_normal_mass * (rhs + rhs_restitution_velocity));
                         }
                     } else {
                         if (vcp->m_bias_velocity > 0) {
-                            //1
+                            //2
                             if (abs(vcp->m_relative_velocity - vn) <= tolerance || vn == 0.0f) {
                                 vcp->m_relative_velocity = vn;
                                 //change to situation 3
@@ -225,11 +283,11 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
                                 //不加上这项结果会有问题，因此问题在于考虑转换的条件
                                 vn = 0.0;
                                 v_bias = 0.0;
-                                spdlog::info("st:1, the violated constrain {} ,{} is real legal",cs->body_sim_a->index,cs->body_sim_b->index);
+                                spdlog::info("st:2, the violated constrain {} ,{} is real legal",cs->body_sim_a->index,cs->body_sim_b->index);
                             } else{
                                 violate = true;
-                                spdlog::info("st:1, the violated constrain {} ,{} is fake legal",cs->body_sim_a->index,cs->body_sim_b->index);
-                                spdlog::info("st:1, the violating constrain is {} ,{},v_rel = {},v_bias = {}",cs->body_sim_a->index,cs->body_sim_b->index,vn,v_bias);
+                                spdlog::info("st:2, the violated constrain {} ,{} is fake legal",cs->body_sim_a->index,cs->body_sim_b->index);
+                                spdlog::info("st:2, the violating constrain is {} ,{},v_rel = {},v_bias = {}",cs->body_sim_a->index,cs->body_sim_b->index,vn,v_bias);
                             }
                         } else {
                             //3
@@ -260,11 +318,27 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
                         vcp->m_relative_velocity = -v_rel.dot(normal);
                     }
                 }
-                cs->body_sim_a->v = v_a;
-                cs->body_sim_a->w = w_a;
-                cs->body_sim_b->v = v_b;
-                cs->body_sim_b->w = w_b;
+            cs->body_sim_a->v = v_a;
+            cs->body_sim_a->w = w_a;
+            cs->body_sim_b->v = v_b;
+            cs->body_sim_b->w = w_b;
         }
-
+        if(j==vel_iteration-1&&violate){
+            spdlog::info("time out, rollback velocity to last substep");
+            for (int32 i = 0; i < m_contact_count; ++i) {
+                b3ContactSim *cs = m_contact_constraints + i;
+                b3ContactSim *la = last + i;
+                cs->body_sim_a->v = la->v_a;
+                cs->body_sim_a->w = la->w_a;
+                cs->body_sim_b->v = la->v_b;
+                cs->body_sim_b->w = la->w_b;
+            }
+            //spdlog::info("time out, rollback velocity to last substep");
+        }
+        if(!violate) {
+            if(j>0)
+            spdlog::info("substep over, iterations now = {}",iteration_now);
+            break;
+        }
     }
 }

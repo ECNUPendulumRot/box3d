@@ -28,10 +28,6 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
     }
 
     void solve(b3TimeStep &step, b3BodySim* body_sims) override {
-        int32 substep = 4;
-        real hw = step.m_hw;
-        real dt_sub = real(1.0)/(substep * hw);
-
         b3StaticIsland static_contact_island(m_block_allocator, m_body_count, m_contact_manager->m_static_contact_count);
         b3NormalIsland normal_contact_island(m_block_allocator, m_body_count, m_contact_manager->m_normal_contact_count);
 
@@ -52,7 +48,7 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
             normal_contact_island.add_contact(contact);
         }
 
-        b3ContactSolver static_solver;
+        b3ContactSolvergGS static_solver;
         static_solver.m_block_allocator = m_block_allocator;
         static_solver.m_island = &static_contact_island;
         static_solver.m_timestep = &step;
@@ -64,18 +60,25 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
         dynamic_solver.m_timestep = &step;
         dynamic_solver.prepare_contact_contraints();
 
+        //the substep is depended on the count of contact now
+        int32 substep = b3_max(b3_min(step.m_velocity_iterations, b3_max(dynamic_solver.m_contact_count,static_contact_island.m_contact_count)),1);
+        real hw = step.m_hw;
+        real dt_sub = real(1.0)/(substep * hw);
+
         // solve velocity constraints
         for (int32 i = 0; i < substep; i++) {
             integrate_velocity(body_sims, dt_sub); // integrate velocity
 
             if (!static_solver.empty_solver()) {
-                static_solver.solve_velocity_constraints();
+                static_solver.solve_static_velocity_constrains();
             }
 
             if (normal_contact_island.m_contact_count > 0) {
                 spdlog::info("substep:{},contact:{}",i,normal_contact_island.m_contact_count);
                 dynamic_solver.solve_velocity_constraints();
             }
+
+            //integrate_position(body_sims, dt_sub);
         }
 
         integrate_position(body_sims, real(1.0) / hw);

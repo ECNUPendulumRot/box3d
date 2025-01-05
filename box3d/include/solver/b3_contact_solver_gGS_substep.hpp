@@ -32,7 +32,10 @@ class b3BlockAllocator;
 class b3ContactSolvergGS {
 
 public:
-    bool  violate = false;
+    //total iterations
+    int32 iter_capacity = 100;
+
+    int32 iteration_now = 0;
 
     b3Contact** m_contacts = nullptr;
 
@@ -50,6 +53,8 @@ public:
 
     b3ContactSim* m_contact_constraints = nullptr;
 
+    b3ContactSim* last = nullptr;
+
     b3ContactSolvergGS() = default;
 
     b3ContactSolvergGS(b3BlockAllocator* block_allocator, b3Island* island, b3TimeStep* step, bool is_static);
@@ -59,6 +64,8 @@ public:
     void prepare_contact_contraints();
 
     void solve_velocity_constraints();
+
+    void solve_static_velocity_constrains();
 
     ~b3ContactSolvergGS() = default;
 
