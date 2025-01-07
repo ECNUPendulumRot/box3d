@@ -91,7 +91,7 @@ void b3World::clear()
 }
 
 
-void b3World::step(int32 hw, int32 velocity_iterations, int32 position_iterations, b3Solver* solver)
+void b3World::step(int32 hw, int32 velocity_iterations, int32 position_iterations, int32 main_iteration, b3Solver* solver)
 {
 
     // when new fixtures were added, we need to find the new contacts.
@@ -105,6 +105,7 @@ void b3World::step(int32 hw, int32 velocity_iterations, int32 position_iteration
     step.m_dt = hw == 0 ? 0.0 : real(1.0)/real(hw);
     step.m_velocity_iterations = velocity_iterations;
     step.m_position_iterations = position_iterations;
+    step.m_main_iterations = main_iteration;
     step.m_integral_method = e_implicit;
 
     // update contacts, aabb updates, when aabb not overlapping, delete the contact,

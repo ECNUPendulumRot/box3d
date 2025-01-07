@@ -25,6 +25,8 @@ struct b3TimeStep {
 
     int32 m_position_iterations;
 
+    int32 m_main_iterations;
+
     bool m_warm_starting;
 
     b3IntegralMethod m_integral_method;

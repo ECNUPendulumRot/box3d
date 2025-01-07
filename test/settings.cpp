@@ -48,6 +48,7 @@ void Settings::save() const
     fprintf(file, "  \"hertz\": %.9g,\n", m_hertz);
     fprintf(file, "  \"velocity_iteration\": %d,\n", m_velocity_iteration);
     fprintf(file, "  \"position_iteration\": %d,\n", m_position_iteration);
+    fprintf(file, "  \"main_step_iteration\": %d,\n", m_main_iteration);
     fprintf(file, "  \"enable_sleep\": %s,\n", m_enable_sleep ? "true" : "false");
     fprintf(file, "  \"enable_continuous_physics\": %s,\n", m_enable_continuous_physics ? "true" : "false");
     fprintf(file, "  \"draw_shapes\": %s,\n", m_draw_shapes ? "true" : "false");

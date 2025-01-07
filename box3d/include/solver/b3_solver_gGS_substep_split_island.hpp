@@ -76,12 +76,17 @@ struct b3SolvergGSSubstepSplitIsland: b3Solver {
             if (normal_contact_island.m_contact_count > 0) {
                 spdlog::info("substep:{},contact:{}",i,normal_contact_island.m_contact_count);
                 dynamic_solver.solve_velocity_constraints();
+                if(dynamic_solver.is_timeout()){
+                    //integrate_position(body_sims, real(1.0) / hw);
+                    break;
+                }
             }
-
             //integrate_position(body_sims, dt_sub);
         }
+        //if(!dynamic_solver.is_timeout()){
+            integrate_position(body_sims, real(1.0) / hw);
+        //}
 
-        integrate_position(body_sims, real(1.0) / hw);
 
         write_back_status(body_sims);
     }

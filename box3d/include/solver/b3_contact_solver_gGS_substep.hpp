@@ -67,6 +67,8 @@ public:
 
     void solve_static_velocity_constrains();
 
+    bool is_timeout();
+
     ~b3ContactSolvergGS() = default;
 
     bool empty_solver() const {

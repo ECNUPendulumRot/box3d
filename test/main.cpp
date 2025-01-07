@@ -194,6 +194,7 @@ void update_ui() {
     ImGui::Begin("Tools", &g_debug_draw.m_show_ui, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
     ImGui::SliderInt("Velocity Iteration", &s_settings.m_velocity_iteration, 0, 100);
     ImGui::SliderInt("Position Iteration", &s_settings.m_position_iteration, 0, 100);
+    ImGui::SliderInt("Main Step Iteration", &s_settings.m_main_iteration, 0, 200);
     ImGui::SliderFloat("Hertz", &s_settings.m_hertz, 5.0f, 144.0f, "%.0f hz");
 
     ImGui::Separator();

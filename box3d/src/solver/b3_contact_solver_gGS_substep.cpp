@@ -27,6 +27,7 @@ void b3ContactSolvergGS::init(b3BlockAllocator *block_allocator, b3Island *islan
     m_is_static = is_static;
 
     m_timestep = step;
+
     m_block_allocator = block_allocator;
 
     m_contact_count = island->get_contacts_count();
@@ -75,6 +76,11 @@ static void prepare_contact_sims(b3Island* island, b3ContactSim* css, b3ContactS
 
         cs->inv_m_a = body_a->m_inv_mass;
         cs->inv_m_b = body_b->m_inv_mass;
+
+        const b3Mat33r& R_a = body_a->get_quaternion().rotation_matrix();
+        cs->inv_I_a = R_a.transpose() * body_a->get_inv_inertia() * R_a;
+        const b3Mat33r& R_b = body_b->get_quaternion().rotation_matrix();
+        cs->inv_I_b = R_b.transpose() * body_b->get_inv_inertia() * R_b;
 
         cs->radius_a = c->m_fixture_a->m_shape->m_radius;
         cs->radius_b = c->m_fixture_b->m_shape->m_radius;
@@ -125,7 +131,7 @@ static void prepare_contact_sims(b3Island* island, b3ContactSim* css, b3ContactS
 
 
 void b3ContactSolvergGS::prepare_contact_contraints() {
-
+    iter_capacity = m_timestep->m_main_iterations;
     m_contact_count = m_island->m_contact_count;
     void* mem = m_block_allocator->allocate(m_contact_count * sizeof(b3ContactSim));
     m_contact_constraints = new (mem) b3ContactSim[m_contact_count];
@@ -341,4 +347,11 @@ void b3ContactSolvergGS::solve_velocity_constraints() {
             break;
         }
     }
+    if(violate){
+        spdlog::info("time out but not converge");
+    }
+}
+
+bool b3ContactSolvergGS::is_timeout() {
+    return iter_capacity==iteration_now;
 }

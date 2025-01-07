@@ -73,7 +73,7 @@ public:
         return m_body_count == 0;
     }
 
-    void step(int32 dt, int32 velocity_iterations, int32 position_iterations, b3Solver* solver);
+    void step(int32 dt, int32 velocity_iterations, int32 position_iterations, int32 main_iterations, b3Solver* solver);
 
     void set_allow_sleeping(bool flag);
 
