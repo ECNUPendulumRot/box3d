@@ -79,7 +79,7 @@ public:
                 }
             }
             for(int i = layer; i < 2 * layer - 1; i++) {
-                b3Vec3r left_position(2 * layer - i - 2 , 3 + i * y_distance, 1);
+                b3Vec3r left_position(2 * layer - i - 2 , 3 + 0.9999 * i * y_distance, 1);
                 for(int j = 0; j < 2 * layer - i - 1; j++) {
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);

@@ -6,7 +6,7 @@ public:
 
     TestWallRebound() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, -10));
+        m_world->set_gravity(b3Vec3r(0, 0, 0));
         int num_of_spheres = 5;
         // create a dynamic body
         b3Transr pose, velocity;
@@ -34,14 +34,26 @@ public:
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_world->create_body(body_def)->create_fixture(fixture_def);
+        b3Fixture *fg;
+        b3Body * bd;
+
+        bd = m_world->create_body(body_def);
+        fg = bd->create_fixture(fixture_def);
+
+        utils.track_body(bd, "ini_v1");
+        utils.track_fixture(fg, "ini_v1");
 
         p = { 0.5, -0.8, 0.5 };
         v = { -2, 3.2, 0 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_world->create_body(body_def)->create_fixture(fixture_def);
+        bd = m_world->create_body(body_def);
+        fg = bd->create_fixture(fixture_def);
+
+        utils.track_body(bd, "ini_v2");
+        utils.track_fixture(fg, "ini_v2");
+
         real x = 0;
 
 
@@ -51,7 +63,11 @@ public:
             //if(i==2) v={0,-3.0f,0};
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
-            m_world->create_body(body_def)->create_fixture(fixture_def);
+            bd = m_world->create_body(body_def);
+            fg = bd->create_fixture(fixture_def);
+
+            utils.track_body(bd, ("sphere_" + std::to_string(i)).c_str());
+            utils.track_fixture(fg, ("sphere_" + std::to_string(i)).c_str());
         }
         // create a ground
         p = { 0, 0, 0 };
@@ -67,7 +83,10 @@ public:
         fixture_def.m_shape = &ground_shape;
         fixture_def.m_density = 0;
 
-        ground_body->create_fixture(fixture_def);
+        fg =  ground_body->create_fixture(fixture_def);
+
+        utils.track_body(ground_body, "ground");
+        utils.track_fixture(fg, "ground");
 
         p = { 0, 2.5f, 0 };
         q = {3.14159 * 0.5, 0, 0};
@@ -75,7 +94,10 @@ public:
         body_def.set_init_velocity(v, w);
         ground_body = m_world->create_body(body_def);
 
-        ground_body->create_fixture(fixture_def);
+        fg = ground_body->create_fixture(fixture_def);
+
+        utils.track_body(ground_body, "wall");
+        utils.track_fixture(fg, "wall");
     }
 
     static Test* create() {
