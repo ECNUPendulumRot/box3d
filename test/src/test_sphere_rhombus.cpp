@@ -21,7 +21,7 @@ public:
 
         // Define the shape of the spheres
         b3SphereShape sphere_shape;
-        sphere_shape.set_as_sphere(1);
+        sphere_shape.set_as_sphere(0.5);
 
         // Create an initial sphere with a specified initial velocity
         {
@@ -29,7 +29,7 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(0, -3, 1);
+            b3Vec3r p(0, -4, 0.5);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 5, 0);
             b3Vec3r w(0, 0, 0);
@@ -59,12 +59,12 @@ public:
 
             int index = 1;
 
-            real y_distance = sqrtf(3.0);
-            b3Vec3r x_offset(-2, 0, 0);
+            real y_distance = sqrtf(3.0)/2;
+            b3Vec3r x_offset(-1, 0, 0);
 
             b3Vec3r q(0, 0, 0);
             for(int i = 0; i < layer; i++) {
-                b3Vec3r left_position(i, 3 + i * y_distance, 1);
+                b3Vec3r left_position(i*0.5, i * y_distance-sqrtf(3.0), 0.5);
                 for(int j = 0; j <= i; j++) {
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);
@@ -79,7 +79,7 @@ public:
                 }
             }
             for(int i = layer; i < 2 * layer - 1; i++) {
-                b3Vec3r left_position(2 * layer - i - 2 , 3 + 0.9999 * i * y_distance, 1);
+                b3Vec3r left_position((2 * layer - i - 2)*0.5 , i * y_distance-sqrtf(3.0), 0.5);
                 for(int j = 0; j < 2 * layer - i - 1; j++) {
                     b3Vec3r p = left_position + j * x_offset;
                     body_def.set_init_pose(p, q);
