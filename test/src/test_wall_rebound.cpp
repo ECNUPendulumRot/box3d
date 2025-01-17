@@ -1,43 +1,12 @@
-// The MIT License
-
-// Copyright (c) 2024
-// Robot Motion and Vision Laboratory at East China Normal University
-// Contact: tophill.robotics@gmail.com
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include "test.hpp"
 
-/**
- * @brief A test class to simulate dynamic spheres bouncing off a ground plane and a vertical wall.
- */
 class TestWallRebound :public Test {
 
 public:
 
-    /**
-     * @brief Constructor for TestWallRebound.
-     * This constructor sets up the simulation environment with bouncing spheres and static ground and wall planes.
-     */
     TestWallRebound() {
 
-        m_world->set_gravity(b3Vec3r(0, 0, -10));
+        m_world->set_gravity(b3Vec3r(0, 0, 0));
         int num_of_spheres = 5;
         // create a dynamic body
         b3Transr pose, velocity;
@@ -65,14 +34,26 @@ public:
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_world->create_body(body_def)->create_fixture(fixture_def);
+        b3Fixture *fg;
+        b3Body * bd;
+
+        bd = m_world->create_body(body_def);
+        fg = bd->create_fixture(fixture_def);
+
+        utils.track_body(bd, "ini_v1");
+        utils.track_fixture(fg, "ini_v1");
 
         p = { 0.5, -0.8, 0.5 };
         v = { -2, 3.2, 0 };
         body_def.set_init_pose(p, q);
         body_def.set_init_velocity(v, w);
 
-        m_world->create_body(body_def)->create_fixture(fixture_def);
+        bd = m_world->create_body(body_def);
+        fg = bd->create_fixture(fixture_def);
+
+        utils.track_body(bd, "ini_v2");
+        utils.track_fixture(fg, "ini_v2");
+
         real x = 0;
 
 
@@ -82,7 +63,11 @@ public:
             //if(i==2) v={0,-3.0f,0};
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
-            m_world->create_body(body_def)->create_fixture(fixture_def);
+            bd = m_world->create_body(body_def);
+            fg = bd->create_fixture(fixture_def);
+
+            utils.track_body(bd, ("sphere_" + std::to_string(i)).c_str());
+            utils.track_fixture(fg, ("sphere_" + std::to_string(i)).c_str());
         }
         // create a ground
         p = { 0, 0, 0 };
@@ -98,7 +83,10 @@ public:
         fixture_def.m_shape = &ground_shape;
         fixture_def.m_density = 0;
 
-        ground_body->create_fixture(fixture_def);
+        fg =  ground_body->create_fixture(fixture_def);
+
+        utils.track_body(ground_body, "ground");
+        utils.track_fixture(fg, "ground");
 
         p = { 0, 2.5f, 0 };
         q = {3.14159 * 0.5, 0, 0};
@@ -106,18 +94,16 @@ public:
         body_def.set_init_velocity(v, w);
         ground_body = m_world->create_body(body_def);
 
-        ground_body->create_fixture(fixture_def);
+        fg = ground_body->create_fixture(fixture_def);
+
+        utils.track_body(ground_body, "wall");
+        utils.track_fixture(fg, "wall");
     }
 
-    /**
-     * @brief Factory method to create an instance of TestWallRebound.
-     * @return A pointer to the created TestWallRebound instance.
-     */
     static Test* create() {
         return new TestWallRebound;
     }
 
 };
 
-// Register the test with the test index
 static int test_index = register_test("Sphere Scene Test", "Wall rebound", TestWallRebound::create);
