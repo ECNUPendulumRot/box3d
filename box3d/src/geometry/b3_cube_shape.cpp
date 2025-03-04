@@ -98,6 +98,67 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz) {
 
 }
 
+void b3CubeShape::set_as_box(double hx, double hy, double hz, b3Vec3r center, b3Vec3r angle) {
+    b3_assert(hx > 0.0f);
+    b3_assert(hy > 0.0f);
+    b3_assert(hz > 0.0f);
+
+    m_centroid = center;
+
+    // TODO: check the order of the axis
+    m_vertices[0].set(hx, -hy, -hz);
+    m_vertices[1].set(hx, hy, -hz);
+    m_vertices[2].set(-hx, hy, -hz);
+    m_vertices[3].set(-hx, -hy, -hz);
+
+    m_vertices[4].set(hx, -hy, hz);
+    m_vertices[5].set(hx, hy, hz);
+    m_vertices[6].set(-hx, hy, hz);
+    m_vertices[7].set(-hx, -hy, hz);
+
+    m_normals[0].set(0.0f, 0.0f, -1.0f);
+    m_normals[1].set(0.0f, 1.0f, 0.0f);
+    m_normals[2].set(0.0f, 0.0f, 1.0f);
+    m_normals[3].set(0.0f, -1.0f, 0.0f);
+    m_normals[4].set(1.0f, 0.0f, 0.0f);
+    m_normals[5].set(-1.0f, 0.0f, 0.0f);
+
+    m_faces[0] = { 0, 3, 2, 1 };
+    m_faces[1] = { 1, 2, 6, 5 };
+    m_faces[2] = { 4, 5, 6, 7 };
+    m_faces[3] = { 0, 4, 7, 3 };
+    m_faces[4] = { 0, 1, 5, 4 };
+    m_faces[5] = { 2, 3, 7, 6 };
+
+    m_edges[0] = { 0, 1 };
+    m_edges[1] = { 1, 2 };
+    m_edges[2] = { 2, 3 };
+    m_edges[3] = { 3, 0 };
+    m_edges[4] = { 4, 5 };
+    m_edges[5] = { 5, 6 };
+    m_edges[6] = { 6, 7 };
+    m_edges[7] = { 7, 4 };
+    m_edges[8] = { 0, 4 };
+    m_edges[9] = { 1, 5 };
+    m_edges[10] = { 2, 6 };
+    m_edges[11] = { 3, 7 };
+
+    m_xyz.set(2 * hx, 2 * hy, 2 * hz);
+    m_h_xyz.set(hx, hy, hz);
+
+    b3Transr xf;
+    xf.m_p = center;
+    b3Quatr q(angle);
+    xf.m_r = q.rotation_matrix();
+
+    for(int32 i=0;i<8;i++){
+        m_vertices[i] = xf.transform_local(m_vertices[i]);
+    }
+
+    for(int32 i=0;i<6;i++){
+        m_normals[i] = xf.rotate(m_normals[i]);
+    }
+}
 /**
  * @brief compute the axis-aligned bounding box (AABB) for the cube shape
  * @param aabb A pointer to a b3AABB object where the resulting AABB will be stored.

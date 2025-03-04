@@ -52,7 +52,7 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(0, -4, box_hf_size);
+            b3Vec3r p(-2, -4, box_hf_size);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 2, 0);
             b3Vec3r w(0, 0, 0);
@@ -83,7 +83,7 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(0, 0, box_hf_size);
+            b3Vec3r p(-2, 0, box_hf_size);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
@@ -96,7 +96,9 @@ public:
 
             // Create a cube shape with defined half-size
             b3CubeShape cube_shape;
-            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size);
+            b3Vec3r center(2*box_hf_size,0,0);
+            b3Vec3r angle(0,0,0);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
 
             // Define fixture properties for the box
             b3FixtureDef box_fd;
@@ -107,40 +109,81 @@ public:
 
             // Create the fixture and attach it to the body
             cube->create_fixture(box_fd);
+
+            center = b3Vec3r (-2*box_hf_size,0,0);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd1;
+            box_fd1.m_shape = &cube_shape;
+            box_fd1.m_friction = 0.3;
+            box_fd1.m_restitution = 1.0;
+            box_fd1.m_density = 1.0;
+
+            box_fd1.m_shape = &cube_shape;
+            cube->create_fixture(box_fd1);
+
+            center = b3Vec3r (0,0,0);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd2;
+            box_fd2.m_shape = &cube_shape;
+            box_fd2.m_friction = 0.3;
+            box_fd2.m_restitution = 1.0;
+            box_fd2.m_density = 1.0;
+
+            box_fd2.m_shape = &cube_shape;
+            cube->create_fixture(box_fd2);
+
+            center = b3Vec3r (0,0,-2*box_hf_size);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd3;
+            box_fd3.m_shape = &cube_shape;
+            box_fd3.m_friction = 0.3;
+            box_fd3.m_restitution = 1.0;
+            box_fd3.m_density = 1.0;
+
+            box_fd3.m_shape = &cube_shape;
+            cube->create_fixture(box_fd3);
+
+            center = b3Vec3r (0,0,2*box_hf_size);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd4;
+            box_fd4.m_shape = &cube_shape;
+            box_fd4.m_friction = 0.3;
+            box_fd4.m_restitution = 1.0;
+            box_fd4.m_density = 1.0;
+
+            box_fd4.m_shape = &cube_shape;
+            cube->create_fixture(box_fd4);
+
+            center = b3Vec3r (0,2*box_hf_size,0);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd5;
+            box_fd5.m_shape = &cube_shape;
+            box_fd5.m_friction = 0.3;
+            box_fd5.m_restitution = 1.0;
+            box_fd5.m_density = 1.0;
+
+            box_fd5.m_shape = &cube_shape;
+            cube->create_fixture(box_fd5);
+
+            center = b3Vec3r (0,-2*box_hf_size,0);
+            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
+
+            b3FixtureDef box_fd6;
+            box_fd6.m_shape = &cube_shape;
+            box_fd6.m_friction = 0.3;
+            box_fd6.m_restitution = 1.0;
+            box_fd6.m_density = 1.0;
+
+            box_fd6.m_shape = &cube_shape;
+            cube->create_fixture(box_fd6);
         }
 
-        // Create the rest of the dynamic cubes with zero initial velocity
-        for (int32 i = 0; i < box_count; i++) {
 
-            b3BodyDef body_def;
-            body_def.m_type = b3BodyType::b3_dynamic_body;
-
-            // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(pow(-1,i) * (box_hf_size * (1.5-0.5*(i%4/2))), box_hf_size*2*(i/2), box_hf_size);
-            b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
-            b3Vec3r w(0, 0, 0);
-
-            body_def.set_init_pose(p, q);
-            body_def.set_init_velocity(v, w);
-
-            // Create the body in the world
-            b3Body *cube = m_world->create_body(body_def);
-
-            // Create a cube shape with defined half-size
-            b3CubeShape cube_shape;
-            cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size);
-
-            // Define fixture properties for the box
-            b3FixtureDef box_fd;
-            box_fd.m_shape = &cube_shape;
-            box_fd.m_friction = 0.3;
-            box_fd.m_restitution = 1.0;
-            box_fd.m_density = 1.0;
-
-            // Create the fixture and attach it to the body
-            cube->create_fixture(box_fd);
-        }
 
         ////////////////////////////////////////////////////
 

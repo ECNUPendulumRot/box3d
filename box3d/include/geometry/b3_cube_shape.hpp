@@ -125,7 +125,7 @@ public:
      * @param hz: the half height of the cube
      */
     void set_as_box(double hx, double hy, double hz);
-
+    void set_as_box(double hx, double hy, double hz, b3Vec3r center, b3Vec3r angle);
     /**
      * @brief the destructor  of b3CubeShape
      */
