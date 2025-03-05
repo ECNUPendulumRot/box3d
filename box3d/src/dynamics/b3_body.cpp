@@ -83,7 +83,7 @@ b3Fixture* b3Body::create_fixture(const b3FixtureDef &def)
     // create proxies for the fixture
     auto *broad_phase = m_world->get_broad_phase();
 
-    b3Transr xf(m_p, m_q);
+    b3Transr xf(def.m_shape->m_centroid + m_p , m_q);
     fixture->create_proxy(broad_phase, xf);
     fixture->m_body = this;
 

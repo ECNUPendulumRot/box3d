@@ -100,7 +100,7 @@ protected:
     b3Vec3r m_color = b3Vec3r::zero();
 
 public:
-
+    b3Vec3r m_centroid;
     /**
      * @brief Destructor for the b3Shape class.
      */
