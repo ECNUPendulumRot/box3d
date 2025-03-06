@@ -221,8 +221,8 @@ void b3Contact::get_world_manifold(b3WorldManifold *world_manifold) const
     const b3Body *body_a = m_fixture_a->get_body();
     const b3Body *body_b = m_fixture_b->get_body();
 
-    b3Transr xf_a(body_a->get_position(), body_a->get_quaternion());
-    b3Transr xf_b(body_b->get_position(), body_b->get_quaternion());
+    b3Transr xf_a(body_a->get_position()+m_fixture_a->get_shape()->m_centroid, body_a->get_quaternion());
+    b3Transr xf_b(body_b->get_position()+m_fixture_b->get_shape()->m_centroid, body_b->get_quaternion());
 
     world_manifold->initialize(&m_manifold, xf_a, m_fixture_a->get_shape()->get_radius(), xf_b, m_fixture_b->get_shape()->get_radius());
 }

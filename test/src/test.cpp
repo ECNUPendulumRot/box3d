@@ -87,8 +87,9 @@ void Test::step(Settings &settings) {
         for (int32 i = 0; i < m_point_count; ++i) {
             ContactPoint* cp = m_points + i;
             b3Vec3r p1 = cp->position;
-            b3Vec3r p2 = p1 + 0.1f * cp->normal;
+            b3Vec3r p2 = p1 +  cp->normal;
             g_debug_draw.draw_point(p1, 10.0f, b3Color(1.0f, 0.0f, 0.0f));
+            //g_debug_draw.draw_line(p1,p2,b3Color(1.0f, 1.0f, 1.0f));
         }
     }
 

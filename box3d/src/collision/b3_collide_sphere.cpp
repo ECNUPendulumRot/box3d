@@ -139,6 +139,6 @@ void b3_collide_cube_and_sphere(
     manifold->m_local_normal = normal.normalized();
     manifold->m_local_point = closest_point;
     manifold->m_type = b3Manifold::e_face_A;
-    manifold->m_points[0].m_local_point = {0, 0, 0};
+    manifold->m_points[0].m_local_point = sphere_b->get_centroid();
 }
 

@@ -152,7 +152,7 @@ void b3CubeShape::set_as_box(double hx, double hy, double hz, b3Vec3r center, b3
     xf.m_r = q.rotation_matrix();
 
     for(int32 i=0;i<8;i++){
-        m_vertices[i] = xf.transform_local(m_vertices[i]);
+        m_vertices[i] = xf.transform(m_vertices[i]);
     }
 
     for(int32 i=0;i<6;i++){

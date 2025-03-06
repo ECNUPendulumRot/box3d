@@ -52,9 +52,9 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(-2, -4, box_hf_size);
+            b3Vec3r p(2, 4, box_hf_size);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
+            b3Vec3r v(0, -2, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);
@@ -76,6 +76,15 @@ public:
 
             // Create the fixture and attach it to the body
             ball->create_fixture(box_fd);
+
+            p={-2, -4, box_hf_size};
+            v= {0, 2, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            ball->create_fixture(box_fd);
         }
 
         {
@@ -83,7 +92,7 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(-2, 0, box_hf_size);
+            b3Vec3r p(0, 0, box_hf_size);
             b3Vec3r q(0, 0, 0);
             b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);

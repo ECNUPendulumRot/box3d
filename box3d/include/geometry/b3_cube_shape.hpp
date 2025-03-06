@@ -81,7 +81,7 @@ public:
     /**
      * @brief Stores the centroid (geometric center) of the cube.
      */
-    b3Vec3r m_centroid;
+    //b3Vec3r m_centroid;
 
     /**
      * @brief Array of the cube's vertices.

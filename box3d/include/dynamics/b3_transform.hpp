@@ -146,6 +146,10 @@ public:
      * @return The transformed vector in local coordinates.
      */
     inline b3Vec3<T> transform_local(const b3Vec3<T>& v) const {
+        return m_r.transpose() * (v - m_p);
+    }
+
+    inline b3Vec3<T> ne_transform_local(const b3Vec3<T>& v) const {
         return m_r.transpose() * (m_p - v);
     }
 

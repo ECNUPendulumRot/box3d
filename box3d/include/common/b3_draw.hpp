@@ -190,6 +190,7 @@ public:
      */
     virtual void draw_point(const b3Vec3r& p, float size, const b3Color& color) = 0;
 
+    virtual void draw_line(const b3Vec3r& p1, const b3Vec3r& p2, const b3Color& color) = 0;
 protected:
 
     /**

@@ -75,7 +75,9 @@ public:
             box_fd.m_density = 1.0;
 
             // Create the fixture and attach it to the body
-            ball->create_fixture(box_fd);
+            b3Fixture *fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,"ball1");
+            utils.track_body(ball,"ball1");
         }
 
         // Create the rest of the dynamic cubes with zero initial velocity
@@ -108,7 +110,9 @@ public:
             box_fd.m_density = 1.0;
 
             // Create the fixture and attach it to the body
-            cube->create_fixture(box_fd);
+            b3Fixture* fix = cube->create_fixture(box_fd);
+            utils.track_fixture(fix,("box" + std::to_string(i)).c_str());
+            utils.track_body(cube,("box" + std::to_string(i)).c_str());
         }
 
         ////////////////////////////////////////////////////

@@ -69,19 +69,21 @@ void Utils::open_file()
 
     for (int i = 0; i < m_body_count; i++) {
         csv_file << m_body_names[i] + ","
-                 << "p_x,"
-                 << "p_y,"
-                 << "p_z,"
-                 << "q_x,"
-                 << "q_y,"
-                 << "q_z,"
-                 << "q_w,"
-                 << "v_x,"
-                 << "v_y,"
-                 << "v_z,"
-                 << "w_x,"
-                 << "w_y,"
-                 << "w_z, ,";
+//                 << "p_x,"
+//                 << "p_y,"
+//                 << "p_z,"
+//                 << "q_x,"
+//                 << "q_y,"
+//                 << "q_z,"
+//                 << "q_w,"
+//                 << "v_x,"
+//                 << "v_y,"
+//                 << "v_z,"
+//                 << "w_x,"
+//                 << "w_y,"
+//                 << "w_z,"
+//                 << "m, ,";
+                    << "E, ,";
     }
     csv_file << std::endl;
 }
@@ -98,11 +100,17 @@ void Utils::save_body_info()
         b3Quatr q = body->get_quaternion();
         b3Vec3r v = body->get_linear_velocity();
         b3Vec3r w = body->get_angular_velocity();
+        real m = body->get_mass();
+        b3Mat33r in = body->get_inertia();
+        float kinetic_energy = 0.5 * v.length2() * m ;
+        kinetic_energy += 0.5 * (in * w).dot(w);
 
-        csv_file << "," << p.x << "," << p.y << "," << p.z << ",";
-        csv_file << q.m_x << "," << q.m_y << "," << q.m_z << "," << q.m_w << ",";
-        csv_file << v.x << "," << v.y << "," << v.z << ",";
-        csv_file << w.x << "," << w.y << "," << w.z << ", ,";
+//        csv_file << "," << p.x << "," << p.y << "," << p.z << ",";
+//        csv_file << q.m_x << "," << q.m_y << "," << q.m_z << "," << q.m_w << ",";
+//        csv_file << v.x << "," << v.y << "," << v.z << ",";
+//        csv_file << w.x << "," << w.y << "," << w.z << ",";
+//        csv_file << m << ", ,";
+        csv_file << "," << kinetic_energy << ", ,";
     }
     csv_file << std::endl;
 }

@@ -255,4 +255,8 @@ void DebugDraw::draw_point(const b3Vec3r &p, float size, const b3Color &color)
     m_points->vertex(p, color, size);
 }
 
-
+void DebugDraw::draw_line(const b3Vec3r &p1, const b3Vec3r &p2, const b3Color &color)
+{
+    m_lines->vertex(p1, color);
+    m_lines->vertex(p2, color);
+}
