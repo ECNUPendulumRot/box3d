@@ -2,7 +2,7 @@
 
 class TestInnerBounding :public Test {
 
-    int c_count = 6;
+    int c_count = 4;
 
     real radius = 0.5;
 
@@ -38,6 +38,18 @@ public:
 
             utils.track_body(b, "init_velocity_sphere");
             utils.track_fixture(f, "init_velocity_sphere");
+
+            p={c_count * radius, 5+2 * c_count * radius, c_count * radius};
+            v={0,0,0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            b = m_world->create_body(body_def);
+            f = b->create_fixture(fixture_def);
+
+            utils.track_body(b, "back_sphere");
+            utils.track_fixture(f, "back_sphere");
         }
 
         {
@@ -57,7 +69,7 @@ public:
                         b3Body* b = m_world->create_body(body_def);
                         b3Fixture* f = b->create_fixture(fixture_def);
 
-                        //utils.track_body(b, ("sphere_" + std::to_string(index)).c_str());
+                        utils.track_body(b, ("sphere_" + std::to_string(index)).c_str());
                         utils.track_fixture(f, ("sphere_" + std::to_string(index)).c_str());
                         index++;
                     }
@@ -133,39 +145,39 @@ public:
             b3Fixture* fg = ground_body->create_fixture(fixture_def);
         }
 
-        {
-            // create a ground
-            b3BodyDef body_def;
-            p = { -10, 0, 0};
-            q = {0, 3.1415926535897 / 2.0, 0};
-            body_def.set_init_pose(p, q);
-            body_def.m_type = b3BodyType::b3_static_body;
-            b3Body* ground_body = m_world->create_body(body_def);
-
-            b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(100, 100);
-
-            fixture_def.m_shape = &ground_shape;
-            fixture_def.m_density = 0;
-            b3Fixture* fg = ground_body->create_fixture(fixture_def);
-        }
-
-        {
-            // create a ground
-            b3BodyDef body_def;
-            p = { 2 * radius * c_count + 10, 0, 0};
-            q = {0, -3.1415926535897 / 2.0, 0};
-            body_def.set_init_pose(p, q);
-            body_def.m_type = b3BodyType::b3_static_body;
-            b3Body* ground_body = m_world->create_body(body_def);
-
-            b3PlaneShape ground_shape;
-            ground_shape.set_as_plane(100, 100);
-
-            fixture_def.m_shape = &ground_shape;
-            fixture_def.m_density = 0;
-            b3Fixture* fg = ground_body->create_fixture(fixture_def);
-        }
+//        {
+//            // create a ground
+//            b3BodyDef body_def;
+//            p = { -10, 0, 0};
+//            q = {0, 3.1415926535897 / 2.0, 0};
+//            body_def.set_init_pose(p, q);
+//            body_def.m_type = b3BodyType::b3_static_body;
+//            b3Body* ground_body = m_world->create_body(body_def);
+//
+//            b3PlaneShape ground_shape;
+//            ground_shape.set_as_plane(100, 100);
+//
+//            fixture_def.m_shape = &ground_shape;
+//            fixture_def.m_density = 0;
+//            b3Fixture* fg = ground_body->create_fixture(fixture_def);
+//        }
+//
+//        {
+//            // create a ground
+//            b3BodyDef body_def;
+//            p = { 2 * radius * c_count + 10, 0, 0};
+//            q = {0, -3.1415926535897 / 2.0, 0};
+//            body_def.set_init_pose(p, q);
+//            body_def.m_type = b3BodyType::b3_static_body;
+//            b3Body* ground_body = m_world->create_body(body_def);
+//
+//            b3PlaneShape ground_shape;
+//            ground_shape.set_as_plane(100, 100);
+//
+//            fixture_def.m_shape = &ground_shape;
+//            fixture_def.m_density = 0;
+//            b3Fixture* fg = ground_body->create_fixture(fixture_def);
+//        }
     }
 
     static Test* create() {
