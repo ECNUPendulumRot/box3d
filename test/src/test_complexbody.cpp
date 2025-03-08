@@ -52,9 +52,9 @@ public:
             body_def.m_type = b3BodyType::b3_dynamic_body;
 
             // Initial position, orientation, linear velocity, and angular velocity
-            b3Vec3r p(2, 4, box_hf_size);
+            b3Vec3r p(0, -8, box_hf_size);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, -2, 0);
+            b3Vec3r v(0, 0, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);
@@ -75,16 +75,108 @@ public:
             box_fd.m_density = 1.0;
 
             // Create the fixture and attach it to the body
-            ball->create_fixture(box_fd);
+            b3Fixture* fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(0)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(0)).c_str());
 
-            p={-2, -4, box_hf_size};
-            v= {0, 2, 0};
+            p={-2, -6, box_hf_size};
+            v= {0, 0, 0};
 
             body_def.set_init_pose(p, q);
             body_def.set_init_velocity(v, w);
 
             ball = m_world->create_body(body_def);
-            ball->create_fixture(box_fd);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(1)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(1)).c_str());
+
+            p={2, -6, box_hf_size};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(2)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(2)).c_str());
+
+            p={0, -6, box_hf_size};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(3)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(3)).c_str());
+
+            p={0, -6, box_hf_size+2};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(4)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(4)).c_str());
+
+            p={0, -6, box_hf_size-2};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(5)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(5)).c_str());
+
+            p={0, -4, box_hf_size-2};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(6)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(6)).c_str());
+
+            p={0, -4, box_hf_size+2};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(7)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(7)).c_str());
+
+            p={2, -8, box_hf_size};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(8)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(8)).c_str());
+
+            p={-2, -8, box_hf_size};
+            v= {0, 0, 0};
+
+            body_def.set_init_pose(p, q);
+            body_def.set_init_velocity(v, w);
+
+            ball = m_world->create_body(body_def);
+            fix = ball->create_fixture(box_fd);
+            utils.track_fixture(fix,("ball" + std::to_string(9)).c_str());
+            utils.track_body(ball,("ball" + std::to_string(9)).c_str());
         }
 
         {
@@ -94,7 +186,7 @@ public:
             // Initial position, orientation, linear velocity, and angular velocity
             b3Vec3r p(0, 0, box_hf_size);
             b3Vec3r q(0, 0, 0);
-            b3Vec3r v(0, 0, 0);
+            b3Vec3r v(0, -2, 0);
             b3Vec3r w(0, 0, 0);
 
             body_def.set_init_pose(p, q);
@@ -117,7 +209,9 @@ public:
             box_fd.m_density = 1.0;
 
             // Create the fixture and attach it to the body
-            cube->create_fixture(box_fd);
+            b3Fixture* fix = cube->create_fixture(box_fd);
+            utils.track_fixture(fix,("box" + std::to_string(0)).c_str());
+            utils.track_body(cube,("box" + std::to_string(0)).c_str());
 
             center = b3Vec3r (-2*box_hf_size,0,0);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -129,7 +223,9 @@ public:
             box_fd1.m_density = 1.0;
 
             box_fd1.m_shape = &cube_shape;
-            cube->create_fixture(box_fd1);
+            fix = cube->create_fixture(box_fd1);
+            utils.track_fixture(fix,("box" + std::to_string(1)).c_str());
+            utils.track_body(cube,("box" + std::to_string(1)).c_str());
 
             center = b3Vec3r (0,0,0);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -141,7 +237,9 @@ public:
             box_fd2.m_density = 1.0;
 
             box_fd2.m_shape = &cube_shape;
-            cube->create_fixture(box_fd2);
+            fix = cube->create_fixture(box_fd2);
+            utils.track_fixture(fix,("box" + std::to_string(2)).c_str());
+            utils.track_body(cube,("box" + std::to_string(2)).c_str());
 
             center = b3Vec3r (0,0,-2*box_hf_size);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -153,7 +251,9 @@ public:
             box_fd3.m_density = 1.0;
 
             box_fd3.m_shape = &cube_shape;
-            cube->create_fixture(box_fd3);
+            fix = cube->create_fixture(box_fd3);
+            utils.track_fixture(fix,("box" + std::to_string(3)).c_str());
+            utils.track_body(cube,("box" + std::to_string(3)).c_str());
 
             center = b3Vec3r (0,0,2*box_hf_size);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -165,7 +265,9 @@ public:
             box_fd4.m_density = 1.0;
 
             box_fd4.m_shape = &cube_shape;
-            cube->create_fixture(box_fd4);
+            fix = cube->create_fixture(box_fd4);
+            utils.track_fixture(fix,("box" + std::to_string(4)).c_str());
+            utils.track_body(cube,("box" + std::to_string(4)).c_str());
 
             center = b3Vec3r (0,2*box_hf_size,0);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -177,7 +279,9 @@ public:
             box_fd5.m_density = 1.0;
 
             box_fd5.m_shape = &cube_shape;
-            cube->create_fixture(box_fd5);
+            fix = cube->create_fixture(box_fd5);
+            utils.track_fixture(fix,("box" + std::to_string(5)).c_str());
+            utils.track_body(cube,("box" + std::to_string(5)).c_str());
 
             center = b3Vec3r (0,-2*box_hf_size,0);
             cube_shape.set_as_box(box_hf_size, box_hf_size, box_hf_size, center, angle);
@@ -189,7 +293,9 @@ public:
             box_fd6.m_density = 1.0;
 
             box_fd6.m_shape = &cube_shape;
-            cube->create_fixture(box_fd6);
+            fix = cube->create_fixture(box_fd6);
+            utils.track_fixture(fix,("box" + std::to_string(6)).c_str());
+            utils.track_body(cube,("box" + std::to_string(6)).c_str());
         }
 
 
